@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="croniot.models">
+    <class name="croniot.models.Account" table="account">
+        <id name="id" column="id">
+            <generator class="identity"/>
+        </id>
+
+        <property name="uuid" column="uuid" unique="true"/>
+        <property name="nickname" column="nickname" unique="true"/>
+        <property name="email" column="email" unique="true"/>
+        <property name="password" column="password"/>
+
+    <set name="devices" table="device" cascade="save-update"
+         inverse="true" lazy="false" fetch="join">
+        <key>
+            <column name="account"/>  <!-- Change this to refer to the account column in the Device table -->
+        </key>
+        <one-to-many class="croniot.models.Device" />
+    </set>
+
+    </class>
+</hibernate-mapping>
