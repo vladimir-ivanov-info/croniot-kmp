@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping package="croniot.models">
+    <class name="croniot.models.ParameterSensor" table="parameter_sensor">
+
+        <id name="id" column="id">
+            <generator class="identity"/>
+        </id>
+
+        <!-- Common properties -->
+        <property name="uid" column="uid"/>
+        <property name="name" column="name"/>
+        <property name="type" column="type"/>
+        <property name="unit" column="unit"/>
+        <property name="description" column="description"/>
+
+        <map name="constraints" table="parameter_sensor_constraints" cascade="all" lazy="false">
+            <key column="parameter_id"/>
+            <index column="constraint_key" type="string"/>
+            <element column="constraint_value" type="string"/>
+        </map>
+
+        <!-- Map to Task entity -->
+        <many-to-one name="sensor" class="croniot.models.Sensor" column="sensor" not-null="true"/>
+    </class>
+</hibernate-mapping>

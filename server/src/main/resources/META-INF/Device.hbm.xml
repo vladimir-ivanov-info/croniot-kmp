@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="croniot.models">
+    <class name="croniot.models.Device" table="device">
+        <id name="id" column="id">
+            <generator class="identity"/>
+        </id>
+
+        <property name="uuid" column="uuid"/>
+        <property name="name" column="name"/>
+        <property name="description" column="description"/>
+        <property name="iot" column="iot"/>
+
+        <many-to-one name="account" class="croniot.models.Account" column="account" />
+
+        <set name="sensors" table="sensor" cascade="all-delete-orphan"
+             inverse="true" lazy="false" fetch="join">
+            <key>
+                <column name="device"/>
+            </key>
+            <one-to-many class="croniot.models.Sensor" />
+        </set>
+
+        <set name="taskTypes" table="task_type" cascade="all-delete-orphan"
+             inverse="true" lazy="false" fetch="join">
+            <key>
+                <column name="device"/>
+            </key>
+            <one-to-many class="croniot.models.TaskType" />
+        </set>
+
+
+<!--                 <column name="id" not-null="true"  /> -->
+
+    </class>
+</hibernate-mapping>
