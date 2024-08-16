@@ -39,9 +39,11 @@ config/passwords.txt
 
 #Ignore /app folder content
 /app/*
+/.fleet/*
 
 #Ignore files with sensitive data
 **/hibernate.cfg.xml
 **/hibernate-test.cfg.xml
 **/persistence.xml
 **/secrets.json
+
