@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="croniot.models">
+    <class name="croniot.models.TaskStateInfo" table="task_state_info">
+
+        <id name="id" column="id">
+            <generator class="identity"/>
+        </id>
+
+        <property name="dateTime" column="date_time"/>
+       <!-- <property name="state" column="state" type="string"/> -->
+        <property name="state" column="state">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">croniot.models.TaskState</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+
+        <property name="errorMessage" column="error_message"/>
+
+        <many-to-one name="task" class="croniot.models.Task" column="task" not-null="true"/>
+
+    </class>
+</hibernate-mapping>

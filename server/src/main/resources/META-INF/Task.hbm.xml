@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="croniot.models">
+    <class name="croniot.models.Task" table="task">
+
+        <id name="id" column="id">
+            <generator class="identity"/>
+        </id>
+
+        <property name="uid" column="uid"/>
+<!--
+        <map name="parametersValues" table="task_configuration_parameter_value" cascade="all" lazy="false" fetch="join">
+            <key column="id_task_configuration"/>
+            <composite-map-key class="croniot.models.ParameterTask">
+                <key-property name="id" column="id_parameter" type="long"/>
+            </composite-map-key>
+            <element type="string" column="value"/>
+        </map>
+
+        -->
+
+        <map name="parametersValues" table="task_parameter_value" cascade="all" lazy="false" fetch="join">
+            <key column="id_task"/>
+            <map-key-many-to-many class="croniot.models.ParameterTask" column="id_parameter"/>
+            <element type="string" column="value"/>
+        </map>
+
+     <!--   <many-to-one name="account" class="croniot.models.Account" column="account" /> -->
+
+      <!--  <many-to-one name="taskType" class="croniot.models.TaskType" column="task_type" /> -->
+        <many-to-one name="taskType" class="croniot.models.TaskType" column="task_type" not-null="true"/>
+
+        <!--  <set name="stateInfos" table="device" cascade="save-update"
+               inverse="true" lazy="false" fetch="join">
+              <key>
+                  <column name="task"/>   Change this to refer to the account column in the Device table
+            </key>
+            <one-to-many class="croniot.models.TaskStateInfo" />
+        </set>-->
+
+
+
+          <set name="stateInfos" table="task_state_info" cascade="save-update"
+              inverse="true" lazy="false" fetch="join">
+             <key>
+                 <column name="task"/>
+            </key>
+            <one-to-many class="croniot.models.TaskStateInfo" />
+        </set>
+
+    </class>
+</hibernate-mapping>
+
+<!-- <many-to-one name="device" class="croniot.models.Device" column="device" not-null="false"/> -->

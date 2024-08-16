@@ -1,0 +1,47 @@
+# Ignore the Gradle files and build directories
+*.gradle
+.gradle/
+build/
+**/build/
+
+# Kotlin and IntelliJ/Android Studio specific
+*.idea/
+*.iml
+*.hprof
+.idea/
+.DS_Store
+*.log
+*.lock
+
+# Android specific files
+androidApp/.idea/
+androidApp/local.properties
+androidApp/.gradle/
+androidApp/build/
+*.apk
+*.ap_
+
+# iOS specific files
+iosApp/.gradle/
+iosApp/build/
+iosApp/Pods/
+iosApp/Podfile.lock
+iosApp/xcuserdata/
+iosApp/DerivedData/
+
+# Ignore sensitive files like passwords or API keys
+config/passwords.txt
+.env
+*.keystore
+
+# Miscellaneous
+.vscode/
+
+#Ignore /app folder content
+/app/*
+
+#Ignore files with sensitive data
+**/hibernate.cfg.xml
+**/hibernate-test.cfg.xml
+**/persistence.xml
+**/secrets.json
