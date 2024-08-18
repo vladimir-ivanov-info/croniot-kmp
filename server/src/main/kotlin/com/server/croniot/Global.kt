@@ -14,9 +14,9 @@ object Global {
     init{
         var secretsFile : File
         if(TESTING){
-            secretsFile = File("app/secrets_testing.json");
+            secretsFile = File("secrets/secrets_testing.json");
         } else {
-            secretsFile = File("app/secrets.json");
+            secretsFile = File("secrets/secrets.json");
         }
 
 
