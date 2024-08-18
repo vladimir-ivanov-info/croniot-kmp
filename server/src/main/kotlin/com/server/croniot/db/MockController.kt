@@ -10,7 +10,7 @@ object MockController {
     val connection = ControllerDb.getConnection()
 
 
-    
+
     fun addMockData(){
         val account1 = Account("account1Uuid", "vladimiriot", "email1@gmail.com", "password1", mutableSetOf())
         val device1 = Device("esp32id", "Watering system", "description123", true, /*"esp32Password",*/ mutableSetOf(),  mutableSetOf(), account1)

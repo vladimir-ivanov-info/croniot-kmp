@@ -1,5 +1,5 @@
-package com.croniot.server
-
+package com.server.croniot
+/*
 import Greeting
 import SERVER_PORT
 import io.ktor.server.application.*
@@ -19,4 +19,4 @@ fun Application.module() {
             call.respondText("Ktor: ${Greeting().greet()}")
         }
     }
-}
+}*/
