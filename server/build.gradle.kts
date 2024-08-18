@@ -1,13 +1,18 @@
+//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     application
+    //id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.croniot.server"
 version = "1.0.0"
 application {
-    mainClass.set("com.croniot.server.ApplicationKt")
+    //mainClass.set("com.croniot.server.ApplicationKt")
+    mainClass.set("MainKt")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
 
@@ -57,3 +62,40 @@ dependencies {
 
 
 }
+/*
+tasks {
+    withType<ShadowJar> {
+        archiveClassifier.set("")  // Optional: removes the "-all" suffix from the jar name
+        manifest {
+            attributes["Main-Class"] = "com.croniot.server.MainKt" // Replace with your main class
+        }
+    }
+}
+*/
+/*
+tasks {
+    compileKotlin {
+        //kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "21"
+    }
+
+    compileTestKotlin {
+        //kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "21"
+    }
+
+    shadowJar {
+        // Set the main class for the JAR (replace com.example.MainClass with your actual main class)
+        manifest {
+            attributes["Main-Class"] = "MainKt"
+        }
+
+        // Optionally, configure the shadowJar task further if needed
+        // For example, excluding files or dependencies, or merging services files
+
+        // Example of excluding certain files from the JAR
+        exclude("META-INF/*.DSA", "META-INF/*.SF", "META-INF/*.RSA")
+    }
+}
+*/
+
