@@ -77,10 +77,10 @@ fun Application.configureRouting() {
             call.respondText(responseJSON, ContentType.Text.Plain)
         }
 
-        post("/api/register_sensor"){
+        post("/api/register_sensor_type"){
             val message = call.receiveText();
-            val messageRegisterSensor = MessageFactory.fromJson<MessageRegisterSensor>(message)
-            val result = RegisterSensorController.registerSensor(messageRegisterSensor)
+            val messageRegisterSensorType = MessageFactory.fromJson<MessageRegisterSensorType>(message)
+            val result = RegisterSensorController.registerSensor(messageRegisterSensorType)
             val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(result)
             call.respondText(responseJSON, ContentType.Text.Plain)
         }

@@ -18,7 +18,7 @@ data class DeviceToken(
     override fun equals(obj: Any?): Boolean {
         if (this === obj) return true
         if (obj == null || javaClass != obj.javaClass) return false
-        val (id1) = obj as Sensor //TODO
+        val (id1) = obj as SensorType //TODO
         return id == id1 // or compare other relevant properties
     }
 

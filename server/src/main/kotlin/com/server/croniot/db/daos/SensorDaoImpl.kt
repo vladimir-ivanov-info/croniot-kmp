@@ -1,7 +1,7 @@
 package com.croniot.server.db.daos
 
 import com.croniot.server.db.controllers.ControllerDb
-import croniot.models.Sensor
+import croniot.models.SensorType
 
 import croniot.models.SensorInfoDb
 import java.sql.Connection
@@ -9,15 +9,15 @@ import java.util.*
 
 class SensorDaoImpl : SensorDao {
 
-    override fun insert(sensor: Sensor) : Long {
+    override fun insert(sensorType: SensorType) : Long {
 
         val session = ControllerDb.sessionFactory.openSession()
         val transaction = session.beginTransaction()
         val sensorId: Long
         try {
-            session.persist(sensor)
+            session.persist(sensorType)
             session.flush()
-            sensorId = sensor.id
+            sensorId = sensorType.id
 
             transaction.commit()
         } catch (e: Exception) {

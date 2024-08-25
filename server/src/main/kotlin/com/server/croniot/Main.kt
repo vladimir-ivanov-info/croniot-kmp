@@ -11,6 +11,7 @@ import java.time.ZonedDateTime
 
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import java.io.File
 
 fun Application.module(testing: Boolean = false) {
     Global.TESTING = testing
@@ -27,6 +28,26 @@ fun Application.module(testing: Boolean = false) {
 
 
 fun main() {
+/*
+var numeroleidotexto=readln()
+   var numeroleido=numeroleidotexto.toDouble()
+    var resultado=467.0/numeroleido
+    println("el resultado es: $resultado")
+    val formatted = String.format("%.3f", resultado)
+    println(formatted)  // Output: 123.456789
+
+    var archivo= File("/home/vladimir/archivo.txt" )
+archivo.writeText(formatted)
+    //archivo.
+*/
+
+
+
+
+    Runtime.getRuntime().addShutdownHook(Thread {
+        println("Gracefully shutting down...")
+    })
+
     try{
         ControllerDb.initialize()
 
