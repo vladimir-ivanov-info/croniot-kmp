@@ -59,7 +59,7 @@ kotlin {
             implementation(libs.mqtt)
             implementation(libs.composeMaterial3)
 
-
+            implementation(libs.google.maps)
 
         }
         desktopMain.dependencies {

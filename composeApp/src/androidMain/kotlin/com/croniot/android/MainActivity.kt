@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.croniot.android.domain.util.StringUtil
 import com.croniot.android.presentation.devices.DevicesScreen
+import com.croniot.android.presentation.login.ScreenMaps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,6 +79,7 @@ fun CurrentScreen(){
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = UiConstants.ROUTE_LOGIN,
+    // NavHost(navController = navController, startDestination = UiConstants.ROUTE_MAPS,
 
         enterTransition = {
             // you can change whatever you want transition
@@ -89,6 +91,7 @@ fun CurrentScreen(){
         }
 
     ) {
+        //composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
         composable(UiConstants.ROUTE_REGISTER_ACCOUNT) { ScreenRegisterAccount(navController) }
         composable(UiConstants.ROUTE_LOGIN) { LoginScreen(navController) }
         composable(UiConstants.ROUTE_DEVICE) { DeviceScreen(navController, Modifier) }

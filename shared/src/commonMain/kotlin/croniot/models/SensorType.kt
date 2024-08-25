@@ -1,11 +1,8 @@
 package croniot.models
 
-import com.google.gson.annotations.Expose
-import croniot.models.dto.DeviceDto
 import croniot.models.dto.SensorDto
-import java.util.*
 
-data class Sensor(
+data class SensorType(
     var id: Long = 0,
     var uid: Long = 0,
     var name: String,
@@ -33,16 +30,16 @@ data class Sensor(
     override fun equals(obj: Any?): Boolean {
         if (this === obj) return true
         if (obj == null || javaClass != obj.javaClass) return false
-        val (id1) = obj as Sensor
+        val (id1) = obj as SensorType
         return id == id1 // or compare other relevant properties
     }
 
     override fun toString(): String {
-        return "Sensor: $id"
+        return "Sensor type: $id"
     }
 }
 
-fun Sensor.toDto() = SensorDto(
+fun SensorType.toDto() = SensorDto(
     uid = this.uid,
     name = this.name,
     description = this.description,

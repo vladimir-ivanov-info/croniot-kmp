@@ -7,7 +7,7 @@ import java.util.*
 
 object Global {
 
-    var TESTING = false
+    var TESTING = true
 
     val secrets : Secrets
 

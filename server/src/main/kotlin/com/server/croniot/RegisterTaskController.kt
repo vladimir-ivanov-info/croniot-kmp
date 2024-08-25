@@ -25,7 +25,7 @@ object RegisterTaskController {
             ControllerDb.taskTypeDao.insert(task)
             result = Result(true, "Task ${task.uid} registered")
         } else {
-            result = Result(false, "Incorrect device or token.")
+            result = Result(false, "Incorrect device or token for task register process.")
         }
 
         return result
