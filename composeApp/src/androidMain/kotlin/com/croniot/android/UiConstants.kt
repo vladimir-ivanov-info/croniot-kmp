@@ -2,6 +2,7 @@ package com.croniot.android
 
 object UiConstants {
 
+    val ROUTE_MAPS = "maps"
     val ROUTE_REGISTER_ACCOUNT = "register_account"
     val ROUTE_LOGIN = "login"
     val ROUTE_DEVICE = "device"

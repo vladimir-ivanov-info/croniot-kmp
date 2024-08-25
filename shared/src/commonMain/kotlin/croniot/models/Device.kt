@@ -8,7 +8,7 @@ data class Device(
     var name: String,
     var description: String,
     var iot: Boolean,
-    var sensors: MutableSet<Sensor>,
+    var sensorTypes: MutableSet<SensorType>,
     var taskTypes: MutableSet<TaskType>,
     @Transient
     var account: Account, // Reference to the Account this Device belongs to
@@ -19,10 +19,10 @@ data class Device(
     constructor() : this(0, "", "",  "",/*"",*/false, mutableSetOf(), mutableSetOf(), Account())
 
     constructor(uuid: String = "", name: String = "", description: String = "", iot: Boolean = false,
-                sensors: MutableSet<Sensor> = mutableSetOf(),
+                sensorTypes: MutableSet<SensorType> = mutableSetOf(),
                 taskTypes: MutableSet<TaskType> = mutableSetOf(),
                 account: Account = Account())
-            : this(0, uuid, name, description, iot, sensors, taskTypes, account)
+            : this(0, uuid, name, description, iot, sensorTypes, taskTypes, account)
 
     override fun hashCode(): Int {
         var result = id.hashCode()
@@ -48,7 +48,7 @@ fun Device.toDto() = DeviceDto(
     uuid = this.uuid,
     name = this.name,
     description = this.description,
-    sensors = this.sensors.map { it.toDto() }.toMutableSet(),
+    sensors = this.sensorTypes.map { it.toDto() }.toMutableSet(),
     tasks = this.taskTypes.map { it.toDto() }.toMutableSet(),
     lastOnlineMillis = 0 //TODO implement a column in database. Another column for seconds after which the device should be considered offline.
 )

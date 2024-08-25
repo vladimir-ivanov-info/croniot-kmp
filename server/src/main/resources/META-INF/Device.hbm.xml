@@ -16,12 +16,12 @@
 
         <many-to-one name="account" class="croniot.models.Account" column="account" />
 
-        <set name="sensors" table="sensor" cascade="all-delete-orphan"
+        <set name="sensorTypes" table="sensor" cascade="all-delete-orphan"
              inverse="true" lazy="false" fetch="join">
             <key>
                 <column name="device"/>
             </key>
-            <one-to-many class="croniot.models.Sensor" />
+            <one-to-many class="croniot.models.SensorType" />
         </set>
 
         <set name="taskTypes" table="task_type" cascade="all-delete-orphan"

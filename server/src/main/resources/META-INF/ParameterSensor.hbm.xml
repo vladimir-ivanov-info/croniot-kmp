@@ -25,6 +25,6 @@
         </map>
 
         <!-- Map to Task entity -->
-        <many-to-one name="sensor" class="croniot.models.Sensor" column="sensor" not-null="true"/>
+        <many-to-one name="sensorType" class="croniot.models.SensorType" column="sensor_type" not-null="true"/>
     </class>
 </hibernate-mapping>

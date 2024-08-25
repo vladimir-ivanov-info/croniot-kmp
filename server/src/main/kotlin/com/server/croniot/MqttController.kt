@@ -17,7 +17,7 @@ object MqttController {
 
             val deviceUuid = device.uuid
 
-            for(sensor in device.sensors){
+            for(sensor in device.sensorTypes){
                 val sensorUid = sensor.uid
                 val topic = deviceUuid + "_outcoming/sensor_data/" + sensorUid
                 val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
