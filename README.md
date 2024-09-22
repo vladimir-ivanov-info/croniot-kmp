@@ -14,7 +14,7 @@ The system is composed by 3 parts: an IoT device, a server and a mobile app.
 The next time you want to make an IoT project, forget about the repetitive code: 95% of the job is already done:
 
 
-❌ You don't need to make a new server for your IoT project. The server already exists! And you can easily run it either directly or in a docker container.
+❌ You don't need to make a new server for your IoT project. The server already exists! And you can easily run it either directly or in a docker container. This way you skip defining the data, creating a database structure, managing the transactions and the communication between the IoT and the mobile app.
 
 
 ❌ You don't need to create a new app to monitor your IoT device and run tasks on it. The app already exists!
@@ -34,10 +34,11 @@ The next time you want to make an IoT project, forget about the repetitive code:
 
 Croniot is made with the idea of saving time in two ways: saving software development time and saving time to the final users through the resulting projects that are created with it.
 
+
+What you see on the images is just a basic version of what Croniot can do right now. The functionalities are constantly expanding with the aim of covering more use cases and making the framework even easier to use.
+
 ## Project description
-This project targets the Android app and server. The IoT project is here: https://github.com/vladimir-ivanov-info/croniot-iot
-
-
+This is a Kotlin Multiplatform project that contains the code of the Android app and the server. The IoT project is here: https://github.com/vladimir-ivanov-info/croniot-iot
 
 
 ## Quick start (beginner friendly)
