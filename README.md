@@ -2,7 +2,7 @@
 
 ## What is Croniot?
 
-Croniot is a framework that helps you connect your IoT devices with your smartphone via a local or remote server. 
+Croniot is a framework that connects IoT devices to your smartphone via a local or remote server, allowing you to monitor sensors and run tasks seamlessly. 
 
 
 This way you can easily monitor your IoT devices' sensors and run different tasks. All this data (sensors and tasks) is defined by you! 
@@ -10,43 +10,47 @@ This way you can easily monitor your IoT devices' sensors and run different task
 
 The system is composed by 3 parts: an IoT device, a server and a mobile app.
 
+## Advantages
 
-The next time you want to make an IoT project, forget about the repetitive code: 95% of the job is already done:
-
-
-❌ You don't need to make a new server for your IoT project. The server already exists! And you can easily run it either directly or in a docker container. This way you skip defining the data, creating a database structure, managing the transactions and the communication between the IoT and the mobile app.
+The next time you want to make an IoT project, forget about the repetitive code: 95% of the job is already done!
 
 
-❌ You don't need to create a new app to monitor your IoT device and run tasks on it. The app already exists!
+❌ No need to:
+
+• Build a new server: Croniot provides a pre-configured server that runs locally or in Docker, handling data storage, transactions, and communication.
 
 
-❌ You don't need to create the repetitive IoT code: the WiFi connection management, the credentials' storage, the MQTT/HTTP connections management are already defined!
+• Develop a mobile app: Croniot includes a ready-made app to monitor and control your IoT devices.
 
 
-✅ Just focus on your unique project's code without creating all the repetitive software from scratch for each new project! All you have to do is:
+• Write repetitive IoT code: WiFi management, credential storage, and MQTT/HTTP communication are already built-in.
 
 
-  ⭐ For each sensor: make the code responsible of extracting the data from the sensor and transforming it to a human-readable value.
+✅ Focus on your project-specific code:
 
 
-  ⭐ For each task: make the code that will be executed when you run the task from your smartphone.
+• For each sensor, implement code to extract and format data.
 
 
-Croniot is made with the idea of saving time in two ways: saving software development time and saving time to the final users through the resulting projects that are created with it.
+• For each task, define the execution code, which you will trigger remotely from your smartphone.
+
+<br>
+
+Croniot saves time both in development and for end-users through the projects created with it.
 
 
-What you see on the images is just a basic version of what Croniot can do right now. The functionalities are constantly expanding with the aim of covering more use cases and making the framework even easier to use.
+What you see on the images is just a basic version of what Croniot can do right now. The functionalities are constantly being expanded with the aim of covering more use cases and making the framework even easier to use.
 
-## Project description
-This is a Kotlin Multiplatform project that contains the code of the Android app and the server. The IoT project is here: https://github.com/vladimir-ivanov-info/croniot-iot
+## This git repository
+This is a Kotlin Multiplatform repository that contains the code of the Android app and the server. The IoT project is here: https://github.com/vladimir-ivanov-info/croniot-iot
 
 
 ## Quick start (beginner friendly)
 
 ### Server (Linux tested, also works on Windows)
 Install docker-compose.<br><br>
-Go to `/server/` and open the terminal in this folder.<br><br>
-run `docker-compose up`<br><br>
+Navigate to /server/ in your terminal.<br><br>
+run `docker-compose up` to start the PostgreSQL database and server.<br><br>
 Now you have a PostgreSQL database the server can use to store the data.<br><br>
 Run the server.<br><br>
 
@@ -63,7 +67,7 @@ After that, your IoT uses your credentials to register itself, telling the serve
 
 Then you log in and see a list with all your devices. In this case there is only one IoT device, which is my watering system.
 
-When you click on the device, you can see a screen with 3 tabs. 
+When you click on the device, you can see a screen with 3 tabs that show this device's information.. 
 
 The 1st tab "Sensors" shows all the sensors' information in a graph. The app knows how to graphically represent the values (minimum, maximum, whether it's a number or a string, etc.) because the IoT device told all the necesary information.
 
