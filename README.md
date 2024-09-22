@@ -12,7 +12,7 @@ The system is composed by 3 parts: an IoT device, a server and a mobile app.
 
 ## Advantages
 
-The next time you want to make an IoT project, forget about the repetitive code: 95% of the job is already done!
+The next time you want to make a new IoT project, forget about the repetitive code: 95% of the job is already done!
 
 
 ❌ No need to:
