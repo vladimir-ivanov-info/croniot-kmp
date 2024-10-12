@@ -56,7 +56,7 @@ fun LoginScreen(navController: NavHostController, loginViewModel: LoginViewModel
             TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
                 title = {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                        Text("IoT client app")
+                        Text(Global.appName, fontSize = UtilUi.TEXT_SIZE_2)
                     }
                 },
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),

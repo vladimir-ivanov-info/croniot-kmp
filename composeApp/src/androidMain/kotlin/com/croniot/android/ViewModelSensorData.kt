@@ -1,6 +1,7 @@
 package com.croniot.android
 
 import MqttHandler
+import MqttProcessorMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.data.MqttProcessorSensorData
@@ -17,13 +18,16 @@ class ViewModelSensorData() : ViewModel(), KoinComponent {
     private var _map : MutableMap<SensorDto, MutableStateFlow<SensorData>> = mutableMapOf()
     val map : MutableMap<SensorDto, MutableStateFlow<SensorData>> get() = _map
 
+    private var _gps : MutableStateFlow<String> = MutableStateFlow("")
+    val gps : MutableStateFlow<String> get() = _gps
+
     fun listenToClientSensors(devices: List<DeviceDto>){
 
         for(device in devices){
             val clientUuid = device.uuid
 
             for(sensor in device.sensors){
-                val topic = "esp32id_outcoming/sensor_data/${sensor.uid}"
+                val topic = "/${device.uuid}/sensor_data/${sensor.uid}"
                 var mqttClient = MqttClient(
                     Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
                         8
@@ -35,6 +39,33 @@ class ViewModelSensorData() : ViewModel(), KoinComponent {
 
                 _map[sensor] = MutableStateFlow(value)
             }
+        }
+    }
+
+    //TODO experimental
+    fun listenToMapUpdates(){
+
+        Global.mqttBrokerUrl = "tcp://51.77.195.204:1883"
+
+        val topic = "/gps"
+
+        try{
+            var mqttClient = MqttClient(
+                Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
+                    8
+                ), null) //TODO (Ver luego) sin null da: org.eclipse.paho.client.mqttv3.MqttPersistenceException
+
+            MqttHandler(mqttClient, MqttProcessorMap(), topic)
+
+        } catch (e: Exception){
+            println("error")
+        }
+    }
+
+    //TODO experimental
+    fun updateMap(value: String){
+        viewModelScope.launch {
+            _gps.emit(value)
         }
     }
 

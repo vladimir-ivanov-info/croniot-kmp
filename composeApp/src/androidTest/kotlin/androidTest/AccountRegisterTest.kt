@@ -144,7 +144,7 @@ class AccountRegisterTest {
         //Thread.sleep(1000)
 
      //   signUpNode.performClick()
-Thread.sleep(3000)
+        Thread.sleep(3000)
 
     }
 }

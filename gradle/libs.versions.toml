@@ -55,11 +55,15 @@ h2 = "2.2.224"
 testcontainers = "1.19.0"
 #junitJupiter = "5.9.0"
 
-maps = "18.1.0"
+#maps = "18.1.0"
+
+##maplibre = "9.5.0" # Use the latest stable version available
+#maplibre = "11.3.0" # Use the latest stable version available
+
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+#c = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
@@ -135,7 +139,10 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 
 
-google-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "maps" }
+
+#maplibreGl = { group = "org.maplibre.gl", name = "android-sdk", version.ref = "maplibre" }
+#maplibreSdkExtensions = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-extensions", version = "10.0.0" }
+accompanistPermissions = { group = "com.google.accompanist", name = "accompanist-permissions", version = "0.20.0" }
 
 
 [plugins]
