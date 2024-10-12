@@ -128,7 +128,7 @@ fun Application.configureRouting() {
                     val result = Result(true, accountJson)
                     val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(result)
                     call.respondText(responseJSON, ContentType.Text.Plain)
-
+ 
                 }  else {
                     val result = Result(true, "Could not get account.")
                     val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(result)

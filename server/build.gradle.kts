@@ -22,8 +22,15 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     testImplementation(libs.ktor.server.tests)
-    testImplementation(libs.kotlin.test.junit)
+   /// testImplementation(libs.kotlin.test.junit)
+   // implementation(libs.kotlin.stdlib)  // Kotlin standard library
 
+    // JUnit 5 dependencies
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+
+    // Kotlin test with JUnit 5
+    testImplementation(libs.kotlin.test.junit5)
     implementation(libs.mysql.connector.java)
     implementation(libs.coroutinesCore)
     //implementation(libs.gson)
@@ -61,6 +68,10 @@ dependencies {
 
 
 
+}
+
+tasks.test {
+    useJUnitPlatform()  // Enables JUnit 5 support
 }
 /*
 tasks {

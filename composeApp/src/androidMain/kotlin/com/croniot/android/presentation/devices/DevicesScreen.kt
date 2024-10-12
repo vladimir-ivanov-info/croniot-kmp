@@ -48,7 +48,7 @@ fun DevicesScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
-                title = { Text("IoT client app") },
+                title = { Text(Global.appName) },
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
             )
         },

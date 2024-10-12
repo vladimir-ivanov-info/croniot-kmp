@@ -1,6 +1,7 @@
 import com.google.gson.Gson
 import org.eclipse.paho.client.mqttv3.MqttClient
 import java.io.File
+import java.nio.file.Files
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -13,10 +14,20 @@ object Global {
 
     init{
         var secretsFile : File
+        //secretsFile = File("")
+        //secretsFile.absolutePath
+        secretsFile = File(System.getProperty("user.dir"))
+        var parent = secretsFile.parentFile
+
+        //secretsFile  = parent.
+        secretsFile.listFiles()
         if(TESTING){
-            secretsFile = File("secrets/secrets_testing.json");
+            //secretsFile = File("../secrets/secrets_testing.json")
+            secretsFile = File(secretsFile.absolutePath + File.separator+ "secrets/secrets_testing.json")
         } else {
-            secretsFile = File("secrets/secrets.json");
+            //secretsFile = File("/secrets/secrets.json");
+            secretsFile = File(secretsFile.absolutePath + File.separator+ "secrets/secrets.json")
+
         }
 
 

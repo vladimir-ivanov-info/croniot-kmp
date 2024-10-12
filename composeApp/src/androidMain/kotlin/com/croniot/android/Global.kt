@@ -14,6 +14,8 @@ import java.util.*
 
 object Global {
 
+    val appName = "croniot"
+
     val SERVER_ADDRESS_LOCAL = "192.168.50.163"
     var SERVER_ADDRESS_REMOTE = ""
 

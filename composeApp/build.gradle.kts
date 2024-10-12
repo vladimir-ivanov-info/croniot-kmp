@@ -25,6 +25,16 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            //implementation(libs.google.maps)
+            //implementation(libs.maplibreGl)
+            implementation("org.maplibre.gl:android-sdk:11.3.0")
+           // implementation("org.maplibre.gl:plugin-annotation:11.3.0")
+            implementation("org.maplibre.gl:android-plugin-annotation-v9:3.0.0")
+
+            //   implementation("org.maplibre.gl:android-sdk-extensions:11.3.0")
+            // implementation("org.maplibre.gl:android-sdk:9.5.0")
+
         }
 
         val androidInstrumentedTest by getting {
@@ -59,12 +69,19 @@ kotlin {
             implementation(libs.mqtt)
             implementation(libs.composeMaterial3)
 
-            implementation(libs.google.maps)
+
+
+
+
+            // implementation(libs.maplibreSdkExtensions)
+            implementation(libs.accompanistPermissions)
+
 
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
         }
+
     }
 }
 
