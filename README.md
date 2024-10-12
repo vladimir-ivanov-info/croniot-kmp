@@ -85,8 +85,7 @@ The 3rd tab "Tasks" shows the history of the tasks and the state in which they a
 <img src="https://github.com/user-attachments/assets/ea69cf7f-9a79-46cc-9316-1b1cd8b978cb" alt="Account registered successfully" width="270" height="600">
 <img src="https://github.com/user-attachments/assets/68d51fd7-8251-4c8e-b3a4-5b4c144a2f9c" alt="Devices screen" width="270" height="600">
 <img src="https://github.com/user-attachments/assets/01653b76-c344-498c-9291-4cda0fed03d8" alt="Sensors screen" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/01653b76-c344-498c-9291-4cda0fed03d8" alt="Task types screen" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/b8859eaa-c8dd-42a8-bc4b-8a24b363238d" alt="Task configuration" width="270" height="600">
+<img src="https://github.com/user-attachments/assets/f3877bf9-68f2-445e-afaa-47e91931299f" alt="Task types screen" width="270" height="600">
 <img src="https://github.com/user-attachments/assets/6be13237-8a6f-4b20-8095-66020f803eb9" alt="Tasks' history" width="270" height="600">
 
 
