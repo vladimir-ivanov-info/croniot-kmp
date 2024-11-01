@@ -10,40 +10,42 @@ import kotlin.random.Random
 
 object AddTaskController {
 
-    fun registerTask(messageAddTask: MessageAddTask) : Result {
+    fun addTask(messageAddTask: MessageAddTask) : Result {
         val deviceUuid = messageAddTask.deviceUuid
-        val taskUid = messageAddTask.taskUid
+        val taskTypeUid = messageAddTask.taskUid
         val parametersValues = messageAddTask.parametersValues
 
-        val device = ControllerDb.deviceDao.getByUuid(deviceUuid)
+        val device = ControllerDb.deviceDao.getLazy(deviceUuid) //2482 ms -> 1089 ms without logback -> 32 ms with val query = sess.createQuery(cr).uniqueResultOptional()
 
         if(device != null){
-            val task = ControllerDb.taskTypeDao.get(device, taskUid.toLong())
 
-            if(task != null){
+            val taskType = ControllerDb.taskTypeDao.getLazy(device, taskTypeUid.toLong()) //53-129 ms ->  2-11ms
 
+            if(taskType != null){
                 val parametersValuesForDatabase = mutableMapOf<ParameterTask, String>()
-
                 for(parameterValueEntry in parametersValues){
                     val parameterUid = parameterValueEntry.key
                     val value = parameterValueEntry.value
 
-                    val parameterTask = ControllerDb.parameterTaskDao.getByUid(parameterUid, task)
+                    val parameterTask = ControllerDb.parameterTaskDao.getByUid(parameterUid, taskType) //60-149 ms per parameter -> 7 ms
 
                     if(parameterTask != null){
-                        parametersValuesForDatabase.put(parameterTask, value)
+                        parametersValuesForDatabase[parameterTask] = value
                     }
                 }
 
                 val taskUid = Random.nextLong(1, 10001)
 
-                val task = Task(taskUid, parametersValuesForDatabase, task, mutableSetOf())
-                ControllerDb.taskDao.insert(task)
+                val task = Task(taskUid, parametersValuesForDatabase, taskType, mutableSetOf())
 
-                val stateInfo = TaskStateInfo(ZonedDateTime.now(), TaskState.CREATED, "", task) //TODO check if taskConfiguration.id gets updated from 0 to actual value
-                ControllerDb.taskStateInfoDao.insert(stateInfo)
+                ControllerDb.taskDao.insert(task) //7-47 ms
 
-                MqttController.sendTaskToDevice(deviceUuid, task)
+                val taskStateInfo = TaskStateInfo(ZonedDateTime.now(), TaskState.CREATED, 0.0, "", task) //TODO check if taskConfiguration.id gets updated from 0 to actual value
+
+                ControllerDb.taskStateInfoDao.insert(taskStateInfo) //4-6 ms
+
+                MqttController.sendNewTask(deviceUuid, task, taskStateInfo);
+                MqttController.sendTaskToDevice(deviceUuid, task) //468-620 ms  ->  99-616 ms
             }
         }
 

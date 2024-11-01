@@ -10,4 +10,6 @@ interface DeviceDao {
 
     fun getByUuid(deviceUuid: String) : Device?
 
+    fun getLazy(deviceUuid: String) : Device?
+
 }

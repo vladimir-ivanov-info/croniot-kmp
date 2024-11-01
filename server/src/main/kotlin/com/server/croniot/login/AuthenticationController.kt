@@ -1,46 +1,57 @@
 package com.croniot.server.login
 
-import croniot.models.*
+import Global
 import com.croniot.server.db.controllers.ControllerDb
-import croniot.models.dto.AccountDto
 import croniot.messages.MessageLogin
+import croniot.models.*
+import org.hibernate.stat.Statistics
+
 
 object AuthenticationController {
 
-    fun tryLogin(messageLogin: MessageLogin) : AccountDto? {
-        var result : AccountDto? = null
+    fun tryLogin(messageLogin: MessageLogin) : LoginResult {
+
+        var result = LoginResult(Result(false, ""), null, null)
+
 //TODO first check email and password
         val accountEmail = messageLogin.accountEmail
         val accountPassword = messageLogin.accountPassword
         val deviceUuid = messageLogin.deviceUuid
         val deviceToken = messageLogin.deviceToken
+        val startMillis = System.currentTimeMillis()
 
-        val account = ControllerDb.accountDao.getAccount(accountEmail, accountPassword)
+        val account = ControllerDb.accountDao.getAccountEagerSkipTasks(accountEmail, accountPassword) //1500 ms -> 52 ms
+        val endMillis = System.currentTimeMillis()
+        val time = endMillis - startMillis
+        println("$time")
 
+        val stats: Statistics = ControllerDb.sessionFactory.statistics
+        println("Second-level cache hit count: " + stats.secondLevelCacheHitCount)
+        println("Second-level cache miss count: " + stats.secondLevelCacheMissCount)
+        println()
         //TODO if account null throw new exception "account doesn't exist". Or better check account existence in another method and if exists, pass it to this one
-
-        var device : Device? = null
-        if(deviceToken != null){
-            device = getDeviceAssociatedWithToken(deviceToken) //TODO test for when the device is contained in multiple accounts
-        }
-
-        if(device == null){
-            val newDevice = Device(uuid = deviceUuid, account = account!!)
-            ControllerDb.deviceDao.insert(newDevice)
-            device = newDevice
-            val newToken = Global.generateUniqueString(8)
-            ControllerDb.deviceTokenDao.insert(DeviceToken(newDevice, newToken))
-        }
-
-        //TODO try to authenticate with token first
-
-        val checkToken = false //TODO temporarily we don't need token so I can log in from any device into the same account.
-
-        if(!checkToken && device != null) {
-            if (account != null) {
-                result = account.toDto()
-                println()
+        if(account != null){
+            var device : Device? = null
+            if(deviceToken != null){
+                //device = getDeviceAssociatedWithToken(deviceToken) //TODO test for when the device is contained in multiple accounts
+                device = ControllerDb.deviceTokenDao.getDeviceAssociatedWithToken(deviceToken)
             }
+            var newToken : String? = null
+
+            if(device == null){
+                val newDevice = Device(uuid = deviceUuid, account = account)
+                ControllerDb.deviceDao.insert(newDevice)
+                newToken = Global.generateUniqueString(8)
+                ControllerDb.deviceTokenDao.insert(DeviceToken(newDevice, newToken))
+            }
+
+            //TODO try to authenticate with token first
+            val checkToken = false //TODO temporarily we don't need token so I can log in from any device into the same account.
+            // if(!checkToken && device != null) {
+
+                result = LoginResult(Result(true, ""), account.toDto(), newToken)
+                println()
+           // }
         }
         return result
     }
@@ -62,7 +73,7 @@ object AuthenticationController {
        // val device = getDeviceAssociatedWithToken(deviceToken) //TODO test for when the device is contained in multiple accounts
 //TODO try to authenticate with token first
         if(device != null) {
-            val account = ControllerDb.accountDao.getAccount(accountEmail, accountPassword)
+            val account = ControllerDb.accountDao.getAccountEagerSkipTasks(accountEmail, accountPassword)
 
             if (account != null) {
                 result = Result(true, "Login success")
@@ -75,7 +86,6 @@ object AuthenticationController {
     //TODO CHECK TOKEN
     fun getDeviceAssociatedWithToken(token: String) : Device? {
         val device = ControllerDb.deviceTokenDao.getDeviceAssociatedWithToken(token)
-
         return device
     }
 

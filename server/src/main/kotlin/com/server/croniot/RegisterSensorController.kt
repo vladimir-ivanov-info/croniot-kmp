@@ -8,12 +8,11 @@ object RegisterSensorController {
 
     fun registerSensor(messageRegisterSensorType: MessageRegisterSensorType) : Result {
 
-        var result = Result(false, "")
+        var result: Result
 
         val deviceUuid = messageRegisterSensorType.deviceUuid
         val deviceToken = messageRegisterSensorType.deviceToken
 
-        //val deviceTokenCorrect = TokenController.isDeviceTokenCorrect(deviceUuid, deviceToken)
         val device = ControllerDb.deviceTokenDao.getDeviceAssociatedWithToken(deviceToken)
 
         if(device != null && device.uuid == deviceUuid){

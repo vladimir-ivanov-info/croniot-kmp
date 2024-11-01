@@ -5,6 +5,8 @@
 
 <hibernate-mapping package="croniot.models">
     <class name="croniot.models.Device" table="device">
+        <cache usage="read-write" region="device_cache"/>
+
         <id name="id" column="id">
             <generator class="identity"/>
         </id>
@@ -16,24 +18,24 @@
 
         <many-to-one name="account" class="croniot.models.Account" column="account" />
 
-        <set name="sensorTypes" table="sensor" cascade="all-delete-orphan"
-             inverse="true" lazy="false" fetch="join">
+        <set name="sensorTypes" table="sensor" cascade="save-update" inverse="true" lazy="false" fetch="join">
+            <cache usage="read-write" region="sensorTypes_cache"/>
             <key>
                 <column name="device"/>
             </key>
             <one-to-many class="croniot.models.SensorType" />
         </set>
 
-        <set name="taskTypes" table="task_type" cascade="all-delete-orphan"
-             inverse="true" lazy="false" fetch="join">
+        <set name="taskTypes" table="task_type" cascade="all-delete-orphan" inverse="true" lazy="false" fetch="join">
+            <cache usage="read-write" region="taskTypes_cache"/>
             <key>
                 <column name="device"/>
             </key>
             <one-to-many class="croniot.models.TaskType" />
         </set>
 
-
-<!--                 <column name="id" not-null="true"  /> -->
+        <one-to-one name="deviceToken" class="croniot.models.DeviceToken" cascade="all-delete-orphan" property-ref="device"/>
+        <!--                 <column name="id" not-null="true"  /> -->
 
     </class>
 </hibernate-mapping>

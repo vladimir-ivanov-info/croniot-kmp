@@ -21,6 +21,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,21 +29,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.Global
 import com.croniot.android.UiConstants
+import com.croniot.android.ViewModelSensorData
 import com.croniot.android.ui.UtilUi
 import croniot.models.dto.DeviceDto
-
-import org.koin.java.KoinJavaComponent.get // For Java projects
-
-
-private val devicesViewModel: DevicesViewModel = get(DevicesViewModel::class.java)
-private val viewModelSensorData: com.croniot.android.ViewModelSensorData = get(com.croniot.android.ViewModelSensorData::class.java)
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DevicesScreen(navController: NavController) {
 
+    val viewModelSensorData: ViewModelSensorData = koinViewModel()
     LaunchedEffect(Unit) {
-        viewModelSensorData.listenToClientSensors(com.croniot.android.Global.account.devices.toList())
+        viewModelSensorData.listenToClientSensorsIfNeeded(Global.account.devices.toList())
     }
 
     Scaffold(
@@ -64,12 +62,14 @@ fun DevicesScreen(navController: NavController) {
 
 @Composable
 fun MainContent(navController: NavController, modifier: Modifier = Modifier) {
+    val devicesViewModel: DevicesViewModel = koinViewModel()
+
     val clientsState = devicesViewModel.devices.collectAsState()
-    ClientsList(navController, clientsState.value.toList(), modifier)
+    DevicesList(navController, clientsState.value.toList(), modifier)
 }
 
 @Composable
-fun ClientsList(navController: NavController, items: List<DeviceDto>, modifier: Modifier) {
+fun DevicesList(navController: NavController, items: List<DeviceDto>, modifier: Modifier) {
     Column(modifier = modifier){
         Text(text = "Devices",
             fontSize = UtilUi.TEXT_SIZE_1,
@@ -107,7 +107,7 @@ fun ClientsList(navController: NavController, items: List<DeviceDto>, modifier: 
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    GridItem(navController, modifier, client)
+                    DeviceItem(navController, modifier, client)
                 }
             }
         }
@@ -115,12 +115,12 @@ fun ClientsList(navController: NavController, items: List<DeviceDto>, modifier: 
 }
 
 @Composable
-fun GridItem(navController: NavController, modifier: Modifier, device: DeviceDto) {
-    val currentTime = System.currentTimeMillis()
+fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceDto) {
+    val currentTime = remember { System.currentTimeMillis() }
 
-    val lastPingDifferenceMillis = currentTime - device.lastOnlineMillis
-
-    val isDeviceOnline = lastPingDifferenceMillis < 5000
+    val isDeviceOnline = remember(device.lastOnlineMillis) {
+        currentTime - device.lastOnlineMillis < 5000
+    }
 
     val backgroundColor =
     if (isDeviceOnline) {

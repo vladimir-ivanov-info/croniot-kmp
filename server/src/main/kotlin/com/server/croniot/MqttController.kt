@@ -1,74 +1,89 @@
 import com.google.gson.GsonBuilder
 import croniot.models.Task
 import com.croniot.server.db.controllers.ControllerDb
+import com.google.gson.Gson
+import com.server.croniot.MqttDataProcessorTaskProgress
 import croniot.messages.MessageTask
+import croniot.models.TaskStateInfo
+import croniot.models.dto.TaskStateInfoDto
+import croniot.models.toDto
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttMessage
+import java.time.ZonedDateTime
 
 
 object MqttController {
 
-    val devicesMqttClients = mutableMapOf<String, MqttClient>()
+    private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+    private val deviceMqttClient : MqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
 
-    fun init(){
-        val devices = ControllerDb.deviceDao.getAll();
+    val gsonZonedDateTime = GsonBuilder()
+        .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
+        .setPrettyPrinting()
+        .create()
 
-        for(device in devices){
+    init{
+        deviceMqttClient.connect()
 
-            val deviceUuid = device.uuid
+        initTaskStateController()
+    }
 
-            for(sensor in device.sensorTypes){
-                val sensorUid = sensor.uid
-                val topic = deviceUuid + "_outcoming/sensor_data/" + sensorUid
-                val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
-                var mqttHandler = MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, sensorUid), topic)
-            }
+    //TODO parametrize watering_system_1
+    fun initTaskStateController(){
+        val topic =  "/iot_to_server/task_progress_update/watering_system_1"
+        val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
+        var mqttHandler = MqttHandler(mqttClient, MqttDataProcessorTaskProgress("watering_system_1", 123), topic)
+    }
 
+    //TODO unify these 2 methods in the future
+    fun sendTaskToDevice(deviceUuid: String, task: Task){
+        val topic = "/server/$deviceUuid/task_type/${task.taskType.uid}"
 
-            //TODO for task in device.tasks create "_incoming" topic and store a map of <deviceUuid, mqttclient>
-//            for(task in device.taskTypes){
-//               // val taskUid = task.uid
-//               // val topic = deviceUuid + "_incoming/task_configuration/" + taskUid
-//                val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
-//                val topic = deviceUuid + "_incoming/task/" + task
-//                devicesMqttClients.put(device.uuid, mqttClient)
-//                var mqttHandler = MqttHandler(mqttClient, MqttDataProcessorTask(deviceUuid, sensorUid), topic)
-//            }
+        val parametersValuesMap = mutableMapOf<Long, String>()
+
+        for(parameter in task.parametersValues){
+            parametersValuesMap.put(parameter.key.uid, parameter.value)
         }
 
+        val messageTask = MessageTask(task.taskType.uid, parametersValuesMap, task.uid)
 
-//        for(sensorInfo in sensorInfoList){
-//            val uuid = sensorInfo.uuid
-//            val sensorId = sensorInfo.id
-//        //TODO topic mal, falta uuid en vez de id al principio
-//            val topic = uuid + "_outcoming/sensor_data/" + sensorId
-//
-//            val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
-//            var mqttHandler = MqttHandler(mqttClient, MqttDataProcessorSensor(uuid, sensorId), topic)
-//        }
-
+        val json = gson.toJson(messageTask)
+        val message = MqttMessage(json.toByteArray())
+        message.qos = 2 //TODO when Arduino implements compatible with QOS=2 MQTT library
+        deviceMqttClient.publish(topic, message) //TODO
     }
 
-    fun sendTaskToDevice(deviceUuid: String, task: Task){
-        val deviceMqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
-        deviceMqttClient.connect()
-        // if(deviceMqttClient != null){
-            val taskUid = task.taskType.uid
-            val topic = "/server/$deviceUuid/task_type/${task.taskType.uid}"
+    fun sendNewTask(deviceUuid: String, task: Task, taskStateInfo: TaskStateInfo){
+        val topic = "/$deviceUuid/newTasks"
 
+        val taskDto = task.toDto()
+        taskDto.stateInfos.add(taskStateInfo.toDto())
 
-            val parametersValuesMap = mutableMapOf<Long, String>()
+        val gson2 = GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
+            .setPrettyPrinting()
+            .create()
 
-            for(parameter in task.parametersValues){
-                parametersValuesMap.put(parameter.key.uid, parameter.value)
-            }
+        val json = gson2.toJson(taskDto)
 
-            val messageTask = MessageTask(task.taskType.uid, parametersValuesMap, task.uid)
+        val message = MqttMessage(json.toByteArray())
+        message.qos = 2 //TODO when Arduino implements compatible with QOS=2 MQTT library
+        deviceMqttClient.publish(topic, message) //TODO
+    }
 
-            val json = GsonBuilder().setPrettyPrinting().create().toJson(messageTask)
+    fun sendNewTaskStateInfo(deviceUuid: String, taskStateInfoDto: TaskStateInfoDto){
+        CoroutineScope(Dispatchers.IO).launch {
+            val topic =  "/server/task_progress_update/$deviceUuid"
+            val json = gsonZonedDateTime.toJson(taskStateInfoDto)
             val message = MqttMessage(json.toByteArray())
-            deviceMqttClient.publish(topic, message) //TODO
-       // }
+            message.qos = 2 //TODO when Arduino implements compatible with QOS=2 MQTT library
+            withContext(Dispatchers.IO) {
+                deviceMqttClient.publish(topic, message) //TODO
+            }
+        }
     }
-
 }

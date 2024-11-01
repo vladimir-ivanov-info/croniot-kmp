@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.croniot.android.di.DependencyInjectionModule
-import com.croniot.android.presentation.taskType.TaskTypeScreen
+import com.croniot.android.presentation.device.taskTypes.TaskTypeScreen
 import com.croniot.android.presentation.device.DeviceScreen
 import com.croniot.android.presentation.login.LoginScreen
 import com.croniot.android.presentation.registerAccount.ScreenRegisterAccount
@@ -22,7 +22,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.croniot.android.domain.util.StringUtil
 import com.croniot.android.presentation.devices.DevicesScreen
-import com.croniot.android.presentation.login.ScreenMaps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,7 +31,6 @@ import okhttp3.Request
 import okhttp3.Response
 import org.koin.core.context.GlobalContext
 import org.maplibre.android.MapLibre
-import org.maplibre.android.WellKnownTileServer
 
 import java.net.InetAddress
 import java.net.URI
@@ -43,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
         //MapLibre.getInstance(this, null, WellKnownTileServer.MapLibre)
         // MapLibre.getInstance(this, null)
-        MapLibre.getInstance(this)
+        MapLibre.getInstance(this) //TODO see if we can move this to the corresponding composable
 
         if (GlobalContext.getOrNull() == null) {
             startKoin {
@@ -70,7 +68,7 @@ fun generateDeviceUuidIfNotExists(){
 }
 
 fun resolveServerAddressIfNotExists(){
-      val serverAddress = SharedPreferences.loadData(SharedPreferences.KEY_SERVER_ADDRESS)
+    val serverAddress = SharedPreferences.loadData(SharedPreferences.KEY_SERVER_ADDRESS)
     //val serverAddress = null
     if(serverAddress == null){
         resolveAndFollowRedirects("vladimiriot.com") //TODO make constant in Global. Catch error if can't be resolved
@@ -158,63 +156,6 @@ private suspend fun followRedirects(url: String): String = withContext(Dispatche
 
     currentUrl
 }
-
-private suspend fun followRedirectsNew(url: String): String = withContext(Dispatchers.IO) {
-    /*var currentUrl = url
-    var redirect = true
-    var previousResponse: Response? = null
-
-    try {
-        while (redirect) {
-            val request = Request.Builder().url(currentUrl).build()
-            val response = client.newCall(request).execute()
-            previousResponse?.close()  // Close the previous response to avoid leaks
-
-            if (response.isRedirect) {
-                // Get the Location header and follow the redirect
-                val location = response.header("Location") ?: currentUrl
-
-                // Handle relative URLs by resolving them
-                if (!location.startsWith("http")) {
-                    val uri = URI(currentUrl)  // Use currentUrl here
-                    currentUrl = uri.resolve(location).toString()
-                } else {
-                    currentUrl = location
-                }
-            } else {
-                // No more redirects, exit the loop
-                redirect = false
-            }
-
-            previousResponse = response  // Save the response to close later
-        }
-    } catch (e: Exception) {
-        println("Error during redirect: ${e.message}")
-    } finally {
-        previousResponse?.close()  // Make sure to close the final response
-    }
-
-    currentUrl
-
-    */
-
-    val client = OkHttpClient.Builder()
-        .followRedirects(false)  // Disable default redirect following
-        .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)  // Set connection timeout
-        .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)     // Set read timeout
-        .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)    // Set write timeout
-        .build()
-
-
-    val request = Request.Builder().url("http://vladimiriot.com").build()
-    val response = client.newCall(request).execute()
-    println(response.body?.string())
-
-
-
-    ""
-}
-
 
 private suspend fun resolveIpAddress(url: String): String = withContext(Dispatchers.IO) {
     try {

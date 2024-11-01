@@ -14,7 +14,11 @@ data class Task(
 ) {
 
     constructor(): this(0, 0, mutableMapOf(), TaskType(), mutableSetOf())
-    constructor(uid: Long, parametersValues: MutableMap<ParameterTask, String>, taskType: TaskType, stateInfos: MutableSet<TaskStateInfo>): this(0, uid, parametersValues, taskType, stateInfos)
+    constructor(uid: Long,
+                parametersValues: MutableMap<ParameterTask, String>,
+                taskType: TaskType,
+                stateInfos: MutableSet<TaskStateInfo>):
+            this(0, uid, parametersValues, taskType, stateInfos)
 
     override fun hashCode(): Int {
         return Objects.hash(id) //TODO or hash other relevant properties
@@ -33,7 +37,7 @@ data class Task(
 }
 
 fun Task.toDto() = TaskDto(
-    deviceUuid = this.taskType.device.uuid,
+    deviceUuid = this.taskType.device!!.uuid,
     taskUid = this.taskType.uid,
     uid = this.uid,
     parametersValues = this.parametersValues.mapKeys { it.key.uid }.toMutableMap(),

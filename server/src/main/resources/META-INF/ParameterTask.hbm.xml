@@ -6,6 +6,7 @@
 
 <hibernate-mapping package="croniot.models">
     <class name="croniot.models.ParameterTask" table="parameter_task">
+        <cache usage="read-write" region="parameter_task_cache"/>
 
         <id name="id" column="id">
             <generator class="identity"/>
@@ -19,6 +20,7 @@
         <property name="description" column="description"/>
 
         <map name="constraints" table="parameter_task_constraints" cascade="all" lazy="false">
+            <cache usage="read-write" region="parameter_task_constraints_cache"/>
             <key column="parameter_id"/>
             <index column="constraint_key" type="string"/>
             <element column="constraint_value" type="string"/>
@@ -27,6 +29,9 @@
 
         <!-- Map to Task entity -->
         <many-to-one name="taskType" class="croniot.models.TaskType" column="task_type" not-null="true"/>
+        <property name="taskTypeId" column="task_type" insert="false" update="false"/> <!-- In order to fetch ParameterTask without looking for ParameterTask -->
+
+
 
         <!-- Map to Parameter entity
         <many-to-one name="parameter" class="croniot.models.Parameter" column="parameter_id" not-null="true"/>

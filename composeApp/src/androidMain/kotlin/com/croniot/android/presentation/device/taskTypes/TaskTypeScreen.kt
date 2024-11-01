@@ -1,4 +1,4 @@
-package com.croniot.android.presentation.taskType
+package com.croniot.android.presentation.device.taskTypes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +19,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -43,15 +42,11 @@ import androidx.compose.runtime.setValue
 import com.croniot.android.presentation.device.DeviceScreenViewModel
 import com.croniot.android.ui.util.GenericDialog
 import croniot.models.Result
-import croniot.models.dto.ParameterTaskDto
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.get
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.roundToInt
-
-private val viewModelDeviceScreen = get<DeviceScreenViewModel>(DeviceScreenViewModel::class.java)
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,7 +111,7 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
     var showDialog by remember{ mutableStateOf(false) }
     var postNewTaskResult  by remember{ mutableStateOf(Result(false, "")) }
 
-    val viewModelTask: ViewModelTaskType = viewModel()
+    val viewModelTask: ViewModelTaskTypes = viewModel()
 
     Column(
         modifier = Modifier
@@ -178,12 +173,13 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                             minValueLabel = minValue,
                             maxValueLabel = maxValue,
                             currentValueLabel = "abc",
-                            constarints = currentParameter.constraints
+                            constraints = currentParameter.constraints
                         )
                     }
+                } else if(currentParameter.type.equals("time")){
+                    TimePicker(currentParameter, viewModelTask)
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
             }
         }
 
@@ -219,52 +215,10 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                 onButton1Clicked = { showDialog = false},
                 button2Text = "Go to Tasks",
                 onButton2Clicked = {
-                    viewModelDeviceScreen.updateCurrentTab(2) //TODO make enum
+                    //TODO not active for now viewModelDeviceScreen.updateCurrentTab(2) //TODO make enum
                 }) {}
         }
     }
-}
-
-@Composable
-fun LabeledSlider(
-    parameter: ParameterTaskDto,
-    modifier: Modifier = Modifier,
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    valueRange: ClosedFloatingPointRange<Float>,
-    steps: Int,
-    minValue: Float,
-    maxValue: Float,
-    minValueLabel: String,
-    maxValueLabel: String,
-    currentValueLabel: String,
-    constarints: MutableMap<String, String>
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Slider(
-            value = value,
-            onValueChange = onValueChange,
-            //valueRange = minValue - 1..maxValue-1,
-            valueRange = valueRange,
-           // steps = (maxValue - minValue).toInt() - 1,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            ,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)){
-
-            Text(text = "${parameter.name}:")
-
-            Text(text = formatNumber(value, constarints))
-            Text(text = parameter.unit)
-        }
-    }
-
 }
 
 fun formatNumber(value: Float, constraints: MutableMap<String, String>) : String{
@@ -280,3 +234,4 @@ fun formatNumber(value: Float, constraints: MutableMap<String, String>) : String
 
     return result
 }
+

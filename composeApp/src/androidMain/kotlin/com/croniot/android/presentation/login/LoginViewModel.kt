@@ -2,6 +2,7 @@ package com.croniot.android.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.croniot.android.Global
 import com.croniot.android.SharedPreferences
 import com.croniot.android.presentation.devices.DevicesViewModel
 import com.croniot.android.data.source.remote.retrofit.RetrofitClient
@@ -47,33 +48,34 @@ class LoginViewModel() : ViewModel(), KoinComponent {
         val deviceUuid = SharedPreferences.loadData(SharedPreferences.KEY_DEVICE_UUID)
         val deviceToken = SharedPreferences.loadData(SharedPreferences.KEY_DEVICE_TOKEN)
 
-       // if(deviceToken == null){
-            //login with email and password and deviceuuid
-       // } else {
-            //login with deviceUuid and token
-       // }
-
         val accountEmail = email.value
         val accountPassword = password.value
 
-        return withContext(Dispatchers.IO) { try {
+        return withContext(Dispatchers.IO) {
+            try {
                 val messageLogin = MessageLogin(accountEmail, accountPassword, deviceUuid!!, deviceToken)
                 val response = RetrofitClient.loginApiService.login(messageLogin)
             val millisFinish = System.currentTimeMillis();
             println("Millis for login: ${millisFinish - millisStart} ms")
-                val account = response.body()
-                if (response.isSuccessful && account != null) {
-                    com.croniot.android.Global.account = account// Log or use the UUID as needed
+                val loginResult = response.body()!!
+                val result = loginResult.result
+                val account = loginResult.account
+                val token = loginResult.token
 
+                if(token != null){
+                    SharedPreferences.saveData(SharedPreferences.KEY_DEVICE_TOKEN, token)
+                }
+
+                if (response.isSuccessful && result.success && account != null) {
+                    Global.account = account// Log or use the UUID as needed
                     withContext(Dispatchers.Default) {
-                        devicesViewModel.updateDevices(account.devices.toList())
+                        devicesViewModel.updateDevices(account.devices.filter{ it.name.isNotEmpty() }.toList()) //TODO for now we leave this filter
                     }
                     true  // Login successful
                 } else {
                     println("Error: ${response.errorBody()?.string()}")
                     false  // Login failed
                 }
-
         } catch (e: Exception) {
             println("Error: ${e.message}")
             false  // Network error or exception occurred

@@ -5,6 +5,7 @@
 
 <hibernate-mapping package="croniot.models">
     <class name="croniot.models.TaskStateInfo" table="task_state_info">
+        <cache usage="read-write" region="task_cache"/>
 
         <id name="id" column="id">
             <generator class="identity"/>
@@ -19,7 +20,8 @@
             </type>
         </property>
 
-        <property name="errorMessage" column="error_message"/>
+        <property name="progress" column="progress" not-null="false"/>
+        <property name="errorMessage" column="error_message" not-null="false"/>
 
         <many-to-one name="task" class="croniot.models.Task" column="task" not-null="true"/>
 

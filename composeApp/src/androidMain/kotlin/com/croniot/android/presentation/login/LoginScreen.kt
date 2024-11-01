@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,14 +43,17 @@ import androidx.navigation.NavHostController
 import com.croniot.android.Global
 import com.croniot.android.R
 import com.croniot.android.SharedPreferences
+import com.croniot.android.SharedPreferencesViewModel
 import com.croniot.android.UiConstants
 import com.croniot.android.ui.UtilUi
 import com.croniot.android.ui.util.StatefulTextField
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun LoginScreen(navController: NavHostController, loginViewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(navController: NavHostController, loginViewModel: LoginViewModel = koinViewModel()) {
 
     Scaffold(
         topBar = {
@@ -84,7 +88,22 @@ fun LoginScreenBody(navController: NavController, innerPadding: PaddingValues, l
 //@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun Login(navController: NavController, loginViewModel: LoginViewModel, modifier: Modifier){
+
     val isLoading by loginViewModel.isLoading.collectAsState()
+
+    val sharedPreferencesViewModel : SharedPreferencesViewModel = koinViewModel()
+
+    LaunchedEffect(Unit) {
+        sharedPreferencesViewModel.loadCurrentServerMode()
+    }
+
+    val serverMode by sharedPreferencesViewModel.serverMode.collectAsState()
+
+    var logoResourceId = R.drawable.logo_cockroach
+
+    if(serverMode == "local"){
+        logoResourceId = R.drawable.logo_cockroach_test_mode
+    }
 
     if(isLoading){
         Box(Modifier.fillMaxSize()){
@@ -97,11 +116,12 @@ fun Login(navController: NavController, loginViewModel: LoginViewModel, modifier
                 .size(200.dp)
                 .align(Alignment.CenterHorizontally)
                 .clickable { //for testing
-                    com.croniot.android.Global.SERVER_ADDRESS = Global.SERVER_ADDRESS_REMOTE
+                    sharedPreferencesViewModel.changeServerMode()
                 },
                 contentAlignment = Alignment.Center, ){
                 Image(
-                    painter = painterResource(id = R.drawable.logo_cockroach),
+                   // painter = painterResource(id = R.drawable.logo_cockroach),
+                    painter = painterResource(id = logoResourceId),
                     contentDescription = "Example Image",
                     modifier = Modifier
                         .align(Alignment.Center)
@@ -125,7 +145,6 @@ fun Login(navController: NavController, loginViewModel: LoginViewModel, modifier
             LoginButton(navController, loginViewModel)
             Spacer(modifier = Modifier.size(16.dp))
             RegisterButton(navController)
-
         }
     }
 }
@@ -134,7 +153,6 @@ fun Login(navController: NavController, loginViewModel: LoginViewModel, modifier
 fun LoginButton(navController: NavController, viewModel: LoginViewModel) {
 
     val coroutineScope = rememberCoroutineScope()
-
     var accountEmail = viewModel.email.collectAsState()
     var accountPassword = viewModel.password.collectAsState()
 

@@ -49,7 +49,7 @@ object RegisterAccountController {
             val deviceName = messageRegisterDevice.deviceName
             val deviceDescription = messageRegisterDevice.deviceDescription
 
-            val account = ControllerDb.accountDao.getAccount(accountEmail, accountPassword)
+            val account = ControllerDb.accountDao.getAccountEagerSkipTasks(accountEmail, accountPassword)
 
             if(account != null){
                 //TODO check if device exists

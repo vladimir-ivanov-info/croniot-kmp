@@ -39,6 +39,7 @@ import com.croniot.android.ui.util.StatefulTextField
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import croniot.models.Result
+import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +77,7 @@ fun ScreenRegisterAccount(navController: NavController) {
 @Composable
 fun ScreenRegisterAccountBody(navController: NavController, innerPadding: PaddingValues, modifier: Modifier){
 
-    val viewModelRegisterAccount: ViewModelRegisterAccount = viewModel()
+    val viewModelRegisterAccount: ViewModelRegisterAccount = koinViewModel()
     val coroutineScope = rememberCoroutineScope()
 
     var showDialog by remember { mutableStateOf(false) }
@@ -146,11 +147,6 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
 fun tryRegisterAccount(coroutineScope: CoroutineScope, viewModelRegisterAccount: ViewModelRegisterAccount, navController: NavController, onResult: (result: Result) -> Unit){
     coroutineScope.launch {
         val registerResult = viewModelRegisterAccount.registerAccount()
-        /*if(registerResult.success){
-            //navController.popBackStack()
-        } else {
-            //TODO
-        }*/
         onResult(registerResult)
     }
 }

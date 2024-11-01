@@ -1,6 +1,7 @@
 package com.croniot.server.db.controllers
 
 import Global
+import TaskController
 import com.croniot.server.db.daos.*
 import db.daos.*
 import org.hibernate.SessionFactory
@@ -41,8 +42,10 @@ object ControllerDb {
             configuration = Configuration().configure("META-INF/hibernate.cfg.xml") // Load hibernate.cfg.xml file
         }
 
-       sessionFactory = configuration.buildSessionFactory()
+        sessionFactory = configuration.buildSessionFactory()
         initDaos()
+
+        TaskController
     }
 
     lateinit var accountDao : AccountDao
@@ -54,7 +57,7 @@ object ControllerDb {
     lateinit var parameterTaskDao : ParameterTaskDao
     lateinit var deviceTokenDao : DeviceTokenDao
 
-    lateinit private var sensorDataDao : SensorDataDao
+    lateinit var sensorDataDao : SensorDataDao
 
     fun initDaos(){
         accountDao = AccountDaoImpl()
