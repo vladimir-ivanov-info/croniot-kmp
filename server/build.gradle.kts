@@ -48,7 +48,27 @@ dependencies {
     implementation(libs.hibernate.core)
     implementation(libs.hibernate.entitymanager)
     implementation(libs.ehcache)
+
+    implementation(libs.jaxb.impl)
+
+    implementation(libs.jakarta.jaxb.api)
+    implementation(libs.jaxb.runtime)
+    implementation(libs.jaxb.runtime.old)
+    implementation("javax.activation:activation:1.1.1") // For JAXB dependencies
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
+
+
+    implementation(libs.jakarta.activation.api)
+
+    implementation(libs.jcache)
+    implementation(libs.hibernate.jcache)
     implementation(libs.hibernate.ehcache)
+
+    // Infinispan dependencies
+    implementation(libs.infinispan.hibernate.cache)
+    implementation(libs.infinispan.core)
+    implementation(libs.javax.cache.api)
+
     implementation(libs.javax.persistence)
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)

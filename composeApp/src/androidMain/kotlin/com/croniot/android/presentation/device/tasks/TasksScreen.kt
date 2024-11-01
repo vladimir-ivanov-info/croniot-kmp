@@ -1,4 +1,4 @@
-package com.croniot.android.presentation.task
+package com.croniot.android.presentation.device.tasks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,29 +34,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.croniot.android.Global
 import com.croniot.android.R
-
 import com.croniot.android.domain.util.DateTimeUtil
 import com.croniot.android.ui.UtilUi
-import com.croniot.android.ui.task.ViewModelTask
+import com.croniot.android.ui.task.ViewModelTasks
 import com.croniot.android.ui.util.FixedSizeScrollableDialog
 import croniot.models.TaskState
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
+import kotlinx.coroutines.flow.StateFlow
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ScreenTask(navController: NavController, viewModelTask: ViewModelTask){
+fun TasksScreen(navController: NavController){
 
-    val tasks by viewModelTask.tasks.collectAsState()
+    val viewModelTasks: ViewModelTasks = koinViewModel()
 
-    val tasksSortedByDate = tasks.toList().sortedByDescending { it.getLastState().dateTime }
+    val tasks by viewModelTasks.tasks.collectAsState()
+
+    val tasksSortedByDate = tasks.toList().sortedByDescending { it.value.getLastState().dateTime }
 
     var showTask by remember{ mutableStateOf(false) }
     var taskToShow by remember{ mutableStateOf(TaskDto()) }
-
-    LaunchedEffect(Unit) {
-        viewModelTask.loadTasks()
-    }
 
     Box(modifier = Modifier
         .fillMaxSize()){
@@ -71,9 +70,10 @@ fun ScreenTask(navController: NavController, viewModelTask: ViewModelTask){
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
             }
 
-            items(tasksSortedByDate.toList()){ item ->
+            items(tasksSortedByDate){ item ->
                 //TODO generic task card. For specific cards, create custom for your custom task type!
-                GenericTaskItem(navController, taskConfiguration = item, onTaskClicked = {
+                GenericTaskItem(
+                    navController, taskStateFlow = item, onTaskClicked = {
                     taskToShow = it
                     showTask = true
                 })
@@ -87,16 +87,21 @@ fun ScreenTask(navController: NavController, viewModelTask: ViewModelTask){
 }
 
 @Composable
-fun GenericTaskItem(navController: NavController, taskConfiguration: TaskDto, onTaskClicked: (taskClicked: TaskDto) -> Unit) {
+fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskDto>, onTaskClicked: (taskClicked: TaskDto) -> Unit) {
+
+    val taskAsState = taskStateFlow.collectAsState()
+    val taskValue = taskAsState.value
 
     var stateIconPainter = painterResource(id = R.drawable.baseline_done_24)
     var stateIconColor = Color.Black
 
-    val stateInfos = taskConfiguration.stateInfos.toList().sortedByDescending { it.dateTime }
+    val stateInfos = taskValue.stateInfos.toList().sortedByDescending { it.dateTime }
     var latestStateInfo : TaskStateInfoDto? = null
+    var latestStateInfoProgress = 0.0
 
     if(stateInfos.isNotEmpty()){
         latestStateInfo = stateInfos[0]
+        latestStateInfoProgress = latestStateInfo.progress
 
         if(latestStateInfo.state == TaskState.CREATED){
             stateIconPainter = painterResource(id = R.drawable.baseline_schedule_24)
@@ -109,7 +114,6 @@ fun GenericTaskItem(navController: NavController, taskConfiguration: TaskDto, on
         } else {
             stateIconPainter = painterResource(id = R.drawable.baseline_question_mark_24)
         }
-
     }
 
     Surface(
@@ -117,7 +121,7 @@ fun GenericTaskItem(navController: NavController, taskConfiguration: TaskDto, on
             .fillMaxWidth()
             .height(70.dp)
             .clickable {
-                onTaskClicked(taskConfiguration)
+                onTaskClicked(taskValue)
             },
     ) {
         Card(
@@ -129,10 +133,10 @@ fun GenericTaskItem(navController: NavController, taskConfiguration: TaskDto, on
 //TODO make this a method in another class
             var taskName = ""
 
-            val selectedDevice = com.croniot.android.Global.selectedDevice
-            for (task in selectedDevice.tasks){
-                if(task.uid == taskConfiguration.taskUid){
-                    taskName = task.name
+            val selectedDevice = Global.selectedDevice
+            for (taskType in selectedDevice.tasks){
+                if(taskType.uid == taskValue.taskUid){
+                    taskName = taskType.name
                 }
             }
 //TODO_end
@@ -153,7 +157,9 @@ fun GenericTaskItem(navController: NavController, taskConfiguration: TaskDto, on
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(modifier = Modifier.fillMaxHeight().padding(horizontal = 8.dp),
+                        Box(modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(horizontal = 8.dp),
                             contentAlignment = Alignment.Center
                         ){
                             Box(
@@ -174,33 +180,57 @@ fun GenericTaskItem(navController: NavController, taskConfiguration: TaskDto, on
                         }
 
                         Box(
-                            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.primaryContainer)
                             ,
                             contentAlignment = Alignment.CenterStart
                         ){
                             Text(
                                 text = taskName,
                                 fontSize = UtilUi.TEXT_SIZE_3,
-                                modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 4.dp)
                                 ,
                             )
                         }
                     }
                 }
-                if(latestStateInfo != null){
-                    val formattedDateTimeAgain = DateTimeUtil.formatRelativeTime(latestStateInfo.dateTime)
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Box(
-                        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer)
-                        ,
-                        contentAlignment = Alignment.CenterEnd
+                        contentAlignment = Alignment.CenterStart
                     ) {
                         Text(
-                            text = formattedDateTimeAgain,
+                            text = "$latestStateInfoProgress %",
                             fontSize = 14.sp,
 
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(start = 8.dp)
                         )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    if(latestStateInfo != null){
+                        val formattedDateTimeAgain = DateTimeUtil.formatRelativeTime(latestStateInfo.dateTime)
+                        Box(
+                            //modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer)
+                            //,
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Text(
+                                text = formattedDateTimeAgain,
+                                fontSize = 14.sp,
+
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
                     }
                 }
             }

@@ -5,12 +5,13 @@
 
 <hibernate-mapping package="croniot.models">
     <class name="croniot.models.Task" table="task">
+        <cache usage="read-write" region="task_cache"/>
 
         <id name="id" column="id">
             <generator class="identity"/>
         </id>
 
-        <property name="uid" column="uid"/>
+        <property name="uid" column="uid" index="idx_task_uid"/>
 <!--
         <map name="parametersValues" table="task_configuration_parameter_value" cascade="all" lazy="false" fetch="join">
             <key column="id_task_configuration"/>
@@ -23,15 +24,14 @@
         -->
 
         <map name="parametersValues" table="task_parameter_value" cascade="all" lazy="false" fetch="join">
+            <cache usage="read-write" region="task_parameter_value_cache"/>
             <key column="id_task"/>
             <map-key-many-to-many class="croniot.models.ParameterTask" column="id_parameter"/>
             <element type="string" column="value"/>
         </map>
 
-     <!--   <many-to-one name="account" class="croniot.models.Account" column="account" /> -->
 
-      <!--  <many-to-one name="taskType" class="croniot.models.TaskType" column="task_type" /> -->
-        <many-to-one name="taskType" class="croniot.models.TaskType" column="task_type" not-null="true"/>
+        <many-to-one name="taskType" class="croniot.models.TaskType" column="task_type" not-null="true" index="idx_task_tasktype"/>
 
         <!--  <set name="stateInfos" table="device" cascade="save-update"
                inverse="true" lazy="false" fetch="join">
@@ -41,10 +41,8 @@
             <one-to-many class="croniot.models.TaskStateInfo" />
         </set>-->
 
-
-
-          <set name="stateInfos" table="task_state_info" cascade="save-update"
-              inverse="true" lazy="false" fetch="join">
+        <set name="stateInfos" table="task_state_info" cascade="save-update" inverse="true" lazy="false" fetch="join">
+            <cache usage="read-write" region="task_state_infos_cache"/>
              <key>
                  <column name="task"/>
             </key>
@@ -52,6 +50,18 @@
         </set>
 
     </class>
+    <!-- Define composite index on device, task_type, and uid columns. |||| ERROR:  column "device" does not exist -->
+  <!--  <database-object>
+        <create>
+            CREATE INDEX idx_task_device_tasktype_uid ON task (device, task_type, uid)
+        </create>
+        <drop>
+            DROP INDEX IF EXISTS idx_task_device_tasktype_uid
+        </drop>
+    </database-object>
+    -->
+
+
 </hibernate-mapping>
 
 <!-- <many-to-one name="device" class="croniot.models.Device" column="device" not-null="false"/> -->

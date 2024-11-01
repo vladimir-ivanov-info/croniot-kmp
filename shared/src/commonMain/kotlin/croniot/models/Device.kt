@@ -10,19 +10,24 @@ data class Device(
     var iot: Boolean,
     var sensorTypes: MutableSet<SensorType>,
     var taskTypes: MutableSet<TaskType>,
-    @Transient
     var account: Account, // Reference to the Account this Device belongs to
-    @Transient
     var deviceToken: DeviceToken? = null // Ensure this property exists
 
 ) {
-    constructor() : this(0, "", "",  "",/*"",*/false, mutableSetOf(), mutableSetOf(), Account())
+    constructor() : this(0, "", "",  "",/*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null)
 
-    constructor(uuid: String = "", name: String = "", description: String = "", iot: Boolean = false,
+    constructor(uuid: String = "",
+                name: String = "",
+                description: String = "",
+                iot: Boolean = false,
                 sensorTypes: MutableSet<SensorType> = mutableSetOf(),
                 taskTypes: MutableSet<TaskType> = mutableSetOf(),
-                account: Account = Account())
-            : this(0, uuid, name, description, iot, sensorTypes, taskTypes, account)
+                account: Account = Account()
+    ) : this(0, uuid, name, description, iot, sensorTypes, taskTypes, account)
+
+
+    constructor(id: Long, uuid: String) : this(id, uuid, "", "", false, mutableSetOf(), mutableSetOf(), Account(), null)
+
 
     override fun hashCode(): Int {
         var result = id.hashCode()

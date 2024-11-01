@@ -2,6 +2,7 @@ package com.croniot.server.db.daos
 
 import croniot.models.*
 import com.croniot.server.db.controllers.ControllerDb
+import jakarta.persistence.criteria.JoinType
 import java.sql.Connection
 
 class AccountDaoImpl: AccountDao {
@@ -46,7 +47,7 @@ class AccountDaoImpl: AccountDao {
         }
     }
 
-    override fun getAccount(email: String, password: String): Account? {
+    /*override fun getAccount(email: String, password: String): Account? {
         val session = ControllerDb.sessionFactory.openSession()
         session.use { sess ->
             val cb = sess.criteriaBuilder
@@ -66,23 +67,77 @@ class AccountDaoImpl: AccountDao {
 
             return account
         }
+    }*/
+
+    /*override fun getAccount(email: String, password: String): Account? {
+        val session = ControllerDb.sessionFactory.openSession()
+        session.use { sess ->
+            val cb = sess.criteriaBuilder
+            val cr = cb.createQuery(Account::class.java)
+            val root = cr.from(Account::class.java)
+
+            // Join with devices and filter by iot == true
+            val devicesJoin = root.join<Account, Device>("devices")
+            val emailPredicate = cb.equal(root.get<String>("email"), email)
+            val passwordPredicate = cb.equal(root.get<String>("password"), password)
+            //val iotPredicate = cb.equal(devicesJoin.get<Boolean>("iot"), true)
+
+            // Use distinct to ensure no duplicate account results due to join
+            cr.select(root).distinct(true).where(cb.and(emailPredicate, passwordPredicate/*, iotPredicate*/))
+
+           // val result = sess.createQuery(cr).resultList
+          //  return result.firstOrNull() // Returns the first result if present, else null
+
+            val query = sess.createQuery(cr).uniqueResultOptional()
+            return query.orElse(null)
+        }
+    }*/
+
+    override fun getAccountEagerSkipTasks(email: String, password: String): Account? {
+        val session = ControllerDb.sessionFactory.openSession()
+        session.use { sess ->
+           /* val cb = sess.criteriaBuilder
+            val cr = cb.createQuery(Account::class.java)
+            val root = cr.from(Account::class.java)
+
+            // Predicates for email and password
+            val emailPredicate = cb.equal(root.get<String>("email"), email)
+            val passwordPredicate = cb.equal(root.get<String>("password"), password)
+
+            // Select and apply predicates
+           // cr.select(root).distinct(true).where(cb.and(emailPredicate, passwordPredicate))
+            cr.select(root).where(cb.and(emailPredicate, passwordPredicate))
+
+            // Execute with uniqueResultOptional for efficiency
+            val query = sess.createQuery(cr).uniqueResultOptional()
+            return query.orElse(null)*/
+
+            val cb = sess.criteriaBuilder
+            val cr = cb.createQuery(Account::class.java)
+            val root = cr.from(Account::class.java)
+
+            // Fetch devices along with their nested sensorTypes and taskTypes
+            val devicesFetch = root.fetch<Account, Device>("devices", JoinType.LEFT)
+            devicesFetch.fetch<Device, SensorType>("sensorTypes", JoinType.LEFT)
+            devicesFetch.fetch<Device, TaskType>("taskTypes", JoinType.LEFT)
+
+            // Add predicates for email and password
+            val emailPredicate = cb.equal(root.get<String>("email"), email)
+            val passwordPredicate = cb.equal(root.get<String>("password"), password)
+
+            // Apply the selection and predicates
+            cr.select(root).where(cb.and(emailPredicate, passwordPredicate))
+
+            // Execute the query
+            val query = sess.createQuery(cr).uniqueResultOptional()
+            return query.orElse(null)
+        }
     }
 
-    override fun getEmail(accountId: Long): String? {
-        val connection: Connection = ControllerDb.getConnection()
-        val sql = "SELECT email FROM account WHERE id = ?"
-        val ps = connection.prepareStatement(sql)
-        ps.setLong(1, accountId)
-        val rs = ps.executeQuery()
+    override fun getAccountLazy(email: String, password: String): Account? {
 
-        var email : String? = null
 
-        //TODO check rs not null
-        if(rs.next()){
-            email = rs.getString("email");
-
-        }
-        return email
+        return null
     }
 
     override fun getAll(): List<Account> {

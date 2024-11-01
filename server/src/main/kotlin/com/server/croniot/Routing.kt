@@ -10,17 +10,66 @@ import io.ktor.server.routing.*
 import com.croniot.server.login.AuthenticationController
 import croniot.messages.*
 import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 
 fun Application.configureRouting() {
 
     routing {
 
+        post("/dateTime") {
+            val currentDateTime = LocalDateTime.now()
+
+            val hour = currentDateTime.hour;
+            val minute = currentDateTime.minute
+
+            val response = "$hour:$minute"
+
+            val result = Result(true, response)
+            val responseJson = GsonBuilder().setPrettyPrinting().create().toJson(result)
+            call.respondText(responseJson, ContentType.Text.Plain)
+        }
+
+        post("/hour") {
+
+            val currentDateTime = LocalDateTime.now()
+            val hour = currentDateTime.hour;
+            val response = "$hour"
+            val result = Result(true, response)
+            val responseJson = GsonBuilder().setPrettyPrinting().create().toJson(result)
+            call.respondText(responseJson, ContentType.Text.Plain)
+        }
+
+        post("/minute") {
+            val currentDateTime = LocalDateTime.now()
+            val minute = currentDateTime.minute
+            val response = "$minute"
+            val result = Result(true, response)
+            val responseJson = GsonBuilder().setPrettyPrinting().create().toJson(result)
+            call.respondText(responseJson, ContentType.Text.Plain)
+        }
+
+        post("/second") {
+            val currentDateTime = LocalDateTime.now()
+            val second = currentDateTime.second
+            val response = "$second"
+            val result = Result(true, response)
+            val responseJson = GsonBuilder().setPrettyPrinting().create().toJson(result)
+            call.respondText(responseJson, ContentType.Text.Plain)
+        }
+
         post("/api/login") {
+            val startMillis = System.currentTimeMillis()
+
             val message = call.receiveText();
             val messageLogin = MessageFactory.fromJson<MessageLogin>(message)
             val loginResult = AuthenticationController.tryLogin(messageLogin)
             val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(loginResult)
+
+            val endMillis = System.currentTimeMillis()
+            val time = endMillis - startMillis
+            println(time) //158-1135 ms     175-1091    319-1326    Final = 68 ms
+
             call.respondText(responseJSON, ContentType.Text.Plain)
         }
 
@@ -39,25 +88,17 @@ fun Application.configureRouting() {
             )
 
             // Assuming you have a function to get the configurations by UUID
-            val taskConfigurations = TaskController.getTasksByDeviceUuid(deviceUuid)
+            val startMillis = System.currentTimeMillis()
+            val taskConfigurations = TaskController.getTasksByDeviceUuid(deviceUuid) //57 ms
+            val endMillis = System.currentTimeMillis()
+            val time = endMillis - startMillis
+            println("$time")
             // You need to add a response here, assuming taskConfigurations is properly fetched
             if (taskConfigurations.isNotEmpty()) {
                 call.respond(taskConfigurations)
             } else {
                 call.respond(HttpStatusCode.NotFound, "No configurations found for UUID: $deviceUuid")
             }
-        }
-
-        post("/api/iot/{deviceUuid}/task_type/{taskTypeUid}/{taskUid}/state/") {
-            val deviceUuid = call.parameters["deviceUuid"]
-            val taskTypeUid = call.parameters["taskTypeUid"]
-            val taskUid = call.parameters["taskUid"]
-            val receivedData = call.receive<String>()
-            println("Received: $receivedData for device: $deviceUuid, task type: $taskTypeUid, task: $taskUid")
-            if(deviceUuid != null && taskTypeUid != null && taskUid != null){
-                TaskController.addTaskState(deviceUuid, taskTypeUid.toLong(), taskUid.toLong(), receivedData)
-            }
-
         }
 
         post("/api/register_account") {
@@ -105,15 +146,13 @@ fun Application.configureRouting() {
 
             print(messageAddTask.toString())
 
-            val result = AddTaskController.registerTask(messageAddTask)
+            val result = AddTaskController.addTask(messageAddTask)
             val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(result)
             call.respondText(responseJSON, ContentType.Text.Plain)
         }
 
 
         post("/api/account_info") {
-            val millisStart = System.currentTimeMillis()
-
             val message = call.receiveText();
             val messageGetAcountInfo = MessageFactory.fromJson<MessageGetAccountInfo>(message)
             val token = messageGetAcountInfo.token
@@ -128,7 +167,7 @@ fun Application.configureRouting() {
                     val result = Result(true, accountJson)
                     val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(result)
                     call.respondText(responseJSON, ContentType.Text.Plain)
- 
+
                 }  else {
                     val result = Result(true, "Could not get account.")
                     val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(result)

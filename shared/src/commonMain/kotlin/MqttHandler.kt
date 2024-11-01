@@ -32,7 +32,8 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
             }
         })
         println("Server subscribed to " + topic)
-        mqttClient.subscribe(topic)
+        //mqttClient.subscribe(topic)
+        mqttClient.subscribe(topic, 2) // QoS 2 for subscribing
     }
 
 

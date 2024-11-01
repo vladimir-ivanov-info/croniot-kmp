@@ -1,4 +1,4 @@
-package com.croniot.android.presentation.taskType
+package com.croniot.android.presentation.device.taskTypes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,7 @@ import croniot.messages.MessageAddTask
 import croniot.models.Result
 import kotlinx.coroutines.withContext
 
-class ViewModelTaskType : ViewModel() {
+class ViewModelTaskTypes : ViewModel() {
 
     val _parametersValues: MutableMap<ParameterTaskDto, MutableStateFlow<String>> = mutableMapOf()
     val parametersValues : MutableMap<ParameterTaskDto, MutableStateFlow<String>> get() = _parametersValues
@@ -28,15 +28,12 @@ class ViewModelTaskType : ViewModel() {
 
         _parametersValues.forEach { (parameter, flow) ->
             if (parameter.uid == parameterUid) {
-                // Update the flow with new value
                 viewModelScope.launch {
                     flow.emit(newValue)  // Use emit in a coroutine context
                 }
-                // or flow.value = newValue if you're not in a coroutine context or are ok with potentially blocking operations
             }
         }
     }
-
 
     suspend fun sendTaskConfiguration() : Result {
 
