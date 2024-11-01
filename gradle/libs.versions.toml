@@ -45,8 +45,28 @@ mysql = "8.0.33"
 #logback = "1.5.3"
 #commons = "file:///home/vladimir/projects/IoT/commons/build/libs/commons.jar"
 postgres = "42.7.3"
-hibernate = "6.4.1.Final"
-ehcache = "2.10.6"
+#hibernate = "6.4.1.Final"
+#hibernate = "6.6.1.Final"
+hibernate = "6.1.0.Final"
+hibernate-ehcache = "5.6.15.Final"
+ehcache = "3.10.8"
+jcache = "1.1.1"
+jaxb-api = "2.3.1" #Ehcache relies on JAXB for parsing XML configuration
+jaxb-impl = "4.0.5"
+#jaxb-runtime = "2.3.1"
+jaxb-runtime = "4.0.2"  # Use the same version for both api and runtime
+jaxb-runtime-old = "2.3.1"
+
+jakarta-jaxb-api = "4.0.2"
+jakarta-activation-api = "2.1.1"
+
+#infinispan = "14.0.14.Final"
+infinispan-core = "15.0.10.Final"
+infinispan-hibernate-cache = "15.0.10.Final"
+infinispan-hibernate-cache-v62 = "15.0.10.Final"
+#jakarta-cache-api = "1.1.1"  # Latest version compatible with Jakarta EE
+javax-cache-api = "1.0.0"
+
 mapstruct = "1.6.0.Beta1"
 serializationJson = "1.3.2"
 dagger = "2.51.1"
@@ -120,8 +140,30 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 hibernate-core = { module = "org.hibernate:hibernate-core", version.ref = "hibernate" }
 hibernate-entitymanager = { module = "org.hibernate:hibernate-entitymanager", version = "6.0.0.Alpha7" }
-ehcache = { module = "net.sf.ehcache:ehcache", version = "2.10.6" }
-hibernate-ehcache = { module = "org.hibernate:hibernate-ehcache", version = "5.4.12.Final" }
+#ehcache = { module = "net.sf.ehcache:ehcache", version = "2.10.6" }
+ehcache = { module = "org.ehcache:ehcache", version.ref = "ehcache" }
+jcache = { module = "javax.cache:cache-api", version.ref = "jcache" }
+hibernate-jcache = { module = "org.hibernate.orm:hibernate-jcache", version.ref = "hibernate" }  # Add this line
+hibernate-ehcache = { module = "org.hibernate:hibernate-ehcache", version.ref = "hibernate-ehcache" }
+jaxb-api = { module = "javax.xml.bind:jaxb-api", version.ref = "jaxb-api" }
+jaxb-impl = { module = "com.sun.xml.bind:jaxb-impl", version.ref = "jaxb-impl" }
+jaxb-runtime = { module = "org.glassfish.jaxb:jaxb-runtime", version.ref = "jaxb-runtime" }
+jaxb-runtime-old = { module = "javax.xml.bind:jaxb-api", version.ref = "jaxb-runtime-old" }
+
+
+jakarta-jaxb-api = { module = "jakarta.xml.bind:jakarta.xml.bind-api", version.ref = "jakarta-jaxb-api" }
+jakarta-activation-api = { module = "jakarta.activation:jakarta.activation-api", version.ref = "jakarta-activation-api" }
+#jakarta-cache-api = { module = "jakarta.cache:jakarta.cache-api", version.ref = "jakarta-cache-api" }
+javax-cache-api = { module = "javax.cache:cache-api", version.ref = "javax-cache-api" }
+
+# Infinispan dependencies
+#infinispan-hibernate-cache = { module = "org.infinispan:infinispan-hibernate-cache-spi", version.ref = "infinispan" }
+infinispan-hibernate-cache = { module = "org.infinispan:infinispan-hibernate-cache-v62", version.ref = "infinispan-hibernate-cache-v62" }
+
+infinispan-core = { module = "org.infinispan:infinispan-core", version.ref = "infinispan-core" }
+
+
+#hibernate-ehcache = { module = "org.hibernate:hibernate-ehcache", version = "5.4.12.Final" }
 javax-persistence = { module = "javax.persistence:javax.persistence-api", version = "2.2" }
 mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
 mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }

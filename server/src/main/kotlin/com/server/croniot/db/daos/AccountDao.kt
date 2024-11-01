@@ -8,9 +8,10 @@ interface AccountDao {
 
     fun isExistsAccountWithEmail(email: String): Boolean
 
-    fun getAccount(email: String, password: String) : Account?
+    fun getAccountEagerSkipTasks(email: String, password: String) : Account?
 
-    fun getEmail(accountId: Long) : String?
+    fun getAccountLazy(email: String, password: String) : Account?
+
 
     fun getAll(): List<Account>
 

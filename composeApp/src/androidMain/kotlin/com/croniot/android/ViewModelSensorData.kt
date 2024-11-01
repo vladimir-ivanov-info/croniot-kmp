@@ -10,10 +10,13 @@ import kotlinx.coroutines.launch
 import croniot.models.SensorData
 import croniot.models.dto.DeviceDto
 import croniot.models.dto.SensorDto
+import kotlinx.coroutines.Dispatchers
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.koin.core.component.KoinComponent
 
 class ViewModelSensorData() : ViewModel(), KoinComponent {
+
+    private var _listeningToClientSensors = false
 
     private var _map : MutableMap<SensorDto, MutableStateFlow<SensorData>> = mutableMapOf()
     val map : MutableMap<SensorDto, MutableStateFlow<SensorData>> get() = _map
@@ -21,23 +24,28 @@ class ViewModelSensorData() : ViewModel(), KoinComponent {
     private var _gps : MutableStateFlow<String> = MutableStateFlow("")
     val gps : MutableStateFlow<String> get() = _gps
 
-    fun listenToClientSensors(devices: List<DeviceDto>){
+    fun listenToClientSensorsIfNeeded(devices: List<DeviceDto>){
+        viewModelScope.launch(Dispatchers.IO) { //Note: Dispatcher very important
+            if(!_listeningToClientSensors){
+                _listeningToClientSensors = true
 
-        for(device in devices){
-            val clientUuid = device.uuid
+                for(device in devices){
+                    val clientUuid = device.uuid
 
-            for(sensor in device.sensors){
-                val topic = "/${device.uuid}/sensor_data/${sensor.uid}"
-                var mqttClient = MqttClient(
-                    Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
-                        8
-                    ), null) //TODO (Ver luego) sin null da: org.eclipse.paho.client.mqttv3.MqttPersistenceException
+                    for(sensor in device.sensors){
+                        val topic = "/${device.uuid}/sensor_data/${sensor.uid}"
+                        var mqttClient = MqttClient(
+                            Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
+                                8
+                            ), null) //TODO (Ver luego) sin null da: org.eclipse.paho.client.mqttv3.MqttPersistenceException
 
-                MqttHandler(mqttClient, MqttProcessorSensorData(clientUuid, sensor.uid.toString()), topic)
+                        MqttHandler(mqttClient, MqttProcessorSensorData(clientUuid, sensor.uid.toString()), topic)
 
-                var value = SensorData(clientUuid, sensor.uid.toString(), "empty_value", "todo_last_date") //TODO empty_value is a constant
+                        var value = SensorData(clientUuid, sensor.uid.toString(), "empty_value", "todo_last_date") //TODO empty_value is a constant
 
-                _map[sensor] = MutableStateFlow(value)
+                        _map[sensor] = MutableStateFlow(value)
+                    }
+                }
             }
         }
     }

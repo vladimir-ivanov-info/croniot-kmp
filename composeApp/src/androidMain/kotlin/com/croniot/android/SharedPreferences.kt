@@ -18,6 +18,8 @@ object SharedPreferences : KoinComponent {
     const val KEY_DEVICE_TOKEN = "device_token"
     const val KEY_DEVICE_UUID = "device_uuid"
 
+    const val KEY_SERVER_MODE = "server_mode"
+
     private const val PREF_NAME = "secure_prefs"
     private const val SECRET_KEY = "your_secret_key"
 

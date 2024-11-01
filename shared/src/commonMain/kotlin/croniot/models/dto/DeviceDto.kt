@@ -5,6 +5,6 @@ data class DeviceDto(
     var name: String,
     var description: String,
     var sensors: MutableSet<SensorDto>,
-    var tasks: MutableSet<TaskTypeDto>,
+    var tasks: MutableSet<TaskTypeDto>, //TODO rename to "taskTypes"
     var lastOnlineMillis: Long
 )
