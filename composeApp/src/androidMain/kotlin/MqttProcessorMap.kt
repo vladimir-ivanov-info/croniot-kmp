@@ -1,3 +1,4 @@
+import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import croniot.models.MqttDataProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +10,7 @@ import org.koin.core.component.get
 //TODO experimental
 class MqttProcessorMap() : MqttDataProcessor, KoinComponent {
 
-    private val viewModelSensorData: com.croniot.android.ViewModelSensorData = get()
+    private val viewModelSensors: ViewModelSensors = get()
 
     override fun getTopic(): String {
         TODO("Not yet implemented")
@@ -19,7 +20,7 @@ class MqttProcessorMap() : MqttDataProcessor, KoinComponent {
         CoroutineScope(Dispatchers.IO).launch {
             val mapValue = data as String
             println(mapValue)
-            viewModelSensorData.updateMap(mapValue)
+            viewModelSensors.updateMap(mapValue)
         }
     }
 }

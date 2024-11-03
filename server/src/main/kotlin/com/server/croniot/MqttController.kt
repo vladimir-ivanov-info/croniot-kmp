@@ -36,7 +36,7 @@ object MqttController {
     fun initTaskStateController(){
         val topic =  "/iot_to_server/task_progress_update/watering_system_1"
         val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
-        var mqttHandler = MqttHandler(mqttClient, MqttDataProcessorTaskProgress("watering_system_1", 123), topic)
+        var mqttHandler = MqttHandler(mqttClient, MqttDataProcessorTaskProgress("watering_system_1"), topic)
     }
 
     //TODO unify these 2 methods in the future

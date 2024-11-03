@@ -21,7 +21,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.croniot.android.domain.util.StringUtil
+import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import com.croniot.android.presentation.devices.DevicesScreen
+import com.croniot.android.presentation.devices.DevicesViewModel
+import com.croniot.android.presentation.login.LoginViewModel
+import com.croniot.android.ui.task.ViewModelTasks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,6 +33,8 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.component.KoinComponent
 import org.koin.core.context.GlobalContext
 import org.maplibre.android.MapLibre
 
@@ -80,12 +86,14 @@ fun resolveServerAddressIfNotExists(){
 
 @Composable
 fun CurrentScreen(){
-
     generateDeviceUuidIfNotExists()
     LaunchedEffect(Unit) {
         resolveServerAddressIfNotExists()
     }
 
+    val viewModelSensors: ViewModelSensors = koinViewModel()
+    val devicesViewModel: DevicesViewModel = koinViewModel()
+    val viewModelTasks: ViewModelTasks = koinViewModel()
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = UiConstants.ROUTE_LOGIN,
@@ -101,12 +109,15 @@ fun CurrentScreen(){
         }
 
     ) {
+
+
          //composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
         composable("MAPS"){ MapScreen() }
         composable(UiConstants.ROUTE_REGISTER_ACCOUNT) { ScreenRegisterAccount(navController) }
+
         composable(UiConstants.ROUTE_LOGIN) { LoginScreen(navController) }
-        composable(UiConstants.ROUTE_DEVICE) { DeviceScreen(navController, Modifier) }
-        composable(UiConstants.ROUTE_DEVICES) { DevicesScreen(navController) }
+        composable(UiConstants.ROUTE_DEVICE) { DeviceScreen(navController, Modifier, viewModelSensors, viewModelTasks) }
+        composable(UiConstants.ROUTE_DEVICES) { DevicesScreen(navController, Modifier, devicesViewModel, viewModelSensors) }
         composable(UiConstants.ROUTE_TASK) { TaskTypeScreen(navController) }
     }
 }

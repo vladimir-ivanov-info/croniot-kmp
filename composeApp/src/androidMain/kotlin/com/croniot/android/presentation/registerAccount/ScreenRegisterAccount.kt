@@ -108,7 +108,7 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
             }
 
             Spacer(modifier = Modifier.size(8.dp))
-            StatefulTextField(stringFlow = passwordStateFlow, placeholderString = "password") {
+            StatefulTextField(stringFlow = passwordStateFlow, placeholderString = "password", isPassword = true) {
                 viewModelRegisterAccount.updatePassword(it)
             }
 

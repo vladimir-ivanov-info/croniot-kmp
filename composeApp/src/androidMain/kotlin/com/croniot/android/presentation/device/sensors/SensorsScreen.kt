@@ -9,13 +9,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.croniot.android.ViewModelSensorData
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SensorsScreen(){
-    val viewModelSensorData: ViewModelSensorData = koinViewModel()
-    val sensorDataMap = viewModelSensorData.map
+fun SensorsScreen(viewModelSensors: ViewModelSensors){
+    val sensorDataMap = viewModelSensors.map
 
     //TODO observe not map, but map values
     Box(modifier = Modifier

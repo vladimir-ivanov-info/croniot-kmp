@@ -14,14 +14,31 @@ import kotlinx.coroutines.withContext
 
 class ViewModelTaskTypes : ViewModel() {
 
-    val _parametersValues: MutableMap<ParameterTaskDto, MutableStateFlow<String>> = mutableMapOf()
+    companion object{
+        const val PARAMETER_VALUE_UNDEFINED : String = "*undefined*"
+    }
+
+    private val _parametersValues: MutableMap<ParameterTaskDto, MutableStateFlow<String>> = mutableMapOf()
     val parametersValues : MutableMap<ParameterTaskDto, MutableStateFlow<String>> get() = _parametersValues
 
 
+    //TODO delegate this to another class, there will be more parameter types in the future
     init{
         for(parameter in Global.selectedTaskType.parameters){
-            _parametersValues.put(parameter, MutableStateFlow("*undefined*"))
+
+            if(parameter.type == "number"){
+                val minValue = parameter.constraints["minValue"]
+                val maxValue = parameter.constraints["maxValue"]
+                val midValue = ((maxValue!!.toDouble() - minValue!!.toDouble())/2).toString()
+                _parametersValues.put(parameter, MutableStateFlow(midValue))
+            } else {
+                _parametersValues.put(parameter, MutableStateFlow(PARAMETER_VALUE_UNDEFINED))
+            }
         }
+    }
+
+    fun uninit(){
+        _parametersValues.values.clear()
     }
 
     fun updateParameter(parameterUid: Long, newValue: String){
@@ -35,7 +52,7 @@ class ViewModelTaskTypes : ViewModel() {
         }
     }
 
-    suspend fun sendTaskConfiguration() : Result {
+    suspend fun sendTask() : Result {
 
         return withContext(Dispatchers.IO){
             var result: Result
