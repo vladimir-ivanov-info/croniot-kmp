@@ -88,6 +88,8 @@ The 3rd tab "Tasks" shows the history of the tasks and the state in which they a
 <img src="https://github.com/user-attachments/assets/f3877bf9-68f2-445e-afaa-47e91931299f" alt="Task types screen" width="270" height="600">
 <img src="https://github.com/user-attachments/assets/6be13237-8a6f-4b20-8095-66020f803eb9" alt="Tasks' history" width="270" height="600">
 <img src="https://github.com/user-attachments/assets/060bbd87-cb39-4a74-a133-42349bfc619a" alt="Tasks' history" width="270" height="600">
+<img src="https://github.com/user-attachments/assets/f395cf9b-ccf4-433f-8e5d-610cf1cbc0dc" alt="Tasks' history" width="270" height="600">
+
 
 ### IoT
 
