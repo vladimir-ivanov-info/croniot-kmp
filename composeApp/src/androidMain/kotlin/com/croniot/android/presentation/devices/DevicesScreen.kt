@@ -1,5 +1,6 @@
 package com.croniot.android.presentation.devices
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,32 +26,79 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.Global
 import com.croniot.android.UiConstants
-import com.croniot.android.ViewModelSensorData
+import com.croniot.android.presentation.device.sensors.ViewModelSensors
+import com.croniot.android.presentation.login.LoginController
 import com.croniot.android.ui.UtilUi
+import com.croniot.android.ui.util.GenericAlertDialog
 import croniot.models.dto.DeviceDto
-import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DevicesScreen(navController: NavController) {
+fun DevicesScreen(navController: NavController, modifier: Modifier, devicesViewModel: DevicesViewModel, viewModelSensors: ViewModelSensors) {
 
-    val viewModelSensorData: ViewModelSensorData = koinViewModel()
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        showLogoutDialog = true
+    }
+
     LaunchedEffect(Unit) {
-        viewModelSensorData.listenToClientSensorsIfNeeded(Global.account.devices.toList())
+        viewModelSensors.listenToClientSensorsIfNeeded(Global.account.devices.toList())
+    }
+
+    var expanded by remember { mutableStateOf(false) }
+
+    if(showLogoutDialog){
+        GenericAlertDialog(title = "Log Out", content = "Are you sure you want to log out?"){
+            val result = it
+            if(result){
+                LoginController.logOut(navController)
+            }
+            showLogoutDialog = false
+        }
     }
 
     Scaffold(
         topBar = {
             TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
-                title = { Text(Global.appName) },
+                title = {
+                    Box(contentAlignment = Alignment.CenterStart) {
+                        Text(text = Global.appName)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(
+                            painter = painterResource(id = android.R.drawable.ic_menu_more, ), // Triple-dot icon
+                            contentDescription = "More options",
+                            tint = Color.Black // Set icon color to black
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                expanded = false
+                                showLogoutDialog = true
+                            },
+                            text = { Text("Logout") }
+                        )
+                    }
+                },
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
             )
         },
@@ -54,18 +106,17 @@ fun DevicesScreen(navController: NavController) {
             navController,
             Modifier
                 .padding(innerPadding)
-                .fillMaxSize())
+                .fillMaxSize(),
+            devicesViewModel
+        )
         }
     )
-
 }
 
 @Composable
-fun MainContent(navController: NavController, modifier: Modifier = Modifier) {
-    val devicesViewModel: DevicesViewModel = koinViewModel()
-
-    val clientsState = devicesViewModel.devices.collectAsState()
-    DevicesList(navController, clientsState.value.toList(), modifier)
+fun MainContent(navController: NavController, modifier: Modifier = Modifier, devicesViewModel: DevicesViewModel) {
+    val clientsState by devicesViewModel.devices.collectAsState() // Observe as state
+    DevicesList(navController, clientsState, modifier) // Pass the observed list
 }
 
 @Composable

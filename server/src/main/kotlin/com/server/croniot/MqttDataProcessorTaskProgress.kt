@@ -5,13 +5,12 @@ import croniot.messages.MessageFactory
 import croniot.models.MqttDataProcessor
 import croniot.models.TaskProgressUpdate
 
-class MqttDataProcessorTaskProgress(val deviceUuid: String, val taskUid: Long) : MqttDataProcessor {
+class MqttDataProcessorTaskProgress(val deviceUuid: String) : MqttDataProcessor {
 
     override fun process(data: Any) {
         val data = data as String
         val taskProgressUpdate = MessageFactory.fromJson<TaskProgressUpdate>(data)
         println(data)
-        //TODO ControllerDb.getSensorDataDao().insert(uuid, sensorId, sensorValue)
         TaskController.addTaskProgress(deviceUuid, taskProgressUpdate)
     }
 

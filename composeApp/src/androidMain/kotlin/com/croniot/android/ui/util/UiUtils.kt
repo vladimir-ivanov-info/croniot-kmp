@@ -28,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -36,7 +38,7 @@ import croniot.models.dto.TaskDto
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun StatefulTextField(stringFlow: StateFlow<String>, placeholderString: String, onValueChange: (newValue: String) -> Unit){
+fun StatefulTextField(stringFlow: StateFlow<String>, placeholderString: String, isPassword: Boolean = false, onValueChange: (newValue: String) -> Unit){
 
     val text by remember(stringFlow) { stringFlow }.collectAsState()
 
@@ -48,22 +50,23 @@ fun StatefulTextField(stringFlow: StateFlow<String>, placeholderString: String, 
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         singleLine = true,
         maxLines = 1,
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
     )
 }
 
 @Composable
-fun GenericAlertDialog(title: String, content: String, onShowDialog: (showDialog: Boolean) -> Unit){
+fun GenericAlertDialog(title: String, content: String, onResult: (result: Boolean) -> Unit){
     AlertDialog(
         onDismissRequest = {
-            onShowDialog(false)
+            onResult(false)
         },
         confirmButton = {
-            TextButton(onClick = { onShowDialog(false) }) {
+            TextButton(onClick = { onResult(true) }) {
                 Text("OK")
             }
         },
         dismissButton = {
-            TextButton(onClick = { onShowDialog(false) }) {
+            TextButton(onClick = { onResult(false) }) {
                 Text("Cancel")
             }
         },

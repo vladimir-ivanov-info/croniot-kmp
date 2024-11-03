@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import croniot.models.dto.DeviceDto
 import kotlinx.coroutines.delay
+import org.koin.core.component.KoinComponent
 
-class DevicesViewModel : ViewModel() {
+class DevicesViewModel : ViewModel(), KoinComponent {
 
     private val _devices = MutableStateFlow<List<DeviceDto>>(emptyList())
     val devices: StateFlow<List<DeviceDto>> get() = _devices
@@ -18,6 +19,12 @@ class DevicesViewModel : ViewModel() {
     init {
         startTimer()
     }
+
+    fun uninit(){
+        _devices.value = emptyList()
+    }
+
+
 
     private fun startTimer() {
         viewModelScope.launch {
@@ -35,7 +42,6 @@ class DevicesViewModel : ViewModel() {
         }
         _devices.emit(updatedDevices)
     }
-
 
     fun updateDevices(devices: List<DeviceDto>){
         viewModelScope.launch {

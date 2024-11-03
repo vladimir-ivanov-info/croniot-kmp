@@ -1,5 +1,6 @@
 package com.croniot.android.data
 
+import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import com.croniot.android.presentation.devices.DevicesViewModel
 import croniot.models.MqttDataProcessor
 import kotlinx.coroutines.CoroutineScope
@@ -11,7 +12,7 @@ import org.koin.core.component.get
 
 class MqttProcessorSensorData(val clientUuid: String, val sensorUuid: String) : MqttDataProcessor, KoinComponent {
 
-    private val viewModelSensorData: com.croniot.android.ViewModelSensorData = get()
+    private val viewModelSensors: ViewModelSensors = get()
     private val devicesViewModel: DevicesViewModel = get()
 
     override fun getTopic(): String {
@@ -22,7 +23,7 @@ class MqttProcessorSensorData(val clientUuid: String, val sensorUuid: String) : 
         CoroutineScope(Dispatchers.IO).launch {
             val sensorValue = data as String
             println(sensorValue)
-            viewModelSensorData.updateSensorData(clientUuid, sensorUuid, sensorValue)
+            viewModelSensors.updateSensorData(clientUuid, sensorUuid, sensorValue)
             devicesViewModel.updateDeviceOnlineStatus(clientUuid)
         }
     }

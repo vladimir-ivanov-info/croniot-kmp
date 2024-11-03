@@ -31,6 +31,12 @@ class LoginViewModel() : ViewModel(), KoinComponent {
     private val _password= MutableStateFlow("password1")
     val password : StateFlow<String> get() = _password
 
+    fun setLoggedIn(loggedInState: Boolean){
+        viewModelScope.launch {
+            _loggedIn.emit(loggedInState)
+        }
+    }
+
     fun updatePassword(password: String){
         viewModelScope.launch {
             _password.emit(password) // Update the counter value by emitting a new value
@@ -51,7 +57,7 @@ class LoginViewModel() : ViewModel(), KoinComponent {
         val accountEmail = email.value
         val accountPassword = password.value
 
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.Main) {
             try {
                 val messageLogin = MessageLogin(accountEmail, accountPassword, deviceUuid!!, deviceToken)
                 val response = RetrofitClient.loginApiService.login(messageLogin)

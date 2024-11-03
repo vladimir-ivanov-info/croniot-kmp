@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.croniot.android.Global
+import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import com.croniot.android.presentation.device.sensors.SensorsScreen
 import com.croniot.android.ui.TaskItem
 import com.croniot.android.presentation.device.tasks.TasksScreen
@@ -45,7 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeviceScreen(navController: NavController, modifier: Modifier) {
+fun DeviceScreen(navController: NavController, modifier: Modifier, viewModelSensors: ViewModelSensors, viewModelTasks: ViewModelTasks) {
     Scaffold(
         topBar = {
             TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
@@ -75,13 +76,13 @@ fun DeviceScreen(navController: NavController, modifier: Modifier) {
             )
         },
         content = {
-            innerPadding -> DeviceScreenContent(navController, innerPadding = innerPadding, viewModelTasks = koinViewModel())
+            innerPadding -> DeviceScreenContent(navController, innerPadding = innerPadding, viewModelTasks, viewModelSensors)
         }
     )
 }
 
 @Composable
-fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValues, viewModelTasks: ViewModelTasks){
+fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValues, viewModelTasks: ViewModelTasks, viewModelSensors: ViewModelSensors){
     val viewModelDeviceScreen: DeviceScreenViewModel = koinViewModel()
 
     LaunchedEffect(Unit) {
@@ -111,9 +112,9 @@ fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValue
             }
         }
         when (selectedTabIndex) {
-            0 -> SensorsScreen()
+            0 -> SensorsScreen(viewModelSensors)
             1 -> TaskTypesScreen(navController)
-            2 -> TasksScreen(navController)
+            2 -> TasksScreen(navController, viewModelTasks)
         }
     }
 }

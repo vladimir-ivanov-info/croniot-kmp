@@ -10,6 +10,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.*
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import org.koin.java.KoinJavaComponent.get
 import org.maplibre.android.annotations.IconFactory
 import org.maplibre.android.annotations.MarkerOptions
@@ -23,7 +24,7 @@ import org.maplibre.geojson.FeatureCollection
 
 //TOOD experimental
 
-private val viewModelSensorData: ViewModelSensorData = get(ViewModelSensorData::class.java)
+private val viewModelSensors: ViewModelSensors = get(ViewModelSensors::class.java)
 lateinit var mapLibre: MapLibreMap
 private val markersList = mutableListOf<MarkerOptions>()
 
@@ -33,7 +34,7 @@ fun MapScreen(
     savedLocations: List<Point> = emptyList() // Use an empty list if you don't have locations yet
 ) {
     LaunchedEffect(Unit) {
-        viewModelSensorData.listenToMapUpdates()
+        viewModelSensors.listenToMapUpdates()
     }
 
     val context = LocalContext.current
@@ -60,7 +61,7 @@ fun MapScreen(
         }
     }
 
-    val gps = viewModelSensorData.gps.collectAsState()
+    val gps = viewModelSensors.gps.collectAsState()
     val gpsString = gps.value
     if(gpsString.isNotEmpty()){
         val dataStr = gpsString.split(",")

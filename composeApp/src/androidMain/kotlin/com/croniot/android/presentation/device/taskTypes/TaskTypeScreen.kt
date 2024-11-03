@@ -39,11 +39,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.croniot.android.presentation.device.DeviceScreenViewModel
 import com.croniot.android.ui.util.GenericDialog
 import croniot.models.Result
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent.get
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.roundToInt
@@ -137,10 +135,10 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
 
                 val currentParameter = viewModelTask.parametersValues.toList()[index].first
 
-                if(currentParameter.type.equals("number")){
+                if(currentParameter.type == "number"){
 
-                    val minValue = currentParameter.constraints.get("minValue")
-                    val maxValue = currentParameter.constraints.get("maxValue")
+                    val minValue = currentParameter.constraints["minValue"]
+                    val maxValue = currentParameter.constraints["maxValue"]
 
                     val sliderValue = viewModelTask.parametersValues.toList()[index].second.collectAsState()
                     var sliderValueStr = sliderValue.value
@@ -153,10 +151,11 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                     ) {
                         val steps = maxValue!!.toInt()
 
-
-                        if(sliderValueStr == "*undefined*"){
-                            sliderValueStr = (maxValue.toDouble()/2).toString()
-                        }
+                        /*if(sliderValueStr == ViewModelTaskTypes.PARAMETER_VALUE_UNDEFINED){
+                            //sliderValueStr = (maxValue.toDouble()/2).toString()
+                            val midValue = (maxValue.toDouble()/2).toString()
+                            viewModelTask.updateParameter(currentParameter.uid, midValue)
+                        }*/
 
                         sliderValueStr = BigDecimal(sliderValueStr.toDouble()).setScale(1, RoundingMode.HALF_UP).toString()
 
@@ -176,7 +175,7 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                             constraints = currentParameter.constraints
                         )
                     }
-                } else if(currentParameter.type.equals("time")){
+                } else if(currentParameter.type == "time"){
                     TimePicker(currentParameter, viewModelTask)
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -189,7 +188,7 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                         //TODO add confirmation dialog
                         //TODO go back?
                         coroutineScope.launch {
-                            postNewTaskResult = viewModelTask.sendTaskConfiguration()
+                            postNewTaskResult = viewModelTask.sendTask()
                             if(postNewTaskResult.success){
                                 snackbarHostState.showSnackbar(
                                     message = "Task created successfully.",

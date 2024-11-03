@@ -76,7 +76,7 @@ fun LoginScreenBody2(navController: NavController, innerPadding: PaddingValues){
             .padding(innerPadding)
         ,
     ) {
-        Login(navController,
+        Login2(navController,
             Modifier
                 .align(Alignment.Center)
                 .padding(16.dp))
@@ -85,7 +85,7 @@ fun LoginScreenBody2(navController: NavController, innerPadding: PaddingValues){
 
 //@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun Login(navController: NavController, modifier: Modifier){
+fun Login2(navController: NavController, modifier: Modifier){
 
     Column(modifier = modifier){
         Box(modifier = Modifier
