@@ -1,9 +1,10 @@
-package com.croniot.android
+package com.croniot.android.presentation.device.sensors
 
 import MqttHandler
 import MqttProcessorMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.croniot.android.Global
 import com.croniot.android.data.MqttProcessorSensorData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -14,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.koin.core.component.KoinComponent
 
-class ViewModelSensorData() : ViewModel(), KoinComponent {
+class ViewModelSensors() : ViewModel(), KoinComponent {
 
     private var _listeningToClientSensors = false
 
@@ -23,6 +24,22 @@ class ViewModelSensorData() : ViewModel(), KoinComponent {
 
     private var _gps : MutableStateFlow<String> = MutableStateFlow("")
     val gps : MutableStateFlow<String> get() = _gps
+
+    val mqttClients : MutableList<MqttClient> = mutableListOf()
+
+    fun uninit(){
+        viewModelScope.launch{
+            for(mqttClient in mqttClients){
+                mqttClient.disconnect()
+            }
+            mqttClients.clear()
+
+            _map.values.clear()
+            _gps.value = ""
+
+            _listeningToClientSensors = false
+        }
+    }
 
     fun listenToClientSensorsIfNeeded(devices: List<DeviceDto>){
         viewModelScope.launch(Dispatchers.IO) { //Note: Dispatcher very important
@@ -34,14 +51,16 @@ class ViewModelSensorData() : ViewModel(), KoinComponent {
 
                     for(sensor in device.sensors){
                         val topic = "/${device.uuid}/sensor_data/${sensor.uid}"
-                        var mqttClient = MqttClient(
+                        val mqttClient = MqttClient(
                             Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
                                 8
                             ), null) //TODO (Ver luego) sin null da: org.eclipse.paho.client.mqttv3.MqttPersistenceException
 
                         MqttHandler(mqttClient, MqttProcessorSensorData(clientUuid, sensor.uid.toString()), topic)
 
-                        var value = SensorData(clientUuid, sensor.uid.toString(), "empty_value", "todo_last_date") //TODO empty_value is a constant
+                        mqttClients.add(mqttClient)
+
+                        val value = SensorData(clientUuid, sensor.uid.toString(), "empty_value", "todo_last_date") //TODO empty_value is a constant
 
                         _map[sensor] = MutableStateFlow(value)
                     }

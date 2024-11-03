@@ -45,15 +45,17 @@ import com.croniot.android.R
 import com.croniot.android.SharedPreferences
 import com.croniot.android.SharedPreferencesViewModel
 import com.croniot.android.UiConstants
+import com.croniot.android.presentation.devices.DevicesViewModel
 import com.croniot.android.ui.UtilUi
 import com.croniot.android.ui.util.StatefulTextField
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun LoginScreen(navController: NavHostController, loginViewModel: LoginViewModel = koinViewModel()) {
+fun LoginScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
@@ -66,19 +68,19 @@ fun LoginScreen(navController: NavHostController, loginViewModel: LoginViewModel
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
             )
         },
-        content = { innerPadding -> LoginScreenBody(navController, innerPadding, loginViewModel)
+        content = { innerPadding -> LoginScreenBody(navController, innerPadding)
             // Content goes here
         }
     )
 }
 @Composable
-fun LoginScreenBody(navController: NavController, innerPadding: PaddingValues, loginViewModel: LoginViewModel){
+fun LoginScreenBody(navController: NavController, innerPadding: PaddingValues){
     Box(
         Modifier
             .padding(innerPadding)
         ,
     ) {
-        Login(navController, loginViewModel,
+        Login(navController,
             Modifier
                 .align(Alignment.Center)
                 .padding(16.dp))
@@ -87,7 +89,10 @@ fun LoginScreenBody(navController: NavController, innerPadding: PaddingValues, l
 
 //@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun Login(navController: NavController, loginViewModel: LoginViewModel, modifier: Modifier){
+fun Login(navController: NavController, modifier: Modifier){
+
+
+    val loginViewModel: LoginViewModel = koinViewModel()
 
     val isLoading by loginViewModel.isLoading.collectAsState()
 
@@ -138,7 +143,7 @@ fun Login(navController: NavController, loginViewModel: LoginViewModel, modifier
                 loginViewModel.updateEmail(it)
             }
             Spacer(modifier = Modifier.size(16.dp))
-            StatefulTextField(stringFlow = loginViewModel.password, placeholderString = "password") {
+            StatefulTextField(stringFlow = loginViewModel.password, placeholderString = "password", isPassword = true) {
                 loginViewModel.updatePassword(it)
             }
             Spacer(modifier = Modifier.size(16.dp))
