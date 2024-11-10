@@ -2,9 +2,7 @@ package com.croniot.android.presentation.device.tasks
 
 import com.croniot.android.ui.task.ViewModelTasks
 import croniot.messages.MessageFactory
-import croniot.messages.MessageRegisterSensorType
 import croniot.models.MqttDataProcessor
-import croniot.models.TaskProgressUpdate
 import croniot.models.dto.TaskStateInfoDto
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -18,6 +16,7 @@ class MqttDataProcessorTaskProgress() : MqttDataProcessor, KoinComponent {
 
         val taskStateInfoDto = MessageFactory.fromJsonWithZonedDateTime<TaskStateInfoDto>(data1)
         println(taskStateInfoDto)
+
         viewModelTasks.updateTaskProgress(taskStateInfoDto)
     }
 

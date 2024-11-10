@@ -22,7 +22,7 @@ object Global {
     var SERVER_ADDRESS = "192.168.50.163"
     var SERVER_PORT = 8090
 
-    var mqttBrokerUrl = ""
+    var mqttBrokerUrl = "tcp://51.77.195.204:1883"
     val mqttClientId = "AndroidMQTTClient"
 
     fun generateUniqueString(length: Int): String {
@@ -31,9 +31,8 @@ object Global {
         return uniqueString
     }
 
-    lateinit var account : AccountDto
-    lateinit var selectedDevice : DeviceDto
-    lateinit var selectedTaskType: TaskTypeDto
+    var selectedDevice : DeviceDto? = null
+    var selectedTaskType: TaskTypeDto? = null //TODO persist
 
     fun performPostRequestToEndpoint(endPoint: String, postData: String) : Result{
         val url =  "http://" + SERVER_ADDRESS + ":" + SERVER_PORT + endPoint

@@ -7,12 +7,39 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.croniot.android.GlobalViewModel
+import com.croniot.android.presentation.login.LoginController
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SensorsScreen(viewModelSensors: ViewModelSensors){
-    val sensorDataMap = viewModelSensors.map
+fun SensorsScreen(navController: NavController, viewModelSensors: ViewModelSensors){
+
+
+   val globalViewModel : GlobalViewModel = koinViewModel()
+   val account by globalViewModel.account.collectAsState()
+    LaunchedEffect(account) {
+        viewModelSensors.listenToClientSensorsIfNeeded()
+    }
+
+    LaunchedEffect(Unit) {
+        val result = viewModelSensors.isAccountInitialized()
+
+        if(!result){
+            LoginController.forceLogOut(navController)
+        } else {
+            viewModelSensors.listenToClientSensorsIfNeeded()
+        }
+    }
+
+
+    //val sensorDataMap = viewModelSensors.
+    val sensorMap by viewModelSensors.mapStateFlow.collectAsState()
 
     //TODO observe not map, but map values
     Box(modifier = Modifier
@@ -27,9 +54,10 @@ fun SensorsScreen(viewModelSensors: ViewModelSensors){
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
             }
 
-            items(sensorDataMap.toList()) { item ->
-                val (key, sensorDataFlow) = item
-                SensorItem(key, sensorDataFlow)
+            items(sensorMap.entries.toList()) { entry ->
+                val sensor = entry.key
+                val sensorDataFlow = entry.value
+                SensorItem(sensor, sensorDataFlow)
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
             }
 

@@ -3,7 +3,6 @@ package com.croniot.android.presentation.device.tasks
 import com.croniot.android.ui.task.ViewModelTasks
 import croniot.messages.MessageFactory
 import croniot.models.MqttDataProcessor
-import croniot.models.TaskProgressUpdate
 import croniot.models.dto.TaskDto
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
