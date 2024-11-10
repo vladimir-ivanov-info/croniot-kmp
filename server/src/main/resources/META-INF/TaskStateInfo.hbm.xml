@@ -12,13 +12,7 @@
         </id>
 
         <property name="dateTime" column="date_time"/>
-       <!-- <property name="state" column="state" type="string"/> -->
-        <property name="state" column="state">
-            <type name="org.hibernate.type.EnumType">
-                <param name="enumClass">croniot.models.TaskState</param>
-                <param name="useNamed">true</param>
-            </type>
-        </property>
+        <property name="state" column="state" not-null="false" type="string"/>
 
         <property name="progress" column="progress" not-null="false"/>
         <property name="errorMessage" column="error_message" not-null="false"/>

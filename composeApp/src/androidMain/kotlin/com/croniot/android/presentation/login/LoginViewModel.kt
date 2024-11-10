@@ -1,8 +1,10 @@
 package com.croniot.android.presentation.login
 
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.Global
+import com.croniot.android.GlobalViewModel
 import com.croniot.android.SharedPreferences
 import com.croniot.android.presentation.devices.DevicesViewModel
 import com.croniot.android.data.source.remote.retrofit.RetrofitClient
@@ -12,10 +14,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import croniot.messages.MessageLogin
+import croniot.models.dto.AccountDto
+import croniot.models.dto.DeviceDto
+import croniot.models.dto.ParameterSensorDto
+import croniot.models.dto.SensorDto
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 class LoginViewModel() : ViewModel(), KoinComponent {
+
+    private val globalViewModel: GlobalViewModel = get()
+
+    private var loggedInAsGuest = false
 
     private val devicesViewModel: DevicesViewModel = get()
 
@@ -73,8 +83,11 @@ class LoginViewModel() : ViewModel(), KoinComponent {
                 }
 
                 if (response.isSuccessful && result.success && account != null) {
-                    Global.account = account// Log or use the UUID as needed
-                    withContext(Dispatchers.Default) {
+
+                    globalViewModel.updateAccount(account)
+
+                  //  Global.account = account// Log or use the UUID as needed
+                    withContext(Dispatchers.Default) { //TODO do this in the GlobalViewModel's "updateAccount"
                         devicesViewModel.updateDevices(account.devices.filter{ it.name.isNotEmpty() }.toList()) //TODO for now we leave this filter
                     }
                     true  // Login successful

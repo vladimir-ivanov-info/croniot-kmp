@@ -40,17 +40,24 @@ class ViewModelTasks : ViewModel(), KoinComponent {
             _tasksLoaded = true
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    val selectedDeviceUuid = Global.selectedDevice.uuid
-                    val response = RetrofitClient.taskConfigurationApiService.requestTaskConfigurations(selectedDeviceUuid)
-                    val taskDtos = response.body()
+                    val selectedDeviceUuid = Global.selectedDevice?.uuid //TODO
+                    // val response = RetrofitClient.taskConfigurationApiService.requestTaskConfigurations(selectedDeviceUuid) //TODO
+                    val response = selectedDeviceUuid?.let {
+                        RetrofitClient.taskConfigurationApiService.requestTaskConfigurations(
+                            it
+                        )
+                    }
+                    val taskDtos = response?.body()
 
-                    if (response.isSuccessful && taskDtos != null) {
-                        for(task in taskDtos){
-                            addTask(task)
+                    if (response != null) {
+                        if (response.isSuccessful && taskDtos != null) {
+                            for(task in taskDtos){
+                                addTask(task)
+                            }
+
+                        } else {
+                            println("Error: ${response.errorBody()?.string()}")
                         }
-
-                    } else {
-                        println("Error: ${response.errorBody()?.string()}")
                     }
                 } catch (e: Exception) {
                     println("Error: ${e.message}")
@@ -63,7 +70,7 @@ class ViewModelTasks : ViewModel(), KoinComponent {
         if(!_tasksBeingListened){
             _tasksBeingListened = true
             try{
-                val topic =  "/server/task_progress_update/${Global.selectedDevice.uuid}"
+                val topic = "/server/task_progress_update/${Global.selectedDevice?.uuid}"
                 val mqttClient = MqttClient(
                     Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(8), null)
                 MqttHandler(mqttClient, MqttDataProcessorTaskProgress(), topic)
@@ -77,12 +84,17 @@ class ViewModelTasks : ViewModel(), KoinComponent {
         if(!_newTasksBeingListened){
             _newTasksBeingListened = true
             try{
-                val topic =  "/${Global.selectedDevice.uuid}/newTasks"
+                val topic =  "/${Global.selectedDevice?.uuid}/newTasks"
                 val mqttClient = MqttClient(
                     Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
                         8
                     ), null)
-                MqttHandler(mqttClient, MqttDataProcessorNewTask(Global.selectedDevice.uuid), topic)
+
+                val selectedDevice = Global.selectedDevice
+                if(selectedDevice != null){
+                    MqttHandler(mqttClient, MqttDataProcessorNewTask(selectedDevice.uuid), topic)
+                }
+
             } catch (e: Exception) {
                 println("Error: ${e.message}")
             }
@@ -93,15 +105,16 @@ class ViewModelTasks : ViewModel(), KoinComponent {
 
         val listOfMutableStateFlows = _tasks.value
         val taskMutableStateFlow = listOfMutableStateFlows.find { it.value.uid == taskStateInfoDto.taskUid }
+
+
         if(taskMutableStateFlow != null){
             val newValue2 = taskMutableStateFlow.value.copy(
                 stateInfos = taskMutableStateFlow.value.stateInfos.toMutableSet().apply {
                     add(taskStateInfoDto)
                 }
             )
-            viewModelScope.launch {
-                taskMutableStateFlow.emit(newValue2) // emit the modified copy
-            }
+            println(newValue2.taskUid)
+            taskMutableStateFlow.value = newValue2 //TODO check why don't use emit here
         }
     }
 

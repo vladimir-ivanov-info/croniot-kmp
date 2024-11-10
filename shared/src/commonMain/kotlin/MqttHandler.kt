@@ -14,6 +14,8 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
         mqttClient.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable?) {
                 println("Connection lost: " + topic + " ${cause?.message}")
+                println("Reconnecting...")
+                mqttClient.connect(options)
             }
 
             override fun messageArrived(topic: String?, message: MqttMessage?) {

@@ -5,6 +5,9 @@ import croniot.models.TaskStateInfo
 import croniot.models.Result
 import com.croniot.server.db.controllers.ControllerDb
 import croniot.messages.MessageAddTask
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import kotlin.random.Random
 
@@ -12,7 +15,7 @@ object AddTaskController {
 
     fun addTask(messageAddTask: MessageAddTask) : Result {
         val deviceUuid = messageAddTask.deviceUuid
-        val taskTypeUid = messageAddTask.taskUid
+        val taskTypeUid = messageAddTask.taskTypeUid
         val parametersValues = messageAddTask.parametersValues
 
         val device = ControllerDb.deviceDao.getLazy(deviceUuid) //2482 ms -> 1089 ms without logback -> 32 ms with val query = sess.createQuery(cr).uniqueResultOptional()
@@ -44,8 +47,10 @@ object AddTaskController {
 
                 ControllerDb.taskStateInfoDao.insert(taskStateInfo) //4-6 ms
 
-                MqttController.sendNewTask(deviceUuid, task, taskStateInfo);
-                MqttController.sendTaskToDevice(deviceUuid, task) //468-620 ms  ->  99-616 ms
+                CoroutineScope(Dispatchers.IO).launch {
+                    MqttController.sendNewTask(deviceUuid, task, taskStateInfo)
+                    MqttController.sendTaskToDevice(deviceUuid, task) //468-620 ms  ->  99-616 ms
+                }
             }
         }
 

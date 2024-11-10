@@ -1,5 +1,6 @@
 package com.croniot.android.presentation.device
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,17 +37,29 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.croniot.android.Global
+import com.croniot.android.GlobalViewModel
+import com.croniot.android.UiConstants
 import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import com.croniot.android.presentation.device.sensors.SensorsScreen
 import com.croniot.android.ui.TaskItem
 import com.croniot.android.presentation.device.tasks.TasksScreen
+import com.croniot.android.presentation.login.LoginController
 import com.croniot.android.ui.task.ViewModelTasks
+import croniot.models.dto.TaskDto
+import croniot.models.dto.TaskTypeDto
 import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeviceScreen(navController: NavController, modifier: Modifier, viewModelSensors: ViewModelSensors, viewModelTasks: ViewModelTasks) {
+fun DeviceScreen(navController: NavController, modifier: Modifier, viewModelSensors: ViewModelSensors, viewModelTasks: ViewModelTasks, globalViewModel: GlobalViewModel) {
+
+    BackHandler {
+        if(!navController.popBackStack()){
+            navController.navigate(UiConstants.ROUTE_DEVICES)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
@@ -57,7 +70,10 @@ fun DeviceScreen(navController: NavController, modifier: Modifier, viewModelSens
                         IconButton(
                             modifier = modifier.padding(end = 8.dp),
                             onClick = {
-                                navController.popBackStack()
+                                val result = navController.popBackStack()
+                                if(!result){
+                                    navController.navigate(UiConstants.ROUTE_DEVICES)
+                                }
                             }
                         ) {
                             Icon(
@@ -67,7 +83,15 @@ fun DeviceScreen(navController: NavController, modifier: Modifier, viewModelSens
                         }
 
                         Box(contentAlignment = Alignment.CenterStart) {
-                            Text(text = Global.selectedDevice.name)
+
+                            val selectedDevice = Global.selectedDevice
+
+                            if(selectedDevice != null){
+                                Text(text = selectedDevice.name)
+                            } else {
+                                //LOGOUT
+                                LoginController.forceLogOut(navController)
+                            }
                         }
 
                     }
@@ -112,7 +136,7 @@ fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValue
             }
         }
         when (selectedTabIndex) {
-            0 -> SensorsScreen(viewModelSensors)
+            0 -> SensorsScreen(navController, viewModelSensors)
             1 -> TaskTypesScreen(navController)
             2 -> TasksScreen(navController, viewModelTasks)
         }
@@ -122,7 +146,14 @@ fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValue
 @Composable
 fun TaskTypesScreen(navController: NavController){
     val selectedDevice = Global.selectedDevice
-    val tasks = selectedDevice.tasks.toList()
+
+    var tasks = emptyList<TaskTypeDto>()
+
+    if(selectedDevice != null){
+        tasks = selectedDevice.tasks.toList()
+    }
+
+
 
     Box(modifier = Modifier
         .fillMaxSize()){

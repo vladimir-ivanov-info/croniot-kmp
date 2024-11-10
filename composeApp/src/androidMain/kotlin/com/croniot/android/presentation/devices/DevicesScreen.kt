@@ -29,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,16 +38,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.Global
+import com.croniot.android.GlobalViewModel
+import com.croniot.android.SharedPreferences
 import com.croniot.android.UiConstants
 import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import com.croniot.android.presentation.login.LoginController
 import com.croniot.android.ui.UtilUi
 import com.croniot.android.ui.util.GenericAlertDialog
 import croniot.models.dto.DeviceDto
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DevicesScreen(navController: NavController, modifier: Modifier, devicesViewModel: DevicesViewModel, viewModelSensors: ViewModelSensors) {
+fun DevicesScreen(navController: NavController, modifier: Modifier, devicesViewModel: DevicesViewModel, viewModelSensors: ViewModelSensors, globalViewModel: GlobalViewModel) {
 
     var showLogoutDialog by remember { mutableStateOf(false) }
 
@@ -54,8 +59,15 @@ fun DevicesScreen(navController: NavController, modifier: Modifier, devicesViewM
         showLogoutDialog = true
     }
 
+    val account by globalViewModel.account.collectAsState()
+    LaunchedEffect(account) {
+        devicesViewModel.listenToDevicesIfNeeded()
+        viewModelSensors.listenToClientSensorsIfNeeded()
+    } //TODO
+
     LaunchedEffect(Unit) {
-        viewModelSensors.listenToClientSensorsIfNeeded(Global.account.devices.toList())
+        devicesViewModel.startTimer()
+        viewModelSensors.listenToClientSensorsIfNeeded()
     }
 
     var expanded by remember { mutableStateOf(false) }
@@ -167,6 +179,9 @@ fun DevicesList(navController: NavController, items: List<DeviceDto>, modifier: 
 
 @Composable
 fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceDto) {
+
+    val coroutineScope = rememberCoroutineScope()
+
     val currentTime = remember { System.currentTimeMillis() }
 
     val isDeviceOnline = remember(device.lastOnlineMillis) {
@@ -186,6 +201,11 @@ fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceD
             .height(100.dp)
             .clickable {
                 Global.selectedDevice = device
+
+                coroutineScope.launch {
+                    SharedPreferences.saveSelectedDevice(device)
+                }
+
                 navController.navigate(UiConstants.ROUTE_DEVICE)
             },
         elevation = CardDefaults.elevatedCardElevation()

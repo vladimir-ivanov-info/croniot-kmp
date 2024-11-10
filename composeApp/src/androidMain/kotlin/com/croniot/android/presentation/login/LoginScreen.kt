@@ -121,7 +121,7 @@ fun Login(navController: NavController, modifier: Modifier){
                 .size(200.dp)
                 .align(Alignment.CenterHorizontally)
                 .clickable { //for testing
-                    sharedPreferencesViewModel.changeServerMode()
+                    navController.navigate(UiConstants.ROUTE_CONFIGURATION)
                 },
                 contentAlignment = Alignment.Center, ){
                 Image(
@@ -150,6 +150,7 @@ fun Login(navController: NavController, modifier: Modifier){
             LoginButton(navController, loginViewModel)
             Spacer(modifier = Modifier.size(16.dp))
             RegisterButton(navController)
+            Spacer(modifier = Modifier.size(16.dp))
         }
     }
 }

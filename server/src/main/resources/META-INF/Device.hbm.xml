@@ -35,7 +35,16 @@
         </set>
 
         <one-to-one name="deviceToken" class="croniot.models.DeviceToken" cascade="all-delete-orphan" property-ref="device"/>
-        <!--                 <column name="id" not-null="true"  /> -->
+        <!--
+
+        <map name="deviceProperties" table="device_properties" cascade="all" lazy="false">
+            <cache usage="read-write" region="device_properties"/>
+            <key column="device_id"/>
+            <index column="property_key" type="string"/>
+            <element column="property_value" type="string"/>
+        </map>
+
+        -->
 
     </class>
 </hibernate-mapping>

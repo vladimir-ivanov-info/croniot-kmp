@@ -1,8 +1,12 @@
 package db.daos
 
+import croniot.models.Device
 import croniot.models.Task
+import croniot.models.TaskType
 
 interface TaskDao {
+
+    fun create(device: Device, taskType: TaskType) : Task
 
     fun insert(task: Task) : Long
 

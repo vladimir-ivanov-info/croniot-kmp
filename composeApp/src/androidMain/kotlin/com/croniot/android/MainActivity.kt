@@ -1,30 +1,38 @@
 package com.croniot.android
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
-import com.croniot.android.di.DependencyInjectionModule
+import androidx.core.content.ContextCompat
 import com.croniot.android.presentation.device.taskTypes.TaskTypeScreen
 import com.croniot.android.presentation.device.DeviceScreen
 import com.croniot.android.presentation.login.LoginScreen
 import com.croniot.android.presentation.registerAccount.ScreenRegisterAccount
 import com.croniot.android.ui.theme.IoTClientTheme
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.croniot.android.domain.util.StringUtil
+import com.croniot.android.presentation.configuration.ConfigurationScreen
 import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import com.croniot.android.presentation.devices.DevicesScreen
 import com.croniot.android.presentation.devices.DevicesViewModel
-import com.croniot.android.presentation.login.LoginViewModel
 import com.croniot.android.ui.task.ViewModelTasks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,29 +41,65 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.context.GlobalContext
 import org.maplibre.android.MapLibre
 
 import java.net.InetAddress
 import java.net.URI
+import android.Manifest
+import androidx.core.app.ActivityCompat
 
 class MainActivity : ComponentActivity() {
+
+    private val REQUEST_NOTIFICATION_PERMISSION = 1;
+
+    val context: Context by inject()
+
+
+    var activityState = ""
+
+    private val requestNotificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission is granted; proceed with showing notifications
+        } else {
+            // Permission is denied; handle accordingly
+        }
+    }
+
+    private fun askNotificationPermission() {
+        // Check if the permission is already granted
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_NOTIFICATION_PERMISSION
+                )
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        askNotificationPermission(); //TODO move to Configuration
+
+
+        val selectedDevice = SharedPreferences.getSelectedDevice()
+        if(selectedDevice != null){
+            Global.selectedDevice = selectedDevice
+        }
 
         //MapLibre.getInstance(this, null, WellKnownTileServer.MapLibre)
         // MapLibre.getInstance(this, null)
         MapLibre.getInstance(this) //TODO see if we can move this to the corresponding composable
-
-        if (GlobalContext.getOrNull() == null) {
-            startKoin {
-                androidLogger()
-                androidContext(this@MainActivity)
-                modules(DependencyInjectionModule.dependencyInjectionModule)
-            }
-        }
 
         setContent {
             IoTClientTheme {
@@ -63,6 +107,17 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        // Retrieve and set selected device if available
+        val selectedDevice = SharedPreferences.getSelectedDevice()
+        if (selectedDevice != null) {
+            Global.selectedDevice = selectedDevice
+        }
+    }
+
 }
 
 fun generateDeviceUuidIfNotExists(){
@@ -75,12 +130,17 @@ fun generateDeviceUuidIfNotExists(){
 
 fun resolveServerAddressIfNotExists(){
     val serverAddress = SharedPreferences.loadData(SharedPreferences.KEY_SERVER_ADDRESS)
-    //val serverAddress = null
     if(serverAddress == null){
         resolveAndFollowRedirects("vladimiriot.com") //TODO make constant in Global. Catch error if can't be resolved
     } else {
         Global.SERVER_ADDRESS_REMOTE = serverAddress
         Global.mqttBrokerUrl = "tcp://${Global.SERVER_ADDRESS_REMOTE}:1883"
+    }
+}
+
+private fun saveCurrentScreenAsync(currentScreen: String) {
+    CoroutineScope(Dispatchers.IO).launch {
+        SharedPreferences.saveData(SharedPreferences.KEY_CURRENT_SCREEN, currentScreen)
     }
 }
 
@@ -91,13 +151,26 @@ fun CurrentScreen(){
         resolveServerAddressIfNotExists()
     }
 
+    val globalViewModel: GlobalViewModel = koinViewModel()
+
     val viewModelSensors: ViewModelSensors = koinViewModel()
     val devicesViewModel: DevicesViewModel = koinViewModel()
     val viewModelTasks: ViewModelTasks = koinViewModel()
 
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = UiConstants.ROUTE_LOGIN,
-    // NavHost(navController = navController, startDestination = "MAPS",
+
+    LaunchedEffect(navController) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            destination.route?.let { route ->
+                saveCurrentScreenAsync(route)
+            }
+        }
+    }
+
+    NavHost(
+        navController = navController,
+
+        startDestination = SharedPreferences.loadData(SharedPreferences.KEY_CURRENT_SCREEN) ?: UiConstants.ROUTE_LOGIN,
 
         enterTransition = {
             // you can change whatever you want transition
@@ -109,15 +182,15 @@ fun CurrentScreen(){
         }
 
     ) {
-
-
          //composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
         composable("MAPS"){ MapScreen() }
         composable(UiConstants.ROUTE_REGISTER_ACCOUNT) { ScreenRegisterAccount(navController) }
 
         composable(UiConstants.ROUTE_LOGIN) { LoginScreen(navController) }
-        composable(UiConstants.ROUTE_DEVICE) { DeviceScreen(navController, Modifier, viewModelSensors, viewModelTasks) }
-        composable(UiConstants.ROUTE_DEVICES) { DevicesScreen(navController, Modifier, devicesViewModel, viewModelSensors) }
+        composable(UiConstants.ROUTE_CONFIGURATION) { ConfigurationScreen(navController) }
+
+        composable(UiConstants.ROUTE_DEVICE) { DeviceScreen(navController, Modifier, viewModelSensors, viewModelTasks, globalViewModel) }
+        composable(UiConstants.ROUTE_DEVICES) { DevicesScreen(navController, Modifier, devicesViewModel, viewModelSensors, globalViewModel) }
         composable(UiConstants.ROUTE_TASK) { TaskTypeScreen(navController) }
     }
 }

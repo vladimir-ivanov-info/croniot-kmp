@@ -1,5 +1,6 @@
 package com.croniot.android.presentation.device.taskTypes
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,15 +34,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.croniot.android.Global
+import com.croniot.android.UiConstants
+import com.croniot.android.ui.task.ViewModelTasks
 import com.croniot.android.ui.util.GenericDialog
 import croniot.models.Result
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.roundToInt
@@ -49,7 +55,25 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskTypeScreen(navController: NavController) {
+
+    LaunchedEffect(Unit) {
+        if(Global.selectedTaskType == null){
+            if(!navController.popBackStack()){
+                navController.navigate(UiConstants.ROUTE_DEVICE)
+            }
+        } else {
+            println()
+        }
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
+
+    BackHandler {
+        if(!navController.popBackStack()){
+            navController.navigate(UiConstants.ROUTE_DEVICE)
+        }
+    }
+
 
     Scaffold(
         snackbarHost = {
@@ -66,6 +90,9 @@ fun TaskTypeScreen(navController: NavController) {
                             modifier = Modifier.padding(end = 8.dp),
                             onClick = {
                                 navController.popBackStack()
+                                if(!navController.popBackStack()){
+                                    navController.navigate(UiConstants.ROUTE_DEVICE)
+                                }
                             }
                         ) {
                             Icon(
@@ -75,9 +102,12 @@ fun TaskTypeScreen(navController: NavController) {
                             )
                         }
 
-                        Box(contentAlignment = Alignment.CenterStart) {
-                            Text(text = com.croniot.android.Global.selectedTaskType.name)
+                        if(Global.selectedTaskType != null){
+                            Box(contentAlignment = Alignment.CenterStart) {
+                                Text(text = Global.selectedTaskType!!.name)
+                            }
                         }
+
 
                     }
                 },
@@ -109,7 +139,7 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
     var showDialog by remember{ mutableStateOf(false) }
     var postNewTaskResult  by remember{ mutableStateOf(Result(false, "")) }
 
-    val viewModelTask: ViewModelTaskTypes = viewModel()
+    val viewModelTaskTypes: ViewModelTaskTypes = viewModel()
 
     Column(
         modifier = Modifier
@@ -117,7 +147,6 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
             .padding(horizontal = 16.dp)
     ){
         Box(
-
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterStart,
 
@@ -128,19 +157,31 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
             )
         }
         Spacer(modifier = Modifier.padding(8.dp))
+
+
+
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
-            items(viewModelTask.parametersValues.size) { index ->
+            items(viewModelTaskTypes.parametersValues.size) { index ->
 
-                val currentParameter = viewModelTask.parametersValues.toList()[index].first
+                val viewModelTasks : ViewModelTasks = koinViewModel() //TODO see why putting this before LazyColumn results in nullpointer
+                val tasks by viewModelTasks.tasks.collectAsState()
+
+                val currentParameter = viewModelTaskTypes.parametersValues.toList()[index].first
+                val taskDtoFlow = tasks
+                    .filter { it.value.taskUid == Global.selectedTaskType!!.uid }
+                    .maxByOrNull { it.value.getLastState().dateTime }
+                    ?.collectAsState()
+
+                val taskDto = taskDtoFlow?.value
 
                 if(currentParameter.type == "number"){
 
                     val minValue = currentParameter.constraints["minValue"]
                     val maxValue = currentParameter.constraints["maxValue"]
 
-                    val sliderValue = viewModelTask.parametersValues.toList()[index].second.collectAsState()
+                    val sliderValue = viewModelTaskTypes.parametersValues.toList()[index].second.collectAsState()
                     var sliderValueStr = sliderValue.value
 
                     Row(
@@ -151,19 +192,13 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                     ) {
                         val steps = maxValue!!.toInt()
 
-                        /*if(sliderValueStr == ViewModelTaskTypes.PARAMETER_VALUE_UNDEFINED){
-                            //sliderValueStr = (maxValue.toDouble()/2).toString()
-                            val midValue = (maxValue.toDouble()/2).toString()
-                            viewModelTask.updateParameter(currentParameter.uid, midValue)
-                        }*/
-
                         sliderValueStr = BigDecimal(sliderValueStr.toDouble()).setScale(1, RoundingMode.HALF_UP).toString()
 
                         LabeledSlider(
                             parameter = currentParameter,
                             value = sliderValueStr.toFloat(),
                             onValueChange = {
-                                viewModelTask.updateParameter(currentParameter.uid, it.toString())
+                                viewModelTaskTypes.updateParameter(currentParameter.uid, it.toString())
                             },
                             valueRange = minValue!!.toFloat()..maxValue!!.toFloat(),
                             steps = steps,
@@ -176,19 +211,25 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                         )
                     }
                 } else if(currentParameter.type == "time"){
-                    TimePicker(currentParameter, viewModelTask)
+                    TimePicker(currentParameter, viewModelTaskTypes)
+                } else if(currentParameter.type == "stateful"){
+                    StatefulParameter(currentParameter, taskDto!!, viewModelTaskTypes)
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Button(
-                onClick = {
+        //TODO instead of checking first element, check if all elements are stateful or if task is immediate
+        if(viewModelTaskTypes.parametersValues.toList().size == 1 && viewModelTaskTypes.parametersValues.toList()[0].first.type == "stateful"){
+            //Stateful parameters don't need the Add task button to be clicked, they run on click
+        } else {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = {
                         //TODO add confirmation dialog
                         //TODO go back?
                         coroutineScope.launch {
-                            postNewTaskResult = viewModelTask.sendTask()
+                            postNewTaskResult = viewModelTaskTypes.sendTask()
                             if(postNewTaskResult.success){
                                 snackbarHostState.showSnackbar(
                                     message = "Task created successfully.",
@@ -197,26 +238,28 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                                 )
                             }
                         }
-                },
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                Text(text = "Add task")
+                    },
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(text = "Add task")
+                }
+            }
+            if(showDialog){
+                GenericDialog(
+                    title = "New task",
+                    text = postNewTaskResult.message,
+                    button1Text = "Accept",
+                    onButton1Clicked = { showDialog = false},
+                    button2Text = "Go to Tasks",
+                    onButton2Clicked = {
+                        //TODO not active for now viewModelDeviceScreen.updateCurrentTab(2) //TODO make enum
+                    }) {}
             }
         }
-        if(showDialog){
-            GenericDialog(
-                title = "New task",
-                text = postNewTaskResult.message,
-                button1Text = "Accept",
-                onButton1Clicked = { showDialog = false},
-                button2Text = "Go to Tasks",
-                onButton2Clicked = {
-                    //TODO not active for now viewModelDeviceScreen.updateCurrentTab(2) //TODO make enum
-                }) {}
-        }
+
     }
 }
 

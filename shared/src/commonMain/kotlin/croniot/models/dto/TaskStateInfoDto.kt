@@ -1,6 +1,5 @@
 package croniot.models.dto
 
-import croniot.models.TaskState
 import java.time.ZonedDateTime
 
 data class TaskStateInfoDto(
@@ -8,7 +7,7 @@ data class TaskStateInfoDto(
     var taskTypeUid: Long,
     var taskUid: Long,
     var dateTime: ZonedDateTime,
-    var state: TaskState,
+    var state: String,
     var progress: Double,
     var errorMessage: String,
 )

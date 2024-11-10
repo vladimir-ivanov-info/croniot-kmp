@@ -2,12 +2,14 @@ package com.croniot.android.presentation.devices
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.croniot.android.GlobalViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import croniot.models.dto.DeviceDto
 import kotlinx.coroutines.delay
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 class DevicesViewModel : ViewModel(), KoinComponent {
 
@@ -16,22 +18,27 @@ class DevicesViewModel : ViewModel(), KoinComponent {
 
     private val _lastOnlineUpdates = mutableMapOf<String, Long>()
 
-    init {
-        startTimer()
-    }
+    private val globalViewModel: GlobalViewModel = get()
+
 
     fun uninit(){
         _devices.value = emptyList()
     }
 
-
-
-    private fun startTimer() {
+    fun startTimer() {
         viewModelScope.launch {
             while (true) {
                 delay(1000L) // 1 second delay
                 emitTimerTick()
             }
+        }
+    }
+
+    fun listenToDevicesIfNeeded(){
+
+        val account = globalViewModel.account.value
+        if(account != null){
+            updateDevices(account.devices.filter{ it.name.isNotEmpty() }.toList()) //TODO for now we leave this filter
         }
     }
 

@@ -20,6 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.compose.koinViewModel
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -98,7 +99,8 @@ class AccountRegisterTest {
     fun testMyComposeUI() {
         composeTestRule.setContent {
             IoTClientTheme {
-                CurrentScreen()  // Ensure this is correctly set up
+                //val viewModel: NavigationViewModel = koinViewModel()
+                //CurrentScreen(viewModel)  // Ensure this is correctly set up
             }
         }
 

@@ -28,28 +28,13 @@ fun Application.module(testing: Boolean = false) {
 
 
 fun main() {
-/*
-var numeroleidotexto=readln()
-   var numeroleido=numeroleidotexto.toDouble()
-    var resultado=467.0/numeroleido
-    println("el resultado es: $resultado")
-    val formatted = String.format("%.3f", resultado)
-    println(formatted)  // Output: 123.456789
-
-    var archivo= File("/home/vladimir/archivo.txt" )
-archivo.writeText(formatted)
-    //archivo.
-*/
-
-
-
-
     Runtime.getRuntime().addShutdownHook(Thread {
         println("Gracefully shutting down...")
     })
 
     try{
         ControllerDb.initialize()
+        MqttController
 
         embeddedServer(
             Netty,

@@ -6,5 +6,7 @@ data class TaskTypeDto(
     var name: String,
     var description: String,
     var parameters: MutableSet<ParameterTaskDto>,
-    var realTime: Boolean
+    var realTime: Boolean,
+    //var continuous: Boolean
+    //var stateful: Boolean
 )
