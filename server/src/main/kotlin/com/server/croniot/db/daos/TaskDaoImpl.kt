@@ -4,8 +4,36 @@ import croniot.models.*
 import com.croniot.server.db.controllers.ControllerDb
 import jakarta.persistence.Tuple
 import jakarta.persistence.criteria.*
+import java.time.ZonedDateTime
+import kotlin.random.Random
 
 class TaskDaoImpl: TaskDao {
+
+    override fun create(device: Device, taskType: TaskType): Task {
+
+        val taskUid = Random.nextLong(1, 10001)
+        val task = Task(
+            uid = taskUid,
+            parametersValues = mutableMapOf(),
+            taskType = taskType,
+            stateInfos = mutableSetOf()
+        )
+
+        val session = ControllerDb.sessionFactory.openSession()
+        val transaction = session.beginTransaction()
+        try {
+            session.persist(task)
+            session.flush()
+            transaction.commit()
+        } catch (e: Exception) {
+            transaction.rollback()
+            throw e
+        } finally {
+            //session.close()
+        }
+
+        return task
+    }
 
     override fun insert(task: Task): Long {
         val session = ControllerDb.sessionFactory.openSession()

@@ -79,7 +79,7 @@ fun GenericAlertDialog(title: String, content: String, onResult: (result: Boolea
         properties = DialogProperties()
     )
 }
-
+/*
 @Composable
 fun FixedSizeScrollableDialog(taskToShow: TaskDto, onDismissRequest: () -> Unit) {
 
@@ -174,7 +174,7 @@ fun FixedSizeScrollableDialog(taskToShow: TaskDto, onDismissRequest: () -> Unit)
         }
         }
     }
-}
+}*/
 
 @Composable
 fun GenericDialog(title: String, text: String, button1Text: String?, onButton1Clicked: () -> Unit, button2Text: String, onButton2Clicked: () -> Unit, onDismiss: () -> Unit) {

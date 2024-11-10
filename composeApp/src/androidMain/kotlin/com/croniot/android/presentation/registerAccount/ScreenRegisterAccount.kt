@@ -1,5 +1,6 @@
 package com.croniot.android.presentation.registerAccount
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.croniot.android.UiConstants
+import com.croniot.android.presentation.login.LoginController
 import com.croniot.android.ui.util.GenericAlertDialog
 import com.croniot.android.ui.util.StatefulTextField
 import kotlinx.coroutines.CoroutineScope
@@ -46,6 +48,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ScreenRegisterAccount(navController: NavController) {
 
+    BackHandler {
+        if(!navController.popBackStack()){
+            navController.navigate(UiConstants.ROUTE_LOGIN)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
@@ -55,7 +63,9 @@ fun ScreenRegisterAccount(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically) {
                         IconButton(
                             onClick = {
-                                navController.popBackStack()
+                                if(!navController.popBackStack()){
+                                    navController.navigate(UiConstants.ROUTE_LOGIN)
+                                }
                             }
                         ) {
                             Icon(
@@ -137,8 +147,14 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
             }
         }
         if(showDialog){
-            GenericAlertDialog(dialogTitle, dialogContent){
-                showDialog = it
+            GenericAlertDialog(title = "Log Out", content = "Are you sure you want to log out?"){
+                val result = it
+                if(result){
+                    if(navController.popBackStack()){
+                        navController.navigate(UiConstants.ROUTE_LOGIN)
+                    }
+                }
+                showDialog = false
             }
         }
     }

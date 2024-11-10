@@ -24,17 +24,21 @@ class ViewModelTaskTypes : ViewModel() {
 
     //TODO delegate this to another class, there will be more parameter types in the future
     init{
-        for(parameter in Global.selectedTaskType.parameters){
+        val selectedTaskType = Global.selectedTaskType
+        if(selectedTaskType != null){
+            for(parameter in selectedTaskType.parameters){
 
-            if(parameter.type == "number"){
-                val minValue = parameter.constraints["minValue"]
-                val maxValue = parameter.constraints["maxValue"]
-                val midValue = ((maxValue!!.toDouble() - minValue!!.toDouble())/2).toString()
-                _parametersValues.put(parameter, MutableStateFlow(midValue))
-            } else {
-                _parametersValues.put(parameter, MutableStateFlow(PARAMETER_VALUE_UNDEFINED))
+                if(parameter.type == "number"){
+                    val minValue = parameter.constraints["minValue"]
+                    val maxValue = parameter.constraints["maxValue"]
+                    val midValue = ((maxValue!!.toDouble() - minValue!!.toDouble())/2).toString()
+                    _parametersValues.put(parameter, MutableStateFlow(midValue))
+                } else {
+                    _parametersValues.put(parameter, MutableStateFlow(PARAMETER_VALUE_UNDEFINED))
+                }
             }
         }
+
     }
 
     fun uninit(){
@@ -55,24 +59,33 @@ class ViewModelTaskTypes : ViewModel() {
     suspend fun sendTask() : Result {
 
         return withContext(Dispatchers.IO){
-            var result: Result
 
-            val deviceUuid = Global.selectedDevice.uuid
-            val taskUid = Global.selectedTaskType.uid
+            val selectedDevice = Global.selectedDevice
 
-            val parametersValues = mutableMapOf<Long, String>()
+            if(selectedDevice != null){
+                var result: Result
 
-            _parametersValues.forEach { (parameter, flow) ->
-                parametersValues[parameter.uid] = flow.value
+                val deviceUuid = selectedDevice.uuid
+                val taskUid = Global.selectedTaskType!!.uid
+
+                val parametersValues = mutableMapOf<Long, String>()
+
+                _parametersValues.forEach { (parameter, flow) ->
+                    parametersValues[parameter.uid] = flow.value
+                }
+                val messageAddTask = MessageAddTask(deviceUuid, taskUid.toString(), parametersValues)
+
+                val gson = GsonBuilder().setPrettyPrinting().create()
+
+                val message = gson.toJson(messageAddTask)
+
+                result = Global.performPostRequestToEndpoint("/api/add_task", message)
+                result
+            } else {
+                Result(false, "Selected Device is null")
             }
-            val messageAddTask = MessageAddTask(deviceUuid, taskUid.toString(), parametersValues)
 
-            val gson = GsonBuilder().setPrettyPrinting().create()
 
-            val message = gson.toJson(messageAddTask)
-
-            result = Global.performPostRequestToEndpoint("/api/add_task", message)
-            result
         }
     }
 }

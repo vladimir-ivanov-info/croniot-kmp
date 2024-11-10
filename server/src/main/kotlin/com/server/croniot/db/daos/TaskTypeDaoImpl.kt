@@ -3,9 +3,7 @@ package com.croniot.server.db.daos
 import croniot.models.Device
 import croniot.models.TaskType
 import com.croniot.server.db.controllers.ControllerDb
-import croniot.models.Account
 import jakarta.persistence.Tuple
-//import javax.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.*
 
 class TaskTypeDaoImpl : TaskTypeDao {
@@ -29,49 +27,15 @@ class TaskTypeDaoImpl : TaskTypeDao {
         return taskId
     }
 
-   /* override fun get(device: Device, taskUid: Long) : TaskType? {
+    override fun get(device: Device, taskTypeUid: Long) : TaskType? {
         val session = ControllerDb.sessionFactory.openSession()
         session.use { sess ->
             val cb = sess.criteriaBuilder
-            val cr = cb.createQuery(TaskType::class.java)
-            val root = cr.from(TaskType::class.java)
-
-            val taskUidPredicate = cb.equal(root.get<TaskType>("uid"), taskUid)
-            //val deviceIdPredicate = cb.equal(root.get<TaskType>("device"), device)
-            val deviceIdPredicate = cb.equal(root.get<TaskType>("device"), device.id)
-            //val deviceIdPredicate = cb.equal(root.get<Any>("device").get<Long>("id"), device.id)
-
-            cr.select(root).where(cb.and(taskUidPredicate, deviceIdPredicate))
-
-            val query = sess.createQuery(cr)
-            //TODO try later query.setCacheable(true)
-            val startMillis = System.currentTimeMillis()
-
-            val result = query.uniqueResultOptional()
-
-            val endMillis = System.currentTimeMillis();
-            val time = endMillis - startMillis;
-            println("$time")
-
-            return result.orElse(null)
-        }
-    }*/
-
-    override fun get(device: Device, taskUid: Long) : TaskType? {
-        val session = ControllerDb.sessionFactory.openSession()
-        session.use { sess ->
-            val cb = sess.criteriaBuilder
-            //val cr = cb.createQuery(TaskType::class.java)
             val cr : CriteriaQuery<TaskType> = cb.createQuery(TaskType::class.java)
-            //val root = cr.from(TaskType::class.java)
             val root: Root<TaskType> = cr.from(TaskType::class.java)
 
-            val taskUidPredicate = cb.equal(root.get<TaskType>("uid"), taskUid)
+            val taskUidPredicate = cb.equal(root.get<TaskType>("uid"), taskTypeUid)
             val deviceIdPredicate = cb.equal(root.get<TaskType>("device"), device)
-            //val deviceIdPredicate = cb.equal(root.get<TaskType>("device"), device.id)
-            //val deviceIdPredicate = cb.equal(root.get<Any>("device").get<Long>("id"), device.id)
-
-            //cr.select(root).where(cb.and(taskUidPredicate, deviceIdPredicate))
 
             val finalPredicate: Predicate = cb.and(taskUidPredicate, deviceIdPredicate)
             cr.select(root).where(finalPredicate).distinct(true) //TODO maybe remove distinct

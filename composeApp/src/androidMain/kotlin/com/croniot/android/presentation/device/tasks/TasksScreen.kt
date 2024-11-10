@@ -148,18 +148,12 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
             elevation = CardDefaults.elevatedCardElevation()
         ) {
 //TODO make this a method in another class
-           /* var taskName = ""
-
-            val selectedDevice = Global.selectedDevice
-            for (taskType in selectedDevice.tasks){
-                if(taskType.uid == taskValue.taskUid){
-                    taskName = taskType.name
-                }
-            }*/
 
             // Retrieve task name
             val taskName = remember(taskValue.taskUid) {
-                Global.selectedDevice.tasks.firstOrNull { it.uid == taskValue.taskUid }?.name.orEmpty()
+
+                Global.selectedDevice?.tasks?.firstOrNull { it.uid == taskValue.taskUid }?.name.orEmpty() //TODO
+
             }
 //TODO_end
             Column(

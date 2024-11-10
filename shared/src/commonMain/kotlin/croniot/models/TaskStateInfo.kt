@@ -8,7 +8,7 @@ data class TaskStateInfo(
     var id: Long = 0,
 
     var dateTime: ZonedDateTime,
-    var state: TaskState,
+    var state: String,
     var progress: Double,
     var errorMessage: String,
     @Transient
@@ -16,7 +16,7 @@ data class TaskStateInfo(
 ) {
 
     constructor(): this(0, ZonedDateTime.now(), TaskState.UNDEFINED, 0.0, "", Task())
-    constructor(dateTime: ZonedDateTime, state: TaskState, progress: Double, errorMessage: String, task: Task): this(0, dateTime, state, progress, errorMessage, task)
+    constructor(dateTime: ZonedDateTime, state: String, progress: Double, errorMessage: String, task: Task): this(0, dateTime, state, progress, errorMessage, task)
 
     override fun hashCode(): Int {
         return Objects.hash(id) //TODO or hash other relevant properties

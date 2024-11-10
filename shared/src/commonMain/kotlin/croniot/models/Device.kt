@@ -11,10 +11,11 @@ data class Device(
     var sensorTypes: MutableSet<SensorType>,
     var taskTypes: MutableSet<TaskType>,
     var account: Account, // Reference to the Account this Device belongs to
-    var deviceToken: DeviceToken? = null // Ensure this property exists
+    var deviceToken: DeviceToken? = null, // Ensure this property exists
+    //var deviceProperties: MutableMap<String, String> = mutableMapOf()
 
 ) {
-    constructor() : this(0, "", "",  "",/*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null)
+    constructor() : this(0, "", "",  "",/*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null/*, mutableMapOf()*/)
 
     constructor(uuid: String = "",
                 name: String = "",
@@ -22,8 +23,10 @@ data class Device(
                 iot: Boolean = false,
                 sensorTypes: MutableSet<SensorType> = mutableSetOf(),
                 taskTypes: MutableSet<TaskType> = mutableSetOf(),
-                account: Account = Account()
-    ) : this(0, uuid, name, description, iot, sensorTypes, taskTypes, account)
+                account: Account = Account(),
+                //deviceToken: DeviceToken?,
+                //deviceProperties: MutableMap<String, String>
+    ) : this(0, uuid, name, description, iot, sensorTypes, taskTypes, account/*, deviceToken, deviceProperties*/)
 
 
     constructor(id: Long, uuid: String) : this(id, uuid, "", "", false, mutableSetOf(), mutableSetOf(), Account(), null)
@@ -55,5 +58,5 @@ fun Device.toDto() = DeviceDto(
     description = this.description,
     sensors = this.sensorTypes.map { it.toDto() }.toMutableSet(),
     tasks = this.taskTypes.map { it.toDto() }.toMutableSet(),
-    lastOnlineMillis = 0 //TODO implement a column in database. Another column for seconds after which the device should be considered offline.
+    lastOnlineMillis = 0, //TODO implement a column in database. Another column for seconds after which the device should be considered offline.
 )

@@ -5,6 +5,7 @@ object UiConstants {
     val ROUTE_MAPS = "maps"
     val ROUTE_REGISTER_ACCOUNT = "register_account"
     val ROUTE_LOGIN = "login"
+    val ROUTE_CONFIGURATION = "configuration"
     val ROUTE_DEVICE = "device"
     val ROUTE_DEVICES = "devices"
     val ROUTE_TASK = "task"

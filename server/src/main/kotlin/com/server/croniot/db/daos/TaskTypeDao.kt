@@ -7,7 +7,7 @@ interface TaskTypeDao {
 
     fun insert(task: TaskType) : Long
 
-    fun get(device: Device, taskUid: Long) : TaskType?
+    fun get(device: Device, taskTypeUid: Long) : TaskType?
     fun getLazy(device: Device, taskUid: Long) : TaskType?
 
     fun exists(device: Device, taskUid: Long) : Boolean
