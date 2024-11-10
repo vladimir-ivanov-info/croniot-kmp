@@ -85,10 +85,19 @@ The 3rd tab "Tasks" shows the history of the tasks and the state in which they a
 <img src="https://github.com/user-attachments/assets/ea69cf7f-9a79-46cc-9316-1b1cd8b978cb" alt="Account registered successfully" width="270" height="600">
 <img src="https://github.com/user-attachments/assets/68d51fd7-8251-4c8e-b3a4-5b4c144a2f9c" alt="Devices screen" width="270" height="600">
 <img src="https://github.com/user-attachments/assets/01653b76-c344-498c-9291-4cda0fed03d8" alt="Sensors screen" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/f3877bf9-68f2-445e-afaa-47e91931299f" alt="Task types screen" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/6be13237-8a6f-4b20-8095-66020f803eb9" alt="Tasks' history" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/060bbd87-cb39-4a74-a133-42349bfc619a" alt="Tasks' history" width="270" height="600">
+
+
+
+<img src="https://github.com/user-attachments/assets/64010582-73c5-4911-84ec-f284d4c5251f" alt="Tasks' history" width="270" height="600">
+
+<img src="https://github.com/user-attachments/assets/d3af0540-8f41-430c-bba6-07a03a7f9f7d" alt="Tasks' history" width="270" height="600">
+
+<img src="https://github.com/user-attachments/assets/ccb5e7b1-d831-42dc-91e1-93ed50b5dd0c" alt="Tasks' history" width="270" height="600">
+
 <img src="https://github.com/user-attachments/assets/f395cf9b-ccf4-433f-8e5d-610cf1cbc0dc" alt="Tasks' history" width="270" height="600">
+
+
+
 
 
 ### IoT
