@@ -9,6 +9,9 @@ class MqttDataProcessorTaskProgress(val deviceUuid: String) : MqttDataProcessor 
 
     override fun process(data: Any) {
         val data = data as String
+        //println("Millis 3: ${System.currentTimeMillis()}")
+       // Global.startMillis = System.currentTimeMillis()
+
         val taskProgressUpdate = MessageFactory.fromJson<TaskProgressUpdate>(data)
         println(data)
         TaskController.addTaskProgress(deviceUuid, taskProgressUpdate)

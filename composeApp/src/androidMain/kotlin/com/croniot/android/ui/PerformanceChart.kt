@@ -13,7 +13,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import croniot.models.dto.SensorDto
+import croniot.models.dto.SensorTypeDto
 import kotlin.random.Random
 
 private fun getValuePercentageForRange(value: Float, max: Float, min: Float) =
@@ -29,7 +29,7 @@ fun getRandomEntries2() : List<Float> {
 
 @Composable
 //fun PerformanceChart(modifier: Modifier = Modifier, list: List<Float> = listOf(10f, 20f, 3f, 1f)) {
-fun PerformanceChart(sensorInfo: SensorDto, modifier: Modifier, list: List<Float>) {
+fun PerformanceChart(sensorInfo: SensorTypeDto, modifier: Modifier, list: List<Float>) {
 
     if(list.isEmpty()) return
 

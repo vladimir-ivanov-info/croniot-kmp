@@ -6,26 +6,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.Global
 import com.croniot.android.GlobalViewModel
-import com.croniot.android.data.MqttProcessorSensorData
-import com.croniot.android.presentation.login.LoginController
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import croniot.models.SensorData
-import croniot.models.dto.DeviceDto
-import croniot.models.dto.SensorDto
+import croniot.models.dto.SensorDataDto
+import croniot.models.dto.SensorTypeDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import java.time.ZonedDateTime
 
 class ViewModelSensors() : ViewModel(), KoinComponent {
 
     private var _listeningToClientSensors = false
 
-    private val _mapStateFlow = MutableStateFlow<Map<SensorDto, MutableStateFlow<SensorData>>>(emptyMap())
-    val mapStateFlow: StateFlow<Map<SensorDto, MutableStateFlow<SensorData>>> = _mapStateFlow
+    private val _mapStateFlow = MutableStateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>>(emptyMap())
+    val mapStateFlow: StateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>> = _mapStateFlow
 
     private var _gps : MutableStateFlow<String> = MutableStateFlow("")
     val gps : MutableStateFlow<String> get() = _gps
@@ -59,9 +57,8 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
         }
     }
 
-    fun listenToClientSensorsIfNeeded(/*devices: List<DeviceDto>*/){
+    fun listenToClientSensorsIfNeeded(){
 
-        // Global.account.devices.toList()
         val account = globalViewModel.account.value
         if(account != null){
 
@@ -72,22 +69,21 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
                     _listeningToClientSensors = true
 
                     for(device in devices){
-                        val clientUuid = device.uuid
+                        val deviceUuid = device.uuid
 
                         for(sensor in device.sensors){
-                            val topic = "/${device.uuid}/sensor_data/${sensor.uid}"
+                            val topic = "/server_to_app/${device.uuid}/sensor_data/${sensor.uid}"
                             val mqttClient = MqttClient(
                                 Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
                                     8
                                 ), null) //TODO (Ver luego) sin null da: org.eclipse.paho.client.mqttv3.MqttPersistenceException
 
-                            MqttHandler(mqttClient, MqttProcessorSensorData(clientUuid, sensor.uid.toString()), topic)
+                            MqttHandler(mqttClient, MqttProcessorSensorData(deviceUuid, sensor.uid.toString()), topic)
 
                             mqttClients.add(mqttClient)
 
-                            val value = SensorData(clientUuid, sensor.uid.toString(), "empty_value", "todo_last_date") //TODO empty_value is a constant
+                            val value = SensorDataDto(deviceUuid, sensor.uid, "empty_value", ZonedDateTime.now()) //TODO empty_value is a constant
 
-                            //_map[sensor] = MutableStateFlow(value)
                             _mapStateFlow.value = _mapStateFlow.value.toMutableMap().apply {
                                 this[sensor] = MutableStateFlow(value)
                             }
@@ -98,8 +94,6 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
         } else {
 
         }
-
-
     }
 
     //TODO experimental
@@ -136,9 +130,9 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
 
             // Iterate over the map and find the matching entry to update
             updatedMap.forEach { (sensor, flow) ->
-                if (flow.value.clientUuid == deviceUuid && flow.value.sensorId == sensorId) {
+                if (flow.value.deviceUuid == deviceUuid && flow.value.sensorTypeUid == sensorId.toLong()) {
                     // Emit new data to the MutableStateFlow for the matching entry
-                    flow.emit(SensorData(deviceUuid, sensorId, newSensorData, "dateTimeTODO"))
+                    flow.emit(SensorDataDto(deviceUuid, sensorId.toLong(), newSensorData, ZonedDateTime.now()))
                 }
             }
 

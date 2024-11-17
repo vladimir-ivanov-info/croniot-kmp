@@ -4,7 +4,7 @@ data class DeviceDto(
     var uuid: String,
     var name: String,
     var description: String,
-    var sensors: MutableSet<SensorDto>,
+    var sensors: MutableSet<SensorTypeDto>,
     var tasks: MutableSet<TaskTypeDto>, //TODO rename to "taskTypes"
     var lastOnlineMillis: Long
 )

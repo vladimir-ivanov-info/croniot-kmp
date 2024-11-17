@@ -18,12 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.croniot.android.ui.PerformanceChart
 import com.croniot.android.ui.UtilUi
-import croniot.models.SensorData
-import croniot.models.dto.SensorDto
+import croniot.models.dto.SensorDataDto
+import croniot.models.dto.SensorTypeDto
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun SensorItem(sensor: SensorDto, sensorDataFlow: MutableStateFlow<SensorData>) {
+fun SensorItem(sensor: SensorTypeDto, sensorDataFlow: MutableStateFlow<SensorDataDto>) {
 
     val sensorDataState = sensorDataFlow.collectAsState()
     val sensorData = sensorDataState.value

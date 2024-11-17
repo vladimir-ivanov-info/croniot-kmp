@@ -16,15 +16,15 @@ import org.koin.dsl.module
 object DependencyInjectionModule {
 
     val dependencyInjectionModule = module {
-        viewModel { ConfigurationViewModel(androidApplication()) } // Provide Application context
+        single { ConfigurationViewModel(androidApplication()) } // Provide Application context
         single { GlobalViewModel() }
         viewModel { ViewModelRegisterAccount() }
         viewModel { LoginViewModel() }
         single { DevicesViewModel() }
         single { ViewModelSensors() }
         single { ViewModelTasks() }
+
         single { DeviceScreenViewModel() }
         single { SharedPreferencesViewModel() }
     }
-
 }

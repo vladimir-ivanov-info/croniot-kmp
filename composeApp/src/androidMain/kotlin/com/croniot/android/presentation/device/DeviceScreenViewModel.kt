@@ -2,6 +2,7 @@ package com.croniot.android.presentation.device
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,7 +14,7 @@ class DeviceScreenViewModel : ViewModel(), KoinComponent {
     val currentTab : StateFlow<Int> get() = _currentTab
 
     fun updateCurrentTab(newTab: Int){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             _currentTab.emit(newTab)
         }
     }
