@@ -3,7 +3,11 @@ import croniot.messages.MessageSensorData
 import croniot.models.MqttDataProcessor
 import org.eclipse.paho.client.mqttv3.*
 
+
 class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, topic: String) {
+
+    //private val scope = CoroutineScope(Dispatchers.IO) // Coroutine scope for handling message processing
+
 
     init {
         val options = MqttConnectOptions()
@@ -22,8 +26,13 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
                 val payload = message?.payload
                 if (payload != null) {
                     val value = String(payload)
-                    println("Received message on topic $topic: $value")
+                    //println("Received message on topic $topic: $value")
                     mqttDataProcessor.process(value) //datawrapper nees to be generic too. Better use map key-value I think
+
+                    //scope.launch {
+                      //  mqttDataProcessor.process(value)
+                   // }
+
                 } else {
                     println("Received message on topic $topic with null payload.")
                 }

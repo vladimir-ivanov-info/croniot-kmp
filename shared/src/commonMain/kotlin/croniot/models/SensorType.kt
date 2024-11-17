@@ -1,10 +1,10 @@
 package croniot.models
 
-import croniot.models.dto.SensorDto
+import croniot.models.dto.SensorTypeDto
 
 data class SensorType(
-    var id: Long = 0,
-    var uid: Long = 0,
+    var id: Long,
+    var uid: Long,
     var name: String,
     var description: String,
     var parameters: MutableSet<ParameterSensor>,
@@ -15,6 +15,8 @@ data class SensorType(
 
     constructor() : this(0, 0,"", "", mutableSetOf(), Device())
     constructor(uid: Long, name: String, description: String, parameters: MutableSet<ParameterSensor>, device: Device) : this(0, uid, name, description, parameters, device)
+
+    constructor(id: Long, uid: Long) : this(id, uid, "", "", mutableSetOf(), Device())
 
     override fun hashCode(): Int {
         var result = id.hashCode()
@@ -39,7 +41,7 @@ data class SensorType(
     }
 }
 
-fun SensorType.toDto() = SensorDto(
+fun SensorType.toDto() = SensorTypeDto(
     uid = this.uid,
     name = this.name,
     description = this.description,

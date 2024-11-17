@@ -1,9 +1,6 @@
 package croniot.models.dto
 
-import croniot.models.Device
-import croniot.models.ParameterSensor
-
-data class SensorDto(
+data class SensorTypeDto(
     var uid: Long,
     var name: String,
     var description: String,

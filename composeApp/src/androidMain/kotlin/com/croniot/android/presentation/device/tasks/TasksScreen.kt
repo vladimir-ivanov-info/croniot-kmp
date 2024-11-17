@@ -1,5 +1,6 @@
 package com.croniot.android.presentation.device.tasks
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,11 +50,14 @@ import croniot.models.TaskState
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
 import kotlinx.coroutines.flow.StateFlow
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TasksScreen(
     navController: NavController,
-    viewModelTasks: ViewModelTasks
+    viewModelTasks : ViewModelTasks = koinViewModel<ViewModelTasks>(
+        viewModelStoreOwner = LocalContext.current as ComponentActivity
+    )
 ) {
     // Collect tasks and sort them only once
     val tasks by viewModelTasks.tasks.collectAsState()

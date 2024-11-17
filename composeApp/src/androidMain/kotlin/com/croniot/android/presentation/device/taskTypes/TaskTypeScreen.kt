@@ -35,7 +35,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,13 +42,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.croniot.android.Global
 import com.croniot.android.UiConstants
-import com.croniot.android.ui.task.ViewModelTasks
 import com.croniot.android.ui.util.GenericDialog
 import croniot.models.Result
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
-import java.math.BigDecimal
-import java.math.RoundingMode
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,8 +56,6 @@ fun TaskTypeScreen(navController: NavController) {
             if(!navController.popBackStack()){
                 navController.navigate(UiConstants.ROUTE_DEVICE)
             }
-        } else {
-            println()
         }
     }
 
@@ -73,7 +66,6 @@ fun TaskTypeScreen(navController: NavController) {
             navController.navigate(UiConstants.ROUTE_DEVICE)
         }
     }
-
 
     Scaffold(
         snackbarHost = {
@@ -141,6 +133,8 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
 
     val viewModelTaskTypes: ViewModelTaskTypes = viewModel()
 
+   // val viewModelTasks : ViewModelTasks = koinViewModel()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -158,63 +152,19 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
         }
         Spacer(modifier = Modifier.padding(8.dp))
 
-
-
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
             items(viewModelTaskTypes.parametersValues.size) { index ->
 
-                val viewModelTasks : ViewModelTasks = koinViewModel() //TODO see why putting this before LazyColumn results in nullpointer
-                val tasks by viewModelTasks.tasks.collectAsState()
-
                 val currentParameter = viewModelTaskTypes.parametersValues.toList()[index].first
-                val taskDtoFlow = tasks
-                    .filter { it.value.taskUid == Global.selectedTaskType!!.uid }
-                    .maxByOrNull { it.value.getLastState().dateTime }
-                    ?.collectAsState()
 
-                val taskDto = taskDtoFlow?.value
-
-                if(currentParameter.type == "number"){
-
-                    val minValue = currentParameter.constraints["minValue"]
-                    val maxValue = currentParameter.constraints["maxValue"]
-
-                    val sliderValue = viewModelTaskTypes.parametersValues.toList()[index].second.collectAsState()
-                    var sliderValueStr = sliderValue.value
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                        ,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        val steps = maxValue!!.toInt()
-
-                        sliderValueStr = BigDecimal(sliderValueStr.toDouble()).setScale(1, RoundingMode.HALF_UP).toString()
-
-                        LabeledSlider(
-                            parameter = currentParameter,
-                            value = sliderValueStr.toFloat(),
-                            onValueChange = {
-                                viewModelTaskTypes.updateParameter(currentParameter.uid, it.toString())
-                            },
-                            valueRange = minValue!!.toFloat()..maxValue!!.toFloat(),
-                            steps = steps,
-                            minValue = minValue!!.toFloat(),
-                            maxValue = maxValue!!.toFloat(),
-                            minValueLabel = minValue,
-                            maxValueLabel = maxValue,
-                            currentValueLabel = "abc",
-                            constraints = currentParameter.constraints
-                        )
-                    }
-                } else if(currentParameter.type == "time"){
-                    TimePicker(currentParameter, viewModelTaskTypes)
-                } else if(currentParameter.type == "stateful"){
-                    StatefulParameter(currentParameter, taskDto!!, viewModelTaskTypes)
+                when(currentParameter.type){
+                    "number" -> CroniotSlider(currentParameter, index, viewModelTaskTypes)
+                    "time" -> TimePicker(currentParameter, viewModelTaskTypes)
+                    "stateful" -> StatefulParameter(currentParameter,viewModelTaskTypes)
                 }
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }

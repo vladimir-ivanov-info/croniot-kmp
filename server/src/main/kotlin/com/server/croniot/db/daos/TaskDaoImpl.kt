@@ -1,11 +1,13 @@
 package db.daos
 
-import croniot.models.*
 import com.croniot.server.db.controllers.ControllerDb
+import croniot.models.*
 import jakarta.persistence.Tuple
 import jakarta.persistence.criteria.*
-import java.time.ZonedDateTime
+import org.hibernate.Session
+import org.hibernate.Transaction
 import kotlin.random.Random
+
 
 class TaskDaoImpl: TaskDao {
 
@@ -36,21 +38,33 @@ class TaskDaoImpl: TaskDao {
     }
 
     override fun insert(task: Task): Long {
-        val session = ControllerDb.sessionFactory.openSession()
-        val transaction = session.beginTransaction()
-        val taskConfigurationId: Long
-        try {
-            session.persist(task)
-            session.flush()
-            taskConfigurationId = task.id
+        var session: Session? = null
+        var transaction: Transaction? = null
+        var taskConfigurationId: Long
 
-            transaction.commit()
-        } catch (e: Exception) {
-            transaction.rollback()
-            throw e
+        try {
+            session =
+                ControllerDb.sessionFactory.openSession() // Open a new session for this thread
+            transaction = session.beginTransaction() // Start a transaction
+
+            session.persist(task) // Persist the task
+            session.flush() // Ensure the task is inserted into the database
+
+            taskConfigurationId = task.id // Get the generated ID
+
+            transaction.commit() // Commit the transaction
+        } catch (e: java.lang.Exception) {
+            println(task.taskType)
+            if (transaction != null) {
+                transaction.rollback() // Rollback on exception
+            }
+            throw e // Rethrow the exception
         } finally {
-            //session.close()
+            if (session != null) {
+                session.close() // Always close the session
+            }
         }
+
         return taskConfigurationId
     }
 
@@ -95,6 +109,7 @@ class TaskDaoImpl: TaskDao {
             cr.multiselect(root.get<Long>("id"), root.get<Long>("uid")).where(finalPredicate)
 
             val query = sess.createQuery(cr)
+            //TODO bug: query.resultList gives 3 id values for uid = 2891
             val tupleResult = query.uniqueResult() ?: return null
 
             // Map results to a Task instance with only `id` and `uid` initialized

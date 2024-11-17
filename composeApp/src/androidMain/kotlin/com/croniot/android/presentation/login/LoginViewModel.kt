@@ -1,9 +1,7 @@
 package com.croniot.android.presentation.login
 
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.android.Global
 import com.croniot.android.GlobalViewModel
 import com.croniot.android.SharedPreferences
 import com.croniot.android.presentation.devices.DevicesViewModel
@@ -14,18 +12,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import croniot.messages.MessageLogin
-import croniot.models.dto.AccountDto
-import croniot.models.dto.DeviceDto
-import croniot.models.dto.ParameterSensorDto
-import croniot.models.dto.SensorDto
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 class LoginViewModel() : ViewModel(), KoinComponent {
 
     private val globalViewModel: GlobalViewModel = get()
-
-    private var loggedInAsGuest = false
 
     private val devicesViewModel: DevicesViewModel = get()
 
@@ -60,7 +52,6 @@ class LoginViewModel() : ViewModel(), KoinComponent {
     }
 
     suspend fun tryLogin() : Boolean {
-        val millisStart = System.currentTimeMillis()
         val deviceUuid = SharedPreferences.loadData(SharedPreferences.KEY_DEVICE_UUID)
         val deviceToken = SharedPreferences.loadData(SharedPreferences.KEY_DEVICE_TOKEN)
 
@@ -71,8 +62,6 @@ class LoginViewModel() : ViewModel(), KoinComponent {
             try {
                 val messageLogin = MessageLogin(accountEmail, accountPassword, deviceUuid!!, deviceToken)
                 val response = RetrofitClient.loginApiService.login(messageLogin)
-            val millisFinish = System.currentTimeMillis();
-            println("Millis for login: ${millisFinish - millisStart} ms")
                 val loginResult = response.body()!!
                 val result = loginResult.result
                 val account = loginResult.account
@@ -86,7 +75,6 @@ class LoginViewModel() : ViewModel(), KoinComponent {
 
                     globalViewModel.updateAccount(account)
 
-                  //  Global.account = account// Log or use the UUID as needed
                     withContext(Dispatchers.Default) { //TODO do this in the GlobalViewModel's "updateAccount"
                         devicesViewModel.updateDevices(account.devices.filter{ it.name.isNotEmpty() }.toList()) //TODO for now we leave this filter
                     }

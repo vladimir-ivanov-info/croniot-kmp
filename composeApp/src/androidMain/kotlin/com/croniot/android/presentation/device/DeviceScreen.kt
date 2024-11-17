@@ -1,5 +1,6 @@
 package com.croniot.android.presentation.device
 
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,11 +32,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.croniot.android.Global
-import com.croniot.android.GlobalViewModel
 import com.croniot.android.UiConstants
 import com.croniot.android.presentation.device.sensors.ViewModelSensors
 import com.croniot.android.presentation.device.sensors.SensorsScreen
@@ -45,14 +42,16 @@ import com.croniot.android.ui.TaskItem
 import com.croniot.android.presentation.device.tasks.TasksScreen
 import com.croniot.android.presentation.login.LoginController
 import com.croniot.android.ui.task.ViewModelTasks
-import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskTypeDto
 import org.koin.androidx.compose.koinViewModel
 
+val deviceScreenTabsNames = listOf("Sensors", "Task types", "Tasks")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeviceScreen(navController: NavController, modifier: Modifier, viewModelSensors: ViewModelSensors, viewModelTasks: ViewModelTasks, globalViewModel: GlobalViewModel) {
+fun DeviceScreen(navController: NavController,
+                 modifier: Modifier,
+                 viewModelSensors: ViewModelSensors) {
 
     BackHandler {
         if(!navController.popBackStack()){
@@ -100,14 +99,21 @@ fun DeviceScreen(navController: NavController, modifier: Modifier, viewModelSens
             )
         },
         content = {
-            innerPadding -> DeviceScreenContent(navController, innerPadding = innerPadding, viewModelTasks, viewModelSensors)
+            innerPadding -> DeviceScreenContent(navController, innerPadding = innerPadding, viewModelSensors)
         }
     )
 }
 
 @Composable
-fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValues, viewModelTasks: ViewModelTasks, viewModelSensors: ViewModelSensors){
-    val viewModelDeviceScreen: DeviceScreenViewModel = koinViewModel()
+fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValues, viewModelSensors: ViewModelSensors){
+
+    val viewModelDeviceScreen : DeviceScreenViewModel = koinViewModel<DeviceScreenViewModel>(
+        viewModelStoreOwner = LocalContext.current as ComponentActivity
+    )
+
+    val viewModelTasks : ViewModelTasks = koinViewModel<ViewModelTasks>(
+    viewModelStoreOwner = LocalContext.current as ComponentActivity
+    )
 
     LaunchedEffect(Unit) {
         viewModelTasks.loadTasks()
@@ -117,14 +123,13 @@ fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValue
 
     val currentTab = viewModelDeviceScreen.currentTab.collectAsState()
 
-    var selectedTabIndex by remember { mutableIntStateOf(currentTab.value) }
-    val tabs = listOf("Sensors", "Task types", "Tasks")
+    var selectedTabIndex = currentTab.value
 
     Column(modifier = Modifier.padding(innerPadding)) {
         TabRow(
             selectedTabIndex = selectedTabIndex
         ) {
-            tabs.forEachIndexed { index, title ->
+            deviceScreenTabsNames.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = {
@@ -152,8 +157,6 @@ fun TaskTypesScreen(navController: NavController){
     if(selectedDevice != null){
         tasks = selectedDevice.tasks.toList()
     }
-
-
 
     Box(modifier = Modifier
         .fillMaxSize()){

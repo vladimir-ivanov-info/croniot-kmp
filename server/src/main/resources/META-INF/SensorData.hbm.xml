@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="croniot.models">
+    <class name="croniot.models.SensorData" table="sensor_data">
+        <cache usage="read-write" region="sensor_data_cache"/>
+
+        <id name="id" column="id">
+            <generator class="identity"/>
+        </id>
+
+        <many-to-one name="device" class="croniot.models.Device" column="device"/>
+        <many-to-one name="sensorType" class="croniot.models.SensorType" column="sensorType"/>
+        <property name="value" column="value"/>
+        <property name="dateTime" column="date_time"/>
+
+    </class>
+</hibernate-mapping>

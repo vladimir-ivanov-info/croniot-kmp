@@ -12,6 +12,8 @@ object Global {
 
     val secrets : Secrets
 
+    var startMillis  : Long = 0
+
     init{
         var secretsFile : File
         //secretsFile = File("")

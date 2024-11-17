@@ -1,3 +1,5 @@
+
+
 <configuration>
     <!--
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -13,4 +15,5 @@
     <logger name="org.hibernate.SQL" level="INFO" />
     <logger name="org.hibernate.type" level="INFO" />
     -->
+
 </configuration>

@@ -1,16 +1,17 @@
 package com.croniot.server.db.daos
 
 import com.croniot.server.db.controllers.ControllerDb
+import croniot.models.Device
 import croniot.models.SensorType
-
-import croniot.models.SensorInfoDb
-import java.sql.Connection
-import java.util.*
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.JoinType
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class SensorDaoImpl : SensorDao {
 
     override fun insert(sensorType: SensorType) : Long {
-
         val session = ControllerDb.sessionFactory.openSession()
         val transaction = session.beginTransaction()
         val sensorId: Long
@@ -29,23 +30,25 @@ class SensorDaoImpl : SensorDao {
         return sensorId
     }
 
-    override fun getColumnsUuidId(): List<SensorInfoDb> {
-        val connection: Connection = ControllerDb.getConnection()
-        val sql = "SELECT id_client, id_sensor FROM sensor_info"
-        val ps = connection.prepareStatement(sql)
-        val rs = ps.executeQuery()
+    override fun getLazy(deviceUuid: String, sensorTypeUid: Long): SensorType? {
+        val session = ControllerDb.sessionFactory.openSession()
+        session.use { sess ->
+            val cb: CriteriaBuilder = sess.criteriaBuilder
+            val cr: CriteriaQuery<SensorType> = cb.createQuery(SensorType::class.java)
+            val root: Root<SensorType> = cr.from(SensorType::class.java)
 
-        val sensorInfoList = LinkedList<SensorInfoDb>()
+            val deviceJoin = root.join<SensorType, Device>("device", JoinType.LEFT)
 
-        //TODO check rs not null
-        while(rs.next()){
-            val uuid = rs.getString("id_client");
-            val id = rs.getString("id_sensor");
+            val sensorTypePredicate = cb.equal(root.get<String>("uid"), sensorTypeUid)
+            val devicePredicate = cb.equal(deviceJoin.get<String>("uuid"), deviceUuid)
 
-            sensorInfoList.add(SensorInfoDb(uuid = uuid, id = id))
+            val finalPredicate: Predicate = cb.and(sensorTypePredicate, devicePredicate)
+
+            cr.select(root).where(finalPredicate).distinct(true)
+
+            val query = sess.createQuery(cr)
+            return query.uniqueResultOptional().orElse(null)
         }
-
-        return sensorInfoList
     }
 
 }

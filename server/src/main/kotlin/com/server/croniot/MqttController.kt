@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.server.croniot.MqttDataProcessorTaskProgress
 import croniot.messages.MessageTask
 import croniot.models.TaskStateInfo
+import croniot.models.dto.SensorDataDto
 import croniot.models.dto.TaskStateInfoDto
 import croniot.models.toDto
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +14,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttClient
@@ -68,11 +68,16 @@ object MqttController {
         initTaskStateController()
     }
 
-    //TODO parametrize watering_system_1
     fun initTaskStateController(){
-        val topic =  "/iot_to_server/task_progress_update/watering_system_1"
-        val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
-        MqttHandler(mqttClient, MqttDataProcessorTaskProgress("watering_system_1"), topic)
+
+        val devices = ControllerDb.deviceDao.getAll()
+        val iotDevices = devices.filter { it.iot }
+
+        for(device in iotDevices){
+            val topic =  "/iot_to_server/task_progress_update/${device.uuid}"
+            val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
+            MqttHandler(mqttClient, MqttDataProcessorTaskProgress(device.uuid), topic)
+        }
     }
 
     //TODO unify these 2 methods in the future
@@ -91,6 +96,7 @@ object MqttController {
             val json = gson.toJson(messageTask)
             val message = MqttMessage(json.toByteArray())
             message.qos = 2 //TODO when Arduino implements compatible with QOS=2 MQTT library
+    message.isRetained  = false
             deviceMqttClient.publish(topic, message) //TODO
         }
     }
@@ -111,20 +117,43 @@ object MqttController {
 
             val message = MqttMessage(json.toByteArray())
             message.qos = 2 //TODO when Arduino implements compatible with QOS=2 MQTT library
+    message.isRetained  = false
             deviceMqttClient.publish(topic, message) //TODO
         }
 
     }
 
-    fun sendNewTaskStateInfo(deviceUuid: String, taskStateInfoDto: TaskStateInfoDto){
-        CoroutineScope(Dispatchers.IO).launch {
-            val topic =  "/server/task_progress_update/$deviceUuid"
+    suspend fun sendSensorData(sensorDataDto: SensorDataDto){
+        clientLock.withLock {
+          //  val topic = "/${deviceUuid}/sensor_data/${sensorTypeUid}"
+            val topic = "/server_to_app/${sensorDataDto.deviceUuid}/sensor_data/${sensorDataDto.sensorTypeUid}"
+
+            /*val gson2 = GsonBuilder()
+                .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
+                .setPrettyPrinting()
+                .create()*/
+
+            val json = gsonZonedDateTime.toJson(sensorDataDto)
+
+            val message = MqttMessage(json.toByteArray())
+            message.qos = 2 //TODO when Arduino implements compatible with QOS=2 MQTT library
+            message.isRetained  = false
+            deviceMqttClient.publish(topic, message) //TODO
+        }
+    }
+
+    suspend fun sendNewTaskStateInfo(deviceUuid: String, taskStateInfoDto: TaskStateInfoDto){
+        //CoroutineScope(Dispatchers.IO).launch {
+      //  clientLock.withLock {
+            val topic = "/server_to_devices/task_progress_update/$deviceUuid"
             val json = gsonZonedDateTime.toJson(taskStateInfoDto)
             val message = MqttMessage(json.toByteArray())
             message.qos = 2 //TODO when Arduino implements compatible with QOS=2 MQTT library
-            withContext(Dispatchers.IO) {
-                deviceMqttClient.publish(topic, message) //TODO
-            }
-        }
+            //withContext(Dispatchers.IO) {
+            message.isRetained  = false
+            deviceMqttClient.publish(topic, message) //TODO
+            //}
+            //}
+       // }
     }
 }
