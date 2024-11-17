@@ -1,9 +1,5 @@
 package croniot.models
 
-import croniot.models.dto.ParameterDto
-import croniot.models.dto.SensorDto
-import java.util.*
-
 open class Parameter(
     var id: Long,
     var uid: Long,

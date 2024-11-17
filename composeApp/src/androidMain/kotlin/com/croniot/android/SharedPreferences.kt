@@ -3,8 +3,8 @@ package com.croniot.android
 import ZonedDateTimeAdapter
 import android.content.Context
 import android.content.SharedPreferences
+import com.croniot.android.domain.util.StringUtil
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import croniot.models.dto.AccountDto
 import croniot.models.dto.DeviceDto
 import org.koin.core.component.KoinComponent
@@ -49,17 +49,30 @@ object SharedPreferences : KoinComponent {
         return prefs.getString(key, null)
     }
 
-    fun saveAccount(/*context: Context, */account: AccountDto) {
+    fun generateAndSaveDeviceUuidIfNotExists(){
+        val deviceUuid = loadData(KEY_DEVICE_UUID)
+        if(deviceUuid == null){
+            val newDeviceUuid = "android_" + StringUtil.generateRandomString(4);
+            saveData(KEY_DEVICE_UUID, newDeviceUuid)
+        }
+    }
+
+    fun saveAccount(/*context: Context, */account: AccountDto?) {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-        val gsonZonedDateTime = GsonBuilder()
-            .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
-            .setPrettyPrinting()
-            .create()
+        if (account == null) {
+            // Remove the stored account data if the account is null
+            prefs.edit().remove(KEY_ACCOUNT).apply()
+        } else {
+            val gsonZonedDateTime = GsonBuilder()
+                .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
+                .setPrettyPrinting()
+                .create()
 
-        val accountJson = gsonZonedDateTime.toJson(account)
+            val accountJson = gsonZonedDateTime.toJson(account)
 
-        prefs.edit().putString(KEY_ACCOUNT, accountJson).apply()
+            prefs.edit().putString(KEY_ACCOUNT, accountJson).apply()
+        }
     }
 
     fun getAccout(): AccountDto? {
@@ -113,5 +126,9 @@ object SharedPreferences : KoinComponent {
             }
         }
         return selectedDeviceDto
+    }
+
+    fun clearCache() {
+        saveAccount(null)
     }
 }

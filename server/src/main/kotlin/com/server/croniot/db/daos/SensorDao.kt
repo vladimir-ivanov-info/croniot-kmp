@@ -7,6 +7,6 @@ interface SensorDao {
 
     fun insert(sensorType: SensorType) : Long
 
-    fun getColumnsUuidId() : List<SensorInfoDb>
+    fun getLazy(deviceUuid: String, sensorTypeUid: Long) : SensorType?
 
 }

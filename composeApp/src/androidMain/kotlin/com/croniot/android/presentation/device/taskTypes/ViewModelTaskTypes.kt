@@ -46,12 +46,42 @@ class ViewModelTaskTypes : ViewModel() {
     }
 
     fun updateParameter(parameterUid: Long, newValue: String){
-
         _parametersValues.forEach { (parameter, flow) ->
             if (parameter.uid == parameterUid) {
                 viewModelScope.launch {
                     flow.emit(newValue)  // Use emit in a coroutine context
                 }
+            }
+        }
+    }
+
+    fun sendStatefulTask(parameterUid: Long, newValue: String){
+        //return withContext(Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO){
+
+            val startMillis = System.currentTimeMillis()
+
+            val selectedDevice = Global.selectedDevice
+
+            if(selectedDevice != null){
+                var result: Result
+
+                val deviceUuid = selectedDevice.uuid
+                val taskUid = Global.selectedTaskType!!.uid
+
+                val parametersValues = mutableMapOf<Long, String>()
+
+                parametersValues[parameterUid] = newValue
+
+                val messageAddTask = MessageAddTask(deviceUuid, taskUid.toString(), parametersValues)
+
+                val gson = GsonBuilder().setPrettyPrinting().create()
+
+                val message = gson.toJson(messageAddTask)
+
+                result = Global.performPostRequestToEndpoint("/api/add_task", message) //50 ms //TODO do something if result is false
+            } else {
+                Result(false, "Selected Device is null")
             }
         }
     }
@@ -84,8 +114,6 @@ class ViewModelTaskTypes : ViewModel() {
             } else {
                 Result(false, "Selected Device is null")
             }
-
-
         }
     }
 }

@@ -1,17 +1,13 @@
-
-
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import com.croniot.server.db.controllers.ControllerDb
-
-import io.ktor.server.application.*
 import io.ktor.serialization.gson.*
-import io.ktor.server.plugins.contentnegotiation.*
-
-import java.time.ZonedDateTime
-
-
+import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import java.io.File
+import io.ktor.server.plugins.contentnegotiation.*
+import org.slf4j.LoggerFactory
+import java.time.ZonedDateTime
 
 fun Application.module(testing: Boolean = false) {
     Global.TESTING = testing

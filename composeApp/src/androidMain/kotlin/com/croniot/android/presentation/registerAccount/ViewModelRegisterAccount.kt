@@ -24,6 +24,9 @@ class ViewModelRegisterAccount() : ViewModel() {
     private val _password = MutableStateFlow("password1") //default for testing
     val password : StateFlow<String> get() = _password
 
+
+
+
     fun updateNickname(nickname: String){
         viewModelScope.launch {
             _nickname.emit(nickname)

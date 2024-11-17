@@ -140,15 +140,18 @@ fun Application.configureRouting() {
         }
 
         post("/api/add_task"){
+            //println("Millis 1: ${System.currentTimeMillis()}")
+
             val message = call.receiveText();
 
             val messageAddTask = MessageFactory.fromJson<MessageAddTask>(message)
 
-            print(messageAddTask.toString())
+            println(messageAddTask.toString())
 
             val result = AddTaskController.addTask(messageAddTask)
             val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(result)
             call.respondText(responseJSON, ContentType.Text.Plain)
+
         }
 
 

@@ -11,7 +11,7 @@
             <generator class="identity"/>
         </id>
 
-        <property name="uid" column="uid" index="idx_task_uid"/>
+        <property name="uid" column="uid" unique="true" index="idx_task_uid"/>
 <!--
         <map name="parametersValues" table="task_configuration_parameter_value" cascade="all" lazy="false" fetch="join">
             <key column="id_task_configuration"/>

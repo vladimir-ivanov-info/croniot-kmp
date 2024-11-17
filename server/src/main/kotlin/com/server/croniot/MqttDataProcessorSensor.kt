@@ -1,10 +1,12 @@
+import com.croniot.server.db.controllers.ControllerDb
+import com.server.croniot.SensorsDataController
 import croniot.models.MqttDataProcessor
 
-class MqttDataProcessorSensor(val uuid: String, val sensorUid: Long) : MqttDataProcessor {
+class MqttDataProcessorSensor(val deviceUuid: String, val sensorTypeUid: Long) : MqttDataProcessor {
     override fun process(data: Any) {
         val sensorValue = data as String
 
-        //TODO ControllerDb.getSensorDataDao().insert(uuid, sensorId, sensorValue)
+       SensorsDataController.processSensorData(deviceUuid, sensorTypeUid, sensorValue)
     }
 
     override fun getTopic(): String {

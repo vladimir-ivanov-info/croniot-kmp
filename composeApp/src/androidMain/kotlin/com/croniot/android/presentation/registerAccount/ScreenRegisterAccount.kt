@@ -83,7 +83,7 @@ fun ScreenRegisterAccount(navController: NavController) {
         }
     )
 }
-//@SuppressLint("StateFlowValueCalledInComposition")
+
 @Composable
 fun ScreenRegisterAccountBody(navController: NavController, innerPadding: PaddingValues, modifier: Modifier){
 
@@ -91,6 +91,7 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
     val coroutineScope = rememberCoroutineScope()
 
     var showDialog by remember { mutableStateOf(false) }
+
     var dialogTitle by remember { mutableStateOf("") }
     var dialogContent by remember { mutableStateOf("") }
 
@@ -127,12 +128,15 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(
                     onClick = {
-                        tryRegisterAccount(coroutineScope, viewModelRegisterAccount, navController){ result ->
+
+                        coroutineScope.launch {
+                            val result = viewModelRegisterAccount.registerAccount()
+                            //val result = tryRegisterAccountAsync(viewModel).await()
                             dialogTitle = "Account register"
-                            if(result.success){
-                                dialogContent = "Account registered successfully!"
+                            dialogContent = if (result.success) {
+                                "Account registered successfully!"
                             } else {
-                                dialogContent = "Could not register account:\n\n ${result.message}"
+                                "Could not register account:\n\n ${result.message}"
                             }
                             showDialog = true
                         }
@@ -147,7 +151,7 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
             }
         }
         if(showDialog){
-            GenericAlertDialog(title = "Log Out", content = "Are you sure you want to log out?"){
+            GenericAlertDialog(title = dialogTitle, content = dialogContent){
                 val result = it
                 if(result){
                     if(navController.popBackStack()){
@@ -157,12 +161,5 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
                 showDialog = false
             }
         }
-    }
-}
-
-fun tryRegisterAccount(coroutineScope: CoroutineScope, viewModelRegisterAccount: ViewModelRegisterAccount, navController: NavController, onResult: (result: Result) -> Unit){
-    coroutineScope.launch {
-        val registerResult = viewModelRegisterAccount.registerAccount()
-        onResult(registerResult)
     }
 }

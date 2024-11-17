@@ -3,6 +3,7 @@ package com.croniot.server.db.controllers
 import Global
 import TaskController
 import com.croniot.server.db.daos.*
+import com.server.croniot.SensorsDataController
 import db.daos.*
 import org.hibernate.SessionFactory
 import org.hibernate.boot.MetadataSources
@@ -46,6 +47,7 @@ object ControllerDb {
         initDaos()
 
         TaskController
+        SensorsDataController
     }
 
     lateinit var accountDao : AccountDao
