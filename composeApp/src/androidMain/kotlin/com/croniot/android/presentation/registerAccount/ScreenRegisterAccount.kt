@@ -29,7 +29,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -104,6 +107,17 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
                 )
             }
 
+            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Warning! This is a TESTING version of the app.\n\nDo NOT use a real password that you already use somewhere else.\n\nThe connection with the server is NOT secure and the password will NOT be stored encrypted in the server's database.",
+                    fontSize = 20.sp,
+                    color = Color.Red,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
+            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
             val nicknameStateFlow = viewModelRegisterAccount.nickname
             val emailStateFlow = viewModelRegisterAccount.email
             val passwordStateFlow = viewModelRegisterAccount.password
@@ -128,10 +142,8 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
             Box(modifier = Modifier.fillMaxWidth()) {
                 Button(
                     onClick = {
-
                         coroutineScope.launch {
                             val result = viewModelRegisterAccount.registerAccount()
-                            //val result = tryRegisterAccountAsync(viewModel).await()
                             dialogTitle = "Account register"
                             dialogContent = if (result.success) {
                                 "Account registered successfully!"

@@ -12,11 +12,9 @@ import croniot.messages.*
 import java.time.ZonedDateTime
 import java.time.LocalDateTime
 
-
 fun Application.configureRouting() {
 
     routing {
-
         post("/dateTime") {
             val currentDateTime = LocalDateTime.now()
 
@@ -31,7 +29,6 @@ fun Application.configureRouting() {
         }
 
         post("/hour") {
-
             val currentDateTime = LocalDateTime.now()
             val hour = currentDateTime.hour;
             val response = "$hour"
@@ -71,6 +68,7 @@ fun Application.configureRouting() {
             println(time) //158-1135 ms     175-1091    319-1326    Final = 68 ms
 
             call.respondText(responseJSON, ContentType.Text.Plain)
+            println("Response sent: $responseJSON")
         }
 
         post("/api/iot/login") {
@@ -140,8 +138,6 @@ fun Application.configureRouting() {
         }
 
         post("/api/add_task"){
-            //println("Millis 1: ${System.currentTimeMillis()}")
-
             val message = call.receiveText();
 
             val messageAddTask = MessageFactory.fromJson<MessageAddTask>(message)
@@ -151,9 +147,7 @@ fun Application.configureRouting() {
             val result = AddTaskController.addTask(messageAddTask)
             val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(result)
             call.respondText(responseJSON, ContentType.Text.Plain)
-
         }
-
 
         post("/api/account_info") {
             val message = call.receiveText();
@@ -161,10 +155,10 @@ fun Application.configureRouting() {
             val token = messageGetAcountInfo.token
             val device = AuthenticationController.getDeviceAssociatedWithToken(token) //TODO test for when the device is contained in multiple accounts
 
-            if(device != null){
-                val accounts = AccountController.getAccountOfDevice(device)
+            device?.let{
+                val accounts = AccountController.getAccountOfDevice(it)
 
-                if(!accounts.isEmpty()){
+                if(accounts.isNotEmpty()){
                     val account = accounts.first()
                     val accountJson = GsonBuilder().setPrettyPrinting().create().toJson(account)
                     val result = Result(true, accountJson)

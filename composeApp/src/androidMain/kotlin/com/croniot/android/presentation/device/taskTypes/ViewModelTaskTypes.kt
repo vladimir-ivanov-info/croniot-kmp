@@ -25,20 +25,22 @@ class ViewModelTaskTypes : ViewModel() {
     //TODO delegate this to another class, there will be more parameter types in the future
     init{
         val selectedTaskType = Global.selectedTaskType
-        if(selectedTaskType != null){
+        //if(selectedTaskType != null){
+        selectedTaskType?.let{
             for(parameter in selectedTaskType.parameters){
 
-                if(parameter.type == "number"){
-                    val minValue = parameter.constraints["minValue"]
-                    val maxValue = parameter.constraints["maxValue"]
-                    val midValue = ((maxValue!!.toDouble() - minValue!!.toDouble())/2).toString()
-                    _parametersValues.put(parameter, MutableStateFlow(midValue))
-                } else {
-                    _parametersValues.put(parameter, MutableStateFlow(PARAMETER_VALUE_UNDEFINED))
+                with(parameter){
+                    if(type == "number"){
+                        val minValue = constraints["minValue"]
+                        val maxValue = constraints["maxValue"]
+                        val midValue = ((maxValue!!.toDouble() - minValue!!.toDouble())/2).toString()
+                        _parametersValues.put(parameter, MutableStateFlow(midValue))
+                    } else {
+                        _parametersValues.put(parameter, MutableStateFlow(PARAMETER_VALUE_UNDEFINED))
+                    }
                 }
             }
         }
-
     }
 
     fun uninit(){
@@ -56,11 +58,7 @@ class ViewModelTaskTypes : ViewModel() {
     }
 
     fun sendStatefulTask(parameterUid: Long, newValue: String){
-        //return withContext(Dispatchers.IO){
         viewModelScope.launch(Dispatchers.IO){
-
-            val startMillis = System.currentTimeMillis()
-
             val selectedDevice = Global.selectedDevice
 
             if(selectedDevice != null){
@@ -76,9 +74,7 @@ class ViewModelTaskTypes : ViewModel() {
                 val messageAddTask = MessageAddTask(deviceUuid, taskUid.toString(), parametersValues)
 
                 val gson = GsonBuilder().setPrettyPrinting().create()
-
                 val message = gson.toJson(messageAddTask)
-
                 result = Global.performPostRequestToEndpoint("/api/add_task", message) //50 ms //TODO do something if result is false
             } else {
                 Result(false, "Selected Device is null")
