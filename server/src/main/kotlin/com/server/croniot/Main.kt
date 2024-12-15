@@ -6,7 +6,17 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
+import java.io.DataInputStream
+import java.io.File
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.ServerSocket
+import java.net.Socket
+import java.nio.ByteBuffer
 import java.time.ZonedDateTime
 
 fun Application.module(testing: Boolean = false) {
@@ -72,5 +82,4 @@ DROP TABLE public.task_type CASCADE;
 DROP TABLE public.device CASCADE;
 DROP TABLE public.account CASCADE;
 DROP TABLE public.device_token CASCADE;
-
 */

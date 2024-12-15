@@ -3,13 +3,8 @@ package com.croniot.android.presentation.configuration
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.content.ContextCompat.checkSelfPermission
-import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.ForegroundService
 import com.croniot.android.SharedPreferences
@@ -18,23 +13,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
-//class ConfigurationViewModel : ViewModel() {
-class ConfigurationViewModel(application: Application) : AndroidViewModel(application),
-    KoinComponent {
+class ConfigurationViewModel(application: Application) : AndroidViewModel(application), KoinComponent {
 
     private val _foregroundServiceEnabled = MutableStateFlow(false)
     val foregroundServiceEnabled : StateFlow<Boolean> get() = _foregroundServiceEnabled
 
-    lateinit var context : Context
+    var context : Context
 
     init {
-        context = getApplication<Application>()
+        context = getApplication()
         loadConfigurationForegoundService()
     }
 
     private fun loadConfigurationForegoundService(){
         val configurationForegoundService = SharedPreferences.loadData(SharedPreferences.KEY_CONFIGURATION_FOREGROUND_SERVICE)
-        if(configurationForegoundService != null){
+        configurationForegoundService?.let{
             viewModelScope.launch {
                 if(configurationForegoundService == "true"){
                     _foregroundServiceEnabled.emit(true)
@@ -93,7 +86,6 @@ class ConfigurationViewModel(application: Application) : AndroidViewModel(applic
             _foregroundServiceEnabled.emit(enableService)
         }
     }
-
 
     // SharedPreferences.saveData(SharedPreferences.KEY_SERVER_MODE, newServerMode)
 

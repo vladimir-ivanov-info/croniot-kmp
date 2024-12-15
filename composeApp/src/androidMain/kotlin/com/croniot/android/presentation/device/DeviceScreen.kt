@@ -41,7 +41,7 @@ import com.croniot.android.presentation.device.sensors.SensorsScreen
 import com.croniot.android.ui.TaskItem
 import com.croniot.android.presentation.device.tasks.TasksScreen
 import com.croniot.android.presentation.login.LoginController
-import com.croniot.android.ui.task.ViewModelTasks
+import com.croniot.android.presentation.device.tasks.ViewModelTasks
 import croniot.models.dto.TaskTypeDto
 import org.koin.androidx.compose.koinViewModel
 
@@ -85,12 +85,13 @@ fun DeviceScreen(navController: NavController,
 
                             val selectedDevice = Global.selectedDevice
 
-                            if(selectedDevice != null){
+                            //if(selectedDevice != null){
+                            selectedDevice?.let{
                                 Text(text = selectedDevice.name)
-                            } else {
+                            } ?:// {
                                 //LOGOUT
                                 LoginController.forceLogOut(navController)
-                            }
+                            //}
                         }
 
                     }
@@ -154,7 +155,8 @@ fun TaskTypesScreen(navController: NavController){
 
     var tasks = emptyList<TaskTypeDto>()
 
-    if(selectedDevice != null){
+    //if(selectedDevice != null){
+    selectedDevice?.let{
         tasks = selectedDevice.tasks.toList()
     }
 

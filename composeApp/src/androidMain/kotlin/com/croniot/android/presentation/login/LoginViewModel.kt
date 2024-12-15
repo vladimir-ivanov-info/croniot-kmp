@@ -1,7 +1,9 @@
 package com.croniot.android.presentation.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.croniot.android.DevicePropertiesController
 import com.croniot.android.GlobalViewModel
 import com.croniot.android.SharedPreferences
 import com.croniot.android.presentation.devices.DevicesViewModel
@@ -12,10 +14,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import croniot.messages.MessageLogin
+import org.koin.android.ext.android.inject
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.component.inject
 
 class LoginViewModel() : ViewModel(), KoinComponent {
+
+    val context: Context by inject()
+
 
     private val globalViewModel: GlobalViewModel = get()
 
@@ -58,9 +65,14 @@ class LoginViewModel() : ViewModel(), KoinComponent {
         val accountEmail = email.value
         val accountPassword = password.value
 
-        return withContext(Dispatchers.Main) {
+        return withContext(Dispatchers.IO) {
             try {
-                val messageLogin = MessageLogin(accountEmail, accountPassword, deviceUuid!!, deviceToken)
+
+                val details = DevicePropertiesController.getScreenDetails(context)
+                val details2 = DevicePropertiesController.getDeviceDetails()
+                val deviceProperties = details + details2
+
+                val messageLogin = MessageLogin(accountEmail, accountPassword, deviceUuid!!, deviceToken, deviceProperties)
                 val response = RetrofitClient.loginApiService.login(messageLogin)
                 val loginResult = response.body()!!
                 val result = loginResult.result
@@ -75,9 +87,12 @@ class LoginViewModel() : ViewModel(), KoinComponent {
 
                     globalViewModel.updateAccount(account)
 
-                    withContext(Dispatchers.Default) { //TODO do this in the GlobalViewModel's "updateAccount"
-                        devicesViewModel.updateDevices(account.devices.filter{ it.name.isNotEmpty() }.toList()) //TODO for now we leave this filter
-                    }
+                    SharedPreferences.saveData(SharedPreferences.KEY_ACCOUNT_EMAIL, accountEmail)
+                    SharedPreferences.saveData(SharedPreferences.KEY_ACCOUNT_PASSWORD, accountPassword)
+
+                    //withContext(Dispatchers.Default) { //TODO do this in the GlobalViewModel's "updateAccount"
+                    devicesViewModel.updateDevices(account.devices.filter{ it.name.isNotEmpty() }.toList()) //TODO for now we leave this filter
+                    //  }
                     true  // Login successful
                 } else {
                     println("Error: ${response.errorBody()?.string()}")

@@ -45,7 +45,6 @@ import com.croniot.android.Global
 import com.croniot.android.R
 import com.croniot.android.domain.util.DateTimeUtil
 import com.croniot.android.ui.UtilUi
-import com.croniot.android.ui.task.ViewModelTasks
 import croniot.models.TaskState
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
@@ -111,7 +110,6 @@ fun TasksScreen(
 
 @Composable
 fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskDto>, onTaskClicked: (taskClicked: TaskDto) -> Unit) {
-
     val taskValue by taskStateFlow.collectAsState()
 
     val stateIconPainter: Painter
@@ -125,16 +123,35 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
         latestStateInfo = stateInfos[0]
         latestStateInfoProgress = latestStateInfo.progress
 
-        if(latestStateInfo.state == TaskState.CREATED){
-            stateIconPainter = painterResource(id = R.drawable.baseline_schedule_24)
-        } else if(latestStateInfo.state == TaskState.RUNNING){
-            stateIconPainter = painterResource(id = R.drawable.baseline_update_24)
-            //stateIconColor = Color.Blue
-        } else if(latestStateInfo.state == TaskState.COMPLETED){
-            stateIconPainter = painterResource(id = R.drawable.baseline_done_24)
-            stateIconColor = Color.Green
-        } else {
-            stateIconPainter = painterResource(id = R.drawable.baseline_question_mark_24)
+        when (latestStateInfo.state) {
+            TaskState.CREATED -> {
+                stateIconPainter = painterResource(id = R.drawable.baseline_schedule_24)
+                //stateIconColor = null
+            }
+            TaskState.RUNNING -> {
+                stateIconPainter = painterResource(id = R.drawable.baseline_update_24)
+                //stateIconColor = null // Or set a specific color
+            }
+            TaskState.COMPLETED -> {
+                stateIconPainter = painterResource(id = R.drawable.baseline_done_24)
+                stateIconColor = Color.Green
+            }
+            "on" -> {
+                stateIconPainter = painterResource(id = R.drawable.ic_toggle_on_24)
+                stateIconColor = Color.Green
+            }
+            "off" -> {
+                stateIconPainter = painterResource(id = R.drawable.ic_toggle_off_24)
+                stateIconColor = Color.Red
+            }
+            "RECEIVED" -> {
+                stateIconPainter = painterResource(id = R.drawable.ic_check_24)
+                stateIconColor = Color(0xFF03A9F4)
+            }
+            else -> {
+                stateIconPainter = painterResource(id = R.drawable.baseline_question_mark_24)
+                //stateIconColor = null
+            }
         }
     //}
 
@@ -153,11 +170,10 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
             elevation = CardDefaults.elevatedCardElevation()
         ) {
 //TODO make this a method in another class
-
             // Retrieve task name
-            val taskName = remember(taskValue.taskUid) {
+            val taskName = remember(taskValue.taskTypeUid) {
 
-                Global.selectedDevice?.tasks?.firstOrNull { it.uid == taskValue.taskUid }?.name.orEmpty() //TODO
+                Global.selectedDevice?.tasks?.firstOrNull { it.uid == taskValue.taskTypeUid }?.name.orEmpty() //TODO
 
             }
 //TODO_end
@@ -168,9 +184,9 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
             ){
                 Row(
                     modifier = Modifier
-                    .fillMaxWidth()
+                        .fillMaxWidth()
                         .padding(horizontal = 8.dp)
-                    .weight(1f),
+                        .weight(1f),
                     verticalAlignment = Alignment.CenterVertically
 
                 ) {
@@ -206,8 +222,15 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                    var latestStateInfoProgressText = "$latestStateInfoProgress %"
+
+                    if(latestStateInfo.state != TaskState.RUNNING){
+                        latestStateInfoProgressText = ""
+                    }
+
                     Text(
-                        text = "$latestStateInfoProgress %",
+                        text = latestStateInfoProgressText,
                         fontSize = 14.sp,
 
                         color = MaterialTheme.colorScheme.primary,

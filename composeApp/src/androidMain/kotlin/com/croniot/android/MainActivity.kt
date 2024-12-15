@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
         askNotificationPermissionIfNecessary(); //TODO move to Configuration
 
         val selectedDevice = SharedPreferences.getSelectedDevice()
-        if(selectedDevice != null){
+        selectedDevice?.let {
             Global.selectedDevice = selectedDevice
         }
 
@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
 
         // Retrieve and set selected device if available
         val selectedDevice = SharedPreferences.getSelectedDevice()
-        if (selectedDevice != null) {
+        selectedDevice?.let{
             Global.selectedDevice = selectedDevice
         }
     }

@@ -87,7 +87,7 @@ object SharedPreferences : KoinComponent {
 
         val accountJson = prefs.getString(KEY_ACCOUNT, null)
 
-        if (accountJson != null) {
+        accountJson?.let {
             if(accountJson.isNotEmpty()){
                 accountDto = gsonZonedDateTime.fromJson(accountJson, AccountDto::class.java)
             }
@@ -120,7 +120,7 @@ object SharedPreferences : KoinComponent {
 
         val accountJson = prefs.getString(KEY_SELECTED_DEVICE, null)
 
-        if (accountJson != null) {
+        accountJson?.let {
             if(accountJson.isNotEmpty()){
                 selectedDeviceDto = gsonZonedDateTime.fromJson(accountJson, DeviceDto::class.java)
             }

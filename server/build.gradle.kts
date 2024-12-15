@@ -1,17 +1,20 @@
-//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     application
-    //id("com.github.johnrengelman.shadow") version "8.1.1"
+
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 group = "com.croniot.server"
 version = "1.0.0"
 application {
-    //mainClass.set("com.croniot.server.ApplicationKt")
     mainClass.set("MainKt")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
@@ -66,6 +69,7 @@ dependencies {
 
     // Infinispan dependencies
     implementation(libs.infinispan.hibernate.cache)
+    implementation(libs.infinispan.hibernate.cache.commons)
     implementation(libs.infinispan.core)
     implementation(libs.javax.cache.api)
 
@@ -93,17 +97,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()  // Enables JUnit 5 support
 }
-/*
-tasks {
-    withType<ShadowJar> {
-        archiveClassifier.set("")  // Optional: removes the "-all" suffix from the jar name
-        manifest {
-            attributes["Main-Class"] = "com.croniot.server.MainKt" // Replace with your main class
-        }
-    }
-}
-*/
-/*
+
 tasks {
     compileKotlin {
         //kotlinOptions.jvmTarget = "1.8"
@@ -116,6 +110,9 @@ tasks {
     }
 
     shadowJar {
+        mergeServiceFiles() //necessary for incñusion of Inifinispan dependencies
+        archiveClassifier.set("all") //necessary for incñusion of Inifinispan dependencies
+
         // Set the main class for the JAR (replace com.example.MainClass with your actual main class)
         manifest {
             attributes["Main-Class"] = "MainKt"
@@ -128,5 +125,4 @@ tasks {
         exclude("META-INF/*.DSA", "META-INF/*.SF", "META-INF/*.RSA")
     }
 }
-*/
 

@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.croniot.android.ui.PerformanceChart
 import com.croniot.android.ui.UtilUi
@@ -42,14 +43,13 @@ fun SensorItem(sensor: SensorTypeDto, sensorDataFlow: MutableStateFlow<SensorDat
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                //.background(Colors.primary),
                 .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
 
             Text(
                 text = sensorDataValue + " " + sensorUnit,
-
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .align(Alignment.Center),

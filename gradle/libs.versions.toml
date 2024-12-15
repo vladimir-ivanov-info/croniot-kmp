@@ -69,6 +69,7 @@ jakarta-activation-api = "2.1.1"
 infinispan-core = "15.0.10.Final"
 infinispan-hibernate-cache = "15.0.10.Final"
 infinispan-hibernate-cache-v62 = "15.0.10.Final"
+hibernate-cache-commons = "15.0.10.Final"
 #jakarta-cache-api = "1.1.1"  # Latest version compatible with Jakarta EE
 javax-cache-api = "1.0.0"
 
@@ -164,6 +165,7 @@ javax-cache-api = { module = "javax.cache:cache-api", version.ref = "javax-cache
 # Infinispan dependencies
 #infinispan-hibernate-cache = { module = "org.infinispan:infinispan-hibernate-cache-spi", version.ref = "infinispan" }
 infinispan-hibernate-cache = { module = "org.infinispan:infinispan-hibernate-cache-v62", version.ref = "infinispan-hibernate-cache-v62" }
+infinispan-hibernate-cache-commons = { module = "org.infinispan:infinispan-hibernate-cache-commons", version.ref = "hibernate-cache-commons" }
 
 infinispan-core = { module = "org.infinispan:infinispan-core", version.ref = "infinispan-core" }
 

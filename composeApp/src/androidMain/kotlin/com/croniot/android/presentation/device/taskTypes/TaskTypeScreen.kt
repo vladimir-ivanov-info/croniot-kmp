@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import com.croniot.android.Global
 import com.croniot.android.UiConstants
 import com.croniot.android.ui.util.GenericDialog
+import croniot.models.ParameterTypes
 import croniot.models.Result
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -72,12 +73,11 @@ fun TaskTypeScreen(navController: NavController) {
             SnackbarHost(snackbarHostState)
         },
         topBar = {
-            TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
+            TopAppBar(
                 title = {
                     Row(modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically) {
-                        //Text("IoT client app")
                         IconButton(
                             modifier = Modifier.padding(end = 8.dp),
                             onClick = {
@@ -130,10 +130,7 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
     val coroutineScope = rememberCoroutineScope()
     var showDialog by remember{ mutableStateOf(false) }
     var postNewTaskResult  by remember{ mutableStateOf(Result(false, "")) }
-
     val viewModelTaskTypes: ViewModelTaskTypes = viewModel()
-
-   // val viewModelTasks : ViewModelTasks = koinViewModel()
 
     Column(
         modifier = Modifier
@@ -160,9 +157,9 @@ fun TaskConfiguration(navController: NavController, snackbarHostState: SnackbarH
                 val currentParameter = viewModelTaskTypes.parametersValues.toList()[index].first
 
                 when(currentParameter.type){
-                    "number" -> CroniotSlider(currentParameter, index, viewModelTaskTypes)
-                    "time" -> TimePicker(currentParameter, viewModelTaskTypes)
-                    "stateful" -> StatefulParameter(currentParameter,viewModelTaskTypes)
+                    ParameterTypes.NUMBER -> CroniotSlider(currentParameter, index, viewModelTaskTypes)
+                    ParameterTypes.TIME -> TimePicker(currentParameter, viewModelTaskTypes)
+                    ParameterTypes.STATEFUL -> StatefulParameter(currentParameter,viewModelTaskTypes)
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

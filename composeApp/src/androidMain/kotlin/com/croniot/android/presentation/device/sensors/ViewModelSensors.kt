@@ -60,9 +60,8 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
     fun listenToClientSensorsIfNeeded(){
 
         val account = globalViewModel.account.value
-        if(account != null){
-
-            val devices = account.devices
+        account?.let{
+            val devices = it.devices
 
             viewModelScope.launch(Dispatchers.IO) { //Note: Dispatcher very important
                 if(mqttClients.isEmpty()){
@@ -91,9 +90,9 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
                     }
                 }
             }
-        } else {
+        } /*else {
 
-        }
+        }*/
     }
 
     //TODO experimental
@@ -102,7 +101,6 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
         Global.mqttBrokerUrl = "tcp://51.77.195.204:1883"
 
         val topic = "/gps"
-
         try{
             var mqttClient = MqttClient(
                 Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(

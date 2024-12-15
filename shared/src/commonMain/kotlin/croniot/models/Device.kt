@@ -12,10 +12,10 @@ data class Device(
     var taskTypes: MutableSet<TaskType>,
     var account: Account, // Reference to the Account this Device belongs to
     var deviceToken: DeviceToken? = null, // Ensure this property exists
-    //var deviceProperties: MutableMap<String, String> = mutableMapOf()
+    var deviceProperties: Map<String, String> = emptyMap()
 
 ) {
-    constructor() : this(0, "", "",  "",/*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null/*, mutableMapOf()*/)
+    constructor() : this(0, "", "",  "",/*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null, mutableMapOf())
 
     constructor(uuid: String = "",
                 name: String = "",
@@ -25,11 +25,15 @@ data class Device(
                 taskTypes: MutableSet<TaskType> = mutableSetOf(),
                 account: Account = Account(),
                 //deviceToken: DeviceToken?,
-                //deviceProperties: MutableMap<String, String>
-    ) : this(0, uuid, name, description, iot, sensorTypes, taskTypes, account/*, deviceToken, deviceProperties*/)
+                deviceProperties: Map<String, String> = emptyMap()
+    ) : this(0, uuid, name, description, iot, sensorTypes, taskTypes, account, null, deviceProperties)
 
 
-    constructor(id: Long, uuid: String) : this(id, uuid, "", "", false, mutableSetOf(), mutableSetOf(), Account(), null)
+    constructor(id: Long, uuid: String)
+            : this(id, uuid, "", "", false, mutableSetOf(), mutableSetOf(), Account(), null)
+
+    constructor(id: Long, uuid: String, deviceProperties: MutableMap<String, String>)
+            : this(id, uuid, "", "", false, mutableSetOf(), mutableSetOf(), Account(), null, deviceProperties)
 
 
     override fun hashCode(): Int {

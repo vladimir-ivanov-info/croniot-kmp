@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.croniot.android.Global
 import com.croniot.android.ui.UtilUi
-import com.croniot.android.ui.task.ViewModelTasks
+import com.croniot.android.presentation.device.tasks.ViewModelTasks
 import croniot.models.dto.ParameterTaskDto
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
@@ -34,18 +34,19 @@ fun StatefulParameter(parameter: ParameterTaskDto,
     val tasks by viewModelTasks.tasks.collectAsState()
     val taskDtoFlow = remember(tasks) {
         tasks
-            .filter { it.value.taskUid == Global.selectedTaskType!!.uid }
+            .filter { it.value.taskTypeUid == Global.selectedTaskType!!.uid }
             .maxByOrNull { it.value.getLastState().dateTime }
     }?.collectAsState()
 
     val taskDto = taskDtoFlow?.value
 
-    if(taskDto != null){
+    //if(taskDto != null){
+    taskDto?.let {
         var latestTaskInfoState = taskDto.getLastState()
 
         if(latestTaskInfoState.state != "on" && latestTaskInfoState.state != "off"){
             val secondLatestInfoState = getSecondLastState(latestTaskInfoState, taskDto)
-            if(secondLatestInfoState != null){
+            secondLatestInfoState?.let{
                 latestTaskInfoState = secondLatestInfoState
             }
         }
@@ -86,14 +87,14 @@ fun StatefulParameter(parameter: ParameterTaskDto,
 fun getSecondLastState(latestTaskInfoState: TaskStateInfoDto, taskDto: TaskDto) : TaskStateInfoDto? {
     var secondLatestTaskInfoState : TaskStateInfoDto? = null
 
-
     var aux = taskDto.stateInfos.toList().sortedByDescending { it.dateTime }
     if(aux != null && aux.size > 1){
         secondLatestTaskInfoState = aux[1]
     }
 
     if(secondLatestTaskInfoState != null){
-        if(latestTaskInfoState.state != "on" && latestTaskInfoState.state != "off" && (secondLatestTaskInfoState.state == "on" || secondLatestTaskInfoState.state == "off")) { //TODO This is a quick fix, a patch.
+        if(latestTaskInfoState.state != "on" && latestTaskInfoState.state != "off"
+            && (secondLatestTaskInfoState.state == "on" || secondLatestTaskInfoState.state == "off")) { //TODO This is a quick fix, a patch.
             return secondLatestTaskInfoState
         }
     }

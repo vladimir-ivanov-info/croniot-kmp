@@ -12,24 +12,6 @@ import jakarta.persistence.criteria.Root
 
 class DeviceDaoImpl: DeviceDao {
 
-    /*override fun insert(device: Device) : Long {
-        val session = ControllerDb.sessionFactory.openSession()
-        val transaction = session.beginTransaction()
-        val deviceId: Long
-        try {
-            session.persist(device)
-            session.flush()
-            deviceId = device.id
-            transaction.commit()
-        } catch (e: Exception) {
-            transaction.rollback()
-            throw e
-        } finally {
-            //session.close()
-        }
-        return deviceId
-    }*/
-
     override fun insert(device: Device): Long {
         ControllerDb.sessionFactory.openSession().use { session ->
             val transaction = session.beginTransaction()
@@ -43,7 +25,6 @@ class DeviceDaoImpl: DeviceDao {
             }
         }
     }
-
 
     override fun getAll(): List<Device> {
         val session = ControllerDb.sessionFactory.openSession()
@@ -69,10 +50,7 @@ class DeviceDaoImpl: DeviceDao {
 
             cr.select(root).where(emailPredicate)
 
-            //val result = sess.createQuery(cr).resultList
-
-            //return if (result.isNotEmpty()) result.first() else null
-            val query = sess.createQuery(cr).uniqueResultOptional()
+            val query = sess.createQuery(cr).uniqueResultOptional() //TODO don't let register to the same device twice:  org.hibernate.NonUniqueResultException: Query did not return a unique result: 2 results were returned
             return query.orElse(null)
         }
     }
@@ -81,7 +59,6 @@ class DeviceDaoImpl: DeviceDao {
         val session = ControllerDb.sessionFactory.openSession()
         session.use { sess ->
             val cb = sess.criteriaBuilder
-           // val cr = cb.createQuery(Array<Any>::class.java)
             val cr: CriteriaQuery<Tuple> = cb.createQuery(Tuple::class.java)
 
             val root = cr.from(Device::class.java)
