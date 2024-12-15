@@ -19,8 +19,6 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SensorsScreen(navController: NavController, viewModelSensors: ViewModelSensors){
-
-
    val globalViewModel : GlobalViewModel = koinViewModel()
    val account by globalViewModel.account.collectAsState()
     LaunchedEffect(account) {
@@ -37,8 +35,6 @@ fun SensorsScreen(navController: NavController, viewModelSensors: ViewModelSenso
         }
     }
 
-
-    //val sensorDataMap = viewModelSensors.
     val sensorMap by viewModelSensors.mapStateFlow.collectAsState()
 
     //TODO observe not map, but map values

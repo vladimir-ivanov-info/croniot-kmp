@@ -10,7 +10,7 @@ data class Task(
     @Transient
     var taskType: TaskType,
     @Transient
-    var stateInfos: MutableSet<TaskStateInfo>/*? = null*/
+    var stateInfos: MutableSet<TaskStateInfo>
 ) {
 
     constructor(): this(0, 0, mutableMapOf(), TaskType(), mutableSetOf())
@@ -38,7 +38,7 @@ data class Task(
 
 fun Task.toDto() = TaskDto(
     deviceUuid = this.taskType.device!!.uuid,
-    taskUid = this.taskType.uid,
+    taskTypeUid = this.taskType.uid,
     uid = this.uid,
     parametersValues = this.parametersValues.mapKeys { it.key.uid }.toMutableMap(),
     stateInfos = this.stateInfos.map { it.toDto() }.toMutableSet()//,

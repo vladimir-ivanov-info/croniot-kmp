@@ -31,21 +31,17 @@ object SensorsDataController {
         val sensorDataDto = SensorDataDto(deviceUuid, sensorTypeUid, sensorValue, ZonedDateTime.now())
 
         val device = ControllerDb.deviceDao.getLazy(deviceUuid)
-
-        if(device != null){
+        device?.let {
             val sensorType = ControllerDb.sensorDao.getLazy(deviceUuid, sensorTypeUid)
 
-            if(sensorType != null){
+            sensorType?.let {
                 val sensorData = SensorData(device, sensorType, sensorValue, ZonedDateTime.now())
-
                 ControllerDb.sensorDataDao.insert(sensorData)
 
                 CoroutineScope(Dispatchers.IO).launch {
                     MqttController.sendSensorData(sensorDataDto)
                 }
             }
-
-
         }
     }
 }

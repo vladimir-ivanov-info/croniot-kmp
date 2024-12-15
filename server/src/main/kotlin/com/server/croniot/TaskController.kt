@@ -38,10 +38,10 @@ object TaskController {
                 if (taskTypeExists) {
                     if (taskUid.toInt() == -1) {
                         val taskType = ControllerDb.taskTypeDao.get(device, taskTypeUid)
-                        if (taskType != null) {
+                        taskType?.let {
                             val task = ControllerDb.taskDao.create(device, taskType)
 
-                            if (task != null) {
+                            task?.let {
                                 val taskStateEnum = taskState
                                 val stateInfo = TaskStateInfo(
                                     ZonedDateTime.now(),
@@ -61,11 +61,10 @@ object TaskController {
                         }
                     } else {
                         val task = ControllerDb.taskDao.getLazy(deviceUuid, taskTypeUid, taskUid) //1700 ms -> 1500 ms -> 3 ms
-                        if (task != null) {
-                            val taskStateEnum = taskState
+                        task?.let {
                             val stateInfo = TaskStateInfo(
                                 ZonedDateTime.now(),
-                                taskStateEnum,
+                                taskState,
                                 taskProgress,
                                 errorMessage,
                                 task
@@ -75,25 +74,24 @@ object TaskController {
 
                             val stateInfoDto = stateInfo.toDto()  //1816 ms
                             CoroutineScope(Dispatchers.IO).launch {
-                                MqttController.sendNewTaskStateInfo(deviceUuid, stateInfoDto //sends twice
-                                ) //100-120 ms -> 90-100 -> 1 ms
+                                MqttController.sendNewTaskStateInfo(deviceUuid, stateInfoDto) //100-120 ms -> 90-100 -> 1 ms
                             }
                             //println("Millis 4: ${System.currentTimeMillis()} ${stateInfoDto.state}")
-
                         }
                     }
-                    //val resultMillis = System.currentTimeMillis() - startMillis //40 - 50 ms
                 }
             }
         } catch (e : Exception){
             e.printStackTrace()
         }
-
     }
 
     fun getTasksByDeviceUuid(deviceUuid: String) : List<TaskDto> {
         val tasks = ControllerDb.taskDao.getAll(deviceUuid)
         val tasksDto = tasks.map { it.toDto() }.toMutableList()
+
+        println(tasksDto)
+
         return tasksDto
     }
 

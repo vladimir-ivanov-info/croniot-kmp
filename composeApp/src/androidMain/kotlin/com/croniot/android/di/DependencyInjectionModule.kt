@@ -8,7 +8,7 @@ import com.croniot.android.presentation.device.DeviceScreenViewModel
 import com.croniot.android.presentation.login.LoginViewModel
 import com.croniot.android.presentation.devices.DevicesViewModel
 import com.croniot.android.presentation.registerAccount.ViewModelRegisterAccount
-import com.croniot.android.ui.task.ViewModelTasks
+import com.croniot.android.presentation.device.tasks.ViewModelTasks
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

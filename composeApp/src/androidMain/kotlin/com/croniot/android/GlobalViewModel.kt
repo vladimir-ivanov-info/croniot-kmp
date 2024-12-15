@@ -15,7 +15,7 @@ class GlobalViewModel : ViewModel(), KoinComponent {
     init {
         val account = SharedPreferences.getAccout()
         viewModelScope.launch {
-            if (account != null) {
+            account?.let{
                 _account.emit(account)
             }
         }

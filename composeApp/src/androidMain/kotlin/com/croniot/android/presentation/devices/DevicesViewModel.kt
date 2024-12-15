@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import croniot.models.dto.DeviceDto
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -35,9 +36,8 @@ class DevicesViewModel : ViewModel(), KoinComponent {
     }
 
     fun listenToDevicesIfNeeded(){
-
         val account = globalViewModel.account.value
-        if(account != null){
+        account?.let {
             updateDevices(account.devices.filter{ it.name.isNotEmpty() }.toList()) //TODO for now we leave this filter
         }
     }
@@ -51,7 +51,7 @@ class DevicesViewModel : ViewModel(), KoinComponent {
     }
 
     fun updateDevices(devices: List<DeviceDto>){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             _devices.emit(devices)
         }
     }

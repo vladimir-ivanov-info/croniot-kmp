@@ -1,23 +1,18 @@
-package com.croniot.android.ui.task
+package com.croniot.android.presentation.device.tasks
 
 import MqttHandler
-import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.Global
 import com.croniot.android.data.source.remote.retrofit.RetrofitClient
-import com.croniot.android.presentation.device.tasks.MqttDataProcessorNewTask
-import com.croniot.android.presentation.device.tasks.MqttDataProcessorTaskProgress
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.koin.core.component.KoinComponent
 
@@ -102,8 +97,8 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
                     ), null)
 
                 val selectedDevice = Global.selectedDevice
-                if(selectedDevice != null){
-                    MqttHandler(mqttClient, MqttDataProcessorNewTask(selectedDevice.uuid), topic)
+                selectedDevice?.let{
+                    MqttHandler(mqttClient, MqttDataProcessorNewTask(it.uuid), topic)
                 }
 
             } catch (e: Exception) {
@@ -116,8 +111,8 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
         val listOfMutableStateFlows = _tasks.value
         val taskMutableStateFlow = listOfMutableStateFlows.find { it.value.uid == taskStateInfoDto.taskUid }
 
-        if (taskMutableStateFlow != null) {
-            taskMutableStateFlow.update { currentValue ->
+        taskMutableStateFlow?.let{
+            it.update { currentValue ->
                 currentValue.copy(
                     stateInfos = currentValue.stateInfos.toMutableSet().apply {
                         add(taskStateInfoDto)
@@ -131,10 +126,10 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
         _tasks.update { currentTasks ->
             val existingTask = currentTasks.find { it.value.uid == taskDto.uid }
 
-            if (existingTask != null) {
+            existingTask?.let {
                 existingTask.value = taskDto // Update existing task
                 currentTasks // Return unchanged list
-            } else {
+            } ?: run {
                 currentTasks + MutableStateFlow(taskDto) // Return new list with added task
             }
         }
