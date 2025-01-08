@@ -8,11 +8,10 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.croniot.android.CurrentScreen
-import com.croniot.android.Global
-import com.croniot.android.UiConstants
-import com.croniot.android.di.DependencyInjectionModule
-import com.croniot.android.ui.theme.IoTClientTheme
+import com.croniot.android.app.Global
+import com.croniot.android.core.presentation.UiConstants
+import com.croniot.android.core.di.DependencyInjectionModule
+import com.croniot.android.core.presentation.theme.IoTClientTheme
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -20,7 +19,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.androidx.compose.koinViewModel
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
