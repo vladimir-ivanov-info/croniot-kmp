@@ -7,6 +7,7 @@ import com.croniot.android.core.util.StringUtil
 import com.google.gson.GsonBuilder
 import croniot.models.dto.AccountDto
 import croniot.models.dto.DeviceDto
+import croniot.models.dto.TaskTypeDto
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.time.ZonedDateTime

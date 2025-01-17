@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.croniot.android.core.presentation.SharedPreferencesViewModel
 import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.presentation.util.UtilUi
 import org.koin.androidx.compose.koinViewModel
@@ -94,12 +95,12 @@ fun ConfigurationScreenBody(navController: NavController, innerPadding: PaddingV
 }
 
 @Composable
-fun Configuration(navController: NavController, modifier: Modifier){
+fun Configuration(navController: NavController, modifier: Modifier, sharedPreferencesViewModel: SharedPreferencesViewModel = koinViewModel()){
 
-    val context = LocalContext.current
     val configurationViewModel : ConfigurationViewModel = koinViewModel()
     val foregroundServiceEnabled by configurationViewModel.foregroundServiceEnabled.collectAsState()
 
+    val useRemoteServer by sharedPreferencesViewModel.serverMode.collectAsState()
     Column(modifier = modifier){
         Box(
             modifier = Modifier
@@ -116,7 +117,28 @@ fun Configuration(navController: NavController, modifier: Modifier){
                 modifier = Modifier.align(Alignment.CenterEnd),
                 checked = foregroundServiceEnabled,
                 onCheckedChange = {
-                    configurationViewModel.setConfigurationForegoundService(context, it)
+                    configurationViewModel.setConfigurationForegoundService(it)
+                }
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ){
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterStart),
+                text = "Use remote server",
+                fontSize = UtilUi.TEXT_SIZE_4,
+            )
+
+            Switch(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                checked = useRemoteServer == "remote", //TODO use constants
+                onCheckedChange = {
+                    //configurationViewModel.setConfigurationForegoundService(context, it)
+                    sharedPreferencesViewModel.changeServerMode()
                 }
             )
         }

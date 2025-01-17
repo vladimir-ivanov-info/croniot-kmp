@@ -9,9 +9,9 @@ import org.koin.dsl.module
 object RegisterAccountModule{
 
     val registerAccountModule = module {
-        factory { RegisterAccountUseCase() } // UseCase can remain factory.
-        single { RegisterAccountController(get()) } // Singleton for the controller.
-        viewModel { ViewModelRegisterAccount(get()) } // ViewModel depends on the controller.
+        factory { RegisterAccountUseCase() }
+        single { RegisterAccountController(get()) }
+        viewModel { ViewModelRegisterAccount(get()) }
     }
 
 }

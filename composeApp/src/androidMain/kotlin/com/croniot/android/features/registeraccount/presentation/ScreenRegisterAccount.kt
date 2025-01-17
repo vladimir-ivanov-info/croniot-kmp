@@ -41,7 +41,6 @@ import com.croniot.android.core.presentation.util.StatefulTextField
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenRegisterAccount(navController: NavController) {

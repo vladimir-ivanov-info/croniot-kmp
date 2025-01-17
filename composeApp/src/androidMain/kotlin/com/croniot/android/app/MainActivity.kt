@@ -2,38 +2,17 @@ package com.croniot.android.app
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
-import com.croniot.android.features.device.presentation.DeviceScreen
-import com.croniot.android.features.login.presentation.LoginScreen
-import com.croniot.android.features.registeraccount.presentation.ScreenRegisterAccount
 import com.croniot.android.core.presentation.theme.IoTClientTheme
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.croniot.android.features.configuration.ConfigurationScreen
-import com.croniot.android.features.deviceslist.DevicesScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.maplibre.android.MapLibre
 import android.Manifest
 import androidx.core.app.ActivityCompat
-import androidx.navigation.NavController
 import com.croniot.android.core.data.source.local.SharedPreferences
-import com.croniot.android.core.presentation.UiConstants
-import com.croniot.android.core.presentation.composables.map.MapScreen
-import com.croniot.android.core.util.NetworkUtil
-import com.croniot.android.features.device.features.tasktypes.CreateTaskScreen
-import com.croniot.android.features.login.controller.LoginController
-
 
 class MainActivity : ComponentActivity() {
 
@@ -52,19 +31,16 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun askNotificationPermissionIfNecessary() {
-        // Check if the permission is already granted
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    REQUEST_NOTIFICATION_PERMISSION
-                )
-            }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_NOTIFICATION_PERMISSION
+            )
         }
     }
 
@@ -92,81 +68,9 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-        // Retrieve and set selected device if available
         val selectedDevice = SharedPreferences.getSelectedDevice()
         selectedDevice?.let{
             Global.selectedDevice = selectedDevice
-        }
-    }
-
-}
-
-private fun saveCurrentScreenAsync(currentScreen: String) {
-    CoroutineScope(Dispatchers.IO).launch {
-        SharedPreferences.saveData(SharedPreferences.KEY_CURRENT_SCREEN, currentScreen)
-    }
-}
-
-@Composable
-fun CurrentScreen(){
-    SharedPreferences.generateAndSaveDeviceUuidIfNotExists()
-    LaunchedEffect(Unit) {
-        NetworkUtil.resolveServerAddressIfNotExists()
-    }
-
-    val navController = rememberNavController()
-
-    LaunchedEffect(navController) {
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            destination.route?.let { route ->
-                saveCurrentScreenAsync(route)
-            }
-        }
-
-        val currentScreen = SharedPreferences.loadData(SharedPreferences.KEY_CURRENT_SCREEN)
-        if(currentScreen != UiConstants.ROUTE_LOGIN && currentScreen != UiConstants.ROUTE_CONFIGURATION){ // or configuration screen
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val latestLoggedInEmail = SharedPreferences.loadData(SharedPreferences.KEY_ACCOUNT_EMAIL)
-                val latestLoggedInPassword = SharedPreferences.loadData(SharedPreferences.KEY_ACCOUNT_PASSWORD)
-
-                if(latestLoggedInEmail != null && latestLoggedInPassword != null){
-                    val success = LoginController.checkedLoginState(latestLoggedInEmail, latestLoggedInPassword)
-                    if(!success){
-                        clearSessionCacheAndMoveToLoginScreen(navController)
-                    }
-                } else {
-                    clearSessionCacheAndMoveToLoginScreen(navController)
-                }
-            }
-        }
-    }
-
-    NavHost(
-        navController = navController,
-        startDestination = SharedPreferences.loadData(SharedPreferences.KEY_CURRENT_SCREEN) ?: UiConstants.ROUTE_LOGIN,
-        //enterTransition = { EnterTransition.None },
-        //exitTransition = { ExitTransition.None }
-    ) {
-        //composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
-        composable("MAPS"){ MapScreen() }
-        composable(UiConstants.ROUTE_REGISTER_ACCOUNT) { ScreenRegisterAccount(navController) }
-
-        composable(UiConstants.ROUTE_LOGIN) { LoginScreen(navController) }
-        composable(UiConstants.ROUTE_CONFIGURATION) { ConfigurationScreen(navController) }
-
-        composable(UiConstants.ROUTE_DEVICE) { DeviceScreen(navController) }
-        composable(UiConstants.ROUTE_DEVICES) { DevicesScreen(navController) }
-        composable(UiConstants.ROUTE_CREATE_TASK) { CreateTaskScreen(navController) }
-    }
-}
-
-fun clearSessionCacheAndMoveToLoginScreen(navController: NavController){
-    SharedPreferences.clearCache()
-    CoroutineScope(Dispatchers.Main).launch {
-        navController.navigate(UiConstants.ROUTE_LOGIN) {
-            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-            launchSingleTop = true
         }
     }
 }

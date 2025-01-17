@@ -1,14 +1,7 @@
 package com.croniot.android.app
 
-import com.google.gson.Gson
-import croniot.models.Result
 import croniot.models.dto.DeviceDto
 import croniot.models.dto.TaskTypeDto
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStream
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.*
 
 object Global {
@@ -35,6 +28,6 @@ object Global {
     }
 
     var selectedDevice : DeviceDto? = null
-    var selectedTaskType: TaskTypeDto? = null //TODO persist
+    var selectedTaskType: TaskTypeDto? = null
 
 }

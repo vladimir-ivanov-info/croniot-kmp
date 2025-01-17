@@ -26,7 +26,6 @@ object RetrofitClient {
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
 
-    val loginApiService: LoginApiService = retrofit.create(LoginApiService::class.java)
     val taskConfigurationApiService: TaskConfigurationApiService = retrofit.create(
         TaskConfigurationApiService::class.java)
 }

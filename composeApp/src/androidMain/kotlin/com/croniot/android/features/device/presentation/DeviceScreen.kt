@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,7 +44,7 @@ val deviceScreenTabsNames = listOf("Sensors", "Task types", "Tasks")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceScreen(navController: NavController,
-                 viewModelSensors: ViewModelSensors = koinViewModel()) {
+                 viewModelSensors: ViewModelSensors) {
 
     BackHandler {
         if(!navController.popBackStack()){
@@ -61,7 +60,6 @@ fun DeviceScreen(navController: NavController,
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically) {
                         IconButton(
-                            //modifier = modifier.padding(end = 8.dp),
                             modifier = Modifier.padding(end = 8.dp),
                             onClick = {
                                 val result = navController.popBackStack()
@@ -77,18 +75,11 @@ fun DeviceScreen(navController: NavController,
                         }
 
                         Box(contentAlignment = Alignment.CenterStart) {
-
-                            val selectedDevice = Global.selectedDevice
-
-                            //if(selectedDevice != null){
+                            val selectedDevice = Global.selectedDevice //TODO save persistently as accounUuid/deviceUuid
                             selectedDevice?.let{
                                 Text(text = selectedDevice.name)
-                            } ?:// {
-                                //LOGOUT
-                                LoginController.forceLogOut(navController)
-                            //}
+                            } ?: LoginController.forceLogOut(navController)
                         }
-
                     }
                 },
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
