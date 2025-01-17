@@ -59,8 +59,8 @@ fun Application.configureRouting() {
             val startMillis = System.currentTimeMillis()
 
             val message = call.receiveText();
-            val messageLogin = MessageFactory.fromJson<MessageLogin>(message)
-            val loginResult = AuthenticationController.tryLogin(messageLogin)
+            val messageLoginRequest = MessageFactory.fromJson<MessageLoginRequest>(message)
+            val loginResult = AuthenticationController.tryLogin(messageLoginRequest)
             val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(loginResult)
 
             val endMillis = System.currentTimeMillis()
@@ -73,8 +73,8 @@ fun Application.configureRouting() {
 
         post("/api/iot/login") {
             val message = call.receiveText();
-            val messageLogin = MessageFactory.fromJson<MessageLogin>(message)
-            val loginIotResult = AuthenticationController.tryLoginIoT(messageLogin)
+            val messageLoginRequest = MessageFactory.fromJson<MessageLoginRequest>(message)
+            val loginIotResult = AuthenticationController.tryLoginIoT(messageLoginRequest)
             val responseJSON = GsonBuilder().setPrettyPrinting().create().toJson(loginIotResult)
             call.respondText(responseJSON, ContentType.Text.Plain)
         }

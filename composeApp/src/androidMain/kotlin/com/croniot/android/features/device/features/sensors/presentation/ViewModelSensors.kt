@@ -5,7 +5,7 @@ import com.croniot.android.core.presentation.composables.map.MqttProcessorMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.app.Global
-import com.croniot.android.app.GlobalViewModel
+import com.croniot.android.core.data.source.repository.AccountRepository
 import com.croniot.android.features.device.features.sensors.data.processor.MqttProcessorSensorData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -21,6 +21,8 @@ import java.time.ZonedDateTime
 
 class ViewModelSensors() : ViewModel(), KoinComponent {
 
+    private val accountRepository: AccountRepository = get()
+
     private var _listeningToClientSensors = false
 
     private val _mapStateFlow = MutableStateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>>(emptyMap())
@@ -31,8 +33,6 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
 
     val mqttClients : MutableList<MqttClient> = mutableListOf()
 
-    private val globalViewModel: GlobalViewModel = get()
-
     fun uninit(){
         viewModelScope.launch{
             for(mqttClient in mqttClients){
@@ -40,7 +40,6 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
             }
             mqttClients.clear()
 
-            //_map.values.clear()
             _mapStateFlow.value = emptyMap()
             _gps.value = ""
 
@@ -48,19 +47,16 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
         }
     }
 
-    init {
-        listenToClientSensorsIfNeeded()
-    }
-
     suspend fun isAccountInitialized() : Boolean {
         return withContext(Dispatchers.Main) {
-            globalViewModel.account.value != null
+            accountRepository.account != null
         }
     }
 
     fun listenToClientSensorsIfNeeded(){
 
-        val account = globalViewModel.account.value
+        val account = accountRepository.account.value //TODO null account
+
         account?.let{
             val devices = it.devices
 
@@ -84,16 +80,17 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
 
                             val value = SensorDataDto(deviceUuid, sensor.uid, "empty_value", ZonedDateTime.now()) //TODO empty_value is a constant
 
-                            _mapStateFlow.value = _mapStateFlow.value.toMutableMap().apply {
-                                this[sensor] = MutableStateFlow(value)
+                            withContext(Dispatchers.Main){
+                                _mapStateFlow.value = _mapStateFlow.value.toMutableMap().apply {
+                                    this[sensor] = MutableStateFlow(value)
+                                }
                             }
+
                         }
                     }
                 }
             }
-        } /*else {
-
-        }*/
+        }
     }
 
     //TODO experimental

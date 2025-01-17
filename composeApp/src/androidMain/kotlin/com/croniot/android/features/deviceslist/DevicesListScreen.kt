@@ -38,8 +38,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.app.Global
-import com.croniot.android.app.GlobalViewModel
+//import com.croniot.android.app.GlobalViewModel
 import com.croniot.android.core.data.source.local.SharedPreferences
+import com.croniot.android.core.data.source.repository.AccountRepository
 import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
 import com.croniot.android.features.login.controller.LoginController
@@ -48,29 +49,22 @@ import com.croniot.android.core.presentation.util.GenericAlertDialog
 import croniot.models.dto.DeviceDto
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DevicesScreen(navController: NavController,/* modifier: Modifier, */
+fun DevicesScreen(navController: NavController,
                   devicesListViewModel: DevicesListViewModel = koinViewModel(),
-                  viewModelSensors: ViewModelSensors = koinViewModel(),
-                  globalViewModel: GlobalViewModel = koinViewModel()) {
-
+) {
     var showLogoutDialog by remember { mutableStateOf(false) }
 
     BackHandler {
         showLogoutDialog = true
     }
 
-    val account by globalViewModel.account.collectAsState()
-    LaunchedEffect(account) {
-        devicesListViewModel.listenToDevicesIfNeeded()
-        viewModelSensors.listenToClientSensorsIfNeeded()
-    } //TODO
-
     LaunchedEffect(Unit) {
         devicesListViewModel.startTimer()
-        viewModelSensors.listenToClientSensorsIfNeeded()
     }
 
     var expanded by remember { mutableStateOf(false) }
