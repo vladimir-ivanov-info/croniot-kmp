@@ -13,17 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.croniot.android.app.GlobalViewModel
 import com.croniot.android.features.login.controller.LoginController
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SensorsScreen(navController: NavController, viewModelSensors: ViewModelSensors){
-   val globalViewModel : GlobalViewModel = koinViewModel()
-   val account by globalViewModel.account.collectAsState()
-    LaunchedEffect(account) {
-        viewModelSensors.listenToClientSensorsIfNeeded()
-    }
 
     LaunchedEffect(Unit) {
         val result = viewModelSensors.isAccountInitialized()

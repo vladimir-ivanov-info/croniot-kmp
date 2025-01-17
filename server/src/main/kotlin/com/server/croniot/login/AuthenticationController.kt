@@ -3,23 +3,22 @@ package com.croniot.server.login
 import Global
 import MqttController
 import com.croniot.server.db.controllers.ControllerDb
-import croniot.messages.MessageLogin
+import croniot.messages.MessageLoginRequest
 import croniot.models.*
-import org.hibernate.stat.Statistics
 
 
 object AuthenticationController {
 
-    fun tryLogin(messageLogin: MessageLogin) : LoginResult {
+    fun tryLogin(messageLoginRequest: MessageLoginRequest) : LoginResult {
 
         var result = LoginResult(Result(false, ""), null, null)
 
 //TODO first check email and password
-        val accountEmail = messageLogin.accountEmail
-        val accountPassword = messageLogin.accountPassword
-        val deviceUuid = messageLogin.deviceUuid
-        val deviceToken = messageLogin.deviceToken
-        val deviceProperties = messageLogin.deviceProperties
+        val accountEmail = messageLoginRequest.email
+        val accountPassword = messageLoginRequest.password
+        val deviceUuid = messageLoginRequest.deviceUuid
+        val deviceToken = messageLoginRequest.deviceToken
+        val deviceProperties = messageLoginRequest.deviceProperties
 
         val startMillis = System.currentTimeMillis()
 
@@ -60,13 +59,13 @@ object AuthenticationController {
         return result
     }
 
-    fun tryLoginIoT(messageLogin: MessageLogin) : Result {
+    fun tryLoginIoT(messageLoginRequest: MessageLoginRequest) : Result {
         var result = Result(false, "Login failed.")
 
-        val accountEmail = messageLogin.accountEmail
-        val accountPassword = messageLogin.accountPassword
-        val deviceUuid = messageLogin.deviceUuid
-        val deviceToken = messageLogin.deviceToken
+        val accountEmail = messageLoginRequest.email
+        val accountPassword = messageLoginRequest.password
+        val deviceUuid = messageLoginRequest.deviceUuid
+        val deviceToken = messageLoginRequest.deviceToken
 
         var device : Device? = null
         deviceToken?.let {

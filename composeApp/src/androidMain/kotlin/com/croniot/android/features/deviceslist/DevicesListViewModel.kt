@@ -2,24 +2,44 @@ package com.croniot.android.features.deviceslist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.android.app.GlobalViewModel
+import com.croniot.android.core.data.source.repository.AccountRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import croniot.models.dto.DeviceDto
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
-class DevicesListViewModel : ViewModel(), KoinComponent {
+class DevicesListViewModel() : ViewModel(), KoinComponent {
+
+    private val accountRepository: AccountRepository = get()
 
     private val _devices = MutableStateFlow<List<DeviceDto>>(emptyList())
     val devices: StateFlow<List<DeviceDto>> get() = _devices
 
     private val _lastOnlineUpdates = mutableMapOf<String, Long>()
 
-    private val globalViewModel: GlobalViewModel = get()
+    init {
+        init1()
+    }
+
+    fun init1(){
+        println()
+
+        viewModelScope.launch {
+            accountRepository.account.collect { account ->
+                account?.let {
+                    val devices = account.devices
+                    updateDevices(devices.filter { device -> device.name.isNotEmpty() })
+                } //TODO else
+
+                if (account == null) {
+                    updateDevices(emptyList())
+                }
+            }
+        }
+    }
 
     fun uninit(){
         _devices.value = emptyList()
@@ -34,13 +54,6 @@ class DevicesListViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    fun listenToDevicesIfNeeded(){ //TODO observe account and react to changes
-        val account = globalViewModel.account.value
-        account?.let {
-            updateDevices(account.devices.filter{ it.name.isNotEmpty() }.toList()) //TODO for now we leave this filter
-        }
-    }
-
     private suspend fun emitTimerTick() {
         val updatedDevices = _devices.value.map { device ->
             val lastOnlineUpdate = _lastOnlineUpdates[device.uuid] ?: device.lastOnlineMillis
@@ -50,7 +63,7 @@ class DevicesListViewModel : ViewModel(), KoinComponent {
     }
 
     fun updateDevices(devices: List<DeviceDto>){
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             _devices.emit(devices)
         }
     }
