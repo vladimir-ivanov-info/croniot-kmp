@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import com.croniot.android.core.data.source.local.SharedPreferences
 import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.data.source.repository.AccountRepository
-import com.croniot.android.core.data.source.repository.MqttSensorDataRepository
+import com.croniot.android.core.data.source.repository.SensorDataRepositoryImpl
 import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
 import com.croniot.android.features.deviceslist.DevicesListViewModel
 import com.croniot.android.features.device.features.tasks.ViewModelTasks
@@ -20,7 +20,7 @@ import org.koin.core.component.get
 object LoginController : KoinComponent {
 
     val accountRepository : AccountRepository = get()
-    val sensorDataRepository: MqttSensorDataRepository = get()
+    val sensorDataRepository: SensorDataRepositoryImpl = get()
 
 
     fun logOut(navController: NavController) {
