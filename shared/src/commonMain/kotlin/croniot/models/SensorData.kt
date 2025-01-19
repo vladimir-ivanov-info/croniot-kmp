@@ -40,5 +40,5 @@ fun SensorData.toDto() = SensorDataDto(
     deviceUuid = device.uuid,
     sensorTypeUid = sensorType.uid,
     value = value,
-    dateTime = dateTime
+    timestamp = dateTime
 )

@@ -4,14 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.core.data.source.local.SharedPreferences
 import com.croniot.android.core.data.source.repository.AccountRepository
+import com.croniot.android.features.login.controller.LoginController
 import com.croniot.android.features.login.usecase.LoginUseCase
 import com.croniot.android.features.login.usecase.LogoutUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 
 class LoginViewModel(
@@ -40,10 +43,10 @@ class LoginViewModel(
     fun login() {
         viewModelScope.launch {
 
-            val result = loginUseCase(
-                email = _uiState.value.email,
-                password = _uiState.value.password
-            )
+            val email = _uiState.value.email
+            val password = _uiState.value.password
+
+            val result = loginUseCase(email, password)
 
             val token = result.token
 
@@ -52,7 +55,9 @@ class LoginViewModel(
             }
 
             if (result.result.success) {
-                accountRepository.updateAccount(result.account!!) //TODO
+                withContext(Dispatchers.IO){
+                    LoginController.processLoginSuccess(result.account!!) //TODO
+                }
 
                 _uiState.value = _uiState.value.copy(isLoading = false, loggedIn = true)
             } else {

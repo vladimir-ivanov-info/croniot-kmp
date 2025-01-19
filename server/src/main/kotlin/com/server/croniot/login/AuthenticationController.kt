@@ -6,7 +6,6 @@ import com.croniot.server.db.controllers.ControllerDb
 import croniot.messages.MessageLoginRequest
 import croniot.models.*
 
-
 object AuthenticationController {
 
     fun tryLogin(messageLoginRequest: MessageLoginRequest) : LoginResult {
