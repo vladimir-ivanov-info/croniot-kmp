@@ -2,14 +2,14 @@ package com.croniot.android.features.device.features.sensors.presentation
 
 import androidx.lifecycle.ViewModel
 
-import com.croniot.android.core.data.source.repository.MqttSensorDataRepository
+import com.croniot.android.core.data.source.repository.SensorDataRepositoryImpl
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 class ViewModelSensors() : ViewModel(), KoinComponent {
 
-    private val mqttSensorDataRepository: MqttSensorDataRepository = get()
-    val sensorDataStateFlow = mqttSensorDataRepository.sensorDataStateFlow
+    private val sensorDataRepositoryImpl: SensorDataRepositoryImpl = get()
+    val sensorDataStateFlow = sensorDataRepositoryImpl.sensorDataStateFlow
 
 }
 

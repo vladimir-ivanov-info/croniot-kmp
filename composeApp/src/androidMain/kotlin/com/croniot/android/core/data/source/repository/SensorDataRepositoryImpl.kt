@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import org.eclipse.paho.client.mqttv3.MqttClient
 import java.time.ZonedDateTime
 
-class MqttSensorDataRepository() : SensorDataRepository {
+class SensorDataRepositoryImpl() : SensorDataRepository {
 
     private var _sensorDataStateFlow = MutableStateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>>(emptyMap())
     val sensorDataStateFlow : StateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>> get() = _sensorDataStateFlow
