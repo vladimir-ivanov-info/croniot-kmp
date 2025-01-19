@@ -3,6 +3,7 @@ package com.croniot.android.app
 import android.app.Application
 import com.croniot.android.core.di.DependencyInjectionModule
 import com.croniot.android.core.di.NetworkModule
+import com.croniot.android.features.device.features.sensors.di.SensorsModule
 import com.croniot.android.features.registeraccount.di.RegisterAccountModule
 import com.croniot.android.features.login.di.LoginModule
 import org.koin.android.ext.koin.androidContext
@@ -22,7 +23,8 @@ class MyApp : Application() {
                 DependencyInjectionModule.dependencyInjectionModule,
                 NetworkModule.networkModule,
                 RegisterAccountModule.registerAccountModule,
-                LoginModule.loginModule
+                LoginModule.loginModule,
+                SensorsModule.sensorsModule
             )
         }
     }
