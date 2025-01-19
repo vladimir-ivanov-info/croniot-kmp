@@ -35,7 +35,7 @@ fun MapScreen(
     savedLocations: List<Point> = emptyList() // Use an empty list if you don't have locations yet
 ) {
     LaunchedEffect(Unit) {
-        viewModelSensors.listenToMapUpdates()
+        //viewModelSensors.listenToMapUpdates()
     }
 
     val context = LocalContext.current
@@ -61,8 +61,8 @@ fun MapScreen(
             map.cameraPosition = cameraPosition
         }
     }
-
-    val gps = viewModelSensors.gps.collectAsState()
+    //TODO
+    /*val gps = viewModelSensors.gps.collectAsState()
     val gpsString = gps.value
     if(gpsString.isNotEmpty()){
         val dataStr = gpsString.split(",")
@@ -78,7 +78,7 @@ fun MapScreen(
         if(mapLibre != null){
             addMarkersToMap(fatureCollection, mapLibre, context, dateTime)
         }
-    }
+    }*/
 
     AndroidView(
         factory = { mapView },

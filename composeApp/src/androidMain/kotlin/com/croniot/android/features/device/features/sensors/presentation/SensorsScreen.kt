@@ -18,17 +18,7 @@ import com.croniot.android.features.login.controller.LoginController
 @Composable
 fun SensorsScreen(navController: NavController, viewModelSensors: ViewModelSensors){
 
-    LaunchedEffect(Unit) {
-        val result = viewModelSensors.isAccountInitialized()
-
-        if(!result){
-            LoginController.forceLogOut(navController)
-        } else {
-            viewModelSensors.listenToClientSensorsIfNeeded()
-        }
-    }
-
-    val sensorMap by viewModelSensors.mapStateFlow.collectAsState()
+    val sensorMap by viewModelSensors.sensorDataStateFlow.collectAsState()
 
     //TODO observe not map, but map values
     Box(modifier = Modifier

@@ -65,7 +65,7 @@ fun SensorItem(sensor: SensorTypeDto, sensorDataFlow: MutableStateFlow<SensorDat
 
             val list = remember { mutableListOf<Float>() }
 
-            if(!sensorData.value.equals("empty_value")){
+            if(sensorData.value != "empty_value"){ //TODO make const
                 try{
                     val data = sensorData.value.toFloat()
                     list.add(data)

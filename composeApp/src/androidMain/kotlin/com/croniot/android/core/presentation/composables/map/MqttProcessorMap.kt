@@ -22,7 +22,7 @@ class MqttProcessorMap() : MqttDataProcessor, KoinComponent {
         CoroutineScope(Dispatchers.IO).launch {
             val mapValue = data as String
             println(mapValue)
-            viewModelSensors.updateMap(mapValue)
+            //TODO viewModelSensors.updateMap(mapValue)
         }
     }
 }
