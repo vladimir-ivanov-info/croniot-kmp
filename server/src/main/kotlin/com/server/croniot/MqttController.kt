@@ -71,7 +71,6 @@ object MqttController {
 
     //TODO store these MQTT connections in a class variable so we can stop them later
     fun initTaskStateController(){
-
         val devices = ControllerDb.deviceDao.getAll()
         val iotDevices = devices.filter { it.iot }
 
@@ -84,11 +83,9 @@ object MqttController {
 
     //TODO store these MQTT connections in a class variable so we can stop them later
     fun listenToNewDevice(device: Device){
-        CoroutineScope(Dispatchers.IO).launch {
-            val topic =  "/iot_to_server/task_progress_update/${device.uuid}"
-            val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
-            MqttHandler(mqttClient, MqttDataProcessorTaskProgress(device.uuid), topic)
-        }
+        val topic =  "/iot_to_server/task_progress_update/${device.uuid}"
+        val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
+        MqttHandler(mqttClient, MqttDataProcessorTaskProgress(device.uuid), topic)
     }
 
     //TODO unify these 2 methods in the future
@@ -136,13 +133,13 @@ object MqttController {
 
     suspend fun sendSensorData(sensorDataDto: SensorDataDto){
         clientLock.withLock {
-            val topic = "/server_to_app/${sensorDataDto.deviceUuid}/sensor_data/${sensorDataDto.sensorTypeUid}"
+            val topic = "/server_to_app/${sensorDataDto.deviceUuid}/sensor_data"
 
             val json = gsonZonedDateTime.toJson(sensorDataDto)
 
             val message = MqttMessage(json.toByteArray())
             message.qos = 2 //TODO when Arduino implements compatible with QOS=2 MQTT library
-            message.isRetained  = false
+            message.isRetained = false
             deviceMqttClient.publish(topic, message) //TODO
         }
     }

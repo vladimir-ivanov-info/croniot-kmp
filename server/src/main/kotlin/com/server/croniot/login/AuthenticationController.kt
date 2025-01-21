@@ -5,6 +5,9 @@ import MqttController
 import com.croniot.server.db.controllers.ControllerDb
 import croniot.messages.MessageLoginRequest
 import croniot.models.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object AuthenticationController {
 
@@ -42,8 +45,9 @@ object AuthenticationController {
                 val newDevice = Device(uuid = deviceUuid, account = account, deviceProperties = deviceProperties)
                 ControllerDb.deviceDao.insert(newDevice)
 
-                MqttController.listenToNewDevice(newDevice)
-
+                CoroutineScope(Dispatchers.IO).launch {
+                    MqttController.listenToNewDevice(newDevice)
+                }
                 newToken = Global.generateUniqueString(8)
                 ControllerDb.deviceTokenDao.insert(DeviceToken(newDevice, newToken))
             }

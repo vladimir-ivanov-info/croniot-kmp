@@ -4,6 +4,7 @@ import MqttController
 import MqttDataProcessorSensor
 import MqttHandler
 import com.croniot.server.db.controllers.ControllerDb
+import croniot.messages.MessageSensorData
 import croniot.models.SensorData
 import croniot.models.dto.SensorDataDto
 import kotlinx.coroutines.CoroutineScope
@@ -17,30 +18,25 @@ object SensorsDataController {
         val devices = ControllerDb.deviceDao.getAll();
 
         for(device in devices){
-            for(sensorType in device.sensorTypes){
-                val deviceUuid = device.uuid
-                val topic = "/${device.uuid}/sensor_data/${sensorType.uid}"
 
-                val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
-                var mqttHandler = MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, sensorType.uid), topic)
-            }
+            val deviceUuid = device.uuid
+            val topic = "/${device.uuid}/sensor_data"
+
+            val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
+            MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid), topic)
         }
     }
 
-    fun processSensorData(deviceUuid: String, sensorTypeUid: Long, sensorValue: String){
-        val sensorDataDto = SensorDataDto(deviceUuid, sensorTypeUid, sensorValue, ZonedDateTime.now())
+    fun processSensorData(deviceUuid: String, messageSensorData: MessageSensorData, /*sensorTypeUid: Long, sensorValue: String*/){
+
+        val sensorDataDto = SensorDataDto(deviceUuid, messageSensorData.sensorTypeId, messageSensorData.value, ZonedDateTime.now())
 
         val device = ControllerDb.deviceDao.getLazy(deviceUuid)
         device?.let {
-            val sensorType = ControllerDb.sensorDao.getLazy(deviceUuid, sensorTypeUid)
-
-            sensorType?.let {
-                val sensorData = SensorData(device, sensorType, sensorValue, ZonedDateTime.now())
-                ControllerDb.sensorDataDao.insert(sensorData)
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    MqttController.sendSensorData(sensorDataDto)
-                }
+            //TODO should check if sensor type actually exists
+            //val sensorType = ControllerDb.sensorDao.getLazy(deviceUuid, sensorTypeUid)
+            CoroutineScope(Dispatchers.IO).launch {
+                MqttController.sendSensorData(sensorDataDto)
             }
         }
     }

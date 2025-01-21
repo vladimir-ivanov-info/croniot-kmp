@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import com.croniot.android.core.data.source.local.SharedPreferences
 import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.data.source.repository.AccountRepository
-import com.croniot.android.core.data.source.repository.SensorDataRepositoryImpl
+import com.croniot.android.core.data.source.repository.SensorDataRepository
 import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
 import com.croniot.android.features.deviceslist.DevicesListViewModel
 import com.croniot.android.features.device.features.tasks.ViewModelTasks
@@ -20,8 +20,7 @@ import org.koin.core.component.get
 object LoginController : KoinComponent {
 
     val accountRepository : AccountRepository = get()
-    val sensorDataRepository: SensorDataRepositoryImpl = get()
-
+    val sensorDataRepository: SensorDataRepository = get()
 
     fun logOut(navController: NavController) {
         val devicesListViewModel: DevicesListViewModel = get()
@@ -65,12 +64,15 @@ object LoginController : KoinComponent {
             val account = accountRepository.account.value
             account?.let {
                 for(device in account.devices){
-                    for(sensorType in device.sensors){
+                    GlobalScope.launch{ //TODO
+                        sensorDataRepository.listenToDeviceSensors(device)
+                    }
+                    /*for(sensorType in device.sensors){
                         val deviceUuid = device.uuid
                         GlobalScope.launch{ //TODO
-                            sensorDataRepository.listenToSensor(deviceUuid, sensorType)
+                            sensorDataRepository.listenToDeviceSensors(deviceUuid, sensorType)
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -111,12 +113,16 @@ object LoginController : KoinComponent {
         accountRepository.updateAccount(account)
 
         for(device in account.devices){
-            for(sensorType in device.sensors){
+            GlobalScope.launch{ //TODO do this in an IO viewModelScope coroutine
+                sensorDataRepository.listenToDeviceSensors(device)
+            }
+            /*for(sensorType in device.sensors){
                 val deviceUuid = device.uuid
                 GlobalScope.launch{ //TODO do this in an IO viewModelScope coroutine
-                    sensorDataRepository.listenToSensor(deviceUuid, sensorType)
+                    sensorDataRepository.listenToDeviceSensors(deviceUuid, sensorType)
                 }
-            }
+            }*/
+
         }
     }
 }

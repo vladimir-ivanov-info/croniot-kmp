@@ -1,14 +1,9 @@
-import croniot.messages.MessageFactory
-import croniot.messages.MessageSensorData
 import croniot.models.MqttDataProcessor
 import org.eclipse.paho.client.mqttv3.*
 
-
 class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, topic: String) {
 
-    //private val scope = CoroutineScope(Dispatchers.IO) // Coroutine scope for handling message processing
-
-
+    //TODO if device has no sensors, don't subscribe to topic.
     init {
         val options = MqttConnectOptions()
         options.isAutomaticReconnect = true
@@ -28,11 +23,6 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
                     val value = String(payload)
                     //println("Received message on topic $topic: $value")
                     mqttDataProcessor.process(value) //datawrapper nees to be generic too. Better use map key-value I think
-
-                    //scope.launch {
-                      //  mqttDataProcessor.process(value)
-                   // }
-
                 } else {
                     println("Received message on topic $topic with null payload.")
                 }
@@ -47,17 +37,8 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
         mqttClient.subscribe(topic, 2) // QoS 2 for subscribing
     }
 
-
 //        fun disconnect() {
 //            mqttClient.disconnect()
 //        }
-
-
-    fun processMessage(message: String){
-        val messageSenosorData = MessageFactory.fromJson<MessageSensorData>(message)
-
-        val id = messageSenosorData.id
-        val value = messageSenosorData.value
-    }
 
 }
