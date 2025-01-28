@@ -1,6 +1,7 @@
 package com.croniot.android.features.device.features.tasks
 
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
 import com.croniot.android.app.Global
 import com.croniot.android.R
@@ -55,7 +57,10 @@ import org.koin.androidx.compose.koinViewModel
 fun TasksScreen(
     navController: NavController,
     viewModelTasks : ViewModelTasks = koinViewModel<ViewModelTasks>(
-        viewModelStoreOwner = LocalContext.current as ComponentActivity
+        //viewModelStoreOwner = LocalContext.current as ComponentActivity
+                viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
+                ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner")
+
     )
 ) {
     // Collect tasks and sort them only once

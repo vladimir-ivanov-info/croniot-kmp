@@ -16,7 +16,4 @@ class MqttDataProcessorNewTask(val deviceUuid: String) : MqttDataProcessor, Koin
         viewModelTasks.addTask(newTask)
     }
 
-    override fun getTopic(): String {
-        return "esp32id_outcoming/sensor_data/2" //Should name this class "DataProcessorClientOutcoming"
-    }
 }

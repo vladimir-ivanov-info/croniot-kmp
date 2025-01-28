@@ -82,7 +82,6 @@ fun CreateTaskScreen(navController: NavController) {
                         IconButton(
                             modifier = Modifier.padding(end = 8.dp),
                             onClick = {
-                                navController.popBackStack()
                                 if(!navController.popBackStack()){
                                     navController.navigate(UiConstants.ROUTE_DEVICE)
                                 }
