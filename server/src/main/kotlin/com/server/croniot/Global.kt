@@ -1,11 +1,9 @@
 import com.google.gson.Gson
-import org.eclipse.paho.client.mqttv3.MqttClient
+import com.server.croniot.config.Secrets
 import java.io.File
-import java.nio.file.Files
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
 
 object Global {
 
@@ -35,12 +33,5 @@ object Global {
         val uuid = UUID.randomUUID()
         val uniqueString = uuid.toString().substring(0, length)
         return uniqueString
-    }
-
-
-    fun getCurrentDateTime(): String {
-        val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        return currentDateTime.format(formatter)
     }
 }
