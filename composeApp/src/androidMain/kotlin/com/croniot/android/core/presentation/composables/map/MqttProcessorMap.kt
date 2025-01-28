@@ -14,10 +14,6 @@ class MqttProcessorMap() : MqttDataProcessor, KoinComponent {
 
     private val viewModelSensors: ViewModelSensors = get()
 
-    override fun getTopic(): String {
-        TODO("Not yet implemented")
-    }
-
     override fun process(data: Any) {
         CoroutineScope(Dispatchers.IO).launch {
             val mapValue = data as String

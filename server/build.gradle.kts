@@ -4,6 +4,8 @@ plugins {
     application
 
     id("com.github.johnrengelman.shadow") version "8.1.1"
+
+    kotlin("kapt")
 }
 
 java {
@@ -78,7 +80,7 @@ dependencies {
     annotationProcessor(libs.mapstruct.processor)
     implementation(libs.serialization.json)
     implementation(libs.dagger)
-    //kapt(libs.dagger.compiler)
+    kapt(libs.dagger.compiler)
 
     testImplementation(libs.mockk)
     testImplementation(libs.h2)
@@ -89,10 +91,15 @@ dependencies {
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit5)
-
-
-
 }
+/*
+kapt {
+    correctErrorTypes = true
+    arguments {
+        arg("dagger.formatGeneratedSource", "disabled")
+        arg("dagger.gradle.incremental", "true")
+    }
+}*/
 
 tasks.test {
     useJUnitPlatform()  // Enables JUnit 5 support

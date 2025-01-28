@@ -14,10 +14,6 @@ class MqttProcessorSensorData(val onNewData : (SensorDataDto) -> Unit) : MqttDat
         .setPrettyPrinting()
         .create()
 
-    override fun getTopic(): String {
-        TODO("Not yet implemented")
-    }
-
     override fun process(data: Any) {
         val message = data as String
         val sensorDataDto = gsonZonedDateTime.fromJson(message, SensorDataDto::class.java) //TODO handle error

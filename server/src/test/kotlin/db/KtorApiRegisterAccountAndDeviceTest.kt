@@ -7,11 +7,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import io.ktor.server.application.*
-import io.ktor.server.routing.*
-import io.ktor.server.response.*
 //import messages.MessageRegisterAccountAndDevice
-import module
+import com.server.croniot.application.module
 import kotlin.test.*
 
 class KtorApiRegisterAccountAndDeviceTest {

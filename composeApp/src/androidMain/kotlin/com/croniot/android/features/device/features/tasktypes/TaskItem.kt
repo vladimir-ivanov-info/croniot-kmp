@@ -33,7 +33,7 @@ fun TaskItem(navController: NavController, task: TaskTypeDto) {
             .fillMaxWidth()
             .clickable {
                 Global.selectedTaskType = task
-                navController.navigate(UiConstants.ROUTE_CREATE_TASK/*"task"*/)
+                navController.navigate(UiConstants.ROUTE_CREATE_TASK)
             },
     ) {
        Card(
@@ -54,7 +54,7 @@ fun TaskItem(navController: NavController, task: TaskTypeDto) {
                     text = task.name,
                     fontSize = UtilUi.TEXT_SIZE_3,
                     modifier = Modifier
-                        .padding(bottom = 8.dp) // Adjust the padding as needed
+                        .padding(bottom = 8.dp)
                         .align(Alignment.Center),
                 )
             }

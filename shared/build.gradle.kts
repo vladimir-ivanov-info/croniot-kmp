@@ -36,3 +36,6 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
+
+//Useful commands:
+// ./gradlew clean build -x test

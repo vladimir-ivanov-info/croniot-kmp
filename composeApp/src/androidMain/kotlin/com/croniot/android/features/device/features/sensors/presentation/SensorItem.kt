@@ -71,7 +71,7 @@ fun SensorItem(sensor: SensorTypeDto, sensorDataFlow: MutableStateFlow<SensorDat
                     list.add(data)
 
                     if(list.size > 100){
-                        list.removeFirst()
+                        list.removeAt(0)
                     }
 
                 } catch (e: Throwable){

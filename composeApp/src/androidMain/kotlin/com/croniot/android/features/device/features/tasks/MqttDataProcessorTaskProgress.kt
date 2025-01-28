@@ -15,8 +15,4 @@
             val taskStateInfoDto = MessageFactory.fromJsonWithZonedDateTime<TaskStateInfoDto>(dataString)
             viewModelTasks.updateTaskProgress(taskStateInfoDto)
         }
-
-        override fun getTopic(): String {
-            return "esp32id_outcoming/sensor_data/2" //Should name this class "DataProcessorClientOutcoming"
-        }
     }

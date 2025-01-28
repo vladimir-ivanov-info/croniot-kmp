@@ -2,6 +2,7 @@ package com.croniot.android.features.device.presentation
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +29,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
 import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.UiConstants
@@ -95,11 +97,16 @@ fun DeviceScreen(navController: NavController,
 fun DeviceScreenContent(navController: NavController, innerPadding: PaddingValues, viewModelSensors: ViewModelSensors){
 
     val viewModelDeviceScreen : DeviceScreenViewModel = koinViewModel<DeviceScreenViewModel>(
-        viewModelStoreOwner = LocalContext.current as ComponentActivity
+        //viewModelStoreOwner = LocalContext.current as ComponentActivity
+       // viewModelStoreOwner = LocalActivity.current
+        viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
+        ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner")
     )
 
     val viewModelTasks : ViewModelTasks = koinViewModel<ViewModelTasks>(
-    viewModelStoreOwner = LocalContext.current as ComponentActivity
+    //viewModelStoreOwner = LocalContext.current as ComponentActivity
+        viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
+            ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner")
     )
 
     LaunchedEffect(Unit) {
