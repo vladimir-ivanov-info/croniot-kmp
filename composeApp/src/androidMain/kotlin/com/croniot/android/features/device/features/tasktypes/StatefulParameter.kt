@@ -1,6 +1,7 @@
 package com.croniot.android.features.device.features.tasktypes
 
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelStoreOwner
 import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.util.UtilUi
 import com.croniot.android.features.device.features.tasks.ViewModelTasks
@@ -27,7 +29,9 @@ import org.koin.androidx.compose.koinViewModel
 fun StatefulParameter(parameter: ParameterTaskDto,
                       viewModelTask: ViewModelTaskTypes,
                       viewModelTasks : ViewModelTasks = koinViewModel<ViewModelTasks>(
-                          viewModelStoreOwner = LocalContext.current as ComponentActivity
+                          //viewModelStoreOwner = LocalContext.current as ComponentActivity
+                                  viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
+                                  ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner")
                       )
                     ){
 

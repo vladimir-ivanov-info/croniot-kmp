@@ -1,0 +1,2168 @@
+Type-safe project accessors is an incubating feature.
+
+> Configure project :composeApp
+w: Kotlin Multiplatform <-> Android Gradle Plugin compatibility issue:
+The applied Android Gradle Plugin version (8.5.2) is higher 
+than the maximum known to the Kotlin Gradle Plugin.
+Tooling stability in such configuration isn't tested, please report encountered issues to https://kotl.in/issue
+
+Minimum supported Android Gradle Plugin version: 7.1
+Maximum tested Android Gradle Plugin version: 8.3
+
+To suppress this message add 'kotlin.mpp.androidGradlePluginCompatibility.nowarn=true' to your gradle.properties
+
+w: Usage of 'Android Style' source directory composeApp/src/androidTest/kotlin is deprecated.
+Use composeApp/src/androidInstrumentedTest/kotlin instead.
+
+To suppress this warning: put the following in your gradle.properties:
+kotlin.mpp.androidSourceSetLayoutV2AndroidStyleDirs.nowarn=true
+
+Learn more: https://kotl.in/android-source-set-layout-v2
+
+
+> Task :shared:dependencies
+
+------------------------------------------------------------
+Project ':shared'
+------------------------------------------------------------
+
+_internal-unified-test-platform-android-device-provider-ddmlib - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-device-provider-ddmlib:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0 -> 23.0.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- com.android.tools.ddms:ddmlib:31.5.2
+     |    +--- com.android.tools:common:31.5.2 (*)
+     |    +--- com.google.protobuf:protobuf-java:3.22.3
+     |    +--- net.sf.kxml:kxml2:2.3.0
+     |    \--- org.jetbrains:annotations:23.0.0
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.android.tools.utp:android-device-provider-ddmlib-proto:31.5.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
+     |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
+     |         +--- org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
+     |         |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4 (c)
+     |         |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4 (c)
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21 -> 1.9.20 (*)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.6.21 -> 1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- com.google.testing.platform:core-proto:0.0.9-alpha02
+     \--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+
+_internal-unified-test-platform-android-device-provider-gradle - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-device-provider-gradle:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.android.tools.utp:android-device-provider-gradle-proto:31.5.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.google.testing.platform:core-proto:0.0.9-alpha02
+     \--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+
+_internal-unified-test-platform-android-driver-instrumentation - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.google.testing.platform:android-driver-instrumentation:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.google.testing.platform:android-test-plugin:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin-host-additional-test-output - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-test-plugin-host-additional-test-output:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- com.android.tools.utp:utp-common:31.5.2
+     |    +--- com.android.tools:common:31.5.2 (*)
+     |    +--- com.google.testing.platform:launcher:0.0.9-alpha02
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.android.tools.utp:android-test-plugin-host-additional-test-output-proto:31.5.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     \--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin-host-apk-installer - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-test-plugin-host-apk-installer:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.android.tools.utp:android-test-plugin-host-apk-installer-proto:31.5.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+     \--- com.google.testing.platform:core-proto:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin-host-coverage - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-test-plugin-host-coverage:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- com.android.tools.utp:android-test-plugin-host-coverage-proto:31.5.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     \--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin-host-device-info - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-test-plugin-host-device-info:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.android.tools.utp:utp-common:31.5.2
+     |    +--- com.android.tools:common:31.5.2 (*)
+     |    +--- com.google.testing.platform:launcher:0.0.9-alpha02
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.android.tools.utp:android-test-plugin-host-device-info-proto:31.5.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     \--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin-host-emulator-control - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-test-plugin-host-emulator-control:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
+     |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
+     |         +--- org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
+     |         |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4 (c)
+     |         |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4 (c)
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21 -> 1.9.20 (*)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.6.21 -> 1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- commons-io:commons-io:2.13.0
+     +--- com.google.code.gson:gson:2.10.1
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.google.guava:guava:32.0.1-jre (*)
+     +--- com.android.tools.utp:android-test-plugin-host-emulator-control-proto:31.5.2
+     |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.android.tools.emulator:proto:31.5.2
+     |    +--- com.google.code.gson:gson:2.10.1
+     |    +--- com.google.guava:guava:32.0.1-jre (*)
+     |    +--- io.grpc:grpc-core:1.57.0
+     |    |    +--- io.grpc:grpc-api:1.57.0
+     |    |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    +--- com.google.code.gson:gson:2.10.1
+     |    |    +--- com.google.android:annotations:4.1.1.4
+     |    |    +--- org.codehaus.mojo:animal-sniffer-annotations:1.23
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    +--- io.perfmark:perfmark-api:0.26.0
+     |    |    \--- io.grpc:grpc-context:1.57.0
+     |    |         \--- io.grpc:grpc-api:1.57.0 (*)
+     |    +--- io.grpc:grpc-netty:1.57.0
+     |    |    +--- io.grpc:grpc-core:1.57.0 (*)
+     |    |    +--- io.netty:netty-codec-http2:4.1.93.Final
+     |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-buffer:4.1.93.Final
+     |    |    |    |    \--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-transport:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-resolver:4.1.93.Final
+     |    |    |    |         \--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-codec:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-handler:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-resolver:4.1.93.Final (*)
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    |    +--- io.netty:netty-transport-native-unix-common:4.1.93.Final
+     |    |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    |    \--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    |    \--- io.netty:netty-codec-http:4.1.93.Final
+     |    |    |         +--- io.netty:netty-common:4.1.93.Final
+     |    |    |         +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |         +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |         +--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    |         \--- io.netty:netty-handler:4.1.93.Final (*)
+     |    |    +--- io.netty:netty-handler-proxy:4.1.93.Final
+     |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-codec-socks:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    |    \--- io.netty:netty-codec-http:4.1.93.Final (*)
+     |    |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    +--- io.perfmark:perfmark-api:0.26.0
+     |    |    \--- io.netty:netty-transport-native-unix-common:4.1.93.Final (*)
+     |    +--- io.grpc:grpc-protobuf:1.57.0
+     |    |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- com.google.protobuf:protobuf-java:3.22.3
+     |    |    +--- com.google.api.grpc:proto-google-common-protos:2.17.0
+     |    |    |    \--- com.google.protobuf:protobuf-java:3.21.12 -> 3.22.3
+     |    |    +--- io.grpc:grpc-protobuf-lite:1.57.0
+     |    |    |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    +--- io.grpc:grpc-stub:1.57.0
+     |    |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    \--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    +--- javax.annotation:javax.annotation-api:1.3.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+     +--- com.google.crypto.tink:tink:1.7.0
+     |    +--- com.google.protobuf:protobuf-java:3.19.3 -> 3.22.3
+     |    \--- com.google.code.gson:gson:2.8.9 -> 2.10.1
+     \--- com.google.testing.platform:android-driver-instrumentation:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin-host-logcat - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-test-plugin-host-logcat:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- com.android.tools.utp:utp-common:31.5.2
+     |    +--- com.android.tools:common:31.5.2 (*)
+     |    +--- com.google.testing.platform:launcher:0.0.9-alpha02
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.android.tools.utp:android-test-plugin-host-logcat-proto:31.5.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     \--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin-host-retention - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-test-plugin-host-retention:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
+     |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
+     |         +--- org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
+     |         |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4 (c)
+     |         |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4 (c)
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21 -> 1.9.20 (*)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.6.21 -> 1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- commons-io:commons-io:2.13.0
+     +--- com.google.code.gson:gson:2.10.1
+     +--- io.grpc:grpc-core:1.57.0
+     |    +--- io.grpc:grpc-api:1.57.0
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    +--- com.google.code.gson:gson:2.10.1
+     |    +--- com.google.android:annotations:4.1.1.4
+     |    +--- org.codehaus.mojo:animal-sniffer-annotations:1.23
+     |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    +--- io.perfmark:perfmark-api:0.26.0
+     |    \--- io.grpc:grpc-context:1.57.0
+     |         \--- io.grpc:grpc-api:1.57.0 (*)
+     +--- io.grpc:grpc-netty:1.57.0
+     |    +--- io.grpc:grpc-core:1.57.0 (*)
+     |    +--- io.netty:netty-codec-http2:4.1.93.Final
+     |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    +--- io.netty:netty-buffer:4.1.93.Final
+     |    |    |    \--- io.netty:netty-common:4.1.93.Final
+     |    |    +--- io.netty:netty-transport:4.1.93.Final
+     |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    \--- io.netty:netty-resolver:4.1.93.Final
+     |    |    |         \--- io.netty:netty-common:4.1.93.Final
+     |    |    +--- io.netty:netty-codec:4.1.93.Final
+     |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    \--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    +--- io.netty:netty-handler:4.1.93.Final
+     |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-resolver:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-transport-native-unix-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    \--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    \--- io.netty:netty-codec-http:4.1.93.Final
+     |    |         +--- io.netty:netty-common:4.1.93.Final
+     |    |         +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |         +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |         +--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |         \--- io.netty:netty-handler:4.1.93.Final (*)
+     |    +--- io.netty:netty-handler-proxy:4.1.93.Final
+     |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    +--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    +--- io.netty:netty-codec-socks:4.1.93.Final
+     |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    \--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    \--- io.netty:netty-codec-http:4.1.93.Final (*)
+     |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    +--- io.perfmark:perfmark-api:0.26.0
+     |    \--- io.netty:netty-transport-native-unix-common:4.1.93.Final (*)
+     +--- io.grpc:grpc-protobuf:1.57.0
+     |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    +--- com.google.protobuf:protobuf-java:3.22.3
+     |    +--- com.google.api.grpc:proto-google-common-protos:2.17.0
+     |    |    \--- com.google.protobuf:protobuf-java:3.21.12 -> 3.22.3
+     |    +--- io.grpc:grpc-protobuf-lite:1.57.0
+     |    |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     +--- io.grpc:grpc-stub:1.57.0
+     |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    \--- com.google.errorprone:error_prone_annotations:2.18.0
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.google.guava:guava:32.0.1-jre (*)
+     +--- com.android.tools.utp:utp-common:31.5.2
+     |    +--- com.android.tools:common:31.5.2 (*)
+     |    +--- com.google.testing.platform:launcher:0.0.9-alpha02
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- com.android.tools.utp:android-test-plugin-host-retention-proto:31.5.2
+     |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.android.tools.emulator:proto:31.5.2
+     |    +--- com.google.code.gson:gson:2.10.1
+     |    +--- com.google.guava:guava:32.0.1-jre (*)
+     |    +--- io.grpc:grpc-core:1.57.0 (*)
+     |    +--- io.grpc:grpc-netty:1.57.0 (*)
+     |    +--- io.grpc:grpc-protobuf:1.57.0 (*)
+     |    +--- io.grpc:grpc-stub:1.57.0 (*)
+     |    +--- javax.annotation:javax.annotation-api:1.3.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     \--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+
+_internal-unified-test-platform-android-test-plugin-result-listener-gradle - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.android.tools.utp:android-test-plugin-result-listener-gradle:31.5.2
+     +--- com.android.tools:common:31.5.2
+     |    +--- com.android.tools:annotations:31.5.2
+     |    +--- com.google.guava:guava:32.0.1-jre
+     |    |    +--- com.google.guava:failureaccess:1.0.1
+     |    |    +--- com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- org.checkerframework:checker-qual:3.33.0
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    \--- com.google.j2objc:j2objc-annotations:2.8
+     |    +--- net.java.dev.jna:jna-platform:5.6.0
+     |    |    \--- net.java.dev.jna:jna:5.6.0
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20
+     |         |    +--- org.jetbrains:annotations:13.0
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.20 (c)
+     |         |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.20 (c)
+     |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.9.20 (c)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- com.android.tools.utp:android-test-plugin-result-listener-gradle-proto:31.5.2
+     |    +--- com.google.code.gson:gson:2.10.1
+     |    +--- com.google.guava:guava:32.0.1-jre (*)
+     |    +--- io.grpc:grpc-core:1.57.0
+     |    |    +--- io.grpc:grpc-api:1.57.0
+     |    |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    +--- com.google.code.gson:gson:2.10.1
+     |    |    +--- com.google.android:annotations:4.1.1.4
+     |    |    +--- org.codehaus.mojo:animal-sniffer-annotations:1.23
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    +--- io.perfmark:perfmark-api:0.26.0
+     |    |    \--- io.grpc:grpc-context:1.57.0
+     |    |         \--- io.grpc:grpc-api:1.57.0 (*)
+     |    +--- io.grpc:grpc-netty:1.57.0
+     |    |    +--- io.grpc:grpc-core:1.57.0 (*)
+     |    |    +--- io.netty:netty-codec-http2:4.1.93.Final
+     |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-buffer:4.1.93.Final
+     |    |    |    |    \--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-transport:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-resolver:4.1.93.Final
+     |    |    |    |         \--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-codec:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-handler:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-resolver:4.1.93.Final (*)
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    |    +--- io.netty:netty-transport-native-unix-common:4.1.93.Final
+     |    |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    |    \--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    |    \--- io.netty:netty-codec-http:4.1.93.Final
+     |    |    |         +--- io.netty:netty-common:4.1.93.Final
+     |    |    |         +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |         +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |         +--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    |         \--- io.netty:netty-handler:4.1.93.Final (*)
+     |    |    +--- io.netty:netty-handler-proxy:4.1.93.Final
+     |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    |    +--- io.netty:netty-codec-socks:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-common:4.1.93.Final
+     |    |    |    |    +--- io.netty:netty-buffer:4.1.93.Final (*)
+     |    |    |    |    +--- io.netty:netty-transport:4.1.93.Final (*)
+     |    |    |    |    \--- io.netty:netty-codec:4.1.93.Final (*)
+     |    |    |    \--- io.netty:netty-codec-http:4.1.93.Final (*)
+     |    |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    +--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    |    +--- io.perfmark:perfmark-api:0.26.0
+     |    |    \--- io.netty:netty-transport-native-unix-common:4.1.93.Final (*)
+     |    +--- io.grpc:grpc-protobuf:1.57.0
+     |    |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    +--- com.google.protobuf:protobuf-java:3.22.3
+     |    |    +--- com.google.api.grpc:proto-google-common-protos:2.17.0
+     |    |    |    \--- com.google.protobuf:protobuf-java:3.21.12 -> 3.22.3
+     |    |    +--- io.grpc:grpc-protobuf-lite:1.57.0
+     |    |    |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    |    |    +--- com.google.code.findbugs:jsr305:3.0.2
+     |    |    |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    \--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    +--- io.grpc:grpc-stub:1.57.0
+     |    |    +--- io.grpc:grpc-api:1.57.0 (*)
+     |    |    +--- com.google.guava:guava:32.0.1-android -> 32.0.1-jre (*)
+     |    |    \--- com.google.errorprone:error_prone_annotations:2.18.0
+     |    +--- javax.annotation:javax.annotation-api:1.3.2
+     |    \--- com.google.protobuf:protobuf-java:3.22.3
+     +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20 (*)
+     +--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
+     |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
+     |         +--- org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
+     |         |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4 (c)
+     |         |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4 (c)
+     |         +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21 -> 1.9.20 (*)
+     |         \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.6.21 -> 1.9.20
+     |              \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.20 (*)
+     +--- com.google.code.gson:gson:2.10.1
+     +--- io.grpc:grpc-core:1.57.0 (*)
+     +--- io.grpc:grpc-protobuf:1.57.0 (*)
+     +--- io.grpc:grpc-stub:1.57.0 (*)
+     +--- io.grpc:grpc-netty:1.57.0 (*)
+     +--- com.google.protobuf:protobuf-java:3.22.3
+     +--- com.google.guava:guava:32.0.1-jre (*)
+     +--- com.google.testing.platform:core-proto:0.0.9-alpha02
+     \--- com.google.testing.platform:android-device-provider-local:0.0.9-alpha02
+
+_internal-unified-test-platform-core - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.google.testing.platform:core:0.0.9-alpha02
+
+_internal-unified-test-platform-launcher - A configuration to resolve the Unified Test Platform dependencies.
+\--- com.google.testing.platform:launcher:0.0.9-alpha02
+
+allInstrumentedTestSourceSetsCompileDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+allSourceSetsCompileDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+allTestSourceSetsCompileDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidApis - Configuration providing various types of Android JAR file
+No dependencies
+
+androidDebugAndroidTestCompilationApi - API dependencies for android/debugAndroidTest (n)
+No dependencies
+
+androidDebugAndroidTestCompilationCompileOnly - Compile only dependencies for android/debugAndroidTest. (n)
+No dependencies
+
+androidDebugAndroidTestCompilationImplementation - Implementation only dependencies for android/debugAndroidTest. (n)
+No dependencies
+
+androidDebugAndroidTestCompilationRuntimeOnly - Runtime only dependencies for android/debugAndroidTest. (n)
+No dependencies
+
+androidDebugAndroidTestCompileClasspath - Compile classpath for android/debugAndroidTest.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidDebugAndroidTestRuntimeClasspath - Runtime classpath of android/debugAndroidTest.
+No dependencies
+
+androidDebugApi (n)
+No dependencies
+
+androidDebugApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidDebugArchives (n)
+No dependencies
+
+androidDebugCompilationApi - API dependencies for android/debug (n)
+No dependencies
+
+androidDebugCompilationCompileOnly - Compile only dependencies for android/debug. (n)
+No dependencies
+
+androidDebugCompilationImplementation - Implementation only dependencies for android/debug. (n)
+No dependencies
+
+androidDebugCompilationRuntimeOnly - Runtime only dependencies for android/debug. (n)
+No dependencies
+
+androidDebugCompileClasspath - Compile classpath for android/debug.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidDebugCompileOnly (n)
+No dependencies
+
+androidDebugCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidDebugDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidDebugImplementation (n)
+No dependencies
+
+androidDebugImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidDebugIntransitiveDependenciesMetadata
+No dependencies
+
+androidDebugResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidDebugRuntimeClasspath - Runtime classpath of android/debug.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidDebugRuntimeOnly (n)
+No dependencies
+
+androidDebugUnitTestCompilationApi - API dependencies for android/debugUnitTest (n)
+No dependencies
+
+androidDebugUnitTestCompilationCompileOnly - Compile only dependencies for android/debugUnitTest. (n)
+No dependencies
+
+androidDebugUnitTestCompilationImplementation - Implementation only dependencies for android/debugUnitTest. (n)
+No dependencies
+
+androidDebugUnitTestCompilationRuntimeOnly - Runtime only dependencies for android/debugUnitTest. (n)
+No dependencies
+
+androidDebugUnitTestCompileClasspath - Compile classpath for android/debugUnitTest.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidDebugUnitTestRuntimeClasspath - Runtime classpath of android/debugUnitTest.
+No dependencies
+
+androidInstrumentedTestApi (n)
+No dependencies
+
+androidInstrumentedTestApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidInstrumentedTestCompileOnly (n)
+No dependencies
+
+androidInstrumentedTestCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidInstrumentedTestDebugApi (n)
+No dependencies
+
+androidInstrumentedTestDebugApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidInstrumentedTestDebugCompileOnly (n)
+No dependencies
+
+androidInstrumentedTestDebugCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidInstrumentedTestDebugDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidInstrumentedTestDebugImplementation (n)
+No dependencies
+
+androidInstrumentedTestDebugImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidInstrumentedTestDebugIntransitiveDependenciesMetadata
+No dependencies
+
+androidInstrumentedTestDebugResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidInstrumentedTestDebugRuntimeOnly (n)
+No dependencies
+
+androidInstrumentedTestDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidInstrumentedTestImplementation (n)
+No dependencies
+
+androidInstrumentedTestImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidInstrumentedTestIntransitiveDependenciesMetadata
+No dependencies
+
+androidInstrumentedTestResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidInstrumentedTestRuntimeOnly (n)
+No dependencies
+
+androidJdkImage - Configuration providing JDK image for compiling Java 9+ sources
+No dependencies
+
+androidMainApi (n)
+No dependencies
+
+androidMainApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidMainCompileOnly (n)
+No dependencies
+
+androidMainCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidMainDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidMainImplementation (n)
+No dependencies
+
+androidMainImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidMainIntransitiveDependenciesMetadata
+No dependencies
+
+androidMainResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidMainRuntimeOnly (n)
+No dependencies
+
+androidReleaseApi (n)
+No dependencies
+
+androidReleaseApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidReleaseArchives (n)
+No dependencies
+
+androidReleaseCompilationApi - API dependencies for android/release (n)
+No dependencies
+
+androidReleaseCompilationCompileOnly - Compile only dependencies for android/release. (n)
+No dependencies
+
+androidReleaseCompilationImplementation - Implementation only dependencies for android/release. (n)
+No dependencies
+
+androidReleaseCompilationRuntimeOnly - Runtime only dependencies for android/release. (n)
+No dependencies
+
+androidReleaseCompileClasspath - Compile classpath for android/release.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidReleaseCompileOnly (n)
+No dependencies
+
+androidReleaseCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidReleaseDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidReleaseImplementation (n)
+No dependencies
+
+androidReleaseImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidReleaseIntransitiveDependenciesMetadata
+No dependencies
+
+androidReleaseResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidReleaseRuntimeClasspath - Runtime classpath of android/release.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidReleaseRuntimeOnly (n)
+No dependencies
+
+androidReleaseUnitTestCompilationApi - API dependencies for android/releaseUnitTest (n)
+No dependencies
+
+androidReleaseUnitTestCompilationCompileOnly - Compile only dependencies for android/releaseUnitTest. (n)
+No dependencies
+
+androidReleaseUnitTestCompilationImplementation - Implementation only dependencies for android/releaseUnitTest. (n)
+No dependencies
+
+androidReleaseUnitTestCompilationRuntimeOnly - Runtime only dependencies for android/releaseUnitTest. (n)
+No dependencies
+
+androidReleaseUnitTestCompileClasspath - Compile classpath for android/releaseUnitTest.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidReleaseUnitTestRuntimeClasspath - Runtime classpath of android/releaseUnitTest.
+No dependencies
+
+androidTestAnnotationProcessor - Classpath for the annotation processor for 'androidTest'. (n)
+No dependencies
+
+androidTestCompileOnly - Compile only dependencies for 'androidTest' sources. (n)
+No dependencies
+
+androidTestDebugAnnotationProcessor - Classpath for the annotation processor for 'androidTestDebug'. (n)
+No dependencies
+
+androidTestDebugCompileOnly - Compile only dependencies for 'androidTestDebug' sources. (n)
+No dependencies
+
+androidTestDebugImplementation - Implementation only dependencies for 'androidTestDebug' sources. (n)
+No dependencies
+
+androidTestDebugRuntimeOnly - Runtime only dependencies for 'androidTestDebug' sources. (n)
+No dependencies
+
+androidTestDebugWearApp - Link to a wear app to embed for object 'androidTestDebug'. (n)
+No dependencies
+
+androidTestImplementation - Implementation only dependencies for 'androidTest' sources. (n)
+No dependencies
+
+androidTestReleaseAnnotationProcessor - Classpath for the annotation processor for 'androidTestRelease'. (n)
+No dependencies
+
+androidTestReleaseCompileOnly - Compile only dependencies for 'androidTestRelease' sources. (n)
+No dependencies
+
+androidTestReleaseImplementation - Implementation only dependencies for 'androidTestRelease' sources. (n)
+No dependencies
+
+androidTestReleaseRuntimeOnly - Runtime only dependencies for 'androidTestRelease' sources. (n)
+No dependencies
+
+androidTestReleaseWearApp - Link to a wear app to embed for object 'androidTestRelease'. (n)
+No dependencies
+
+androidTestRuntimeOnly - Runtime only dependencies for 'androidTest' sources. (n)
+No dependencies
+
+androidTestUtil - Additional APKs used during instrumentation testing.
+No dependencies
+
+androidTestWearApp - Link to a wear app to embed for object 'androidTest'. (n)
+No dependencies
+
+androidUnitTestApi (n)
+No dependencies
+
+androidUnitTestApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestCompileOnly (n)
+No dependencies
+
+androidUnitTestCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestDebugApi (n)
+No dependencies
+
+androidUnitTestDebugApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestDebugCompileOnly (n)
+No dependencies
+
+androidUnitTestDebugCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestDebugDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidUnitTestDebugImplementation (n)
+No dependencies
+
+androidUnitTestDebugImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestDebugIntransitiveDependenciesMetadata
+No dependencies
+
+androidUnitTestDebugResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestDebugRuntimeOnly (n)
+No dependencies
+
+androidUnitTestDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidUnitTestImplementation (n)
+No dependencies
+
+androidUnitTestImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestIntransitiveDependenciesMetadata
+No dependencies
+
+androidUnitTestReleaseApi (n)
+No dependencies
+
+androidUnitTestReleaseApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestReleaseCompileOnly (n)
+No dependencies
+
+androidUnitTestReleaseCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestReleaseDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+androidUnitTestReleaseImplementation (n)
+No dependencies
+
+androidUnitTestReleaseImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestReleaseIntransitiveDependenciesMetadata
+No dependencies
+
+androidUnitTestReleaseResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestReleaseRuntimeOnly (n)
+No dependencies
+
+androidUnitTestResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+androidUnitTestRuntimeOnly (n)
+No dependencies
+
+annotationProcessor - Classpath for the annotation processor for 'main'. (n)
+No dependencies
+
+api - API dependencies for 'main' sources. (n)
+No dependencies
+
+commonMainApi (n)
+No dependencies
+
+commonMainApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+commonMainCompileOnly (n)
+No dependencies
+
+commonMainCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+commonMainDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+commonMainImplementation (n)
++--- com.google.code.gson:gson:2.11.0 (n)
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5 (n)
+
+commonMainImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+commonMainIntransitiveDependenciesMetadata
+No dependencies
+
+commonMainResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+commonMainRuntimeOnly (n)
+No dependencies
+
+commonTestApi (n)
+No dependencies
+
+commonTestApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+commonTestCompileOnly (n)
+No dependencies
+
+commonTestCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+commonTestDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+commonTestImplementation (n)
+No dependencies
+
+commonTestImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+commonTestIntransitiveDependenciesMetadata
+No dependencies
+
+commonTestResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+commonTestRuntimeOnly (n)
+No dependencies
+
+compileOnly - Compile only dependencies for 'main' sources. (n)
+No dependencies
+
+compileOnlyApi - Compile only API dependencies for 'main' sources. (n)
+No dependencies
+
+coreLibraryDesugaring - Configuration to desugar libraries
+No dependencies
+
+debugAndroidTestAnnotationProcessorClasspath - Resolved configuration for annotation-processor for variant: debugAndroidTest
+No dependencies
+
+debugAndroidTestCompileClasspath - Resolved configuration for compilation for variant: debugAndroidTest
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- project :shared (*)
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
++--- org.jetbrains:annotations:{strictly 13.0} -> 13.0 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+debugAndroidTestRuntimeClasspath - Resolved configuration for runtime for variant: debugAndroidTest
++--- project :shared (*)
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+debugAnnotationProcessor - Classpath for the annotation processor for 'debug'. (n)
+No dependencies
+
+debugAnnotationProcessorClasspath - Resolved configuration for annotation-processor for variant: debug
+No dependencies
+
+debugApi - API dependencies for 'debug' sources. (n)
+No dependencies
+
+debugApiElements - API elements for debug (n)
+No dependencies
+
+debugCompileClasspath - Resolved configuration for compilation for variant: debug
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
++--- org.jetbrains:annotations:{strictly 13.0} -> 13.0 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+debugCompileOnly - Compile only dependencies for 'debug' sources. (n)
+No dependencies
+
+debugCompileOnlyApi - Compile only API dependencies for 'debug' sources. (n)
+No dependencies
+
+debugImplementation - Implementation only dependencies for 'debug' sources. (n)
+No dependencies
+
+debugRuntimeClasspath - Resolved configuration for runtime for variant: debug
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+debugRuntimeElements - Runtime elements for debug (n)
+No dependencies
+
+debugRuntimeOnly - Runtime only dependencies for 'debug' sources. (n)
+No dependencies
+
+debugSourcesElements - Source files of Android debug. (n)
+No dependencies
+
+debugUnitTestAnnotationProcessorClasspath - Resolved configuration for annotation-processor for variant: debugUnitTest
+No dependencies
+
+debugUnitTestCompileClasspath - Resolved configuration for compilation for variant: debugUnitTest
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- project :shared (*)
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
++--- org.jetbrains:annotations:{strictly 13.0} -> 13.0 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+debugUnitTestRuntimeClasspath - Resolved configuration for runtime for variant: debugUnitTest
++--- project :shared (*)
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+debugWearApp - Link to a wear app to embed for object 'debug'. (n)
+No dependencies
+
+implementation - Implementation only dependencies for 'main' sources. (n)
+No dependencies
+
+jvmApiElements - API elements for main. (n)
+No dependencies
+
+jvmCompilationApi - API dependencies for jvm/main (n)
+No dependencies
+
+jvmCompilationCompileOnly - Compile only dependencies for jvm/main. (n)
+No dependencies
+
+jvmCompilationImplementation - Implementation only dependencies for jvm/main. (n)
+No dependencies
+
+jvmCompilationRuntimeOnly - Runtime only dependencies for jvm/main. (n)
+No dependencies
+
+jvmCompileClasspath - Compile classpath for jvm/main.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+jvmMainApi (n)
+No dependencies
+
+jvmMainApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+jvmMainCompileOnly (n)
+No dependencies
+
+jvmMainCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+jvmMainDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+jvmMainImplementation (n)
+No dependencies
+
+jvmMainImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+jvmMainIntransitiveDependenciesMetadata
+No dependencies
+
+jvmMainResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+jvmMainRuntimeOnly (n)
+No dependencies
+
+jvmRuntimeClasspath - Runtime classpath of jvm/main.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+jvmRuntimeElements - Elements of runtime for main. (n)
+No dependencies
+
+jvmSourcesElements - Source files of main compilation of jvm. (n)
+No dependencies
+
+jvmTestApi (n)
+No dependencies
+
+jvmTestApiDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+jvmTestCompilationApi - API dependencies for jvm/test (n)
+No dependencies
+
+jvmTestCompilationCompileOnly - Compile only dependencies for jvm/test. (n)
+\--- unspecified (n)
+
+jvmTestCompilationImplementation - Implementation only dependencies for jvm/test. (n)
+\--- unspecified (n)
+
+jvmTestCompilationRuntimeOnly - Runtime only dependencies for jvm/test. (n)
+\--- unspecified (n)
+
+jvmTestCompileClasspath - Compile classpath for jvm/test.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+jvmTestCompileOnly (n)
+No dependencies
+
+jvmTestCompileOnlyDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+jvmTestDependencySources
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+jvmTestImplementation (n)
+No dependencies
+
+jvmTestImplementationDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+jvmTestIntransitiveDependenciesMetadata
+No dependencies
+
+jvmTestResolvableDependenciesMetadata
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+jvmTestRuntimeClasspath - Runtime classpath of jvm/test.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+jvmTestRuntimeOnly (n)
+No dependencies
+
+kotlinBuildToolsApiClasspath
+\--- org.jetbrains.kotlin:kotlin-build-tools-impl:{strictly 2.0.0} -> 2.0.0
+     +--- org.jetbrains.kotlin:kotlin-build-tools-api:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    \--- org.jetbrains:annotations:13.0
+     +--- org.jetbrains.kotlin:kotlin-compiler-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-reflect:1.6.10
+     |    +--- org.jetbrains.kotlin:kotlin-daemon-embeddable:2.0.0
+     |    \--- org.jetbrains.intellij.deps:trove4j:1.0.20200330
+     +--- org.jetbrains.kotlin:kotlin-compiler-runner:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-build-common:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-daemon-client:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0
+     |    \--- org.jetbrains.kotlin:kotlin-compiler-embeddable:2.0.0 (*)
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0 (*)
+
+kotlinCompilerClasspath
+\--- org.jetbrains.kotlin:kotlin-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    \--- org.jetbrains:annotations:13.0
+     +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-reflect:1.6.10
+     +--- org.jetbrains.kotlin:kotlin-daemon-embeddable:2.0.0
+     \--- org.jetbrains.intellij.deps:trove4j:1.0.20200330
+
+kotlinCompilerPluginClasspath
+No dependencies
+
+kotlinCompilerPluginClasspathAndroidDebug - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinCompilerPluginClasspathAndroidDebugAndroidTest - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinCompilerPluginClasspathAndroidDebugUnitTest - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinCompilerPluginClasspathAndroidRelease - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinCompilerPluginClasspathAndroidReleaseUnitTest - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinCompilerPluginClasspathJvmMain - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinCompilerPluginClasspathJvmTest - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinCompilerPluginClasspathMetadataCommonMain - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinCompilerPluginClasspathMetadataMain - Kotlin compiler plugins for compilation
+\--- org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable:2.0.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0
+     |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    |         \--- org.jetbrains:annotations:13.0
+     |    +--- org.jetbrains.kotlin:kotlin-scripting-jvm:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+     |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     |    |    \--- org.jetbrains.kotlin:kotlin-scripting-common:2.0.0 (*)
+     |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+     \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+
+kotlinKlibCommonizerClasspath
+\--- org.jetbrains.kotlin:kotlin-klib-commonizer-embeddable:2.0.0
+     +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+     |    \--- org.jetbrains:annotations:13.0
+     \--- org.jetbrains.kotlin:kotlin-compiler-embeddable:2.0.0
+          +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0 (*)
+          +--- org.jetbrains.kotlin:kotlin-script-runtime:2.0.0
+          +--- org.jetbrains.kotlin:kotlin-reflect:1.6.10
+          +--- org.jetbrains.kotlin:kotlin-daemon-embeddable:2.0.0
+          \--- org.jetbrains.intellij.deps:trove4j:1.0.20200330
+
+kotlinNativeBundleConfiguration
+\--- org.jetbrains.kotlin:kotlin-native-prebuilt:2.0.0
+
+kotlinNativeCompilerPluginClasspath
+No dependencies
+
+kotlinScriptDef - Script filename extensions discovery classpath configuration (n)
+No dependencies
+
+kotlinScriptDefExtensions
+No dependencies
+
+lintChecks - Configuration to apply external lint check jar
+No dependencies
+
+lintPublish - Configuration to publish external lint check jar
+No dependencies
+
+metadataApiElements - API elements for main. (n)
+No dependencies
+
+metadataCommonMainCompilationApi - API dependencies for metadata/commonMain (n)
+No dependencies
+
+metadataCommonMainCompilationCompileOnly - Compile only dependencies for metadata/commonMain. (n)
+No dependencies
+
+metadataCommonMainCompilationImplementation - Implementation only dependencies for metadata/commonMain. (n)
+No dependencies
+
+metadataCommonMainCompilationRuntimeOnly - Runtime only dependencies for metadata/commonMain. (n)
+No dependencies
+
+metadataCommonMainCompileClasspath - Compile classpath for metadata/commonMain.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+metadataCompilationApi - API dependencies for metadata/main (n)
+No dependencies
+
+metadataCompilationCompileOnly - Compile only dependencies for metadata/main. (n)
+No dependencies
+
+metadataCompilationImplementation - Implementation only dependencies for metadata/main. (n)
+No dependencies
+
+metadataCompilationRuntimeOnly - Runtime only dependencies for metadata/main. (n)
+No dependencies
+
+metadataCompileClasspath - Compile classpath for metadata/main.
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+metadataSourcesElements - Source files of main compilation of metadata. (n)
+No dependencies
+
+releaseAnnotationProcessor - Classpath for the annotation processor for 'release'. (n)
+No dependencies
+
+releaseAnnotationProcessorClasspath - Resolved configuration for annotation-processor for variant: release
+No dependencies
+
+releaseApi - API dependencies for 'release' sources. (n)
+No dependencies
+
+releaseApiElements - API elements for release (n)
+No dependencies
+
+releaseCompileClasspath - Resolved configuration for compilation for variant: release
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
++--- org.jetbrains:annotations:{strictly 13.0} -> 13.0 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+releaseCompileOnly - Compile only dependencies for 'release' sources. (n)
+No dependencies
+
+releaseCompileOnlyApi - Compile only API dependencies for 'release' sources. (n)
+No dependencies
+
+releaseImplementation - Implementation only dependencies for 'release' sources. (n)
+No dependencies
+
+releaseRuntimeClasspath - Resolved configuration for runtime for variant: release
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+releaseRuntimeElements - Runtime elements for release (n)
+No dependencies
+
+releaseRuntimeOnly - Runtime only dependencies for 'release' sources. (n)
+No dependencies
+
+releaseSourcesElements - Source files of Android release. (n)
+No dependencies
+
+releaseUnitTestAnnotationProcessorClasspath - Resolved configuration for annotation-processor for variant: releaseUnitTest
+No dependencies
+
+releaseUnitTestCompileClasspath - Resolved configuration for compilation for variant: releaseUnitTest
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
++--- project :shared (*)
++--- org.jetbrains.kotlin:kotlin-stdlib:{strictly 2.0.0} -> 2.0.0 (c)
++--- com.google.code.gson:gson:{strictly 2.11.0} -> 2.11.0 (c)
++--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:{strictly 1.2.5} -> 1.2.5 (c)
++--- org.jetbrains:annotations:{strictly 13.0} -> 13.0 (c)
+\--- com.google.errorprone:error_prone_annotations:{strictly 2.27.0} -> 2.27.0 (c)
+
+releaseUnitTestRuntimeClasspath - Resolved configuration for runtime for variant: releaseUnitTest
++--- project :shared (*)
++--- org.jetbrains.kotlin:kotlin-stdlib:2.0.0
+|    \--- org.jetbrains:annotations:13.0
++--- com.google.code.gson:gson:2.11.0
+|    \--- com.google.errorprone:error_prone_annotations:2.27.0
+\--- org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5
+
+releaseWearApp - Link to a wear app to embed for object 'release'. (n)
+No dependencies
+
+runtimeOnly - Runtime only dependencies for 'main' sources. (n)
+No dependencies
+
+testAnnotationProcessor - Classpath for the annotation processor for 'test'. (n)
+No dependencies
+
+testCompileOnly - Compile only dependencies for 'test' sources. (n)
+No dependencies
+
+testDebugAnnotationProcessor - Classpath for the annotation processor for 'testDebug'. (n)
+No dependencies
+
+testDebugCompileOnly - Compile only dependencies for 'testDebug' sources. (n)
+No dependencies
+
+testDebugImplementation - Implementation only dependencies for 'testDebug' sources. (n)
+No dependencies
+
+testDebugRuntimeOnly - Runtime only dependencies for 'testDebug' sources. (n)
+No dependencies
+
+testDebugWearApp - Link to a wear app to embed for object 'testDebug'. (n)
+No dependencies
+
+testFixturesAnnotationProcessor - Classpath for the annotation processor for 'testFixtures'. (n)
+No dependencies
+
+testFixturesApi - API dependencies for 'testFixtures' sources. (n)
+No dependencies
+
+testFixturesCompileOnly - Compile only dependencies for 'testFixtures' sources. (n)
+No dependencies
+
+testFixturesCompileOnlyApi - Compile only API dependencies for 'testFixtures' sources. (n)
+No dependencies
+
+testFixturesDebugAnnotationProcessor - Classpath for the annotation processor for 'testFixturesDebug'. (n)
+No dependencies
+
+testFixturesDebugApi - API dependencies for 'testFixturesDebug' sources. (n)
+No dependencies
+
+testFixturesDebugCompileOnly - Compile only dependencies for 'testFixturesDebug' sources. (n)
+No dependencies
+
+testFixturesDebugCompileOnlyApi - Compile only API dependencies for 'testFixturesDebug' sources. (n)
+No dependencies
+
+testFixturesDebugImplementation - Implementation only dependencies for 'testFixturesDebug' sources. (n)
+No dependencies
+
+testFixturesDebugRuntimeOnly - Runtime only dependencies for 'testFixturesDebug' sources. (n)
+No dependencies
+
+testFixturesDebugWearApp - Link to a wear app to embed for object 'testFixturesDebug'. (n)
+No dependencies
+
+testFixturesImplementation - Implementation only dependencies for 'testFixtures' sources. (n)
+No dependencies
+
+testFixturesReleaseAnnotationProcessor - Classpath for the annotation processor for 'testFixturesRelease'. (n)
+No dependencies
+
+testFixturesReleaseApi - API dependencies for 'testFixturesRelease' sources. (n)
+No dependencies
+
+testFixturesReleaseCompileOnly - Compile only dependencies for 'testFixturesRelease' sources. (n)
+No dependencies
+
+testFixturesReleaseCompileOnlyApi - Compile only API dependencies for 'testFixturesRelease' sources. (n)
+No dependencies
+
+testFixturesReleaseImplementation - Implementation only dependencies for 'testFixturesRelease' sources. (n)
+No dependencies
+
+testFixturesReleaseRuntimeOnly - Runtime only dependencies for 'testFixturesRelease' sources. (n)
+No dependencies
+
+testFixturesReleaseWearApp - Link to a wear app to embed for object 'testFixturesRelease'. (n)
+No dependencies
+
+testFixturesRuntimeOnly - Runtime only dependencies for 'testFixtures' sources. (n)
+No dependencies
+
+testFixturesWearApp - Link to a wear app to embed for object 'testFixtures'. (n)
+No dependencies
+
+testImplementation - Implementation only dependencies for 'test' sources. (n)
+No dependencies
+
+testKotlinScriptDef - Script filename extensions discovery classpath configuration (n)
+No dependencies
+
+testKotlinScriptDefExtensions
+No dependencies
+
+testReleaseAnnotationProcessor - Classpath for the annotation processor for 'testRelease'. (n)
+No dependencies
+
+testReleaseCompileOnly - Compile only dependencies for 'testRelease' sources. (n)
+No dependencies
+
+testReleaseImplementation - Implementation only dependencies for 'testRelease' sources. (n)
+No dependencies
+
+testReleaseRuntimeOnly - Runtime only dependencies for 'testRelease' sources. (n)
+No dependencies
+
+testReleaseWearApp - Link to a wear app to embed for object 'testRelease'. (n)
+No dependencies
+
+testRuntimeOnly - Runtime only dependencies for 'test' sources. (n)
+No dependencies
+
+testWearApp - Link to a wear app to embed for object 'test'. (n)
+No dependencies
+
+wearApp - Link to a wear app to embed for object 'main'. (n)
+No dependencies
+
+(c) - A dependency constraint, not a dependency. The dependency affected by the constraint occurs elsewhere in the tree.
+(*) - Indicates repeated occurrences of a transitive dependency subtree. Gradle expands transitive dependency subtrees only once per project; repeat occurrences only display the root of the subtree, followed by this annotation.
+
+(n) - A dependency or dependency configuration that cannot be resolved.
+
+A web-based, searchable dependency report is available by adding the --scan option.
+
+[Incubating] Problems report is available at: file:///home/vladimir/projects/croniot/croniot-kmp/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.12/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1s
+1 actionable task: 1 executed
