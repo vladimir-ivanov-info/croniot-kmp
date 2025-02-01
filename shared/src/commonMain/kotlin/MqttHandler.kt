@@ -3,7 +3,7 @@ import org.eclipse.paho.client.mqttv3.*
 
 class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, topic: String) {
 
-    //TODO if device has no sensors, don't subscribe to topic.
+    // TODO if device has no sensors, don't subscribe to topic.
     init {
         val options = MqttConnectOptions()
         options.isAutomaticReconnect = true
@@ -21,7 +21,7 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
                 val payload = message?.payload
                 if (payload != null) {
                     val value = String(payload)
-                    //println("Received message on topic $topic: $value")
+                    // println("Received message on topic $topic: $value")
                     mqttDataProcessor.process(value)
                 } else {
                     println("Received message on topic $topic with null payload.")
@@ -39,5 +39,4 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
 //        fun disconnect() {
 //            mqttClient.disconnect()
 //        }
-
 }

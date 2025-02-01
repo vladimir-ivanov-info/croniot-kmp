@@ -11,10 +11,10 @@ import org.hibernate.SessionFactory
 import javax.inject.Inject
 
 class SensorTypeDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
-)  : SensorTypeDao {
+    private val sessionFactory: SessionFactory,
+) : SensorTypeDao {
 
-    override fun insert(sensorType: SensorType) : Long {
+    override fun insert(sensorType: SensorType): Long {
         val session = sessionFactory.openSession()
         val transaction = session.beginTransaction()
         val sensorId: Long
@@ -28,7 +28,7 @@ class SensorTypeDaoImpl @Inject constructor(
             transaction.rollback()
             throw e
         } finally {
-            //session.close()
+            // session.close()
         }
         return sensorId
     }
@@ -53,5 +53,4 @@ class SensorTypeDaoImpl @Inject constructor(
             return query.uniqueResultOptional().orElse(null)
         }
     }
-
 }

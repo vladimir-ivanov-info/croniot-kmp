@@ -24,15 +24,12 @@ import androidx.navigation.NavHostController
 import com.croniot.android.app.Global
 
 @OptIn(ExperimentalMaterial3Api::class)
-
-//TODO after getting Google Maps API token
-
+// TODO after getting Google Maps API token
 @Composable
 fun ScreenMaps(navController: NavHostController) {
-
     Scaffold(
         topBar = {
-            TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
+            TopAppBar( // This material API is experimental and is likely to change or to be removed in the future.
                 title = {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                         Text("Map")
@@ -41,42 +38,43 @@ fun ScreenMaps(navController: NavHostController) {
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
             )
         },
-        content = { innerPadding -> LoginScreenBody2(navController, innerPadding)
+        content = { innerPadding ->
+            LoginScreenBody2(navController, innerPadding)
             // Content goes here
-        }
+        },
     )
 }
+
 @Composable
-fun LoginScreenBody2(navController: NavController, innerPadding: PaddingValues){
+fun LoginScreenBody2(navController: NavController, innerPadding: PaddingValues) {
     Box(
         Modifier
-            .padding(innerPadding)
-        ,
+            .padding(innerPadding),
     ) {
-        Login2(navController,
+        Login2(
+            navController,
             Modifier
                 .align(Alignment.Center)
-                .padding(16.dp))
+                .padding(16.dp),
+        )
     }
 }
 
-//@SuppressLint("StateFlowValueCalledInComposition")
+// @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun Login2(navController: NavController, modifier: Modifier){
-
-    Column(modifier = modifier){
-        Box(modifier = Modifier
-            .size(200.dp)
-            .align(Alignment.CenterHorizontally)
-            .clickable { //for testing
-                Global.SERVER_ADDRESS = Global.SERVER_ADDRESS_REMOTE
-            },
-            contentAlignment = Alignment.Center, ){
-
+fun Login2(navController: NavController, modifier: Modifier) {
+    Column(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .align(Alignment.CenterHorizontally)
+                .clickable { // for testing
+                    Global.SERVER_ADDRESS = Global.SERVER_ADDRESS_REMOTE
+                },
+            contentAlignment = Alignment.Center,
+        ) {
         }
 
-        //MAP
-
+        // MAP
     }
-
 }

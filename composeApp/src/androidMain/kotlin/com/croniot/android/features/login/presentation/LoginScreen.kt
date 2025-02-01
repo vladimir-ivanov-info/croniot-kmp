@@ -37,12 +37,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.croniot.android.app.Global
 import com.croniot.android.R
+import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.SharedPreferencesViewModel
 import com.croniot.android.core.presentation.UiConstants
-import com.croniot.android.core.presentation.util.UtilUi
 import com.croniot.android.core.presentation.util.StatefulTextField
+import com.croniot.android.core.presentation.util.UtilUi
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +56,7 @@ fun LoginScreen(navController: NavController) {
                 title = {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
                     ) {
                         Text(Global.appName, fontSize = UtilUi.TEXT_SIZE_2)
                     }
@@ -68,9 +68,9 @@ fun LoginScreen(navController: NavController) {
             LoginScreenBody(
                 navController = navController,
                 viewModel = loginViewModel,
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
             )
-        }
+        },
     )
 }
 
@@ -78,21 +78,20 @@ fun LoginScreen(navController: NavController) {
 fun LoginScreenBody(
     navController: NavController,
     viewModel: LoginViewModel,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
 ) {
-
     val sharedPreferencesViewModel: SharedPreferencesViewModel = koinViewModel()
 
     Box(
         modifier = Modifier
             .padding(innerPadding)
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         LoginContent(
             navController = navController,
             viewModel = viewModel,
             sharedPreferencesViewModel,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
         )
     }
 }
@@ -102,29 +101,29 @@ fun LoginContent(
     navController: NavController,
     viewModel: LoginViewModel,
     sharedPreferencesViewModel: SharedPreferencesViewModel,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val hasNavigated = remember { mutableStateOf(false) }
 
     val uiState by viewModel.uiState.collectAsState()
-    if(uiState.loggedIn && !hasNavigated.value){
+    if (uiState.loggedIn && !hasNavigated.value) {
         hasNavigated.value = true
         navController.navigate(UiConstants.ROUTE_DEVICES) {
             popUpTo(UiConstants.ROUTE_LOGIN) { inclusive = true }
-           // launchSingleTop = true
+            // launchSingleTop = true
         }
     }
 
     Column(
         modifier = modifier.padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Logo
         Box(
             modifier = Modifier
                 .size(200.dp)
                 .clickable { navController.navigate(UiConstants.ROUTE_CONFIGURATION) },
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             val serverMode by sharedPreferencesViewModel.serverMode.collectAsState()
             val logoResourceId = if (serverMode == "local") {
@@ -137,7 +136,7 @@ fun LoginContent(
                 painter = painterResource(id = logoResourceId),
                 contentDescription = "App Logo",
                 modifier = Modifier.clip(CircleShape),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
             )
         }
 
@@ -149,14 +148,14 @@ fun LoginContent(
             modifier = Modifier
                 .padding(bottom = 4.dp)
                 .align(Alignment.Start),
-            textAlign = TextAlign.Start
+            textAlign = TextAlign.Start,
         )
 
         Spacer(modifier = Modifier.size(4.dp))
 
         StatefulTextField(
             stringFlow = viewModel.email,
-            placeholderString = "Email"
+            placeholderString = "Email",
         ) { viewModel.updateEmail(it) }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -164,7 +163,7 @@ fun LoginContent(
         StatefulTextField(
             stringFlow = viewModel.password,
             placeholderString = "Password",
-            isPassword = true
+            isPassword = true,
         ) { viewModel.updatePassword(it) }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -185,7 +184,7 @@ fun LoginButton(navController: NavController, viewModel: LoginViewModel) {
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(48.dp),
     ) {
         Text(text = "Log in")
     }
@@ -201,7 +200,7 @@ fun RegisterButton(navController: NavController) {
             .testTag(UiConstants.SCREEN_LOGIN_BUTTON_REGISTER_TAG),
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.White,
-            disabledContentColor = Color.White
+            disabledContentColor = Color.White,
         ),
     ) {
         Text(UiConstants.SCREEN_LOGIN_BUTTON_NEW_ACCOUNT_TEXT)

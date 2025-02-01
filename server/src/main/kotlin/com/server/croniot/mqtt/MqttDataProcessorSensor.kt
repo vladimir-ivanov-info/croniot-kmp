@@ -15,7 +15,7 @@ class MqttDataProcessorSensor(val deviceUuid: String, val sensorsDataController:
 
     override fun process(data: Any) {
         val messageString = data as String
-        //TODO handle error in fromJson
+        // TODO handle error in fromJson
         val messageSensorData = gson.fromJson(messageString, MessageSensorData::class.java)
 
         sensorsDataController.processSensorData(deviceUuid, messageSensorData)

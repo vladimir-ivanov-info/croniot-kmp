@@ -3,10 +3,10 @@ package com.server.croniot.application
 import com.server.croniot.controllers.*
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.routing.*
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import javax.inject.Inject
-import io.ktor.server.routing.*
 
 class RouteInitializer @Inject constructor(
     private val loginController: LoginController,
@@ -14,7 +14,7 @@ class RouteInitializer @Inject constructor(
     private val deviceController: DeviceController,
     private val taskController: TaskController,
     private val sensorTypeController: SensorTypeController,
-    private val taskTypeController: TaskTypeController
+    private val taskTypeController: TaskTypeController,
 ) {
     fun setupRoutes(application: Application) {
         application.routing {
@@ -46,7 +46,7 @@ class RouteInitializer @Inject constructor(
                 taskTypeController.registerTaskType(call)
             }
 
-            post("/api/add_task"){
+            post("/api/add_task") {
                 taskController.addTask(call)
             }
         }

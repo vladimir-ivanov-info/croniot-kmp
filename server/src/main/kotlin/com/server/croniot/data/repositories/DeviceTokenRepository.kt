@@ -6,17 +6,15 @@ import croniot.models.DeviceToken
 import javax.inject.Inject
 
 class DeviceTokenRepository @Inject constructor(
-    private val deviceTokenDao: DeviceTokenDao
-){
+    private val deviceTokenDao: DeviceTokenDao,
+) {
 
-    fun createDeviceToken(device: Device, token: String){
-
+    fun createDeviceToken(device: Device, token: String) {
         val deviceToken = DeviceToken(device, token)
         deviceTokenDao.insert(deviceToken)
     }
 
-    fun getDeviceAssociatedWithToken(token: String) : Device? {
+    fun getDeviceAssociatedWithToken(token: String): Device? {
         return deviceTokenDao.getDeviceAssociatedWithToken(token)
     }
-
 }

@@ -6,10 +6,10 @@ import org.hibernate.SessionFactory
 import javax.inject.Inject
 
 class AccountDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
+    private val sessionFactory: SessionFactory,
 ) : AccountDao {
 
-    override fun insert(account: Account) : Long {
+    override fun insert(account: Account): Long {
         val session = sessionFactory.openSession()
         val transaction = session.beginTransaction()
         val accountId: Long
@@ -22,12 +22,12 @@ class AccountDaoImpl @Inject constructor(
             transaction.rollback()
             throw e // Rethrow the exception after rollback
         } finally {
-            //session.close() // Close the session to release resources
+            // session.close() // Close the session to release resources
         }
         return accountId
     }
 
-    override fun isExistsAccountWithEmail(email: String) : Boolean {
+    override fun isExistsAccountWithEmail(email: String): Boolean {
         val session = sessionFactory.openSession()
 
         session.use { sess ->
@@ -45,7 +45,6 @@ class AccountDaoImpl @Inject constructor(
             return accountExists != null && accountExists > 0
         }
     }
-
 
     override fun getAccountEagerSkipTasks(email: String, password: String): Account? {
         val session = sessionFactory.openSession()
@@ -82,5 +81,4 @@ class AccountDaoImpl @Inject constructor(
         val list = query.resultList
         return list
     }
-
 }

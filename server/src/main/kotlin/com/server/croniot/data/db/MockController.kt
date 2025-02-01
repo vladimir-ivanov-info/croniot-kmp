@@ -1,17 +1,17 @@
 package com.server.croniot.data.db
 
-import croniot.models.*
 import com.server.croniot.data.db.controllers.ControllerDb
+import croniot.models.*
 
-//idea: add a precondition functionality before being able to run a task. For example: I cannot run the task Water plants if voltage is below certain level.
+// idea: add a precondition functionality before being able to run a task. For example: I cannot run the task Water plants if voltage is below certain level.
 
 object MockController {
 
     val connection = ControllerDb.getConnection()
 
-    fun addMockData(){
+    fun addMockData() {
         val account1 = Account("account1Uuid", "vladimiriot", "email1@gmail.com", "password1", mutableSetOf())
-        val device1 = Device("esp32id", "Watering system", "description123", true, /*"esp32Password",*/ mutableSetOf(),  mutableSetOf(), account1)
+        val device1 = Device("esp32id", "Watering system", "description123", true, /*"esp32Password",*/ mutableSetOf(), mutableSetOf(), account1)
         val device2 = Device("android1Uuid", "Android device", "description123", false, /*"androidPassword",*/ mutableSetOf(), mutableSetOf(), account1)
 
         val sensorType1 = SensorType(1, "WiFi signal", "WiFi signal strength expressed in dBm", mutableSetOf(), device1)
@@ -20,7 +20,7 @@ object MockController {
         parameterSensor1.constraints = parameterSensor1Constraints
         sensorType1.parameters = mutableSetOf(parameterSensor1)
 
-        val sensorType2 = SensorType(2,"Battery level", "Battery level from 0 to 100%", mutableSetOf(), device1)
+        val sensorType2 = SensorType(2, "Battery level", "Battery level from 0 to 100%", mutableSetOf(), device1)
         val parameterSensor2 = ParameterSensor(2, "Battery level", "number", "%", "Battery level from 0 to 100%", mutableMapOf(), sensorType2)
         val parameterSensor2Constraints = mutableMapOf("minValue" to "0", "maxValue" to "100")
         parameterSensor2.constraints = parameterSensor2Constraints
@@ -51,9 +51,8 @@ object MockController {
         device1.sensorTypes.add(sensorType4)
 
         account1.devices.add(device1)
-        account1.devices.add(device2) //hashing problem
+        account1.devices.add(device2) // hashing problem
 
-      //TODO  ControllerDb.accountDao.insert(account1)
+        // TODO  ControllerDb.accountDao.insert(account1)
     }
-    
 }

@@ -28,16 +28,15 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
-fun CurrentScreen(){
-
+fun CurrentScreen() {
     LaunchedEffect(Unit) {
         NetworkUtil.resolveServerAddressIfNotExists()
     }
 
     val loginUseCase: LoginUseCase = koinInject()
 
-    val devicesListViewModel : DevicesListViewModel = koinViewModel()
-    val viewModelSensors : ViewModelSensors = koinViewModel()
+    val devicesListViewModel: DevicesListViewModel = koinViewModel()
+    val viewModelSensors: ViewModelSensors = koinViewModel()
 
     val navController = rememberNavController()
 
@@ -52,17 +51,17 @@ fun CurrentScreen(){
     }
 
     val startDestination = runBlocking {
-        DataStoreController.loadData(DataStoreController.KEY_CURRENT_SCREEN).first()  ?: UiConstants.ROUTE_LOGIN
+        DataStoreController.loadData(DataStoreController.KEY_CURRENT_SCREEN).first() ?: UiConstants.ROUTE_LOGIN
     }
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        //enterTransition = { EnterTransition.None },
-        //exitTransition = { ExitTransition.None }
+        // enterTransition = { EnterTransition.None },
+        // exitTransition = { ExitTransition.None }
     ) {
-        //composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
-        composable("MAPS"){ MapScreen() }
+        // composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
+        composable("MAPS") { MapScreen() }
         composable(UiConstants.ROUTE_REGISTER_ACCOUNT) { ScreenRegisterAccount(navController) }
 
         composable(UiConstants.ROUTE_LOGIN) { LoginScreen(navController) }
@@ -79,4 +78,3 @@ fun saveCurrentScreenAsync(currentScreen: String) {
         DataStoreController.saveData(DataStoreController.KEY_CURRENT_SCREEN, currentScreen)
     }
 }
-

@@ -1,17 +1,14 @@
 package db
 
-//import io.ktor.application.*
-//import commons.models.Result
+// import io.ktor.application.*
+// import commons.models.Result
 
-//import messages.MessageRegisterAccount
+// import messages.MessageRegisterAccount
 
+// @Serializable
+// data class Data(val message: String)
 
-//@Serializable
-//data class Data(val message: String)
-
-class ApplicationTest{
-
-
+class ApplicationTest {
 
 /*
     @Test

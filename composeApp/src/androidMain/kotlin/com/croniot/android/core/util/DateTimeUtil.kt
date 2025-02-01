@@ -46,5 +46,4 @@ object DateTimeUtil {
 
         return if (isPast) "$timeString ago" else "in $timeString"
     }
-
 }

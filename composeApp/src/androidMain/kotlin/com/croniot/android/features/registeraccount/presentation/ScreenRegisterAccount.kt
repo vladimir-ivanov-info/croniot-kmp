@@ -44,26 +44,27 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenRegisterAccount(navController: NavController) {
-
     BackHandler {
-        if(!navController.popBackStack()){
+        if (!navController.popBackStack()) {
             navController.navigate(UiConstants.ROUTE_LOGIN)
         }
     }
 
     Scaffold(
         topBar = {
-            TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
+            TopAppBar( // This material API is experimental and is likely to change or to be removed in the future.
                 title = {
-                    Row(modifier = Modifier.fillMaxWidth(),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically) {
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         IconButton(
                             onClick = {
-                                if(!navController.popBackStack()){
+                                if (!navController.popBackStack()) {
                                     navController.navigate(UiConstants.ROUTE_LOGIN)
                                 }
-                            }
+                            },
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -76,14 +77,14 @@ fun ScreenRegisterAccount(navController: NavController) {
             )
         },
         content = {
-                innerPadding -> ScreenRegisterAccountBody(navController, innerPadding = innerPadding, Modifier)
-        }
+                innerPadding ->
+            ScreenRegisterAccountBody(navController, innerPadding = innerPadding, Modifier)
+        },
     )
 }
 
 @Composable
-fun ScreenRegisterAccountBody(navController: NavController, innerPadding: PaddingValues, modifier: Modifier){
-
+fun ScreenRegisterAccountBody(navController: NavController, innerPadding: PaddingValues, modifier: Modifier) {
     val viewModelRegisterAccount: ViewModelRegisterAccount = koinViewModel()
     val coroutineScope = rememberCoroutineScope()
 
@@ -93,7 +94,7 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
     var dialogContent by remember { mutableStateOf("") }
 
     Box(modifier = Modifier.padding(innerPadding), contentAlignment = Alignment.Center) {
-        Column(modifier = Modifier.padding(16.dp)){
+        Column(modifier = Modifier.padding(16.dp)) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = UiConstants.SCREEN_LOGIN_BUTTON_NEW_ACCOUNT_TEXT,
@@ -107,7 +108,7 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
                     text = "Warning! This is a TESTING version of the app.\n\nDo NOT use a real password that you already use somewhere else.\n\nThe connection with the server is NOT secure and the password will NOT be stored encrypted in the server's database.",
                     fontSize = 20.sp,
                     color = Color.Red,
-                    fontWeight = FontWeight.ExtraBold
+                    fontWeight = FontWeight.ExtraBold,
                 )
             }
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -151,18 +152,22 @@ fun ScreenRegisterAccountBody(navController: NavController, innerPadding: Paddin
                     modifier = Modifier
                         .align(Alignment.Center)
                         .fillMaxWidth()
-                        .testTag(UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP_TAG)
-                ){
-                    Text(text = UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP,  modifier = Modifier.testTag(
-                        UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP))
+                        .testTag(UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP_TAG),
+                ) {
+                    Text(
+                        text = UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP,
+                        modifier = Modifier.testTag(
+                            UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP,
+                        ),
+                    )
                 }
             }
         }
-        if(showDialog){
-            GenericAlertDialog(title = dialogTitle, content = dialogContent){
+        if (showDialog) {
+            GenericAlertDialog(title = dialogTitle, content = dialogContent) {
                 val result = it
-                if(result){
-                    if(navController.popBackStack()){
+                if (result) {
+                    if (navController.popBackStack()) {
                         navController.navigate(UiConstants.ROUTE_LOGIN)
                     }
                 }

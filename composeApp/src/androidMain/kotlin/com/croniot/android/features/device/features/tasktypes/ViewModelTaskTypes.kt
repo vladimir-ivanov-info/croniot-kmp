@@ -2,39 +2,38 @@ package com.croniot.android.features.device.features.tasktypes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.GsonBuilder
 import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.util.NetworkUtil
+import com.google.gson.GsonBuilder
+import croniot.messages.MessageAddTask
+import croniot.models.Result
 import croniot.models.dto.ParameterTaskDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import croniot.messages.MessageAddTask
-import croniot.models.Result
 import kotlinx.coroutines.withContext
 
 class ViewModelTaskTypes : ViewModel() {
 
-    companion object{
-        const val PARAMETER_VALUE_UNDEFINED : String = "*undefined*"
+    companion object {
+        const val PARAMETER_VALUE_UNDEFINED: String = "*undefined*"
     }
 
     private val _parametersValues: MutableMap<ParameterTaskDto, MutableStateFlow<String>> = mutableMapOf()
-    val parametersValues : MutableMap<ParameterTaskDto, MutableStateFlow<String>> get() = _parametersValues
+    val parametersValues: MutableMap<ParameterTaskDto, MutableStateFlow<String>> get() = _parametersValues
 
-
-    //TODO delegate this to another class, there will be more parameter types in the future
-    init{
+    // TODO delegate this to another class, there will be more parameter types in the future
+    init {
         val selectedTaskType = Global.selectedTaskType
-        //if(selectedTaskType != null){
-        selectedTaskType?.let{
-            for(parameter in selectedTaskType.parameters){
+        // if(selectedTaskType != null){
+        selectedTaskType?.let {
+            for (parameter in selectedTaskType.parameters) {
 
-                with(parameter){
-                    if(type == "number"){
+                with(parameter) {
+                    if (type == "number") {
                         val minValue = constraints["minValue"]
                         val maxValue = constraints["maxValue"]
-                        val midValue = ((maxValue!!.toDouble() - minValue!!.toDouble())/2).toString()
+                        val midValue = ((maxValue!!.toDouble() - minValue!!.toDouble()) / 2).toString()
                         _parametersValues.put(parameter, MutableStateFlow(midValue))
                     } else {
                         _parametersValues.put(parameter, MutableStateFlow(PARAMETER_VALUE_UNDEFINED))
@@ -44,25 +43,25 @@ class ViewModelTaskTypes : ViewModel() {
         }
     }
 
-    fun uninit(){
+    fun uninit() {
         _parametersValues.values.clear()
     }
 
-    fun updateParameter(parameterUid: Long, newValue: String){
+    fun updateParameter(parameterUid: Long, newValue: String) {
         _parametersValues.forEach { (parameter, flow) ->
             if (parameter.uid == parameterUid) {
                 viewModelScope.launch {
-                    flow.emit(newValue)  // Use emit in a coroutine context
+                    flow.emit(newValue) // Use emit in a coroutine context
                 }
             }
         }
     }
 
-    fun sendStatefulTask(parameterUid: Long, newValue: String){
-        viewModelScope.launch(Dispatchers.IO){
+    fun sendStatefulTask(parameterUid: Long, newValue: String) {
+        viewModelScope.launch(Dispatchers.IO) {
             val selectedDevice = Global.selectedDevice
 
-            if(selectedDevice != null){
+            if (selectedDevice != null) {
                 var result: Result
 
                 val deviceUuid = selectedDevice.uuid
@@ -76,20 +75,18 @@ class ViewModelTaskTypes : ViewModel() {
 
                 val gson = GsonBuilder().setPrettyPrinting().create()
                 val message = gson.toJson(messageAddTask)
-                result = NetworkUtil.performPostRequestToEndpoint("/api/add_task", message) //50 ms //TODO do something if result is false
+                result = NetworkUtil.performPostRequestToEndpoint("/api/add_task", message) // 50 ms //TODO do something if result is false
             } else {
                 Result(false, "Selected Device is null")
             }
         }
     }
 
-    suspend fun sendTask() : Result {
-
-        return withContext(Dispatchers.IO){
-
+    suspend fun sendTask(): Result {
+        return withContext(Dispatchers.IO) {
             val selectedDevice = Global.selectedDevice
 
-            if(selectedDevice != null){
+            if (selectedDevice != null) {
                 var result: Result
 
                 val deviceUuid = selectedDevice.uuid

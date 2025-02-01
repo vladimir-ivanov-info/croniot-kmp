@@ -7,5 +7,4 @@ object UtilUi {
     val TEXT_SIZE_2 = 24.sp
     val TEXT_SIZE_3 = 20.sp
     val TEXT_SIZE_4 = 16.sp
-
 }

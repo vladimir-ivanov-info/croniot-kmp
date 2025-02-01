@@ -10,5 +10,4 @@ interface LoginApiService {
 
     @POST("/api/login")
     suspend fun login(@Body request: MessageLoginRequest): Response<LoginResult>
-
 }

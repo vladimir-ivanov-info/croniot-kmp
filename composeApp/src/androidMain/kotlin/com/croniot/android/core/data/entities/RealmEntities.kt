@@ -1,8 +1,8 @@
 package com.croniot.android.core.data.entities
 import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
-import io.realm.kotlin.types.RealmList
 
 class AccountEntity : RealmObject {
     @PrimaryKey
@@ -98,7 +98,6 @@ class TaskTypeEntity : RealmObject {
     var parameters: RealmList<ParameterTaskEntity> = realmListOf()
     var realTime: Boolean = false
 }
-
 
 // Helper class to store key-value pairs for constraints and parametersValues.
 class KeyValueEntity : RealmObject {

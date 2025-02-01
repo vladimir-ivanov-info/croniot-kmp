@@ -1,16 +1,16 @@
 package com.croniot.android.features.login.di
 
-import org.koin.dsl.module
-import retrofit2.Retrofit
+import com.croniot.android.features.login.data.LoginApiService
 import com.croniot.android.features.login.data.repository.LoginRepositoryImpl
 import com.croniot.android.features.login.domain.repository.LoginRepository
-import com.croniot.android.features.login.data.LoginApiService
 import com.croniot.android.features.login.presentation.LoginViewModel
 import com.croniot.android.features.login.usecase.LoginUseCase
 import com.croniot.android.features.login.usecase.LogoutUseCase
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
+import retrofit2.Retrofit
 
-object LoginModule{
+object LoginModule {
     val loginModule = module {
 
         single<LoginApiService> {

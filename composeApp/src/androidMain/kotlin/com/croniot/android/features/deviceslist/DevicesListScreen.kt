@@ -40,17 +40,18 @@ import androidx.navigation.NavController
 import com.croniot.android.app.Global
 import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.presentation.UiConstants
-import com.croniot.android.features.login.controller.LoginController
-import com.croniot.android.core.presentation.util.UtilUi
 import com.croniot.android.core.presentation.util.GenericAlertDialog
+import com.croniot.android.core.presentation.util.UtilUi
+import com.croniot.android.features.login.controller.LoginController
 import croniot.models.dto.DeviceDto
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DevicesScreen(navController: NavController,
-                  devicesListViewModel: DevicesListViewModel = koinViewModel(),
+fun DevicesScreen(
+    navController: NavController,
+    devicesListViewModel: DevicesListViewModel = koinViewModel(),
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
 
@@ -64,10 +65,10 @@ fun DevicesScreen(navController: NavController,
 
     var expanded by remember { mutableStateOf(false) }
 
-    if(showLogoutDialog){
-        GenericAlertDialog(title = "Log Out", content = "Are you sure you want to log out?"){
+    if (showLogoutDialog) {
+        GenericAlertDialog(title = "Log Out", content = "Are you sure you want to log out?") {
             val result = it
-            if(result){
+            if (result) {
                 LoginController.logOut(navController)
             }
             showLogoutDialog = false
@@ -76,7 +77,7 @@ fun DevicesScreen(navController: NavController,
 
     Scaffold(
         topBar = {
-            TopAppBar( //This material API is experimental and is likely to change or to be removed in the future.
+            TopAppBar( // This material API is experimental and is likely to change or to be removed in the future.
                 title = {
                     Box(contentAlignment = Alignment.CenterStart) {
                         Text(text = Global.appName)
@@ -85,9 +86,9 @@ fun DevicesScreen(navController: NavController,
                 actions = {
                     IconButton(onClick = { expanded = true }) {
                         Icon(
-                            painter = painterResource(id = android.R.drawable.ic_menu_more, ), // Triple-dot icon
+                            painter = painterResource(id = android.R.drawable.ic_menu_more), // Triple-dot icon
                             contentDescription = "More options",
-                            tint = Color.Black // Set icon color to black
+                            tint = Color.Black, // Set icon color to black
                         )
                     }
                     DropdownMenu(
@@ -99,21 +100,22 @@ fun DevicesScreen(navController: NavController,
                                 expanded = false
                                 showLogoutDialog = true
                             },
-                            text = { Text("Logout") }
+                            text = { Text("Logout") },
                         )
                     }
                 },
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
             )
         },
-        content = { innerPadding -> MainContent(
-            navController,
-            Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            devicesListViewModel
-        )
-        }
+        content = { innerPadding ->
+            MainContent(
+                navController,
+                Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                devicesListViewModel,
+            )
+        },
     )
 }
 
@@ -125,31 +127,29 @@ fun MainContent(navController: NavController, modifier: Modifier = Modifier, dev
 
 @Composable
 fun DevicesList(navController: NavController, items: List<DeviceDto>, modifier: Modifier) {
-    Column(modifier = modifier){
-        Text(text = "Devices",
+    Column(modifier = modifier) {
+        Text(
+            text = "Devices",
             fontSize = UtilUi.TEXT_SIZE_1,
             color = Color.Black,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         )
 
         LazyColumn(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
-
-            if(items.isEmpty()){
-                item{
+            if (items.isEmpty()) {
+                item {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                        ,
-                        contentAlignment = Alignment.Center
-                    ){
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
                         Text(
                             text = "No IoT devices yet",
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = UtilUi.TEXT_SIZE_2,
-                            modifier = Modifier.padding(4.dp)
-                            ,
+                            modifier = Modifier.padding(4.dp),
                         )
                     }
                 }
@@ -160,7 +160,7 @@ fun DevicesList(navController: NavController, items: List<DeviceDto>, modifier: 
                 Row(
                     modifier = Modifier
                         .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     DeviceItem(navController, modifier, client)
                 }
@@ -171,7 +171,6 @@ fun DevicesList(navController: NavController, items: List<DeviceDto>, modifier: 
 
 @Composable
 fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceDto) {
-
     val coroutineScope = rememberCoroutineScope()
 
     val currentTime = remember { System.currentTimeMillis() }
@@ -181,11 +180,11 @@ fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceD
     }
 
     val backgroundColor =
-    if (isDeviceOnline) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.secondaryContainer
-    }
+        if (isDeviceOnline) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.secondaryContainer
+        }
 
     Card(
         modifier = Modifier
@@ -195,25 +194,23 @@ fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceD
                 Global.selectedDevice = device
 
                 coroutineScope.launch {
-                    //SharedPreferences.saveSelectedDevice(device)
+                    // SharedPreferences.saveSelectedDevice(device)
                     DataStoreController.saveSelectedDevice(device)
-
                 }
 
                 navController.navigate(UiConstants.ROUTE_DEVICE)
             },
-        elevation = CardDefaults.elevatedCardElevation()
+        elevation = CardDefaults.elevatedCardElevation(),
     ) {
         Box(
             Modifier
                 .fillMaxSize()
                 .background(backgroundColor),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = "${device.name} ",

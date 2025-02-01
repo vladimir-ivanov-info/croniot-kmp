@@ -2,12 +2,12 @@ package com.croniot.android.features.login.controller
 
 import androidx.navigation.NavController
 import com.croniot.android.core.data.source.local.DataStoreController
-import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.data.source.repository.AccountRepository
 import com.croniot.android.core.data.source.repository.SensorDataRepository
+import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
-import com.croniot.android.features.deviceslist.DevicesListViewModel
 import com.croniot.android.features.device.features.tasks.ViewModelTasks
+import com.croniot.android.features.deviceslist.DevicesListViewModel
 import com.croniot.android.features.login.usecase.LoginUseCase
 import croniot.models.dto.AccountDto
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import org.koin.core.component.get
 
 object LoginController : KoinComponent {
 
-    val accountRepository : AccountRepository = get()
+    val accountRepository: AccountRepository = get()
     val sensorDataRepository: SensorDataRepository = get()
 
     fun logOut(navController: NavController) {
@@ -31,10 +31,10 @@ object LoginController : KoinComponent {
         // Clean up all session data
         viewModelTasks.uninit()
         devicesListViewModel.uninit()
-//TODO        viewModelSensors.uninit()
-      //  SharedPreferences.clearCache()
+// TODO        viewModelSensors.uninit()
+        //  SharedPreferences.clearCache()
 
-        //TODO
+        // TODO
         runBlocking {
             DataStoreController.clearAllCacheExceptDeviceUuid()
         }
@@ -55,7 +55,7 @@ object LoginController : KoinComponent {
         // Clean up all session data
         viewModelTasks.uninit()
         devicesListViewModel.uninit()
-   //TODO     viewModelSensors.uninit()
+        // TODO     viewModelSensors.uninit()
 
         // Navigate to login screen
         navController.navigate(UiConstants.ROUTE_LOGIN) {
@@ -63,17 +63,16 @@ object LoginController : KoinComponent {
         }
     }
 
-    fun processLoginOnAppEntered(loginUseCase: LoginUseCase, navController: NavController){
+    fun processLoginOnAppEntered(loginUseCase: LoginUseCase, navController: NavController) {
         val currentScreen = runBlocking {
             DataStoreController.loadData(DataStoreController.KEY_CURRENT_SCREEN).first()
         }
 
-        if(currentScreen != UiConstants.ROUTE_LOGIN && currentScreen != UiConstants.ROUTE_CONFIGURATION){
-
+        if (currentScreen != UiConstants.ROUTE_LOGIN && currentScreen != UiConstants.ROUTE_CONFIGURATION) {
             val account = accountRepository.account.value
             account?.let {
-                for(device in account.devices){
-                    CoroutineScope(Dispatchers.IO).launch{
+                for (device in account.devices) {
+                    CoroutineScope(Dispatchers.IO).launch {
                         sensorDataRepository.listenToDeviceSensors(device)
                     }
                 }
@@ -86,8 +85,8 @@ object LoginController : KoinComponent {
                 if (latestLoggedInEmail != null && latestLoggedInPassword != null) {
                     val result = loginUseCase.checkedLoginState(
                         latestLoggedInEmail,
-                        latestLoggedInPassword
-                    ) //TODO remove parameters
+                        latestLoggedInPassword,
+                    ) // TODO remove parameters
 
                     if (!result.isSuccess) {
                         clearSessionCacheAndMoveToLoginScreen(navController)
@@ -99,8 +98,8 @@ object LoginController : KoinComponent {
         }
     }
 
-    private fun clearSessionCacheAndMoveToLoginScreen(navController: NavController){
-        //SharedPreferences.clearCache()
+    private fun clearSessionCacheAndMoveToLoginScreen(navController: NavController) {
+        // SharedPreferences.clearCache()
 
         CoroutineScope(Dispatchers.IO).launch {
             DataStoreController.clearAllCacheExceptDeviceUuid()
@@ -114,12 +113,11 @@ object LoginController : KoinComponent {
         }
     }
 
-    suspend fun processLoginSuccess(account: AccountDto){
-
+    suspend fun processLoginSuccess(account: AccountDto) {
         accountRepository.updateAccount(account)
 
-        for(device in account.devices){
-            CoroutineScope(Dispatchers.IO).launch{
+        for (device in account.devices) {
+            CoroutineScope(Dispatchers.IO).launch {
                 sensorDataRepository.listenToDeviceSensors(device)
             }
         }

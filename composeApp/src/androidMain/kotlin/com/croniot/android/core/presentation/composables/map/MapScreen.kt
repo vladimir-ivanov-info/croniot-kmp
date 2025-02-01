@@ -19,11 +19,10 @@ import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
-import org.maplibre.geojson.Point
-import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
+import org.maplibre.geojson.Point
 
-//TOOD experimental
+// TOOD experimental
 
 private val viewModelSensors: ViewModelSensors = get(ViewModelSensors::class.java)
 lateinit var mapLibre: MapLibreMap
@@ -32,10 +31,10 @@ private val markersList = mutableListOf<MarkerOptions>()
 @Composable
 fun MapScreen(
     modifier: Modifier = Modifier,
-    savedLocations: List<Point> = emptyList() // Use an empty list if you don't have locations yet
+    savedLocations: List<Point> = emptyList(), // Use an empty list if you don't have locations yet
 ) {
     LaunchedEffect(Unit) {
-        //viewModelSensors.listenToMapUpdates()
+        // viewModelSensors.listenToMapUpdates()
     }
 
     val context = LocalContext.current
@@ -44,14 +43,13 @@ fun MapScreen(
 
     // Load the map style and add saved locations
     LaunchedEffect(mapView) {
-       // mapView.setRenderMode(MapView.RENDER_MODE_SOFTWARE)
+        // mapView.setRenderMode(MapView.RENDER_MODE_SOFTWARE)
 
         mapView.getMapAsync { map ->
             mapLibre = map
             map.setMaxZoomPreference(17.5) // Maximum zoom level to prevent black screen
             map.setStyle("asset://style.json") { style ->
-               // addSavedLocationsToMap(style, savedLocations)
-
+                // addSavedLocationsToMap(style, savedLocations)
             }
             val newYorkCity = LatLng(40.7167, -74.0000) // Latitude and longitude of NYC
             val cameraPosition = CameraPosition.Builder()
@@ -61,7 +59,7 @@ fun MapScreen(
             map.cameraPosition = cameraPosition
         }
     }
-    //TODO
+    // TODO
     /*val gps = viewModelSensors.gps.collectAsState()
     val gpsString = gps.value
     if(gpsString.isNotEmpty()){
@@ -82,14 +80,14 @@ fun MapScreen(
 
     AndroidView(
         factory = { mapView },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
 @Composable
 fun rememberMapViewWithLifecycle(
     context: Context,
-    lifecycleOwner: LifecycleOwner
+    lifecycleOwner: LifecycleOwner,
 ): MapView {
     val mapView = remember {
         MapView(context)
@@ -141,7 +139,7 @@ private fun addMarkersToMap(data: FeatureCollection, maplibreMap: MapLibreMap, c
         // Intentionally specify package name
         // This makes copy from another project easier
         R.drawable.ic_map_marker,
-        context.theme
+        context.theme,
     )!!
 
     val bitmapBlue = infoIconDrawable.toBitmap()
@@ -160,13 +158,13 @@ private fun addMarkersToMap(data: FeatureCollection, maplibreMap: MapLibreMap, c
         // Contents in InfoWindow of each marker
         val title = feature.getStringProperty("title")
         val epochTime = feature.getNumberProperty("time")
-        //val dateString = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(epochTime)
-       // val dateString = "abc"
+        // val dateString = SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(epochTime)
+        // val dateString = "abc"
         val dateString = message
 
         // If magnitude > 6.0, show marker with red icon. If not, show blue icon instead
         val mag = feature.getNumberProperty("mag")
-        //val icon = IconFactory.getInstance(context)
+        // val icon = IconFactory.getInstance(context)
         //    .fromBitmap(if (mag.toFloat() > 6.0) bitmapRed else bitmapBlue)
 
         val icon = IconFactory.getInstance(context).fromBitmap(bitmapBlue)
@@ -176,7 +174,6 @@ private fun addMarkersToMap(data: FeatureCollection, maplibreMap: MapLibreMap, c
             .position(latLng)
             .title(dateString)
             .snippet(title)
-
             .icon(icon)
         maplibreMap.addMarker(markerOptions)
 

@@ -7,7 +7,7 @@ import org.hibernate.SessionFactory
 import javax.inject.Inject
 
 class DeviceDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
+    private val sessionFactory: SessionFactory,
 ) : DeviceDao {
 
     override fun insert(device: Device): Long {
@@ -37,8 +37,8 @@ class DeviceDaoImpl @Inject constructor(
         return list
     }
 
-//TODO Method threw 'org.hibernate.NonUniqueResultException' exception.
-    override fun getByUuid(deviceUuid: String) : Device? {
+// TODO Method threw 'org.hibernate.NonUniqueResultException' exception.
+    override fun getByUuid(deviceUuid: String): Device? {
         val session = sessionFactory.openSession()
         session.use { sess ->
             val cb = sess.criteriaBuilder
@@ -49,7 +49,7 @@ class DeviceDaoImpl @Inject constructor(
 
             cr.select(root).where(emailPredicate)
 
-            val query = sess.createQuery(cr).uniqueResultOptional() //TODO don't let register to the same device twice:  org.hibernate.NonUniqueResultException: Query did not return a unique result: 2 results were returned
+            val query = sess.createQuery(cr).uniqueResultOptional() // TODO don't let register to the same device twice:  org.hibernate.NonUniqueResultException: Query did not return a unique result: 2 results were returned
             return query.orElse(null)
         }
     }
@@ -72,13 +72,13 @@ class DeviceDaoImpl @Inject constructor(
             return Device(
                 id = tupleResult.get(0, Long::class.java),
                 uuid = tupleResult.get(1, String::class.java),
-                name = "",                  // Uninitialized
-                description = "",           // Uninitialized
-                iot = false,                // Uninitialized
+                name = "", // Uninitialized
+                description = "", // Uninitialized
+                iot = false, // Uninitialized
                 sensorTypes = mutableSetOf(), // Uninitialized
-                taskTypes = mutableSetOf(),   // Uninitialized
-                account = Account(),        // Uninitialized
-                deviceToken = null          // Uninitialized
+                taskTypes = mutableSetOf(), // Uninitialized
+                account = Account(), // Uninitialized
+                deviceToken = null, // Uninitialized
             )
         }
     }

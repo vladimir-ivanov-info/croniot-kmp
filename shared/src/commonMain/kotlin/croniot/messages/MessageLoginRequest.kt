@@ -5,5 +5,5 @@ data class MessageLoginRequest(
     val password: String,
     val deviceUuid: String,
     val deviceToken: String?,
-    val deviceProperties: Map<String, String>
+    val deviceProperties: Map<String, String>,
 )

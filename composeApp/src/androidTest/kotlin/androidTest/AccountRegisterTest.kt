@@ -9,8 +9,8 @@ import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.croniot.android.app.Global
-import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.di.DependencyInjectionModule
+import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.presentation.theme.IoTClientTheme
 import org.junit.After
 import org.junit.Before
@@ -23,26 +23,25 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 
-//import org.robolectric.RobolectricTestRunner
-//import org.robolectric.annotation.Config
-//import kotlin.test.assertEquals
+// import org.robolectric.RobolectricTestRunner
+// import org.robolectric.annotation.Config
+// import kotlin.test.assertEquals
 
-//@RunWith(RobolectricTestRunner::class)
-@RunWith(AndroidJUnit4::class)  // Use AndroidJUnit4 as you are using Android components
-//@Config(manifest = Config.NONE, sdk = [34])
+// @RunWith(RobolectricTestRunner::class)
+// @Config(manifest = Config.NONE, sdk = [34])
+@RunWith(AndroidJUnit4::class) // Use AndroidJUnit4 as you are using Android components
 class AccountRegisterTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
-   // @get:Rule
-   // val composeTestRule = createAndroidComposeRule<MainActivity>()
+    // @get:Rule
+    // val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+    // val composeTestRule = createComposeRule()
 
-   // val composeTestRule = createComposeRule()
+    // @get:Rule
 
-   // @get:Rule
-
-   // private val testModule = DependencyInjectionModule.dependencyInjectionModule /*module {
+    // private val testModule = DependencyInjectionModule.dependencyInjectionModule /*module {
 
 //        viewModel { LoginViewModel() }
 //        viewModel { ViewModelRegisterAccount() }
@@ -58,7 +57,6 @@ class AccountRegisterTest {
             androidContext(InstrumentationRegistry.getInstrumentation().targetContext)
             modules(testModule)
         }*/
-
 
         if (GlobalContext.getOrNull() == null) {
             startKoin {
@@ -85,7 +83,6 @@ class AccountRegisterTest {
                 CurrentScreen();
             }
         }*/
-
     }
 
     @After
@@ -97,15 +94,14 @@ class AccountRegisterTest {
     fun testMyComposeUI() {
         composeTestRule.setContent {
             IoTClientTheme {
-                //val viewModel: NavigationViewModel = koinViewModel()
-                //CurrentScreen(viewModel)  // Ensure this is correctly set up
+                // val viewModel: NavigationViewModel = koinViewModel()
+                // CurrentScreen(viewModel)  // Ensure this is correctly set up
             }
         }
 
         composeTestRule.waitForIdle()
 
         Global.SERVER_ADDRESS = Global.SERVER_ADDRESS_LOCAL
-
 
         // Print the UI hierarchy to the log
         composeTestRule.onRoot().printToLog("TAG")
@@ -125,7 +121,7 @@ class AccountRegisterTest {
         // Perform the click
         registerNode.performClick()
         composeTestRule.waitForIdle()
-     //   Thread.sleep(1000)
+        //   Thread.sleep(1000)
 
         // Print the UI hierarchy again to check if the register screen is loaded
         composeTestRule.onRoot().printToLog("TAG_AFTER_CLICK")
@@ -141,10 +137,9 @@ class AccountRegisterTest {
             println("AssertionError: The component is not displayed!")
         }
         composeTestRule.waitForIdle()
-        //Thread.sleep(1000)
+        // Thread.sleep(1000)
 
-     //   signUpNode.performClick()
+        //   signUpNode.performClick()
         Thread.sleep(3000)
-
     }
 }

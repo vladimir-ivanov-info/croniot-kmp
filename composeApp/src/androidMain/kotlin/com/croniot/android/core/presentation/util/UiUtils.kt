@@ -35,7 +35,7 @@ fun StatefulTextField(
     stringFlow: StateFlow<String>,
     placeholderString: String,
     isPassword: Boolean = false,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
 ) {
     val text by stringFlow.collectAsState() // Observe the current value
 
@@ -52,7 +52,7 @@ fun StatefulTextField(
 }
 
 @Composable
-fun GenericAlertDialog(title: String, content: String, onResult: (result: Boolean) -> Unit){
+fun GenericAlertDialog(title: String, content: String, onResult: (result: Boolean) -> Unit) {
     AlertDialog(
         onDismissRequest = {
             onResult(false)
@@ -73,29 +73,29 @@ fun GenericAlertDialog(title: String, content: String, onResult: (result: Boolea
         text = {
             Text(content)
         },
-        properties = DialogProperties()
+        properties = DialogProperties(),
     )
 }
 
 @Composable
 fun GenericDialog(title: String, text: String, button1Text: String?, onButton1Clicked: () -> Unit, button2Text: String, onButton2Clicked: () -> Unit, onDismiss: () -> Unit) {
-
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
                 .height(400.dp),
-            elevation = CardDefaults.elevatedCardElevation(4.dp)
+            elevation = CardDefaults.elevatedCardElevation(4.dp),
         ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-            ){
-                Box(modifier = Modifier.fillMaxSize().weight(0.5F)){
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Box(modifier = Modifier.fillMaxSize().weight(0.5F)) {
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
 
                     ) {
                         item {
@@ -104,7 +104,7 @@ fun GenericDialog(title: String, text: String, button1Text: String?, onButton1Cl
                                 fontSize = UtilUi.TEXT_SIZE_2,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 8.dp)
+                                    .padding(bottom = 8.dp),
                             )
                             Divider()
                         }
@@ -113,11 +113,11 @@ fun GenericDialog(title: String, text: String, button1Text: String?, onButton1Cl
                 Spacer(modifier = Modifier.height(8.dp))
                 Box(
                     modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.BottomCenter
+                    contentAlignment = Alignment.BottomCenter,
                 ) {
-                    if(button1Text != null){
+                    if (button1Text != null) {
                         Button(
-                            onClick = onButton1Clicked
+                            onClick = onButton1Clicked,
                         ) {
                             Text(text = button1Text)
                         }

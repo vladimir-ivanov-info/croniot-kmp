@@ -4,12 +4,11 @@ import croniot.models.Device
 
 interface DeviceDao {
 
-    fun insert(device: Device) : Long
+    fun insert(device: Device): Long
 
-    fun getAll() : List<Device>
+    fun getAll(): List<Device>
 
-    fun getByUuid(deviceUuid: String) : Device?
+    fun getByUuid(deviceUuid: String): Device?
 
-    fun getLazy(deviceUuid: String) : Device?
-
+    fun getLazy(deviceUuid: String): Device?
 }

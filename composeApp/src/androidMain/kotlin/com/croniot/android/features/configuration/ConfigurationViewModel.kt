@@ -20,20 +20,20 @@ class ConfigurationViewModel(application: Application) : AndroidViewModel(applic
     val context: Context by inject()
 
     private val _foregroundServiceEnabled = MutableStateFlow(false)
-    val foregroundServiceEnabled : StateFlow<Boolean> get() = _foregroundServiceEnabled
+    val foregroundServiceEnabled: StateFlow<Boolean> get() = _foregroundServiceEnabled
 
     init {
         loadConfigurationForegoundService()
     }
 
-    private fun loadConfigurationForegoundService(){
+    private fun loadConfigurationForegoundService() {
         val configurationForegoundService = runBlocking {
             DataStoreController.loadData(DataStoreController.KEY_CONFIGURATION_FOREGROUND_SERVICE).first()
         }
 
-        configurationForegoundService?.let{
+        configurationForegoundService?.let {
             viewModelScope.launch {
-                if(configurationForegoundService == "true"){
+                if (configurationForegoundService == "true") {
                     _foregroundServiceEnabled.emit(true)
                 } else {
                     _foregroundServiceEnabled.emit(false)
@@ -42,10 +42,10 @@ class ConfigurationViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun setConfigurationForegoundService(newValue : Boolean){
+    fun setConfigurationForegoundService(newValue: Boolean) {
         val newValueString = if (newValue) "true" else "false"
 
-        if(newValue){
+        if (newValue) {
             val serviceIntent = Intent(context, ForegroundService::class.java)
 
             context.startForegroundService(serviceIntent)

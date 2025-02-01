@@ -26,9 +26,9 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
     private val _tasks = MutableStateFlow<List<MutableStateFlow<TaskDto>>>(emptyList())
     val tasks: StateFlow<List<StateFlow<TaskDto>>> get() = _tasks
 
-    var mqttClient : MqttClient? = null
+    var mqttClient: MqttClient? = null
 
-    fun uninit(){
+    fun uninit() {
         _tasks.value = mutableStateListOf()
 
         _tasksLoaded = false
@@ -36,28 +36,27 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
         _newTasksBeingListened = false
     }
 
-    fun loadTasks(){
-        if(!_tasksLoaded){
+    fun loadTasks() {
+        if (!_tasksLoaded) {
             _tasksLoaded = true
 
             viewModelScope.launch(Dispatchers.IO) {
                 println("Inside viewModelScope.launch before try-catch")
 
                 try {
-                    val selectedDeviceUuid = Global.selectedDevice?.uuid //TODO
+                    val selectedDeviceUuid = Global.selectedDevice?.uuid // TODO
                     val response = selectedDeviceUuid?.let {
                         RetrofitClient.taskConfigurationApiService.requestTaskConfigurations(
-                            it
+                            it,
                         )
                     }
                     val taskDtos = response?.body()
 
                     if (response != null) {
                         if (response.isSuccessful && taskDtos != null) {
-                            for(task in taskDtos){
+                            for (task in taskDtos) {
                                 addTask(task)
                             }
-
                         } else {
                             println("Error: ${response.errorBody()?.string()}")
                         }
@@ -69,15 +68,18 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
         }
     }
 
-    fun listenToTasksUpdates(){
-        if(!_tasksBeingListened){
+    fun listenToTasksUpdates() {
+        if (!_tasksBeingListened) {
             _tasksBeingListened = true
 
-            viewModelScope.launch(Dispatchers.IO){
-                try{
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
                     val topic = "/server_to_devices/task_progress_update/${Global.selectedDevice?.uuid}"
                     mqttClient = MqttClient(
-                        Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(8), null)
+                        Global.mqttBrokerUrl,
+                        Global.mqttClientId + Global.generateUniqueString(8),
+                        null,
+                    )
                     MqttHandler(mqttClient!!, MqttDataProcessorTaskProgress(), topic)
                 } catch (e: Exception) {
                     println("Error: ${e.message}")
@@ -86,21 +88,23 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
         }
     }
 
-    fun listenToNewTasks(){
-        if(!_newTasksBeingListened){
+    fun listenToNewTasks() {
+        if (!_newTasksBeingListened) {
             _newTasksBeingListened = true
-            try{
-                val topic =  "/${Global.selectedDevice?.uuid}/newTasks"
+            try {
+                val topic = "/${Global.selectedDevice?.uuid}/newTasks"
                 val mqttClient = MqttClient(
-                    Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
-                        8
-                    ), null)
+                    Global.mqttBrokerUrl,
+                    Global.mqttClientId + Global.generateUniqueString(
+                        8,
+                    ),
+                    null,
+                )
 
                 val selectedDevice = Global.selectedDevice
-                selectedDevice?.let{
+                selectedDevice?.let {
                     MqttHandler(mqttClient, MqttDataProcessorNewTask(it.uuid), topic)
                 }
-
             } catch (e: Exception) {
                 println("Error: ${e.message}")
             }
@@ -111,18 +115,18 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
         val listOfMutableStateFlows = _tasks.value
         val taskMutableStateFlow = listOfMutableStateFlows.find { it.value.uid == taskStateInfoDto.taskUid }
 
-        taskMutableStateFlow?.let{
+        taskMutableStateFlow?.let {
             it.update { currentValue ->
                 currentValue.copy(
                     stateInfos = currentValue.stateInfos.toMutableSet().apply {
                         add(taskStateInfoDto)
-                    }
+                    },
                 )
             }
         }
     }
 
-    fun addTask(taskDto: TaskDto){
+    fun addTask(taskDto: TaskDto) {
         _tasks.update { currentTasks ->
             val existingTask = currentTasks.find { it.value.uid == taskDto.uid }
 

@@ -8,14 +8,12 @@ import io.ktor.server.response.respond
 import javax.inject.Inject
 
 class SensorTypeController @Inject constructor(
-    private val sensorTypeService: SensorTypeService
+    private val sensorTypeService: SensorTypeService,
 ) {
 
-    suspend fun registerSensorType(call: ApplicationCall){
-        val message =  call.receive<MessageRegisterSensorType>()
+    suspend fun registerSensorType(call: ApplicationCall) {
+        val message = call.receive<MessageRegisterSensorType>()
         val result = sensorTypeService.registerSensorType(message)
         call.respond(result)
     }
-
-
 }

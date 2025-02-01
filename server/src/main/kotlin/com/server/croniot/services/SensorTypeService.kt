@@ -8,10 +8,10 @@ import javax.inject.Inject
 
 class SensorTypeService @Inject constructor(
     private val sensorTypeRepository: SensorTypeRepository,
-    private val deviceTokenRepository: DeviceTokenRepository
+    private val deviceTokenRepository: DeviceTokenRepository,
 ) {
 
-    fun registerSensorType(message: MessageRegisterSensorType) : Result {
+    fun registerSensorType(message: MessageRegisterSensorType): Result {
         val result: Result
 
         val deviceUuid = message.deviceUuid
@@ -19,11 +19,11 @@ class SensorTypeService @Inject constructor(
 
         val device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken)
 
-        if(device != null && device.uuid == deviceUuid){
+        if (device != null && device.uuid == deviceUuid) {
             val sensor = message.sensorType
             sensor.device = device
 
-            for(parameter in sensor.parameters){
+            for (parameter in sensor.parameters) {
                 parameter.sensorType = sensor
             }
 

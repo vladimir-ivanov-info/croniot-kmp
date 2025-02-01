@@ -4,6 +4,5 @@ import croniot.models.TaskStateInfo
 
 interface TaskStateInfoDao {
 
-    fun insert(taskStateInfo: TaskStateInfo) : Long
-
+    fun insert(taskStateInfo: TaskStateInfo): Long
 }
