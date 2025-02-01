@@ -1,7 +1,7 @@
 package com.server.croniot.data.repositories
 
-import com.croniot.server.db.daos.ParameterTaskDao
-import com.croniot.server.db.daos.TaskTypeDao
+import com.server.croniot.data.db.daos.ParameterTaskDao
+import com.server.croniot.data.db.daos.TaskTypeDao
 import croniot.models.Device
 import croniot.models.ParameterTask
 import croniot.models.TaskType

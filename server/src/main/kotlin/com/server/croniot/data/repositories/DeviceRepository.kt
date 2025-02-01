@@ -1,7 +1,6 @@
 package com.server.croniot.data.repositories
 
-import com.croniot.server.db.daos.AccountDao
-import com.croniot.server.db.daos.DeviceDao
+import com.server.croniot.data.db.daos.DeviceDao
 import croniot.models.Device
 import javax.inject.Inject
 

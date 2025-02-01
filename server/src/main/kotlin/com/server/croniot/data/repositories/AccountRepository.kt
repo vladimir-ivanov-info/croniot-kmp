@@ -1,11 +1,10 @@
 package com.server.croniot.data.repositories
 
-import com.croniot.server.db.daos.AccountDao
+import com.server.croniot.data.db.daos.AccountDao
 import croniot.models.Account
 import croniot.models.Device
 import javax.inject.Inject
 
-//TODO include DAO injetction
 class AccountRepository @Inject constructor(
     private val accountDao: AccountDao
 ) {
@@ -22,9 +21,6 @@ class AccountRepository @Inject constructor(
         //val hashedPassword = hashPassword(plainPassword)
         //val account = Account(email = email, password = hashedPassword)
         val account = Account(accountUuid, nickname, email, password, mutableSetOf())
-
-        // Delegate the database operation to the DAO
-        //return ControllerDb.accountDao.insert(account)
         return accountDao.insert(account)
     }
 
@@ -37,7 +33,6 @@ class AccountRepository @Inject constructor(
     fun getAccountOfDevice(device: Device) : List<Account> {
         //TODO
         return mutableListOf()
-
     }
 
 }

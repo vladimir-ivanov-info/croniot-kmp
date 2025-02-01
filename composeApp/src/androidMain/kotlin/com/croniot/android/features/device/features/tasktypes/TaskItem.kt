@@ -13,17 +13,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.app.Global
-import com.croniot.android.core.data.source.local.SharedPreferences
 import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.presentation.util.UtilUi
 import croniot.models.dto.TaskTypeDto
-import kotlinx.coroutines.launch
 
 @Composable
 fun TaskItem(navController: NavController, task: TaskTypeDto) {

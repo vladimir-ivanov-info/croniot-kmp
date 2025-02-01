@@ -1,10 +1,13 @@
 package com.croniot.android.core.util
 
 import com.croniot.android.app.Global
-import com.croniot.android.core.data.source.local.SharedPreferences
+import com.croniot.android.core.data.source.local.DataStoreController
+//import com.croniot.android.core.data.source.local.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -17,7 +20,10 @@ object NetworkUtil {
     private val client = OkHttpClient.Builder().followRedirects(false).build()
 
     fun resolveServerAddressIfNotExists(){
-        val serverAddress = SharedPreferences.loadData(SharedPreferences.KEY_SERVER_ADDRESS)
+        val serverAddress = runBlocking {
+            DataStoreController.loadData(DataStoreController.KEY_SERVER_ADDRESS).first()
+        }
+
         if(serverAddress == null){
             resolveAndFollowRedirects("vladimiriot.com") //TODO make constant in Global. Catch error if can't be resolved
         } else {
@@ -26,7 +32,7 @@ object NetworkUtil {
         }
     }
 
-    fun resolveAndFollowRedirects(domain: String) {
+    private fun resolveAndFollowRedirects(domain: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val initialUrl = "http://$domain"
             //val initialUrl = domain
@@ -37,14 +43,16 @@ object NetworkUtil {
 
             if(addresses.size > 0){
                 val ipv4Address = addresses[0]
-                SharedPreferences.saveData(SharedPreferences.KEY_SERVER_ADDRESS, ipv4Address)
+
+                DataStoreController.saveData(DataStoreController.KEY_SERVER_ADDRESS, ipv4Address)
+
                 Global.SERVER_ADDRESS = ipv4Address
                 Global.mqttBrokerUrl = "tcp://${Global.SERVER_ADDRESS_REMOTE}:1883"
             }
         }
     }
 
-    suspend fun followRedirects(url: String): String = withContext(Dispatchers.IO) {
+    private suspend fun followRedirects(url: String): String = withContext(Dispatchers.IO) {
         var currentUrl = url
         var redirect = true
         var previousResponse: Response? = null
@@ -70,7 +78,7 @@ object NetworkUtil {
         currentUrl
     }
 
-    suspend fun resolveIpAddress(url: String): String = withContext(Dispatchers.IO) {
+    private suspend fun resolveIpAddress(url: String): String = withContext(Dispatchers.IO) {
         try {
             val uri = URI(url)
             val host = uri.host ?: return@withContext "Invalid URL"
