@@ -1,20 +1,20 @@
 package com.server.croniot.application
 
-import com.croniot.server.db.controllers.ControllerDb
-import com.croniot.server.db.daos.AccountDao
-import com.croniot.server.db.daos.AccountDaoImpl
-import com.croniot.server.db.daos.DeviceDao
-import com.croniot.server.db.daos.DeviceDaoImpl
-import com.croniot.server.db.daos.DeviceTokenDao
-import com.croniot.server.db.daos.DeviceTokenDaoImpl
-import com.croniot.server.db.daos.ParameterTaskDao
-import com.croniot.server.db.daos.ParameterTaskDaoImpl
-import com.croniot.server.db.daos.SensorTypeDao
-import com.croniot.server.db.daos.SensorTypeDaoImpl
-import com.croniot.server.db.daos.TaskStateInfoDao
-import com.croniot.server.db.daos.TaskStateInfoDaoImpl
-import com.croniot.server.db.daos.TaskTypeDao
-import com.croniot.server.db.daos.TaskTypeDaoImpl
+import com.server.croniot.data.db.controllers.ControllerDb
+import com.server.croniot.data.db.daos.AccountDao
+import com.server.croniot.data.db.daos.AccountDaoImpl
+import com.server.croniot.data.db.daos.DeviceDao
+import com.server.croniot.data.db.daos.DeviceDaoImpl
+import com.server.croniot.data.db.daos.DeviceTokenDao
+import com.server.croniot.data.db.daos.DeviceTokenDaoImpl
+import com.server.croniot.data.db.daos.ParameterTaskDao
+import com.server.croniot.data.db.daos.ParameterTaskDaoImpl
+import com.server.croniot.data.db.daos.SensorTypeDao
+import com.server.croniot.data.db.daos.SensorTypeDaoImpl
+import com.server.croniot.data.db.daos.TaskStateInfoDao
+import com.server.croniot.data.db.daos.TaskStateInfoDaoImpl
+import com.server.croniot.data.db.daos.TaskTypeDao
+import com.server.croniot.data.db.daos.TaskTypeDaoImpl
 import com.server.croniot.controllers.AccountController
 import com.server.croniot.controllers.DeviceController
 import com.server.croniot.controllers.DeviceTokenController
@@ -35,8 +35,8 @@ import com.server.croniot.services.TaskService
 import com.server.croniot.services.TaskTypeService
 import dagger.Module
 import dagger.Provides
-import db.daos.TaskDao
-import db.daos.TaskDaoImpl
+import com.server.croniot.data.db.daos.TaskDao
+import com.server.croniot.data.db.daos.TaskDaoImpl
 import org.hibernate.SessionFactory
 import javax.inject.Singleton
 

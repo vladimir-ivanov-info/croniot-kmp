@@ -7,7 +7,7 @@ interface LoginRepository {
     suspend fun login(request: MessageLoginRequest): LoginResult
     suspend fun logout()
 
-    fun getDeviceUuid(): String?
-    fun getDeviceToken(): String?
+    suspend fun  getDeviceUuid(): String?
+    suspend fun getDeviceToken(): String?
     fun getDeviceProperties():  Map<String, String>
 }

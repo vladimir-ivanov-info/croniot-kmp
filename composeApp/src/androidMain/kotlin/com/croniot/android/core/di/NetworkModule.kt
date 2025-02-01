@@ -12,19 +12,18 @@ object NetworkModule {
 
     init {
         BASE_URL = "http://" + Global.SERVER_ADDRESS + ":" + Global.SERVER_PORT
-
     }
 
     val networkModule = module {
-        // Provide Retrofit instance
         single {
             Retrofit.Builder()
-                .baseUrl(BASE_URL) // Replace with your API base URL
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
         }
     }
 
+    //TODO observe DataStore
     fun reloadRetrofitRemote() { //TODO change name later
         val baseUrl = Global.SERVER_ADDRESS_REMOTE
         loadKoinModules(
@@ -40,9 +39,9 @@ object NetworkModule {
         )
     }
 
+    //TODO observe DataStore
     fun reloadRetrofitLocal() {
         val baseUrl = Global.SERVER_ADDRESS_LOCAL
-
         loadKoinModules(
             module {
                 single {

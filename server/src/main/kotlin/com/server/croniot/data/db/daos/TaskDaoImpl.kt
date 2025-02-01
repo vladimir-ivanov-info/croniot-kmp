@@ -1,4 +1,4 @@
-package db.daos
+package com.server.croniot.data.db.daos
 
 import croniot.models.*
 import jakarta.persistence.Tuple
@@ -8,7 +8,6 @@ import org.hibernate.SessionFactory
 import org.hibernate.Transaction
 import javax.inject.Inject
 import kotlin.random.Random
-
 
 class TaskDaoImpl @Inject constructor(
     private val sessionFactory: SessionFactory

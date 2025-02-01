@@ -16,9 +16,8 @@ class AccountController @Inject constructor(
         val result = accountService.registerAccount(receivedMessage)
         call.respond(result)
     }
-
+    //TODO remove
     suspend fun processAccountInfoRequest(call: ApplicationCall){
-
         val message = call.receive<MessageGetAccountInfo>()
         val result = accountService.processAccountInfoRequest(message)
         call.respond(result)

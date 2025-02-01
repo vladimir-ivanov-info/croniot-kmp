@@ -26,7 +26,7 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
         val clientId = Global.mqttClientId + Global.generateUniqueString(8);
         val mqttClient = MqttClient(Global.mqttBrokerUrl, clientId, null)
 
-        //get sensors and give them initial value
+        //Get sensors and give them initial value
         for(sensor in device.sensors){
             val initialSensorData = SensorDataDto(
                 deviceUuid = device.uuid,
@@ -47,15 +47,12 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
                 ?.value
 
             if (result != null) {
-                println("Found MutableStateFlow with UID $targetUid: $result")
-
                 result.update { currentData ->
                     currentData.copy(
                         value = newSensorData.value,
                         timestamp = ZonedDateTime.now() // Update the timestamp to the current time
                     )
                 }
-
             } else {
                 println("No MutableStateFlow found with UID $targetUid")
             }

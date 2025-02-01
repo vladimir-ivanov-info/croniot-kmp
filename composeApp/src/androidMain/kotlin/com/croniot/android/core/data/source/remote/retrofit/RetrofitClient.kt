@@ -3,7 +3,6 @@ package com.croniot.android.core.data.source.remote.retrofit
 import ZonedDateTimeAdapter
 import com.google.gson.GsonBuilder
 import com.croniot.android.app.Global
-import com.croniot.android.features.login.data.LoginApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.ZonedDateTime

@@ -10,13 +10,13 @@ class LoginUseCase(
     suspend operator fun invoke(email: String, password: String): LoginResult {
         lateinit var loginResult : LoginResult
 
-            val deviceUuid = repository.getDeviceUuid()
-            val deviceToken = repository.getDeviceToken()
+        val deviceUuid = repository.getDeviceUuid()
+        val deviceToken = repository.getDeviceToken()
 
-            //TODO
-            /*if (deviceUuid == null) {
-                return Result.failure(IllegalArgumentException("Device UUID is missing"))
-            }*/
+        //TODO
+        /*if (deviceUuid == null) {
+            return Result.failure(IllegalArgumentException("Device UUID is missing"))
+        }*/
 
         if(deviceUuid != null){
             val request = MessageLoginRequest(
@@ -54,7 +54,11 @@ class LoginUseCase(
 
             val loginResult = repository.login(request)
 
-            Result.success(loginResult.result.success)
+            if(loginResult.result.success){
+                Result.success(loginResult.result.success)
+            } else {
+                Result.failure(IllegalArgumentException("Could not log in")) //TODO
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

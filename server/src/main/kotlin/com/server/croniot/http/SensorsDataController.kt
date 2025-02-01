@@ -22,16 +22,17 @@ class SensorsDataController(
         val devices = deviceService.getAll();
 
         for(device in devices){
+            CoroutineScope(Dispatchers.IO).launch {
+                val deviceUuid = device.uuid
+                val topic = "/${device.uuid}/sensor_data"
 
-            val deviceUuid = device.uuid
-            val topic = "/${device.uuid}/sensor_data"
+                val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
 
-            val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
+                val appComponent: AppComponent = DaggerAppComponent.create()
 
-            val appComponent: AppComponent = DaggerAppComponent.create()
-
-            val sensorsDataController = appComponent.sensorDataController() //TODO pass this            MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, sensorsDataController), topic)
-            MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, sensorsDataController), topic)
+                val sensorsDataController = appComponent.sensorDataController() //TODO pass this            MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, sensorsDataController), topic)
+                MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, sensorsDataController), topic)
+            }
         }
     }
 

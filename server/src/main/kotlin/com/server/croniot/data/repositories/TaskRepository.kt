@@ -1,12 +1,11 @@
 package com.server.croniot.data.repositories
 
-import com.croniot.server.db.daos.TaskStateInfoDao
-import com.croniot.server.db.daos.TaskTypeDao
+import com.server.croniot.data.db.daos.TaskStateInfoDao
 import croniot.models.Device
 import croniot.models.Task
 import croniot.models.TaskStateInfo
 import croniot.models.TaskType
-import db.daos.TaskDao
+import com.server.croniot.data.db.daos.TaskDao
 import javax.inject.Inject
 
 class TaskRepository @Inject constructor(

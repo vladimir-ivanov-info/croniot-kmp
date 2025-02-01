@@ -3,14 +3,15 @@ package com.croniot.android.features.configuration
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.services.ForegroundService
-import com.croniot.android.core.data.source.local.SharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -26,7 +27,10 @@ class ConfigurationViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun loadConfigurationForegoundService(){
-        val configurationForegoundService = SharedPreferences.loadData(SharedPreferences.KEY_CONFIGURATION_FOREGROUND_SERVICE)
+        val configurationForegoundService = runBlocking {
+            DataStoreController.loadData(DataStoreController.KEY_CONFIGURATION_FOREGROUND_SERVICE).first()
+        }
+
         configurationForegoundService?.let{
             viewModelScope.launch {
                 if(configurationForegoundService == "true"){
@@ -50,10 +54,9 @@ class ConfigurationViewModel(application: Application) : AndroidViewModel(applic
             context.stopService(stopIntent)
         }
 
-        SharedPreferences.saveData(SharedPreferences.KEY_CONFIGURATION_FOREGROUND_SERVICE, newValueString)
-
         viewModelScope.launch {
             _foregroundServiceEnabled.emit(newValue)
+            DataStoreController.saveData(DataStoreController.KEY_CONFIGURATION_FOREGROUND_SERVICE, newValueString)
         }
     }
 }

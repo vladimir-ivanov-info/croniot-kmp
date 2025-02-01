@@ -2,7 +2,7 @@ package com.croniot.android.features.login.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.android.core.data.source.local.SharedPreferences
+import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.data.source.repository.AccountRepository
 import com.croniot.android.features.login.controller.LoginController
 import com.croniot.android.features.login.usecase.LoginUseCase
@@ -23,7 +23,7 @@ class LoginViewModel(
     private val accountRepository: AccountRepository
 ) : ViewModel(), KoinComponent {
 
-    private val _uiState = MutableStateFlow(LoginUiState(email = "email1@gmail.com", password = "password1"))
+    private val _uiState = MutableStateFlow(LoginUiState(email = "email1@gmail.com", password = "password1")) //TODO this is a demo account
     val uiState: StateFlow<LoginUiState> get() = _uiState
 
     val email: StateFlow<String> get() = _uiState.map { it.email }
@@ -46,19 +46,20 @@ class LoginViewModel(
             val email = _uiState.value.email
             val password = _uiState.value.password
 
-            val result = loginUseCase(email, password)
+            val result = loginUseCase(email, password) //TODO delegate to controller
+
+            _uiState.value = _uiState.value.copy(password = "")
 
             val token = result.token
 
             if(token != null){
-                SharedPreferences.saveData(SharedPreferences.KEY_DEVICE_TOKEN, token)
+                DataStoreController.saveData(DataStoreController.KEY_DEVICE_TOKEN, token)
             }
 
             if (result.result.success) {
                 withContext(Dispatchers.IO){
                     LoginController.processLoginSuccess(result.account!!) //TODO
                 }
-
                 _uiState.value = _uiState.value.copy(isLoading = false, loggedIn = true)
             } else {
                 _uiState.value = _uiState.value.copy(
