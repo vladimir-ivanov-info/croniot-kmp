@@ -16,8 +16,8 @@ object DevicePropertiesController {
             "density" to displayMetrics.density.toString(),
             "scaledDensity" to displayMetrics.scaledDensity.toString(),
             "xdpi" to displayMetrics.xdpi.toString(),
-            "ydpi" to displayMetrics.ydpi.toString()
-           // "displayRefreshRate" to getRefreshRate(context)
+            "ydpi" to displayMetrics.ydpi.toString(),
+            // "displayRefreshRate" to getRefreshRate(context)
         )
     }
 
@@ -55,5 +55,4 @@ object DevicePropertiesController {
             "Supported ABIs" to Build.SUPPORTED_ABIS.joinToString(", ")*/
         )
     }
-
 }

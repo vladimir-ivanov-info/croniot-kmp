@@ -5,5 +5,5 @@ data class TaskProgressUpdate(
     val taskUid: Long,
     val state: String,
     val progress: Double,
-    val errorMessage: String
+    val errorMessage: String,
 )

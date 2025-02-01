@@ -10,17 +10,16 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 class TaskDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
+    private val sessionFactory: SessionFactory,
 ) : TaskDao {
 
     override fun create(device: Device, taskType: TaskType): Task {
-
         val taskUid = Random.nextLong(1, 10001)
         val task = Task(
             uid = taskUid,
             parametersValues = mutableMapOf(),
             taskType = taskType,
-            stateInfos = mutableSetOf()
+            stateInfos = mutableSetOf(),
         )
 
         val session = sessionFactory.openSession()
@@ -33,7 +32,7 @@ class TaskDaoImpl @Inject constructor(
             transaction.rollback()
             throw e
         } finally {
-            //session.close()
+            // session.close()
         }
 
         return task
@@ -69,7 +68,7 @@ class TaskDaoImpl @Inject constructor(
         return taskConfigurationId
     }
 
-    override fun get(deviceUuid: String, taskTypeUid: Long, taskUid: Long) : Task? {
+    override fun get(deviceUuid: String, taskTypeUid: Long, taskUid: Long): Task? {
         val session = sessionFactory.openSession()
         session.use { sess ->
             val cb: CriteriaBuilder = sess.criteriaBuilder
@@ -87,7 +86,7 @@ class TaskDaoImpl @Inject constructor(
 
             cr.select(root).where(finalPredicate).distinct(true)
 
-            val query = sess.createQuery(cr) //4 ms
+            val query = sess.createQuery(cr) // 4 ms
             return query.uniqueResult()
         }
     }
@@ -108,15 +107,15 @@ class TaskDaoImpl @Inject constructor(
             cr.multiselect(root.get<Long>("id"), root.get<Long>("uid")).where(finalPredicate)
 
             val query = sess.createQuery(cr)
-            //TODO bug: query.resultList gives 3 id values for uid = 2891
+            // TODO bug: query.resultList gives 3 id values for uid = 2891
             val tupleResult = query.uniqueResult() ?: return null
 
             return Task(
                 id = tupleResult.get(0, Long::class.java),
                 uid = tupleResult.get(1, Long::class.java),
                 parametersValues = mutableMapOf(), // Uninitialized
-                taskType = TaskType(),                   // Uninitialized
-                stateInfos = mutableSetOf()        // Uninitialized
+                taskType = TaskType(), // Uninitialized
+                stateInfos = mutableSetOf(), // Uninitialized
             )
         }
     }
@@ -138,7 +137,6 @@ class TaskDaoImpl @Inject constructor(
             return Task(id = idResult, uid = taskUid, parametersValues = mutableMapOf(), taskType = TaskType(), stateInfos = mutableSetOf())
         }
     }
-
 
     override fun getAll(deviceUuid: String): List<Task> {
         val session = sessionFactory.openSession()

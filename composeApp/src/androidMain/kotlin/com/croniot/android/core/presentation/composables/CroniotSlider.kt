@@ -18,9 +18,8 @@ import croniot.models.dto.ParameterTaskDto
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-
 @Composable
-fun CroniotSlider(currentParameter : ParameterTaskDto, index: Int, viewModelTaskTypes: ViewModelTaskTypes){
+fun CroniotSlider(currentParameter: ParameterTaskDto, index: Int, viewModelTaskTypes: ViewModelTaskTypes) {
     val minValue = currentParameter.constraints["minValue"]
     val maxValue = currentParameter.constraints["maxValue"]
 
@@ -29,9 +28,8 @@ fun CroniotSlider(currentParameter : ParameterTaskDto, index: Int, viewModelTask
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-        ,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         val steps = maxValue!!.toInt()
 
@@ -50,7 +48,7 @@ fun CroniotSlider(currentParameter : ParameterTaskDto, index: Int, viewModelTask
             minValueLabel = minValue,
             maxValueLabel = maxValue,
             currentValueLabel = "abc",
-            constraints = currentParameter.constraints
+            constraints = currentParameter.constraints,
         )
     }
 }
@@ -68,16 +66,16 @@ fun LabeledSlider(
     minValueLabel: String,
     maxValueLabel: String,
     currentValueLabel: String,
-    constraints: MutableMap<String, String>
+    constraints: MutableMap<String, String>,
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            ,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)){
-
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(text = "· ${parameter.name}:", fontWeight = FontWeight.Bold)
             Text(text = formatNumber(value, constraints), fontWeight = FontWeight.Bold)
             Text(text = parameter.unit, fontWeight = FontWeight.Bold)
@@ -85,11 +83,10 @@ fun LabeledSlider(
         Slider(
             value = value,
             onValueChange = onValueChange,
-            //valueRange = minValue - 1..maxValue-1,
+            // valueRange = minValue - 1..maxValue-1,
             valueRange = valueRange,
             // steps = (maxValue - minValue).toInt() - 1,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
     }
-
 }

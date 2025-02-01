@@ -17,33 +17,32 @@ import javax.inject.Inject
 class LoginService @Inject constructor(
     private val accountRepository: AccountRepository,
     private val deviceRepository: DeviceRepository,
-    private val deviceTokenRepository: DeviceTokenRepository
+    private val deviceTokenRepository: DeviceTokenRepository,
 ) {
 
-    fun login(messageLoginRequest: MessageLoginRequest) : LoginResult {
+    fun login(messageLoginRequest: MessageLoginRequest): LoginResult {
         var result = LoginResult(Result(false, ""), null, null)
 
-//TODO first check email and password
+// TODO first check email and password
         val accountEmail = messageLoginRequest.email
         val accountPassword = messageLoginRequest.password
         val deviceUuid = messageLoginRequest.deviceUuid
         val deviceToken = messageLoginRequest.deviceToken
         val deviceProperties = messageLoginRequest.deviceProperties
 
-        val account = accountRepository.getAccountEagerSkipTasks(accountEmail, accountPassword) //1500 ms -> 52 ms
+        val account = accountRepository.getAccountEagerSkipTasks(accountEmail, accountPassword) // 1500 ms -> 52 ms
 
-        //TODO if account null throw new exception "account doesn't exist". Or better check account existence in another method and if exists, pass it to this one
-        if(account != null){
-            var device : Device? = null
+        // TODO if account null throw new exception "account doesn't exist". Or better check account existence in another method and if exists, pass it to this one
+        if (account != null) {
+            var device: Device? = null
             deviceToken?.let {
                 device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken)
             }
-            var newToken : String? = null
+            var newToken: String? = null
 
-            if(device == null){
+            if (device == null) {
                 val newDevice = Device(uuid = deviceUuid, account = account, deviceProperties = deviceProperties)
                 deviceRepository.createDevice(newDevice)
-
 
                 CoroutineScope(Dispatchers.IO).launch {
                     MqttController.listenToNewDevice(newDevice)
@@ -52,8 +51,8 @@ class LoginService @Inject constructor(
                 deviceTokenRepository.createDeviceToken(newDevice, newToken)
             }
 
-            //TODO try to authenticate with token first
-            val checkToken = false //TODO temporarily we don't need token so I can log in from any device into the same account.
+            // TODO try to authenticate with token first
+            val checkToken = false // TODO temporarily we don't need token so I can log in from any device into the same account.
             // if(!checkToken && device != null) {
             result = LoginResult(Result(true, ""), account.toDto(), newToken)
             println()
@@ -62,7 +61,7 @@ class LoginService @Inject constructor(
         return result
     }
 
-    fun loginIot(message: MessageLoginRequest) : Result {
+    fun loginIot(message: MessageLoginRequest): Result {
         var result = Result(false, "Login failed.")
 
         val accountEmail = message.email
@@ -70,12 +69,12 @@ class LoginService @Inject constructor(
         val deviceUuid = message.deviceUuid
         val deviceToken = message.deviceToken
 
-        var device : Device? = null
+        var device: Device? = null
         deviceToken?.let {
-            device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken) //TODO test for when the device is contained in multiple accounts
+            device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken) // TODO test for when the device is contained in multiple accounts
         }
-//////////
-//TODO try to authenticate with token first
+// ////////
+// TODO try to authenticate with token first
         device?.let {
             val account = accountRepository.getAccountEagerSkipTasks(accountEmail, accountPassword)
 
@@ -85,5 +84,4 @@ class LoginService @Inject constructor(
         }
         return result
     }
-
 }

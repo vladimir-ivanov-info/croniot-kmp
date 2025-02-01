@@ -9,10 +9,9 @@ class ViewModelSensors() : ViewModel(), KoinComponent {
 
     private val sensorDataRepositoryImpl: SensorDataRepository = get()
     val sensorDataStateFlow = sensorDataRepositoryImpl.getStateFlow()
-
 }
 
-//TODO experimental
+// TODO experimental
 //    fun listenToMapUpdates(){
 //
 //        Global.mqttBrokerUrl = "tcp://51.77.195.204:1883"

@@ -8,5 +8,4 @@ interface DeviceTokenDao {
     fun insert(deviceToken: DeviceToken)
 
     fun getDeviceAssociatedWithToken(token: String): Device?
-
 }

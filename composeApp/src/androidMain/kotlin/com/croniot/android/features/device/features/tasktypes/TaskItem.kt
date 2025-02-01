@@ -24,7 +24,6 @@ import croniot.models.dto.TaskTypeDto
 
 @Composable
 fun TaskItem(navController: NavController, task: TaskTypeDto) {
-
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,20 +32,18 @@ fun TaskItem(navController: NavController, task: TaskTypeDto) {
                 navController.navigate(UiConstants.ROUTE_CREATE_TASK)
             },
     ) {
-       Card(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp),
-            elevation = CardDefaults.elevatedCardElevation()
+            elevation = CardDefaults.elevatedCardElevation(),
         ) {
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
-
                 Text(
                     text = task.name,
                     fontSize = UtilUi.TEXT_SIZE_3,
@@ -58,4 +55,3 @@ fun TaskItem(navController: NavController, task: TaskTypeDto) {
         }
     }
 }
-

@@ -15,11 +15,11 @@ data class TaskStateInfo(
     var task: Task,
 ) {
 
-    constructor(): this(0, ZonedDateTime.now(), TaskState.UNDEFINED, 0.0, "", Task())
-    constructor(dateTime: ZonedDateTime, state: String, progress: Double, errorMessage: String, task: Task): this(0, dateTime, state, progress, errorMessage, task)
+    constructor() : this(0, ZonedDateTime.now(), TaskState.UNDEFINED, 0.0, "", Task())
+    constructor(dateTime: ZonedDateTime, state: String, progress: Double, errorMessage: String, task: Task) : this(0, dateTime, state, progress, errorMessage, task)
 
     override fun hashCode(): Int {
-        return Objects.hash(id) //TODO or hash other relevant properties
+        return Objects.hash(id) // TODO or hash other relevant properties
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -35,12 +35,12 @@ data class TaskStateInfo(
 }
 
 fun TaskStateInfo.toDto() = TaskStateInfoDto(
-    deviceUuid =  this.task.taskType.device!!.uuid,
+    deviceUuid = this.task.taskType.device!!.uuid,
     taskTypeUid = this.task.taskType.uid,
     taskUid = this.task.uid,
     dateTime = this.dateTime,
     state = this.state,
     progress = this.progress,
-    errorMessage = this.errorMessage
+    errorMessage = this.errorMessage,
 
 )

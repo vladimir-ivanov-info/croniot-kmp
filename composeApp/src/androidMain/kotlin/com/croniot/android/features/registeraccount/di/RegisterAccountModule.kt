@@ -6,12 +6,11 @@ import com.croniot.android.features.registeraccount.presentation.ViewModelRegist
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-object RegisterAccountModule{
+object RegisterAccountModule {
 
     val registerAccountModule = module {
         factory { RegisterAccountUseCase() }
         single { RegisterAccountController(get()) }
         viewModel { ViewModelRegisterAccount(get()) }
     }
-
 }

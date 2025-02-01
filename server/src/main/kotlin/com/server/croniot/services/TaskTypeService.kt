@@ -10,18 +10,18 @@ import javax.inject.Inject
 
 class TaskTypeService @Inject constructor(
     private val taskTypeRepository: TaskTypeRepository,
-    private val deviceTokenRepository: DeviceTokenRepository
+    private val deviceTokenRepository: DeviceTokenRepository,
 ) {
 
-    fun get(device: Device, taskTypeUid: Long) : TaskType? {
+    fun get(device: Device, taskTypeUid: Long): TaskType? {
         return taskTypeRepository.get(device, taskTypeUid)
     }
 
-    fun exists(device: Device, taskTypeUid: Long) : Boolean {
+    fun exists(device: Device, taskTypeUid: Long): Boolean {
         return taskTypeRepository.exists(device, taskTypeUid)
     }
 
-    fun registerTaskType(message: MessageRegisterTaskType) : Result {
+    fun registerTaskType(message: MessageRegisterTaskType): Result {
         var result: Result
 
         val deviceUuid = message.deviceUuid
@@ -29,11 +29,11 @@ class TaskTypeService @Inject constructor(
 
         val device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken)
 
-        if(device != null && device.uuid == deviceUuid){
+        if (device != null && device.uuid == deviceUuid) {
             val taskType = message.taskType
             taskType.device = device
 
-            for(parameter in taskType.parameters){
+            for (parameter in taskType.parameters) {
                 parameter.taskType = taskType
             }
 

@@ -1,6 +1,5 @@
 package com.croniot.android.features.device.features.tasks
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,16 +36,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
-import com.croniot.android.app.Global
 import com.croniot.android.R
-import com.croniot.android.core.util.DateTimeUtil
+import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.util.UtilUi
+import com.croniot.android.core.util.DateTimeUtil
 import croniot.models.TaskState
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
@@ -56,12 +54,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun TasksScreen(
     navController: NavController,
-    viewModelTasks : ViewModelTasks = koinViewModel<ViewModelTasks>(
-        //viewModelStoreOwner = LocalContext.current as ComponentActivity
-                viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
-                ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner")
+    viewModelTasks: ViewModelTasks = koinViewModel<ViewModelTasks>(
+        // viewModelStoreOwner = LocalContext.current as ComponentActivity
+        viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
+            ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner"),
 
-    )
+        ),
 ) {
     // Collect tasks and sort them only once
     val tasks by viewModelTasks.tasks.collectAsState()
@@ -89,7 +87,7 @@ fun TasksScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -102,7 +100,7 @@ fun TasksScreen(
                     taskStateFlow = taskFlow,
                     onTaskClicked = { taskToShow ->
                         // Handle click events for tasks
-                    }
+                    },
                 )
             }
 
@@ -121,44 +119,44 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
     var stateIconColor = Color.Black
 
     val stateInfos = taskValue.stateInfos.toList().sortedByDescending { it.dateTime }
-    var latestStateInfo : TaskStateInfoDto? = null
+    var latestStateInfo: TaskStateInfoDto? = null
     var latestStateInfoProgress = 0.0
 
-   // if(stateInfos.isNotEmpty()){ //TODO not necessary, every task has at least 1 state
-        latestStateInfo = stateInfos[0]
-        latestStateInfoProgress = latestStateInfo.progress
+    // if(stateInfos.isNotEmpty()){ //TODO not necessary, every task has at least 1 state
+    latestStateInfo = stateInfos[0]
+    latestStateInfoProgress = latestStateInfo.progress
 
-        when (latestStateInfo.state) {
-            TaskState.CREATED -> {
-                stateIconPainter = painterResource(id = R.drawable.baseline_schedule_24)
-                //stateIconColor = null
-            }
-            TaskState.RUNNING -> {
-                stateIconPainter = painterResource(id = R.drawable.baseline_update_24)
-                //stateIconColor = null // Or set a specific color
-            }
-            TaskState.COMPLETED -> {
-                stateIconPainter = painterResource(id = R.drawable.baseline_done_24)
-                stateIconColor = Color.Green
-            }
-            "on" -> {
-                stateIconPainter = painterResource(id = R.drawable.ic_toggle_on_24)
-                stateIconColor = Color.Green
-            }
-            "off" -> {
-                stateIconPainter = painterResource(id = R.drawable.ic_toggle_off_24)
-                stateIconColor = Color.Red
-            }
-            "RECEIVED" -> {
-                stateIconPainter = painterResource(id = R.drawable.ic_check_24)
-                stateIconColor = Color(0xFF03A9F4)
-            }
-            else -> {
-                stateIconPainter = painterResource(id = R.drawable.baseline_question_mark_24)
-                //stateIconColor = null
-            }
+    when (latestStateInfo.state) {
+        TaskState.CREATED -> {
+            stateIconPainter = painterResource(id = R.drawable.baseline_schedule_24)
+            // stateIconColor = null
         }
-    //}
+        TaskState.RUNNING -> {
+            stateIconPainter = painterResource(id = R.drawable.baseline_update_24)
+            // stateIconColor = null // Or set a specific color
+        }
+        TaskState.COMPLETED -> {
+            stateIconPainter = painterResource(id = R.drawable.baseline_done_24)
+            stateIconColor = Color.Green
+        }
+        "on" -> {
+            stateIconPainter = painterResource(id = R.drawable.ic_toggle_on_24)
+            stateIconColor = Color.Green
+        }
+        "off" -> {
+            stateIconPainter = painterResource(id = R.drawable.ic_toggle_off_24)
+            stateIconColor = Color.Red
+        }
+        "RECEIVED" -> {
+            stateIconPainter = painterResource(id = R.drawable.ic_check_24)
+            stateIconColor = Color(0xFF03A9F4)
+        }
+        else -> {
+            stateIconPainter = painterResource(id = R.drawable.baseline_question_mark_24)
+            // stateIconColor = null
+        }
+    }
+    // }
 
     Surface(
         modifier = Modifier
@@ -170,38 +168,34 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-            ,
-            elevation = CardDefaults.elevatedCardElevation()
+                .fillMaxWidth(),
+            elevation = CardDefaults.elevatedCardElevation(),
         ) {
-//TODO make this a method in another class
+// TODO make this a method in another class
             // Retrieve task name
             val taskName = remember(taskValue.taskTypeUid) {
-
-                Global.selectedDevice?.tasks?.firstOrNull { it.uid == taskValue.taskTypeUid }?.name.orEmpty() //TODO
-
+                Global.selectedDevice?.tasks?.firstOrNull { it.uid == taskValue.taskTypeUid }?.name.orEmpty() // TODO
             }
-//TODO_end
+// TODO_end
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-            ){
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                         .weight(1f),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
 
                 ) {
-
                     Box(
                         modifier = Modifier
                             .size(32.dp)
                             .fillMaxHeight()
                             .background(Color.White, shape = CircleShape),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             painter = stateIconPainter,
@@ -216,8 +210,7 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
                         fontSize = UtilUi.TEXT_SIZE_3,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 4.dp)
-                        ,
+                            .padding(start = 4.dp),
                     )
                 }
 
@@ -225,12 +218,11 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.primaryContainer),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-
                     var latestStateInfoProgressText = "$latestStateInfoProgress %"
 
-                    if(latestStateInfo.state != TaskState.RUNNING){
+                    if (latestStateInfo.state != TaskState.RUNNING) {
                         latestStateInfoProgressText = ""
                     }
 
@@ -239,10 +231,10 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
                         fontSize = 14.sp,
 
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp),
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    if(latestStateInfo != null){
+                    if (latestStateInfo != null) {
                         val formattedDateTimeAgain = remember(latestStateInfo.dateTime) {
                             DateTimeUtil.formatRelativeTime(latestStateInfo.dateTime)
                         }
@@ -251,7 +243,7 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
                             fontSize = 14.sp,
 
                             color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
                         )
                     }
                 }

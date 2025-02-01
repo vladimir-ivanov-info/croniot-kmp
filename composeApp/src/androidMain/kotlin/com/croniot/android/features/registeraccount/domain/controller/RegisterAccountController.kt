@@ -20,6 +20,6 @@ class RegisterAccountController(private val registerAccountUseCase: RegisterAcco
                 DataStoreController.saveData(DataStoreController.KEY_ACCOUNT_PASSWORD, password)
             }
         }
-        return  result
+        return result
     }
 }

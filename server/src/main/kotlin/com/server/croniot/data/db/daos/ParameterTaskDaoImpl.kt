@@ -7,8 +7,8 @@ import org.hibernate.SessionFactory
 import javax.inject.Inject
 
 class ParameterTaskDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
-)  : ParameterTaskDao {
+    private val sessionFactory: SessionFactory,
+) : ParameterTaskDao {
 
     override fun getByUid(parameterTaskUid: Long, taskType: TaskType): ParameterTask? {
         val session = sessionFactory.openSession()
@@ -28,7 +28,7 @@ class ParameterTaskDaoImpl @Inject constructor(
                 root.get<String>("type"),
                 root.get<String>("unit"),
                 root.get<String>("description"),
-                //root.get<Map<String, String>>("constraints")
+                // root.get<Map<String, String>>("constraints")
             ).where(cb.and(taskUidPredicate, taskTypeIdPredicate))
 
             val query = sess.createQuery(cr)
@@ -41,19 +41,17 @@ class ParameterTaskDaoImpl @Inject constructor(
                 type = tupleResult.get(3, String::class.java),
                 unit = tupleResult.get(4, String::class.java),
                 description = tupleResult.get(5, String::class.java),
-                //constraints = tupleResult.get(6) as MutableMap<String, String>,
-                taskTypeId = taskType.id  // Set the taskTypeId manually
+                // constraints = tupleResult.get(6) as MutableMap<String, String>,
+                taskTypeId = taskType.id, // Set the taskTypeId manually
                 // Do not set taskType here
             )
 
-            if(parameterTask != null){
-
+            if (parameterTask != null) {
                 parameterTask.constraints = getConstraints(parameterTask.id)
             }
 
             return parameterTask
         }
-
     }
 
     private fun getConstraints(parameterTaskId: Long): MutableMap<String, String> {
@@ -63,7 +61,7 @@ class ParameterTaskDaoImpl @Inject constructor(
             SELECT constraint_key, constraint_value
             FROM parameter_task_constraints
             WHERE parameter_id = :parameterTaskId
-        """.trimIndent()
+            """.trimIndent()
 
             val query = sess.createNativeQuery(sql)
             query.setParameter("parameterTaskId", parameterTaskId)
@@ -77,8 +75,6 @@ class ParameterTaskDaoImpl @Inject constructor(
             }.toMutableMap()
         }
     }
-
-
 
 /* override fun getLazy(parameterTaskUid: Long, taskType: TaskType): ParameterTask? {
 
@@ -171,6 +167,4 @@ fun getByUid2(parameterTaskUid: Long, taskType: TaskType) : ParameterTask? {
      return parameterTask
  }
 }*/
-
-
 }

@@ -16,7 +16,6 @@ class LoginRepositoryImpl(private val apiService: LoginApiService) : LoginReposi
     override suspend fun login(request: MessageLoginRequest): LoginResult {
         val response = apiService.login(request)
         if (response.isSuccessful) {
-
             val accountEmail = request.email
             val accountPassword = request.password
 
@@ -29,7 +28,7 @@ class LoginRepositoryImpl(private val apiService: LoginApiService) : LoginReposi
     }
 
     override suspend fun logout() {
-        //SharedPreferences.clearCache()
+        // SharedPreferences.clearCache()
 
         CoroutineScope(Dispatchers.IO).launch {
             DataStoreController.clearAllCacheExceptDeviceUuid()
@@ -45,6 +44,6 @@ class LoginRepositoryImpl(private val apiService: LoginApiService) : LoginReposi
     }
 
     override fun getDeviceProperties(): Map<String, String> {
-        return DevicePropertiesController.getDeviceDetails() //TODO inject controller
+        return DevicePropertiesController.getDeviceDetails() // TODO inject controller
     }
 }

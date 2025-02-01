@@ -40,10 +40,10 @@ fun DeviceEntity.toDto() = DeviceDto(
     description = description,
     sensors = sensors.map { it.toDto() }.toMutableSet(),
     tasks = taskTypes.map { it.toDto() }.toMutableSet(),
-    lastOnlineMillis = lastOnlineMillis
+    lastOnlineMillis = lastOnlineMillis,
 )
 
-fun TaskTypeDto.toRealmEntity() : TaskTypeEntity {
+fun TaskTypeDto.toRealmEntity(): TaskTypeEntity {
     val entity = TaskTypeEntity()
     entity.uid = uid
     entity.name = name
@@ -58,7 +58,7 @@ fun TaskTypeEntity.toDto() = TaskTypeDto(
     name = name,
     description = description,
     parameters = parameters.map { it.toDto() }.toMutableSet(),
-    realTime = realTime
+    realTime = realTime,
 )
 
 fun ParameterTaskDto.toRealmEntity(): ParameterTaskEntity {
@@ -79,16 +79,14 @@ fun ParameterTaskDto.toRealmEntity(): ParameterTaskEntity {
     return entity
 }
 
-
 fun ParameterTaskEntity.toDto() = ParameterTaskDto(
     uid = uid,
     name = name,
     type = type,
     unit = unit,
     description = description,
-    constraints = constraints.associate { it.key to it.value }.toMutableMap()
+    constraints = constraints.associate { it.key to it.value }.toMutableMap(),
 )
-
 
 fun TaskDto.toRealmEntity(): TaskEntity {
     val entity = TaskEntity()
@@ -108,7 +106,6 @@ fun TaskDto.toRealmEntity(): TaskEntity {
     return entity
 }
 
-
 fun TaskStateInfoDto.toRealmEntity(): TaskStateInfoEntity {
     val entity = TaskStateInfoEntity()
     entity.deviceUuid = deviceUuid
@@ -121,23 +118,22 @@ fun TaskStateInfoDto.toRealmEntity(): TaskStateInfoEntity {
     return entity
 }
 
-
 fun TaskEntity.toDto() = TaskDto(
     uid = uid,
     deviceUuid = deviceUuid,
     taskTypeUid = taskTypeUid,
     parametersValues = parametersValues.associate { it.key.toLong() to it.value }.toMutableMap(),
-    stateInfos = stateInfos.map { it.toDto() }.toMutableSet()
+    stateInfos = stateInfos.map { it.toDto() }.toMutableSet(),
 )
 
 fun TaskStateInfoEntity.toDto() = TaskStateInfoDto(
     deviceUuid = deviceUuid,
     taskTypeUid = taskTypeUid,
     taskUid = taskUid,
-    dateTime = ZonedDateTime.now(), //TODO
+    dateTime = ZonedDateTime.now(), // TODO
     state = state,
     progress = progress,
-    errorMessage = errorMessage
+    errorMessage = errorMessage,
 )
 
 fun ParameterDto.toRealmEntity(): ParameterEntity {
@@ -162,7 +158,7 @@ fun ParameterSensorEntity.toDto() = ParameterSensorDto(
     type = type,
     unit = unit,
     description = description,
-    constraints = constraints.associate { it.key to it.value }.toMutableMap()
+    constraints = constraints.associate { it.key to it.value }.toMutableMap(),
 )
 
 fun ParameterEntity.toDto() = ParameterDto(
@@ -171,7 +167,7 @@ fun ParameterEntity.toDto() = ParameterDto(
     type = type,
     unit = unit,
     description = description,
-    constraints = constraints.associate { it.key to it.value }.toMutableMap()
+    constraints = constraints.associate { it.key to it.value }.toMutableMap(),
 )
 
 fun SensorDataDto.toRealmEntity(): SensorDataEntity {
@@ -184,12 +180,11 @@ fun SensorDataDto.toRealmEntity(): SensorDataEntity {
     return entity
 }
 
-
 fun SensorDataEntity.toDto() = SensorDataDto(
     deviceUuid = deviceUuid,
     sensorTypeUid = sensorTypeUid,
     value = value,
-    timestamp = ZonedDateTime.now(), //TODO
+    timestamp = ZonedDateTime.now(), // TODO
 
 )
 
@@ -222,8 +217,8 @@ fun SensorTypeEntity.toDto() = SensorTypeDto(
     uid = uid,
     name = name,
     description = description,
-    //parameters = parameters.map { it.toDto() }.toMutableSet()
-    parameters = parameters.map { it.toDto() }.toMutableSet()
+    // parameters = parameters.map { it.toDto() }.toMutableSet()
+    parameters = parameters.map { it.toDto() }.toMutableSet(),
 )
 
 fun <T> List<T>.toRealmList(): RealmList<T> {

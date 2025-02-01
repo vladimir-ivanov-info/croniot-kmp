@@ -5,23 +5,22 @@ import croniot.models.Device
 import javax.inject.Inject
 
 class DeviceRepository @Inject constructor(
-    private val deviceDao: DeviceDao
+    private val deviceDao: DeviceDao,
 ) {
 
-    fun getByUuid(deviceUuid: String) : Device? {
+    fun getByUuid(deviceUuid: String): Device? {
         return deviceDao.getByUuid(deviceUuid)
     }
 
-    fun getAll() : List<Device> {
+    fun getAll(): List<Device> {
         return deviceDao.getAll()
     }
 
-    fun createDevice(device: Device){
+    fun createDevice(device: Device) {
         deviceDao.insert(device)
     }
 
-    fun getLazy(deviceUuid: String) : Device? {
+    fun getLazy(deviceUuid: String): Device? {
         return deviceDao.getLazy(deviceUuid)
     }
-
 }

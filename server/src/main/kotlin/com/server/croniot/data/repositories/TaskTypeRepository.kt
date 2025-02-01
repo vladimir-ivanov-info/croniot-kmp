@@ -9,27 +9,26 @@ import javax.inject.Inject
 
 class TaskTypeRepository @Inject constructor(
     private val taskTypeDao: TaskTypeDao,
-    private val parameterTaskDao: ParameterTaskDao
-){
+    private val parameterTaskDao: ParameterTaskDao,
+) {
 
-    fun get(device: Device, taskTypeUid: Long) : TaskType? {
+    fun get(device: Device, taskTypeUid: Long): TaskType? {
         return taskTypeDao.get(device, taskTypeUid)
     }
 
-    fun exists(device: Device, taskTypeUid: Long) : Boolean {
+    fun exists(device: Device, taskTypeUid: Long): Boolean {
         return taskTypeDao.exists(device, taskTypeUid)
     }
 
-    fun create(taskType: TaskType){
+    fun create(taskType: TaskType) {
         taskTypeDao.insert(taskType)
     }
 
-    fun getLazy(device: Device, taskTypeUid: Long) : TaskType? {
+    fun getLazy(device: Device, taskTypeUid: Long): TaskType? {
         return taskTypeDao.getLazy(device, taskTypeUid)
     }
 
-    fun getParameterTaskByUid(parameterUid: Long, taskType: TaskType) : ParameterTask? {
+    fun getParameterTaskByUid(parameterUid: Long, taskType: TaskType): ParameterTask? {
         return parameterTaskDao.getByUid(parameterUid, taskType)
     }
-
 }

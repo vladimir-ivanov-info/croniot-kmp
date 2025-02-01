@@ -9,5 +9,4 @@ object SensorsModule {
     val sensorsModule = module {
         single<SensorDataRepository> { SensorDataRepositoryImpl() }
     }
-
 }
