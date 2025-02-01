@@ -22,7 +22,7 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
                 if (payload != null) {
                     val value = String(payload)
                     //println("Received message on topic $topic: $value")
-                    mqttDataProcessor.process(value) //datawrapper nees to be generic too. Better use map key-value I think
+                    mqttDataProcessor.process(value)
                 } else {
                     println("Received message on topic $topic with null payload.")
                 }
@@ -32,8 +32,7 @@ class MqttHandler(mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, 
                 // Not used in this example
             }
         })
-        println("Server subscribed to " + topic)
-        //mqttClient.subscribe(topic)
+        println("MQTT Subscribed to " + topic)
         mqttClient.subscribe(topic, 2) // QoS 2 for subscribing
     }
 

@@ -23,7 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -84,10 +83,6 @@ fun LoginScreenBody(
 
     val sharedPreferencesViewModel: SharedPreferencesViewModel = koinViewModel()
 
-    LaunchedEffect(Unit) {
-        sharedPreferencesViewModel.loadCurrentServerMode()
-    }
-
     Box(
         modifier = Modifier
             .padding(innerPadding)
@@ -96,7 +91,6 @@ fun LoginScreenBody(
         LoginContent(
             navController = navController,
             viewModel = viewModel,
-        //    logoResourceId = logoResourceId,
             sharedPreferencesViewModel,
             modifier = Modifier.align(Alignment.Center)
         )
@@ -112,7 +106,7 @@ fun LoginContent(
 ) {
     val hasNavigated = remember { mutableStateOf(false) }
 
-    val uiState by viewModel.uiState.collectAsState() // Observe the UI state
+    val uiState by viewModel.uiState.collectAsState()
     if(uiState.loggedIn && !hasNavigated.value){
         hasNavigated.value = true
         navController.navigate(UiConstants.ROUTE_DEVICES) {
@@ -149,7 +143,6 @@ fun LoginContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // "Login" text
         Text(
             text = "Login",
             fontSize = UtilUi.TEXT_SIZE_1,
@@ -161,7 +154,6 @@ fun LoginContent(
 
         Spacer(modifier = Modifier.size(4.dp))
 
-        // Email input field
         StatefulTextField(
             stringFlow = viewModel.email,
             placeholderString = "Email"
@@ -169,7 +161,6 @@ fun LoginContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Password input field
         StatefulTextField(
             stringFlow = viewModel.password,
             placeholderString = "Password",
@@ -178,17 +169,13 @@ fun LoginContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Login Button
         LoginButton(navController, viewModel)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // "New account" Button
         RegisterButton(navController)
     }
 }
-
-
 
 @Composable
 fun LoginButton(navController: NavController, viewModel: LoginViewModel) {

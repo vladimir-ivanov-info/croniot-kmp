@@ -3,7 +3,7 @@ package com.croniot.android.core.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.app.Global
-import com.croniot.android.core.data.source.local.SharedPreferences
+import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.di.NetworkModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,11 +16,12 @@ class SharedPreferencesViewModel  : ViewModel(), KoinComponent {
     private var _serverMode = MutableStateFlow("remote")
     val serverMode : StateFlow<String> get() = _serverMode
 
-    fun loadCurrentServerMode(){
-        val serverModeFromSharedPreferences = SharedPreferences.loadData(SharedPreferences.KEY_SERVER_MODE)
-        if(serverModeFromSharedPreferences != null){
-            viewModelScope.launch {
-                _serverMode.emit(serverModeFromSharedPreferences)
+    init {
+        viewModelScope.launch {
+            DataStoreController.loadData(DataStoreController.KEY_SERVER_MODE).collect { serverMode ->
+                serverMode?.let {
+                    _serverMode.value = serverMode
+                }
             }
         }
     }
@@ -37,9 +38,9 @@ class SharedPreferencesViewModel  : ViewModel(), KoinComponent {
             Global.SERVER_ADDRESS = Global.SERVER_ADDRESS_REMOTE
             NetworkModule.reloadRetrofitRemote()
         }
-        SharedPreferences.saveData(SharedPreferences.KEY_SERVER_MODE, newServerMode)
+
         viewModelScope.launch {
-            _serverMode.emit(newServerMode)
+            DataStoreController.saveData(DataStoreController.KEY_SERVER_MODE, newServerMode)
         }
     }
 }

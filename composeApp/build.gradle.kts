@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.realm)
 }
 
 kotlin {
@@ -20,21 +21,26 @@ kotlin {
     jvm("desktop")
     
     sourceSets {
+        all {
+            languageSettings.languageVersion = "2.0" //Refers to the language features you want to enable. It is expressed as "1.8", "1.9", "2.0", etc., and not as a full compiler version number.
+        }
+
         val desktopMain by getting
 
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
-            //implementation(libs.google.maps)
-            //implementation(libs.maplibreGl)
+
             implementation("org.maplibre.gl:android-sdk:11.3.0")
-           // implementation("org.maplibre.gl:plugin-annotation:11.3.0")
             implementation("org.maplibre.gl:android-plugin-annotation-v9:3.0.0")
 
-            //   implementation("org.maplibre.gl:android-sdk-extensions:11.3.0")
-            // implementation("org.maplibre.gl:android-sdk:9.5.0")
+            implementation(libs.androidx.datastore.core.android)
 
+            implementation("androidx.datastore:datastore-preferences:1.1.2")
+            implementation("androidx.datastore:datastore-core:1.1.2")
+
+            implementation(libs.realm)
         }
 
         val androidInstrumentedTest by getting {
@@ -69,14 +75,10 @@ kotlin {
             implementation(libs.mqtt)
             implementation(libs.composeMaterial3)
 
-
-
-
-
             // implementation(libs.maplibreSdkExtensions)
             implementation(libs.accompanistPermissions)
 
-
+            implementation(libs.realm)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -119,7 +121,8 @@ android {
     buildFeatures {
         compose = true
     }
-    buildToolsVersion = "35.0.0 rc4"
+   // buildToolsVersion = "35.0.0 rc4"
+    buildToolsVersion = "35.0.0"
     ndkVersion = "27.0.11902837 rc2"
     dependencies {
         debugImplementation(compose.uiTooling)

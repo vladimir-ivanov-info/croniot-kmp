@@ -21,12 +21,6 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
     private val _lastOnlineUpdates = mutableMapOf<String, Long>()
 
     init {
-        init1()
-    }
-
-    fun init1(){
-        println()
-
         viewModelScope.launch {
             accountRepository.account.collect { account ->
                 account?.let {
@@ -41,6 +35,7 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
         }
     }
 
+    //TODO
     fun uninit(){
         _devices.value = emptyList()
     }
@@ -62,7 +57,7 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
         _devices.emit(updatedDevices)
     }
 
-    fun updateDevices(devices: List<DeviceDto>){
+    private fun updateDevices(devices: List<DeviceDto>){
         viewModelScope.launch {
             _devices.emit(devices)
         }

@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.croniot.android.core.data.source.local.SharedPreferences
+import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.presentation.composables.map.MapScreen
 import com.croniot.android.core.util.NetworkUtil
@@ -21,13 +21,15 @@ import com.croniot.android.features.login.usecase.LoginUseCase
 import com.croniot.android.features.registeraccount.presentation.ScreenRegisterAccount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun CurrentScreen(){
-    SharedPreferences.generateAndSaveDeviceUuidIfNotExists()
+
     LaunchedEffect(Unit) {
         NetworkUtil.resolveServerAddressIfNotExists()
     }
@@ -49,9 +51,13 @@ fun CurrentScreen(){
         LoginController.processLoginOnAppEntered(loginUseCase, navController)
     }
 
+    val startDestination = runBlocking {
+        DataStoreController.loadData(DataStoreController.KEY_CURRENT_SCREEN).first()  ?: UiConstants.ROUTE_LOGIN
+    }
+
     NavHost(
         navController = navController,
-        startDestination = SharedPreferences.loadData(SharedPreferences.KEY_CURRENT_SCREEN) ?: UiConstants.ROUTE_LOGIN,
+        startDestination = startDestination,
         //enterTransition = { EnterTransition.None },
         //exitTransition = { ExitTransition.None }
     ) {
@@ -67,10 +73,10 @@ fun CurrentScreen(){
         composable(UiConstants.ROUTE_CREATE_TASK) { CreateTaskScreen(navController) }
     }
 }
-//Idea: create controller that saves current screen AND current screen's data and restores them both when needed.
+
 fun saveCurrentScreenAsync(currentScreen: String) {
     CoroutineScope(Dispatchers.IO).launch {
-        SharedPreferences.saveData(SharedPreferences.KEY_CURRENT_SCREEN, currentScreen)
+        DataStoreController.saveData(DataStoreController.KEY_CURRENT_SCREEN, currentScreen)
     }
 }
 

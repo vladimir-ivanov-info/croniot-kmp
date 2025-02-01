@@ -38,19 +38,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.app.Global
-//import com.croniot.android.app.GlobalViewModel
-import com.croniot.android.core.data.source.local.SharedPreferences
-import com.croniot.android.core.data.source.repository.AccountRepository
+import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.presentation.UiConstants
-import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
 import com.croniot.android.features.login.controller.LoginController
 import com.croniot.android.core.presentation.util.UtilUi
 import com.croniot.android.core.presentation.util.GenericAlertDialog
 import croniot.models.dto.DeviceDto
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -200,7 +195,9 @@ fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceD
                 Global.selectedDevice = device
 
                 coroutineScope.launch {
-                    SharedPreferences.saveSelectedDevice(device)
+                    //SharedPreferences.saveSelectedDevice(device)
+                    DataStoreController.saveSelectedDevice(device)
+
                 }
 
                 navController.navigate(UiConstants.ROUTE_DEVICE)
