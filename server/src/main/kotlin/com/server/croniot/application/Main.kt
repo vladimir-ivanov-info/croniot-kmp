@@ -1,10 +1,10 @@
 package com.server.croniot.application
 
 import Global
-import com.server.croniot.mqtt.MqttController
 import ZonedDateTimeAdapter
 import com.server.croniot.data.db.controllers.ControllerDb
 import com.server.croniot.di.DI
+import com.server.croniot.mqtt.MqttController
 import io.ktor.serialization.gson.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
@@ -29,18 +29,19 @@ fun Application.module(testing: Boolean = false) {
         deviceController = appComponent.deviceController(),
         taskController = appComponent.taskController(),
         sensorTypeController = appComponent.sensorTypeController(),
-        taskTypeController = appComponent.taskTypeController()
+        taskTypeController = appComponent.taskTypeController(),
     )
     routeInitializer.setupRoutes(this)
 }
 
-
 fun main() {
-    Runtime.getRuntime().addShutdownHook(Thread {
-        println("Gracefully shutting down...")
-    })
+    Runtime.getRuntime().addShutdownHook(
+        Thread {
+            println("Gracefully shutting down...")
+        },
+    )
 
-    try{
+    try {
         ControllerDb.initialize()
         MqttController
 
@@ -48,13 +49,13 @@ fun main() {
             Netty,
             port = 8090,
             host = "0.0.0.0",
-            module = Application::module
-            //module = Application::module).start(wait = true)
-            //module = Application::configureRouting
+            module = Application::module,
+            // module = Application::module).start(wait = true)
+            // module = Application::configureRouting
         ).start(wait = true)
 
         readLine()
-    } catch (e: Throwable){
+    } catch (e: Throwable) {
         e.printStackTrace()
     }
 }

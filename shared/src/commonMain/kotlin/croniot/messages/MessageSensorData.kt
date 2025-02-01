@@ -1,5 +1,6 @@
 package croniot.messages
 
-data class MessageSensorData(val sensorTypeId: Long,
-                             val value: String
-                            )
+data class MessageSensorData(
+    val sensorTypeId: Long,
+    val value: String,
+)

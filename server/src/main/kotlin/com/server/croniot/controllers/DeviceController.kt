@@ -8,13 +8,12 @@ import io.ktor.server.response.respond
 import javax.inject.Inject
 
 class DeviceController @Inject constructor(
-    private val deviceService: DeviceService
-){
+    private val deviceService: DeviceService,
+) {
 
-    suspend fun registerDevice(call: ApplicationCall){
+    suspend fun registerDevice(call: ApplicationCall) {
         val messageRegisterDevice = call.receive<MessageRegisterDevice>()
         val result = deviceService.registerDevice(messageRegisterDevice)
         call.respond(result)
     }
-
 }

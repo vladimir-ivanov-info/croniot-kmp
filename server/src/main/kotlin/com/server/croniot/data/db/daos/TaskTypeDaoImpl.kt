@@ -8,7 +8,7 @@ import org.hibernate.SessionFactory
 import javax.inject.Inject
 
 class TaskTypeDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
+    private val sessionFactory: SessionFactory,
 ) : TaskTypeDao {
 
     override fun insert(task: TaskType): Long {
@@ -25,29 +25,29 @@ class TaskTypeDaoImpl @Inject constructor(
             transaction.rollback()
             throw e
         } finally {
-            //session.close()
+            // session.close()
         }
         return taskId
     }
 
-    override fun get(device: Device, taskTypeUid: Long) : TaskType? {
+    override fun get(device: Device, taskTypeUid: Long): TaskType? {
         val session = sessionFactory.openSession()
         session.use { sess ->
             val cb = sess.criteriaBuilder
-            val cr : CriteriaQuery<TaskType> = cb.createQuery(TaskType::class.java)
+            val cr: CriteriaQuery<TaskType> = cb.createQuery(TaskType::class.java)
             val root: Root<TaskType> = cr.from(TaskType::class.java)
 
             val taskUidPredicate = cb.equal(root.get<TaskType>("uid"), taskTypeUid)
             val deviceIdPredicate = cb.equal(root.get<TaskType>("device"), device)
 
             val finalPredicate: Predicate = cb.and(taskUidPredicate, deviceIdPredicate)
-            cr.select(root).where(finalPredicate).distinct(true) //TODO maybe remove distinct
+            cr.select(root).where(finalPredicate).distinct(true) // TODO maybe remove distinct
 
             val query = sess.createQuery(cr)
-            //TODO try later query.setCacheable(true)
+            // TODO try later query.setCacheable(true)
             val startMillis = System.currentTimeMillis()
 
-            val result = query.uniqueResultOptional() //1100 ms
+            val result = query.uniqueResultOptional() // 1100 ms
 
             val endMillis = System.currentTimeMillis()
             val time = endMillis - startMillis
@@ -78,12 +78,12 @@ class TaskTypeDaoImpl @Inject constructor(
             return TaskType(
                 id = tupleResult.get(0, Long::class.java),
                 uid = tupleResult.get(1, Long::class.java),
-                name = "",                  // Uninitialized
-                description = "",           // Uninitialized
-                parameters = mutableSetOf(),                // Uninitialized
+                name = "", // Uninitialized
+                description = "", // Uninitialized
+                parameters = mutableSetOf(), // Uninitialized
                 tasks = mutableSetOf(), // Uninitialized
-                realTime = false,   // Uninitialized
-                device = Device(),        // Uninitialized
+                realTime = false, // Uninitialized
+                device = Device(), // Uninitialized
             )
         }
     }
@@ -104,7 +104,7 @@ class TaskTypeDaoImpl @Inject constructor(
             cr.select(cb.count(root)).where(finalPredicate)
 
             val query = sess.createQuery(cr)
-            val count = query.singleResult //2-7 ms
+            val count = query.singleResult // 2-7 ms
 
             val endMillis = System.currentTimeMillis()
             val time = endMillis - startMillis

@@ -1,28 +1,28 @@
 package com.croniot.android.core.presentation.theme
 
-//import android.app.Activity
-//import android.os.Build
-//import androidx.compose.foundation.isSystemInDarkTheme
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.material3.darkColorScheme
-//import androidx.compose.material3.dynamicDarkColorScheme
-//import androidx.compose.material3.dynamicLightColorScheme
-//import androidx.compose.material3.lightColorScheme
-//import androidx.compose.runtime.Composable
-//import androidx.compose.runtime.SideEffect
-//import androidx.compose.ui.graphics.toArgb
-//import androidx.compose.ui.platform.LocalContext
-//import androidx.compose.ui.platform.LocalView
-//import androidx.core.view.WindowCompat
+// import android.app.Activity
+// import android.os.Build
+// import androidx.compose.foundation.isSystemInDarkTheme
+// import androidx.compose.material3.MaterialTheme
+// import androidx.compose.material3.darkColorScheme
+// import androidx.compose.material3.dynamicDarkColorScheme
+// import androidx.compose.material3.dynamicLightColorScheme
+// import androidx.compose.material3.lightColorScheme
+// import androidx.compose.runtime.Composable
+// import androidx.compose.runtime.SideEffect
+// import androidx.compose.ui.graphics.toArgb
+// import androidx.compose.ui.platform.LocalContext
+// import androidx.compose.ui.platform.LocalView
+// import androidx.core.view.WindowCompat
 
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
@@ -33,13 +33,13 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -49,20 +49,17 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = Color.White,
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
-    */
+     */
 )
 
-
-
-
 //
-//@Composable
-//fun IoTClientTheme(
+// @Composable
+// fun IoTClientTheme(
 //    darkTheme: Boolean = isSystemInDarkTheme(),
 //    // Dynamic color is available on Android 12+
 //    dynamicColor: Boolean = true,
 //    content: @Composable () -> Unit
-//) {
+// ) {
 //    val colorScheme = when {
 //        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
 //            val context = LocalContext.current
@@ -86,16 +83,14 @@ private val LightColorScheme = lightColorScheme(
 //        typography = Typography,
 //        content = content
 //    )
-//}
+// }
 
-
-
-//@Immutable
-//data class ExtendedColorScheme(
+// @Immutable
+// data class ExtendedColorScheme(
 //    val customColor1: ColorFamily,
-//)
+// )
 
-//private val lightScheme = lightColorScheme(
+// private val lightScheme = lightColorScheme(
 //    primary = primaryLight,
 //    onPrimary = onPrimaryLight,
 //    primaryContainer = primaryContainerLight,
@@ -124,16 +119,16 @@ private val LightColorScheme = lightColorScheme(
 //    inverseSurface = inverseSurfaceLight,
 //    inverseOnSurface = inverseOnSurfaceLight,
 //    inversePrimary = inversePrimaryLight,
-////    surfaceDim = surfaceDimLight,
-////    surfaceBright = surfaceBrightLight,
-////    surfaceContainerLowest = surfaceContainerLowestLight,
-////    surfaceContainerLow = surfaceContainerLowLight,
-////    surfaceContainer = surfaceContainerLight,
-////    surfaceContainerHigh = surfaceContainerHighLight,
-////    surfaceContainerHighest = surfaceContainerHighestLight,
-//)
+// //    surfaceDim = surfaceDimLight,
+// //    surfaceBright = surfaceBrightLight,
+// //    surfaceContainerLowest = surfaceContainerLowestLight,
+// //    surfaceContainerLow = surfaceContainerLowLight,
+// //    surfaceContainer = surfaceContainerLight,
+// //    surfaceContainerHigh = surfaceContainerHighLight,
+// //    surfaceContainerHighest = surfaceContainerHighestLight,
+// )
 //
-//private val darkScheme = darkColorScheme(
+// private val darkScheme = darkColorScheme(
 //    primary = primaryDark,
 //    onPrimary = onPrimaryDark,
 //    primaryContainer = primaryContainerDark,
@@ -162,16 +157,16 @@ private val LightColorScheme = lightColorScheme(
 //    inverseSurface = inverseSurfaceDark,
 //    inverseOnSurface = inverseOnSurfaceDark,
 //    inversePrimary = inversePrimaryDark,
-////    surfaceDim = surfaceDimDark,
-////    surfaceBright = surfaceBrightDark,
-////    surfaceContainerLowest = surfaceContainerLowestDark,
-////    surfaceContainerLow = surfaceContainerLowDark,
-////    surfaceContainer = surfaceContainerDark,
-////    surfaceContainerHigh = surfaceContainerHighDark,
-////    surfaceContainerHighest = surfaceContainerHighestDark,
-//)
+// //    surfaceDim = surfaceDimDark,
+// //    surfaceBright = surfaceBrightDark,
+// //    surfaceContainerLowest = surfaceContainerLowestDark,
+// //    surfaceContainerLow = surfaceContainerLowDark,
+// //    surfaceContainer = surfaceContainerDark,
+// //    surfaceContainerHigh = surfaceContainerHighDark,
+// //    surfaceContainerHighest = surfaceContainerHighestDark,
+// )
 //
-//private val mediumContrastLightColorScheme = lightColorScheme(
+// private val mediumContrastLightColorScheme = lightColorScheme(
 //    primary = primaryLightMediumContrast,
 //    onPrimary = onPrimaryLightMediumContrast,
 //    primaryContainer = primaryContainerLightMediumContrast,
@@ -200,16 +195,16 @@ private val LightColorScheme = lightColorScheme(
 //    inverseSurface = inverseSurfaceLightMediumContrast,
 //    inverseOnSurface = inverseOnSurfaceLightMediumContrast,
 //    inversePrimary = inversePrimaryLightMediumContrast,
-////    surfaceDim = surfaceDimLightMediumContrast,
-////    surfaceBright = surfaceBrightLightMediumContrast,
-////    surfaceContainerLowest = surfaceContainerLowestLightMediumContrast,
-////    surfaceContainerLow = surfaceContainerLowLightMediumContrast,
-////    surfaceContainer = surfaceContainerLightMediumContrast,
-////    surfaceContainerHigh = surfaceContainerHighLightMediumContrast,
-////    surfaceContainerHighest = surfaceContainerHighestLightMediumContrast,
-//)
+// //    surfaceDim = surfaceDimLightMediumContrast,
+// //    surfaceBright = surfaceBrightLightMediumContrast,
+// //    surfaceContainerLowest = surfaceContainerLowestLightMediumContrast,
+// //    surfaceContainerLow = surfaceContainerLowLightMediumContrast,
+// //    surfaceContainer = surfaceContainerLightMediumContrast,
+// //    surfaceContainerHigh = surfaceContainerHighLightMediumContrast,
+// //    surfaceContainerHighest = surfaceContainerHighestLightMediumContrast,
+// )
 //
-//private val highContrastLightColorScheme = lightColorScheme(
+// private val highContrastLightColorScheme = lightColorScheme(
 //    primary = primaryLightHighContrast,
 //    onPrimary = onPrimaryLightHighContrast,
 //    primaryContainer = primaryContainerLightHighContrast,
@@ -238,16 +233,16 @@ private val LightColorScheme = lightColorScheme(
 //    inverseSurface = inverseSurfaceLightHighContrast,
 //    inverseOnSurface = inverseOnSurfaceLightHighContrast,
 //    inversePrimary = inversePrimaryLightHighContrast,
-////    surfaceDim = surfaceDimLightHighContrast,
-////    surfaceBright = surfaceBrightLightHighContrast,
-////    surfaceContainerLowest = surfaceContainerLowestLightHighContrast,
-////    surfaceContainerLow = surfaceContainerLowLightHighContrast,
-////    surfaceContainer = surfaceContainerLightHighContrast,
-////    surfaceContainerHigh = surfaceContainerHighLightHighContrast,
-////    surfaceContainerHighest = surfaceContainerHighestLightHighContrast,
-//)
+// //    surfaceDim = surfaceDimLightHighContrast,
+// //    surfaceBright = surfaceBrightLightHighContrast,
+// //    surfaceContainerLowest = surfaceContainerLowestLightHighContrast,
+// //    surfaceContainerLow = surfaceContainerLowLightHighContrast,
+// //    surfaceContainer = surfaceContainerLightHighContrast,
+// //    surfaceContainerHigh = surfaceContainerHighLightHighContrast,
+// //    surfaceContainerHighest = surfaceContainerHighestLightHighContrast,
+// )
 //
-//private val mediumContrastDarkColorScheme = darkColorScheme(
+// private val mediumContrastDarkColorScheme = darkColorScheme(
 //    primary = primaryDarkMediumContrast,
 //    onPrimary = onPrimaryDarkMediumContrast,
 //    primaryContainer = primaryContainerDarkMediumContrast,
@@ -276,16 +271,16 @@ private val LightColorScheme = lightColorScheme(
 //    inverseSurface = inverseSurfaceDarkMediumContrast,
 //    inverseOnSurface = inverseOnSurfaceDarkMediumContrast,
 //    inversePrimary = inversePrimaryDarkMediumContrast,
-////    surfaceDim = surfaceDimDarkMediumContrast,
-////    surfaceBright = surfaceBrightDarkMediumContrast,
-////    surfaceContainerLowest = surfaceContainerLowestDarkMediumContrast,
-////    surfaceContainerLow = surfaceContainerLowDarkMediumContrast,
-////    surfaceContainer = surfaceContainerDarkMediumContrast,
-////    surfaceContainerHigh = surfaceContainerHighDarkMediumContrast,
-////    surfaceContainerHighest = surfaceContainerHighestDarkMediumContrast,
-//)
+// //    surfaceDim = surfaceDimDarkMediumContrast,
+// //    surfaceBright = surfaceBrightDarkMediumContrast,
+// //    surfaceContainerLowest = surfaceContainerLowestDarkMediumContrast,
+// //    surfaceContainerLow = surfaceContainerLowDarkMediumContrast,
+// //    surfaceContainer = surfaceContainerDarkMediumContrast,
+// //    surfaceContainerHigh = surfaceContainerHighDarkMediumContrast,
+// //    surfaceContainerHighest = surfaceContainerHighestDarkMediumContrast,
+// )
 //
-//private val highContrastDarkColorScheme = darkColorScheme(
+// private val highContrastDarkColorScheme = darkColorScheme(
 //    primary = primaryDarkHighContrast,
 //    onPrimary = onPrimaryDarkHighContrast,
 //    primaryContainer = primaryContainerDarkHighContrast,
@@ -314,87 +309,87 @@ private val LightColorScheme = lightColorScheme(
 //    inverseSurface = inverseSurfaceDarkHighContrast,
 //    inverseOnSurface = inverseOnSurfaceDarkHighContrast,
 //    inversePrimary = inversePrimaryDarkHighContrast,
-////    surfaceDim = surfaceDimDarkHighContrast,
-////    surfaceBright = surfaceBrightDarkHighContrast,
-////    surfaceContainerLowest = surfaceContainerLowestDarkHighContrast,
-////    surfaceContainerLow = surfaceContainerLowDarkHighContrast,
-////    surfaceContainer = surfaceContainerDarkHighContrast,
-////    surfaceContainerHigh = surfaceContainerHighDarkHighContrast,
-////    surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
-//)
+// //    surfaceDim = surfaceDimDarkHighContrast,
+// //    surfaceBright = surfaceBrightDarkHighContrast,
+// //    surfaceContainerLowest = surfaceContainerLowestDarkHighContrast,
+// //    surfaceContainerLow = surfaceContainerLowDarkHighContrast,
+// //    surfaceContainer = surfaceContainerDarkHighContrast,
+// //    surfaceContainerHigh = surfaceContainerHighDarkHighContrast,
+// //    surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
+// )
 //
-//val extendedLight = ExtendedColorScheme(
+// val extendedLight = ExtendedColorScheme(
 //    customColor1 = ColorFamily(
 //        customColor1Light,
 //        onCustomColor1Light,
 //        customColor1ContainerLight,
 //        onCustomColor1ContainerLight,
 //    ),
-//)
+// )
 //
-//val extendedDark = ExtendedColorScheme(
+// val extendedDark = ExtendedColorScheme(
 //    customColor1 = ColorFamily(
 //        customColor1Dark,
 //        onCustomColor1Dark,
 //        customColor1ContainerDark,
 //        onCustomColor1ContainerDark,
 //    ),
-//)
+// )
 //
-//val extendedLightMediumContrast = ExtendedColorScheme(
+// val extendedLightMediumContrast = ExtendedColorScheme(
 //    customColor1 = ColorFamily(
 //        customColor1LightMediumContrast,
 //        onCustomColor1LightMediumContrast,
 //        customColor1ContainerLightMediumContrast,
 //        onCustomColor1ContainerLightMediumContrast,
 //    ),
-//)
+// )
 //
-//val extendedLightHighContrast = ExtendedColorScheme(
+// val extendedLightHighContrast = ExtendedColorScheme(
 //    customColor1 = ColorFamily(
 //        customColor1LightHighContrast,
 //        onCustomColor1LightHighContrast,
 //        customColor1ContainerLightHighContrast,
 //        onCustomColor1ContainerLightHighContrast,
 //    ),
-//)
+// )
 //
-//val extendedDarkMediumContrast = ExtendedColorScheme(
+// val extendedDarkMediumContrast = ExtendedColorScheme(
 //    customColor1 = ColorFamily(
 //        customColor1DarkMediumContrast,
 //        onCustomColor1DarkMediumContrast,
 //        customColor1ContainerDarkMediumContrast,
 //        onCustomColor1ContainerDarkMediumContrast,
 //    ),
-//)
+// )
 //
-//val extendedDarkHighContrast = ExtendedColorScheme(
+// val extendedDarkHighContrast = ExtendedColorScheme(
 //    customColor1 = ColorFamily(
 //        customColor1DarkHighContrast,
 //        onCustomColor1DarkHighContrast,
 //        customColor1ContainerDarkHighContrast,
 //        onCustomColor1ContainerDarkHighContrast,
 //    ),
-//)
+// )
 //
-//@Immutable
-//data class ColorFamily(
+// @Immutable
+// data class ColorFamily(
 //    val color: Color,
 //    val onColor: Color,
 //    val colorContainer: Color,
 //    val onColorContainer: Color
-//)
+// )
 //
-//val unspecified_scheme = ColorFamily(
+// val unspecified_scheme = ColorFamily(
 //    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
-//)
+// )
 
 @Composable
 fun IoTClientTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -417,6 +412,6 @@ fun IoTClientTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

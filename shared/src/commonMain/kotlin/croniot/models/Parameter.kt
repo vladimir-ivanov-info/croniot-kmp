@@ -10,6 +10,4 @@ open class Parameter(
     var constraints: MutableMap<String, String>,
 ) {
     // Common properties and methods
-
 }
-

@@ -3,11 +3,11 @@ package com.croniot.android.features.deviceslist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.core.data.source.repository.AccountRepository
+import croniot.models.dto.DeviceDto
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import croniot.models.dto.DeviceDto
-import kotlinx.coroutines.delay
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -26,7 +26,7 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
                 account?.let {
                     val devices = account.devices
                     updateDevices(devices.filter { device -> device.name.isNotEmpty() })
-                } //TODO else
+                } // TODO else
 
                 if (account == null) {
                     updateDevices(emptyList())
@@ -35,8 +35,8 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
         }
     }
 
-    //TODO
-    fun uninit(){
+    // TODO
+    fun uninit() {
         _devices.value = emptyList()
     }
 
@@ -57,7 +57,7 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
         _devices.emit(updatedDevices)
     }
 
-    private fun updateDevices(devices: List<DeviceDto>){
+    private fun updateDevices(devices: List<DeviceDto>) {
         viewModelScope.launch {
             _devices.emit(devices)
         }

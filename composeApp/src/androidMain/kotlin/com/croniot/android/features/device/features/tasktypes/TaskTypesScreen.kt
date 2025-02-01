@@ -14,28 +14,29 @@ import com.croniot.android.app.Global
 import croniot.models.dto.TaskTypeDto
 
 @Composable
-fun TaskTypesScreen(navController: NavController){
+fun TaskTypesScreen(navController: NavController) {
     val selectedDevice = Global.selectedDevice
 
     var tasks = emptyList<TaskTypeDto>()
 
-    //if(selectedDevice != null){
-    selectedDevice?.let{
+    // if(selectedDevice != null){
+    selectedDevice?.let {
         tasks = selectedDevice.tasks.toList()
     }
 
-    Box(modifier = Modifier
-        .fillMaxSize()){
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+    ) {
         LazyColumn(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
             item {
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
             }
-            items(tasks){ item ->
+            items(tasks) { item ->
                 TaskItem(navController, task = item)
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
             }

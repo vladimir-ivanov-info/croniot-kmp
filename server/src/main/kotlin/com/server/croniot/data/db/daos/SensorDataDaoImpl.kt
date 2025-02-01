@@ -7,10 +7,10 @@ import org.hibernate.Transaction
 import javax.inject.Inject
 
 class SensorDataDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
+    private val sessionFactory: SessionFactory,
 ) : SensorDataDao {
 
-    override fun insert(sensorData: SensorData){
+    override fun insert(sensorData: SensorData) {
         var session: Session? = null
         var transaction: Transaction? = null
         var taskConfigurationId: Long
@@ -21,7 +21,6 @@ class SensorDataDaoImpl @Inject constructor(
 
             session.persist(sensorData)
             session.flush()
-
 
             transaction.commit()
         } catch (e: java.lang.Exception) {

@@ -16,7 +16,7 @@ import javax.inject.Singleton
     modules = [
         AppModule::class,
         // Add other modules as needed
-    ]
+    ],
 )
 interface AppComponent {
     fun loginController(): LoginController
@@ -25,8 +25,7 @@ interface AppComponent {
     fun taskController(): TaskController
     fun sensorTypeController(): SensorTypeController
     fun taskTypeController(): TaskTypeController
-    fun sensorDataController() : SensorsDataController
+    fun sensorDataController(): SensorsDataController
 
     fun deviceRepository(): DeviceRepository
-
 }

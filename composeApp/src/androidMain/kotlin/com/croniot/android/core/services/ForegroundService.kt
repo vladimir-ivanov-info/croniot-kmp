@@ -1,11 +1,11 @@
 package com.croniot.android.core.services
 
-import android.app.Service
-import android.content.Intent
-import android.os.IBinder
 import android.app.Notification
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
+import android.content.Intent
+import android.os.IBinder
 import android.util.Log
 import com.croniot.android.R
 import com.croniot.android.app.MainActivity
@@ -27,18 +27,18 @@ class ForegroundService : Service() {
             putExtra("START_DESTINATION", lastScreen)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
-       // val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        // val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
             notificationIntent,
-            PendingIntent.FLAG_IMMUTABLE // Add FLAG_IMMUTABLE here
+            PendingIntent.FLAG_IMMUTABLE, // Add FLAG_IMMUTABLE here
         )
 
         val notification: Notification = Notification.Builder(this, channelId)
             .setContentTitle("Croniot running")
             .setContentText("Croniot app is running in the background")
-           // .setSmallIcon(R.drawable.ic_notification)
+            // .setSmallIcon(R.drawable.ic_notification)
             .setSmallIcon(R.drawable.logo_cockroach_test_mode)
             .setContentIntent(pendingIntent)
             .build()
@@ -48,9 +48,9 @@ class ForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Handle your background task here
-        //Log.d("ForegroundService", "Service onStartCommand called")
+        // Log.d("ForegroundService", "Service onStartCommand called")
 
-        //startMQTTConnection()
+        // startMQTTConnection()
         return START_STICKY
     }
 
@@ -58,8 +58,9 @@ class ForegroundService : Service() {
 
     private fun getLastScreen(): String {
         val sharedPref = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        return sharedPref.getString("LAST_SCREEN",
-            UiConstants.ROUTE_LOGIN
+        return sharedPref.getString(
+            "LAST_SCREEN",
+            UiConstants.ROUTE_LOGIN,
         ) ?: UiConstants.ROUTE_LOGIN
     }
 }

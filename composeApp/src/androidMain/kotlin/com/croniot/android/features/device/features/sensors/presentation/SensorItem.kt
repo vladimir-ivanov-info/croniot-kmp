@@ -25,28 +25,26 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun SensorItem(sensor: SensorTypeDto, sensorDataFlow: MutableStateFlow<SensorDataDto>) {
-
     val sensorDataState = sensorDataFlow.collectAsState()
     val sensorData = sensorDataState.value
 
-    val sensorName = sensor.parameters.first().name //TODO adapt for when there are many parameters in a sensor
-    val sensorUnit = sensor.parameters.first().unit //TODO adapt for when there are many parameters in a sensor
+    val sensorName = sensor.parameters.first().name // TODO adapt for when there are many parameters in a sensor
+    val sensorUnit = sensor.parameters.first().unit // TODO adapt for when there are many parameters in a sensor
     val sensorDataValue = sensorData.value
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp),
-        elevation = CardDefaults.elevatedCardElevation()
+        elevation = CardDefaults.elevatedCardElevation(),
 
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
-
             Text(
                 text = sensorDataValue + " " + sensorUnit,
                 fontWeight = FontWeight.Bold,
@@ -65,16 +63,15 @@ fun SensorItem(sensor: SensorTypeDto, sensorDataFlow: MutableStateFlow<SensorDat
 
             val list = remember { mutableListOf<Float>() }
 
-            if(sensorData.value != "empty_value"){ //TODO make const
-                try{
+            if (sensorData.value != "empty_value") { // TODO make const
+                try {
                     val data = sensorData.value.toFloat()
                     list.add(data)
 
-                    if(list.size > 100){
+                    if (list.size > 100) {
                         list.removeAt(0)
                     }
-
-                } catch (e: Throwable){
+                } catch (e: Throwable) {
                     println()
                 }
             }

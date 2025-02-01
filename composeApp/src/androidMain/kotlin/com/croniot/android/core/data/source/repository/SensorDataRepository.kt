@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface SensorDataRepository {
 
-    fun getStateFlow() : StateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>>
+    fun getStateFlow(): StateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>>
 
     suspend fun listenToDeviceSensors(device: DeviceDto)
 }

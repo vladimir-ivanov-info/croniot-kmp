@@ -5,16 +5,16 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import com.croniot.android.core.util.StringUtil
 import com.google.gson.GsonBuilder
 import croniot.models.dto.AccountDto
 import croniot.models.dto.DeviceDto
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import java.time.ZonedDateTime
-import com.croniot.android.core.util.StringUtil
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.time.ZonedDateTime
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "secure_prefs")
 
@@ -34,10 +34,10 @@ object DataStoreController : KoinComponent {
     val KEY_ACCOUNT_PASSWORD = stringPreferencesKey("account_password")
     val KEY_DEVICE_TOKEN = stringPreferencesKey("device_token")
     val KEY_DEVICE_UUID = stringPreferencesKey("device_uuid")
-   // val KEY_SERVER_MODE = booleanPreferencesKey("server_mode")
+
+    // val KEY_SERVER_MODE = booleanPreferencesKey("server_mode")
     val KEY_SERVER_MODE = stringPreferencesKey("server_mode")
     val KEY_CURRENT_SCREEN = stringPreferencesKey("current_screen")
-
 
     suspend fun saveData(key: Preferences.Key<String>, value: String) {
         dataStore.edit { preferences ->
@@ -121,8 +121,8 @@ object DataStoreController : KoinComponent {
 
     suspend fun clearAllCacheExceptDeviceUuid() {
         dataStore.edit { preferences ->
-            //TODO clear everything except deviceUui!!!
-           // preferences.clear()
+            // TODO clear everything except deviceUui!!!
+            // preferences.clear()
         }
     }
 }

@@ -4,6 +4,5 @@ import com.server.croniot.data.repositories.DeviceTokenRepository
 
 class DeviceTokenService(private val deviceTokenRepository: DeviceTokenRepository) {
 
-    //TODO nothing so far
-
+    // TODO nothing so far
 }

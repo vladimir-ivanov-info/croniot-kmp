@@ -8,8 +8,8 @@ import javax.inject.Inject
 
 class MqttDataProcessorTaskProgress @Inject constructor(
     val deviceUuid: String,
-    private val taskController: TaskController
-): MqttDataProcessor {
+    private val taskController: TaskController,
+) : MqttDataProcessor {
 
     override fun process(data: Any) {
         val data = data as String

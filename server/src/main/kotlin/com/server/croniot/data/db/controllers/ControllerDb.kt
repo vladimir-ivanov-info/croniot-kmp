@@ -13,32 +13,32 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.util.*
 
-//TODO convert to dagger
+// TODO convert to dagger
 object ControllerDb {
 
     lateinit var sessionFactory: SessionFactory
 
-    //TOD initialize by lazy
+    // TOD initialize by lazy
     /*  var sessionFactory by lazy {
 
     } //SessionFactory*/
 
-    fun getConnection() : Connection{
-        return connection;
+    fun getConnection(): Connection {
+        return connection
     }
 
     private val connection: Connection = DriverManager.getConnection(
         Global.secrets.databaseUrl,
         Global.secrets.databaseUser,
-        Global.secrets.databasePassword
+        Global.secrets.databasePassword,
     )
 
-    //TODO convert sessionFactory in "by lazy"
+    // TODO convert sessionFactory in "by lazy"
     @Throws(Throwable::class)
-    fun initialize(){
-        var configuration : Configuration
+    fun initialize() {
+        var configuration: Configuration
 
-        if(Global.TESTING){
+        if (Global.TESTING) {
             configuration = Configuration().configure("META-INF/hibernate-test.cfg.xml") // Load hibernate.cfg.xml file
         } else {
             configuration = Configuration().configure("META-INF/hibernate.cfg.xml") // Load hibernate.cfg.xml file
@@ -67,5 +67,4 @@ object ControllerDb {
             throw ExceptionInInitializerError(ex)
         }
     }
-
 }

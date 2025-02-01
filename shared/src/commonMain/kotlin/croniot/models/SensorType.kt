@@ -9,11 +9,11 @@ data class SensorType(
     var description: String,
     var parameters: MutableSet<ParameterSensor>,
     @Transient
-    var device: Device
+    var device: Device,
 
-    ) {
+) {
 
-    constructor() : this(0, 0,"", "", mutableSetOf(), Device())
+    constructor() : this(0, 0, "", "", mutableSetOf(), Device())
     constructor(uid: Long, name: String, description: String, parameters: MutableSet<ParameterSensor>, device: Device) : this(0, uid, name, description, parameters, device)
 
     constructor(id: Long, uid: Long) : this(id, uid, "", "", mutableSetOf(), Device())
@@ -45,5 +45,5 @@ fun SensorType.toDto() = SensorTypeDto(
     uid = this.uid,
     name = this.name,
     description = this.description,
-    parameters = this.parameters.map { it.toDto() }.toMutableSet()
+    parameters = this.parameters.map { it.toDto() }.toMutableSet(),
 )

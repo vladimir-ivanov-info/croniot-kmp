@@ -8,19 +8,18 @@ import io.ktor.server.response.respond
 import javax.inject.Inject
 
 class LoginController @Inject constructor(
-    private val loginService: LoginService
+    private val loginService: LoginService,
 ) {
 
-    suspend fun login(call: ApplicationCall){
-        val message =  call.receive<MessageLoginRequest>()
+    suspend fun login(call: ApplicationCall) {
+        val message = call.receive<MessageLoginRequest>()
         val result = loginService.login(message)
         call.respond(result)
     }
 
-    suspend fun loginIot(call: ApplicationCall){
-        val message =  call.receive<MessageLoginRequest>()
+    suspend fun loginIot(call: ApplicationCall) {
+        val message = call.receive<MessageLoginRequest>()
         val result = loginService.loginIot(message)
         call.respond(result)
     }
-
 }

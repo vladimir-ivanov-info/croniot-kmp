@@ -5,11 +5,10 @@ import croniot.models.SensorType
 import javax.inject.Inject
 
 class SensorTypeRepository @Inject constructor(
-    private val sensorTypeDao: SensorTypeDao
+    private val sensorTypeDao: SensorTypeDao,
 ) {
 
-    fun create(sensorType: SensorType){
+    fun create(sensorType: SensorType) {
         sensorTypeDao.insert(sensorType)
     }
-
 }

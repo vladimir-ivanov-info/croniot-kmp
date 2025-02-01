@@ -6,14 +6,14 @@ import java.time.ZonedDateTime
 data class SensorData(
     var id: Long = 0,
     var device: Device,
-    var sensorType : SensorType,
+    var sensorType: SensorType,
     var value: String,
-    var dateTime: ZonedDateTime) {
+    var dateTime: ZonedDateTime,
+) {
 
-    constructor(): this(0, Device(), SensorType(), "", ZonedDateTime.now())
-    constructor(device: Device, sensorType: SensorType, value: String, dateTime: ZonedDateTime)
-            : this(0, device, sensorType, value, dateTime)
-
+    constructor() : this(0, Device(), SensorType(), "", ZonedDateTime.now())
+    constructor(device: Device, sensorType: SensorType, value: String, dateTime: ZonedDateTime) :
+        this(0, device, sensorType, value, dateTime)
 
     override fun hashCode(): Int {
         var result = id.hashCode()
@@ -40,5 +40,5 @@ fun SensorData.toDto() = SensorDataDto(
     deviceUuid = device.uuid,
     sensorTypeUid = sensorType.uid,
     value = value,
-    timestamp = dateTime
+    timestamp = dateTime,
 )

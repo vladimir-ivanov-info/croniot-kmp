@@ -6,5 +6,5 @@ data class SensorDataDto(
     var deviceUuid: String,
     var sensorTypeUid: Long,
     var value: String,
-    var timestamp: ZonedDateTime
+    var timestamp: ZonedDateTime,
 )

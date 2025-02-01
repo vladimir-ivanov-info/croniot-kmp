@@ -9,21 +9,21 @@ import com.croniot.android.features.login.usecase.LoginUseCase
 import com.croniot.android.features.login.usecase.LogoutUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
 ) : ViewModel(), KoinComponent {
 
-    private val _uiState = MutableStateFlow(LoginUiState(email = "email1@gmail.com", password = "password1")) //TODO this is a demo account
+    private val _uiState = MutableStateFlow(LoginUiState(email = "email1@gmail.com", password = "password1")) // TODO this is a demo account
     val uiState: StateFlow<LoginUiState> get() = _uiState
 
     val email: StateFlow<String> get() = _uiState.map { it.email }
@@ -42,29 +42,28 @@ class LoginViewModel(
 
     fun login() {
         viewModelScope.launch {
-
             val email = _uiState.value.email
             val password = _uiState.value.password
 
-            val result = loginUseCase(email, password) //TODO delegate to controller
+            val result = loginUseCase(email, password) // TODO delegate to controller
 
             _uiState.value = _uiState.value.copy(password = "")
 
             val token = result.token
 
-            if(token != null){
+            if (token != null) {
                 DataStoreController.saveData(DataStoreController.KEY_DEVICE_TOKEN, token)
             }
 
             if (result.result.success) {
-                withContext(Dispatchers.IO){
-                    LoginController.processLoginSuccess(result.account!!) //TODO
+                withContext(Dispatchers.IO) {
+                    LoginController.processLoginSuccess(result.account!!) // TODO
                 }
                 _uiState.value = _uiState.value.copy(isLoading = false, loggedIn = true)
             } else {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = result.result.message
+                    error = result.result.message,
                 )
             }
         }
@@ -73,7 +72,7 @@ class LoginViewModel(
     fun logout() {
         viewModelScope.launch {
             logoutUseCase()
-            accountRepository.clearAccount() //TODO move inside of logoutUseCase
+            accountRepository.clearAccount() // TODO move inside of logoutUseCase
             _uiState.value = LoginUiState() // Reset UI state
         }
     }

@@ -2,7 +2,7 @@ package com.croniot.android.core.util
 
 import com.croniot.android.app.Global
 import com.croniot.android.core.data.source.local.DataStoreController
-//import com.croniot.android.core.data.source.local.SharedPreferences
+// import com.croniot.android.core.data.source.local.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -19,13 +19,13 @@ object NetworkUtil {
 
     private val client = OkHttpClient.Builder().followRedirects(false).build()
 
-    fun resolveServerAddressIfNotExists(){
+    fun resolveServerAddressIfNotExists() {
         val serverAddress = runBlocking {
             DataStoreController.loadData(DataStoreController.KEY_SERVER_ADDRESS).first()
         }
 
-        if(serverAddress == null){
-            resolveAndFollowRedirects("vladimiriot.com") //TODO make constant in Global. Catch error if can't be resolved
+        if (serverAddress == null) {
+            resolveAndFollowRedirects("vladimiriot.com") // TODO make constant in Global. Catch error if can't be resolved
         } else {
             Global.SERVER_ADDRESS_REMOTE = serverAddress
             Global.mqttBrokerUrl = "tcp://${Global.SERVER_ADDRESS_REMOTE}:1883"
@@ -35,13 +35,13 @@ object NetworkUtil {
     private fun resolveAndFollowRedirects(domain: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val initialUrl = "http://$domain"
-            //val initialUrl = domain
+            // val initialUrl = domain
             val finalUrl = followRedirects(initialUrl)
             val ipAddress = resolveIpAddress(finalUrl)
 
             val addresses = ipAddress.split("\n")
 
-            if(addresses.size > 0){
+            if (addresses.size > 0) {
                 val ipv4Address = addresses[0]
 
                 DataStoreController.saveData(DataStoreController.KEY_SERVER_ADDRESS, ipv4Address)
@@ -89,5 +89,4 @@ object NetworkUtil {
             "Unknown host"
         }
     }
-
 }

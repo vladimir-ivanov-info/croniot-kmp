@@ -7,7 +7,7 @@ import croniot.models.dto.SensorDataDto
 import org.koin.core.component.KoinComponent
 import java.time.ZonedDateTime
 
-class MqttProcessorSensorData(val onNewData : (SensorDataDto) -> Unit) : MqttDataProcessor, KoinComponent {
+class MqttProcessorSensorData(val onNewData: (SensorDataDto) -> Unit) : MqttDataProcessor, KoinComponent {
 
     val gsonZonedDateTime = GsonBuilder()
         .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
@@ -16,7 +16,7 @@ class MqttProcessorSensorData(val onNewData : (SensorDataDto) -> Unit) : MqttDat
 
     override fun process(data: Any) {
         val message = data as String
-        val sensorDataDto = gsonZonedDateTime.fromJson(message, SensorDataDto::class.java) //TODO handle error
+        val sensorDataDto = gsonZonedDateTime.fromJson(message, SensorDataDto::class.java) // TODO handle error
         onNewData(sensorDataDto)
     }
 }

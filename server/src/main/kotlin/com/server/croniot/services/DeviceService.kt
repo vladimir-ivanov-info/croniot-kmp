@@ -11,26 +11,25 @@ import javax.inject.Inject
 class DeviceService @Inject constructor(
     private val accountRepository: AccountRepository,
     private val deviceRepository: DeviceRepository,
-    private val deviceTokenRepository: DeviceTokenRepository
+    private val deviceTokenRepository: DeviceTokenRepository,
 ) {
 
-    fun getLazy(deviceUuid: String) : Device? {
+    fun getLazy(deviceUuid: String): Device? {
         return deviceRepository.getLazy(deviceUuid)
     }
 
-    fun getByUuid(deviceUuid: String) : Device? {
+    fun getByUuid(deviceUuid: String): Device? {
         return deviceRepository.getByUuid(deviceUuid)
     }
 
-    fun getAll() : List<Device> {
+    fun getAll(): List<Device> {
         return deviceRepository.getAll()
     }
 
     fun registerDevice(messageRegisterDevice: MessageRegisterDevice): Result {
-
         var result: Result
 
-        try{
+        try {
             val accountEmail = messageRegisterDevice.accountEmail
             val accountPassword = messageRegisterDevice.accountPassword
             val deviceUuid = messageRegisterDevice.deviceUuid
@@ -39,8 +38,8 @@ class DeviceService @Inject constructor(
 
             val account = accountRepository.getAccountEagerSkipTasks(accountEmail, accountPassword)
 
-            if(account != null){
-                //TODO check if device exists
+            if (account != null) {
+                // TODO check if device exists
                 val device = Device(deviceUuid, deviceName, deviceDescription, true, mutableSetOf(), mutableSetOf(), account)
                 deviceRepository.createDevice(device)
 
@@ -57,5 +56,4 @@ class DeviceService @Inject constructor(
 
         return result
     }
-
- }
+}

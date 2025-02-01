@@ -6,7 +6,7 @@ import org.hibernate.SessionFactory
 import javax.inject.Inject
 
 class DeviceTokenDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
+    private val sessionFactory: SessionFactory,
 ) : DeviceTokenDao {
 
     override fun insert(deviceToken: DeviceToken) {
@@ -21,7 +21,6 @@ class DeviceTokenDaoImpl @Inject constructor(
             }
         } // session is automatically closed here
     }
-
 
     override fun getDeviceAssociatedWithToken(token: String): Device? {
         val session = sessionFactory.openSession()
@@ -38,5 +37,4 @@ class DeviceTokenDaoImpl @Inject constructor(
             return query?.device
         }
     }
-
 }

@@ -10,18 +10,20 @@ data class Task(
     @Transient
     var taskType: TaskType,
     @Transient
-    var stateInfos: MutableSet<TaskStateInfo>
+    var stateInfos: MutableSet<TaskStateInfo>,
 ) {
 
-    constructor(): this(0, 0, mutableMapOf(), TaskType(), mutableSetOf())
-    constructor(uid: Long,
-                parametersValues: MutableMap<ParameterTask, String>,
-                taskType: TaskType,
-                stateInfos: MutableSet<TaskStateInfo>):
-            this(0, uid, parametersValues, taskType, stateInfos)
+    constructor() : this(0, 0, mutableMapOf(), TaskType(), mutableSetOf())
+    constructor(
+        uid: Long,
+        parametersValues: MutableMap<ParameterTask, String>,
+        taskType: TaskType,
+        stateInfos: MutableSet<TaskStateInfo>,
+    ) :
+        this(0, uid, parametersValues, taskType, stateInfos)
 
     override fun hashCode(): Int {
-        return Objects.hash(id) //TODO or hash other relevant properties
+        return Objects.hash(id) // TODO or hash other relevant properties
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -41,5 +43,5 @@ fun Task.toDto() = TaskDto(
     taskTypeUid = this.taskType.uid,
     uid = this.uid,
     parametersValues = this.parametersValues.mapKeys { it.key.uid }.toMutableMap(),
-    stateInfos = this.stateInfos.map { it.toDto() }.toMutableSet()//,
+    stateInfos = this.stateInfos.map { it.toDto() }.toMutableSet(), // ,
 )
