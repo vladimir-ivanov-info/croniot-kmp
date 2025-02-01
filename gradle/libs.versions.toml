@@ -14,10 +14,6 @@ androidx-test-junit = "1.2.1"
 compose-plugin = "1.6.11"
 junit = "4.13.2"
 kotlin = "2.0.20"
-#kotlin = "1.9.22"
-
-
-
 
 ktor = "2.3.12"
 logback = "1.5.6"
@@ -25,10 +21,10 @@ logback = "1.5.6"
 gson = "2.11.0"
 
 koin = "3.6.0-wasm-alpha2"
-navigation = "2.8.5"
+navigation = "2.8.6"
 compose = "1.7.7"
 
-lifecycle = "2.9.0-alpha08"
+lifecycle = "2.9.0-alpha09"
 
 coroutines = "1.8.1"
 kotlinBom = "1.9.0"
@@ -55,22 +51,18 @@ mysql = "8.0.33"
 #logback = "1.5.3"
 #commons = "file:///home/vladimir/projects/IoT/commons/build/libs/commons.jar"
 postgres = "42.7.3"
-#hibernate = "6.4.1.Final"
-#hibernate = "6.6.1.Final"
 hibernate = "6.1.0.Final"
 hibernate-ehcache = "5.6.15.Final"
 ehcache = "3.10.8"
 jcache = "1.1.1"
 jaxb-api = "2.3.1" #Ehcache relies on JAXB for parsing XML configuration
 jaxb-impl = "4.0.5"
-#jaxb-runtime = "2.3.1"
 jaxb-runtime = "4.0.2"  # Use the same version for both api and runtime
 jaxb-runtime-old = "2.3.1"
 
 jakarta-jaxb-api = "4.0.2"
 jakarta-activation-api = "2.1.3"
 
-#infinispan = "14.0.14.Final"
 infinispan-core = "15.0.10.Final"
 infinispan-hibernate-cache = "15.0.10.Final"
 infinispan-hibernate-cache-v62 = "15.0.10.Final"
@@ -79,7 +71,7 @@ hibernate-cache-commons = "15.0.10.Final"
 javax-cache-api = "1.1.1"
 
 mapstruct = "1.6.0.Beta1"
-serializationJson = "1.5.1"
+serializationJson = "1.7.1"
 dagger = "2.55"
 #mockk = "1.13.11"
 h2 = "2.2.224"
@@ -92,10 +84,6 @@ datastoreCoreAndroid = "1.1.2"
 ##maplibre = "9.5.0" # Use the latest stable version available
 #maplibre = "11.3.0" # Use the latest stable version available
 
-#realm = "1.12.0"
-#realm = "3.0.0"
-#realm = "1.11.0"
-#realm = "1.9.0"
 realm = "2.3.0"
 
 
@@ -200,15 +188,12 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 kotlin-test-junit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
 
 
-
 #maplibreGl = { group = "org.maplibre.gl", name = "android-sdk", version.ref = "maplibre" }
 #maplibreSdkExtensions = { group = "com.mapbox.mapboxsdk", name = "mapbox-sdk-extensions", version = "10.0.0" }
 accompanistPermissions = { group = "com.google.accompanist", name = "accompanist-permissions", version = "0.20.0" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 
-#realm = { module = "io.realm:realm-kotlin", version.ref = "realm" }
 realm = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
-#realm = { module = "io.realm.kotlin:gradle-plugin", version.ref = "realm" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -218,5 +203,4 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-
 realm = { id = "io.realm.kotlin", version.ref = "realm" }
