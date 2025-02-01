@@ -1,4 +1,4 @@
-package db.daos
+package com.server.croniot.data.db.daos
 
 import croniot.models.Device
 import croniot.models.Task

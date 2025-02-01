@@ -85,13 +85,15 @@ object MqttController {
         val iotDevices = devices.filter { it.iot }
 
         for(device in iotDevices){
-            val topic =  "/iot_to_server/task_progress_update/${device.uuid}"
-            val mqttClient = MqttClient(
-                Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8)
-            )
+            CoroutineScope(Dispatchers.IO).launch {
+                val topic =  "/iot_to_server/task_progress_update/${device.uuid}"
+                val mqttClient = MqttClient(
+                    Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8)
+                )
 
-            val taskController = appComponent.taskController()
-            MqttHandler(mqttClient, MqttDataProcessorTaskProgress(device.uuid, taskController), topic)
+                val taskController = appComponent.taskController()
+                MqttHandler(mqttClient, MqttDataProcessorTaskProgress(device.uuid, taskController), topic)
+            }
         }
     }
 

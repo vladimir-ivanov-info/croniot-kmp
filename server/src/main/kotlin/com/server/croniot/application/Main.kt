@@ -3,7 +3,8 @@ package com.server.croniot.application
 import Global
 import com.server.croniot.mqtt.MqttController
 import ZonedDateTimeAdapter
-import com.croniot.server.db.controllers.ControllerDb
+import com.server.croniot.data.db.controllers.ControllerDb
+import com.server.croniot.di.DI
 import io.ktor.serialization.gson.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.embeddedServer
@@ -21,7 +22,16 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    configureRouting()
+    val appComponent = DI.appComponent
+    val routeInitializer = RouteInitializer(
+        loginController = appComponent.loginController(),
+        accountController = appComponent.accountController(),
+        deviceController = appComponent.deviceController(),
+        taskController = appComponent.taskController(),
+        sensorTypeController = appComponent.sensorTypeController(),
+        taskTypeController = appComponent.taskTypeController()
+    )
+    routeInitializer.setupRoutes(this)
 }
 
 
@@ -31,9 +41,6 @@ fun main() {
     })
 
     try{
-        //val appComponent: AppComponent = DaggerAppComponent.create()
-        //appComponent.inject()
-
         ControllerDb.initialize()
         MqttController
 

@@ -19,7 +19,5 @@ class MqttDataProcessorSensor(val deviceUuid: String, val sensorsDataController:
         val messageSensorData = gson.fromJson(messageString, MessageSensorData::class.java)
 
         sensorsDataController.processSensorData(deviceUuid, messageSensorData)
-
-
     }
 }

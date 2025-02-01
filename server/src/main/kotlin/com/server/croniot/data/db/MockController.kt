@@ -1,15 +1,13 @@
-package com.croniot.server.db
+package com.server.croniot.data.db
 
 import croniot.models.*
-import com.croniot.server.db.controllers.ControllerDb
+import com.server.croniot.data.db.controllers.ControllerDb
 
 //idea: add a precondition functionality before being able to run a task. For example: I cannot run the task Water plants if voltage is below certain level.
 
 object MockController {
 
     val connection = ControllerDb.getConnection()
-
-
 
     fun addMockData(){
         val account1 = Account("account1Uuid", "vladimiriot", "email1@gmail.com", "password1", mutableSetOf())
