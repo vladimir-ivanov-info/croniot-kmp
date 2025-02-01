@@ -5,11 +5,10 @@ import croniot.models.MqttDataProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
-//TODO experimental
+// TODO experimental
 class MqttProcessorMap() : MqttDataProcessor, KoinComponent {
 
     private val viewModelSensors: ViewModelSensors = get()
@@ -18,7 +17,7 @@ class MqttProcessorMap() : MqttDataProcessor, KoinComponent {
         CoroutineScope(Dispatchers.IO).launch {
             val mapValue = data as String
             println(mapValue)
-            //TODO viewModelSensors.updateMap(mapValue)
+            // TODO viewModelSensors.updateMap(mapValue)
         }
     }
 }

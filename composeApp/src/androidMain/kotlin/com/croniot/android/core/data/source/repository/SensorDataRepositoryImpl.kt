@@ -15,48 +15,51 @@ import java.time.ZonedDateTime
 class SensorDataRepositoryImpl() : SensorDataRepository {
 
     private var _sensorDataStateFlow = MutableStateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>>(emptyMap())
-    val sensorDataStateFlow : StateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>> get() = _sensorDataStateFlow
+    val sensorDataStateFlow: StateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>> get() = _sensorDataStateFlow
 
     override fun getStateFlow(): StateFlow<Map<SensorTypeDto, MutableStateFlow<SensorDataDto>>> {
-       return sensorDataStateFlow
+        return sensorDataStateFlow
     }
 
     override suspend fun listenToDeviceSensors(device: DeviceDto) {
-
-        val clientId = Global.mqttClientId + Global.generateUniqueString(8);
+        val clientId = Global.mqttClientId + Global.generateUniqueString(8)
         val mqttClient = MqttClient(Global.mqttBrokerUrl, clientId, null)
 
-        //Get sensors and give them initial value
-        for(sensor in device.sensors){
+        // Get sensors and give them initial value
+        for (sensor in device.sensors) {
             val initialSensorData = SensorDataDto(
                 deviceUuid = device.uuid,
                 sensorTypeUid = sensor.uid,
                 value = "empty_value",
-                timestamp = ZonedDateTime.now()
+                timestamp = ZonedDateTime.now(),
             )
             addOrUpdateSensor(sensor, initialSensorData)
         }
 
         val topic = "/server_to_app/${device.uuid}/sensor_data"
-        MqttHandler(mqttClient, MqttProcessorSensorData(onNewData = { newSensorData ->
+        MqttHandler(
+            mqttClient,
+            MqttProcessorSensorData(onNewData = { newSensorData ->
 
-            //find sensor //TODO optimize searching
-            val targetUid = newSensorData.sensorTypeUid // Replace with your desired UID
-            val result = _sensorDataStateFlow.value.entries
-                .firstOrNull { (_, stateFlow) -> stateFlow.value.sensorTypeUid == targetUid }
-                ?.value
+                // find sensor //TODO optimize searching
+                val targetUid = newSensorData.sensorTypeUid // Replace with your desired UID
+                val result = _sensorDataStateFlow.value.entries
+                    .firstOrNull { (_, stateFlow) -> stateFlow.value.sensorTypeUid == targetUid }
+                    ?.value
 
-            if (result != null) {
-                result.update { currentData ->
-                    currentData.copy(
-                        value = newSensorData.value,
-                        timestamp = ZonedDateTime.now() // Update the timestamp to the current time
-                    )
+                if (result != null) {
+                    result.update { currentData ->
+                        currentData.copy(
+                            value = newSensorData.value,
+                            timestamp = ZonedDateTime.now(), // Update the timestamp to the current time
+                        )
+                    }
+                } else {
+                    println("No MutableStateFlow found with UID $targetUid")
                 }
-            } else {
-                println("No MutableStateFlow found with UID $targetUid")
-            }
-        }), topic)
+            }),
+            topic,
+        )
     }
 
     private fun addOrUpdateSensor(sensorType: SensorTypeDto, sensorData: SensorDataDto) {

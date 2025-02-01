@@ -12,12 +12,10 @@ object MessageFactory {
     }
 
     inline fun <reified T> fromJsonWithZonedDateTime(message: String): T {
-
         val gsonZonedDateTime = GsonBuilder()
             .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
             .setPrettyPrinting()
             .create()
         return gsonZonedDateTime.fromJson(message, T::class.java)
     }
-
 }

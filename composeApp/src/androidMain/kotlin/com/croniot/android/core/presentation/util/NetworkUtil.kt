@@ -12,13 +12,12 @@ import java.net.URL
 
 object NetworkUtil {
 
-    fun performPostRequestToEndpoint(endPoint: String, postData: String) : Result {
-        val url =  "http://" + SERVER_ADDRESS + ":" + SERVER_PORT + endPoint
+    fun performPostRequestToEndpoint(endPoint: String, postData: String): Result {
+        val url = "http://" + SERVER_ADDRESS + ":" + SERVER_PORT + endPoint
         return performPostRequest(url, postData)
     }
 
     fun performPostRequest(urlString: String, postData: String): Result {
-
         var result: Result
 
         try {
@@ -55,5 +54,4 @@ object NetworkUtil {
 
         return result
     }
-
 }

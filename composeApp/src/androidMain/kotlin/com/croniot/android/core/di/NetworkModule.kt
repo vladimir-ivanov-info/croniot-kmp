@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkModule {
 
-    private var BASE_URL : String
+    private var BASE_URL: String
 
     init {
         BASE_URL = "http://" + Global.SERVER_ADDRESS + ":" + Global.SERVER_PORT
@@ -23,8 +23,8 @@ object NetworkModule {
         }
     }
 
-    //TODO observe DataStore
-    fun reloadRetrofitRemote() { //TODO change name later
+    // TODO observe DataStore
+    fun reloadRetrofitRemote() { // TODO change name later
         val baseUrl = Global.SERVER_ADDRESS_REMOTE
         loadKoinModules(
             module {
@@ -35,11 +35,11 @@ object NetworkModule {
                         .addConverterFactory(GsonConverterFactory.create())
                         .build()
                 }
-            }
+            },
         )
     }
 
-    //TODO observe DataStore
+    // TODO observe DataStore
     fun reloadRetrofitLocal() {
         val baseUrl = Global.SERVER_ADDRESS_LOCAL
         loadKoinModules(
@@ -51,7 +51,7 @@ object NetworkModule {
                         .addConverterFactory(GsonConverterFactory.create())
                         .build()
                 }
-            }
+            },
         )
     }
 }

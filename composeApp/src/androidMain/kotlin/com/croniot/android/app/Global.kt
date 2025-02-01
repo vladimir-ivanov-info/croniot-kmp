@@ -6,7 +6,7 @@ import java.util.*
 
 object Global {
 
-    //TODO move to core/util/Constants
+    // TODO move to core/util/Constants
 
     val appName = "croniot"
 
@@ -19,14 +19,13 @@ object Global {
     var mqttBrokerUrl = "tcp://51.77.195.204:1883"
     val mqttClientId = "AndroidMQTTClient"
 
-    //TODO move to a separate util class
+    // TODO move to a separate util class
     fun generateUniqueString(length: Int): String {
         val uuid = UUID.randomUUID()
         val uniqueString = uuid.toString().substring(0, length)
         return uniqueString
     }
 
-    var selectedDevice : DeviceDto? = null
+    var selectedDevice: DeviceDto? = null
     var selectedTaskType: TaskTypeDto? = null
-
 }

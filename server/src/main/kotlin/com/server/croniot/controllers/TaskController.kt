@@ -26,8 +26,8 @@ class TaskController @Inject constructor(
     private val deviceService: DeviceService,
 ) {
 
-    //TODO refactor, make smaller
-    fun addTaskProgress(deviceUuid: String, taskProgressUpdate: TaskProgressUpdate){
+    // TODO refactor, make smaller
+    fun addTaskProgress(deviceUuid: String, taskProgressUpdate: TaskProgressUpdate) {
         try {
             val taskUid = taskProgressUpdate.taskUid
             val taskTypeUid = taskProgressUpdate.taskTypeUid
@@ -53,11 +53,11 @@ class TaskController @Inject constructor(
                                     taskStateEnum,
                                     taskProgress,
                                     errorMessage,
-                                    task
+                                    task,
                                 )
-                                taskService.createTaskState(stateInfo) //5-7 ms
+                                taskService.createTaskState(stateInfo) // 5-7 ms
 
-                                val stateInfoDto = stateInfo.toDto()  //1816 ms
+                                val stateInfoDto = stateInfo.toDto() // 1816 ms
                                 println("Time task state: ${stateInfoDto.state} ${ZonedDateTime.now()}")
                                 CoroutineScope(Dispatchers.IO).launch {
                                     MqttController.sendNewTask(deviceUuid, task, stateInfo)
@@ -65,45 +65,45 @@ class TaskController @Inject constructor(
                             }
                         }
                     } else {
-                        val task = taskService.getLazy(deviceUuid, taskTypeUid, taskUid) //1700 ms -> 1500 ms -> 3 ms
+                        val task = taskService.getLazy(deviceUuid, taskTypeUid, taskUid) // 1700 ms -> 1500 ms -> 3 ms
                         task?.let {
                             val stateInfo = TaskStateInfo(
                                 ZonedDateTime.now(),
                                 taskState,
                                 taskProgress,
                                 errorMessage,
-                                task
+                                task,
                             )
 
-                            taskService.createTaskState(stateInfo) //5-7 ms
+                            taskService.createTaskState(stateInfo) // 5-7 ms
 
-                            val stateInfoDto = stateInfo.toDto()  //1816 ms
+                            val stateInfoDto = stateInfo.toDto() // 1816 ms
                             CoroutineScope(Dispatchers.IO).launch {
-                                MqttController.sendNewTaskStateInfo(deviceUuid, stateInfoDto) //100-120 ms -> 90-100 -> 1 ms
+                                MqttController.sendNewTaskStateInfo(deviceUuid, stateInfoDto) // 100-120 ms -> 90-100 -> 1 ms
                             }
                         }
                     }
                 }
             }
-        } catch (e : Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    suspend fun addTask(call: ApplicationCall){
-        val message = call.receiveText();
+    suspend fun addTask(call: ApplicationCall) {
+        val message = call.receiveText()
         val messageAddTask = MessageFactory.fromJson<MessageAddTask>(message)
         val result = taskService.addTask(messageAddTask)
         call.respond(result)
     }
 
-    suspend fun getTaskConfigurations(call: ApplicationCall){
+    suspend fun getTaskConfigurations(call: ApplicationCall) {
         val deviceUuid = call.parameters["deviceUuid"] ?: call.respondText(
             "Missing or malformed deviceUuid",
-            status = HttpStatusCode.BadRequest
+            status = HttpStatusCode.BadRequest,
         )
 
-        val taskConfigurations = taskService.getTasksByDeviceUuid(deviceUuid.toString()) //57 ms
+        val taskConfigurations = taskService.getTasksByDeviceUuid(deviceUuid.toString()) // 57 ms
 
         if (taskConfigurations.isNotEmpty()) {
             call.respond(taskConfigurations)
@@ -111,5 +111,4 @@ class TaskController @Inject constructor(
             call.respond(HttpStatusCode.NotFound, "No configurations found for UUID: $deviceUuid")
         }
     }
-
 }

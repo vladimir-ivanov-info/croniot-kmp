@@ -4,8 +4,7 @@ import croniot.models.SensorType
 
 interface SensorTypeDao {
 
-    fun insert(sensorType: SensorType) : Long
+    fun insert(sensorType: SensorType): Long
 
-    fun getLazy(deviceUuid: String, sensorTypeUid: Long) : SensorType?
-
+    fun getLazy(deviceUuid: String, sensorTypeUid: Long): SensorType?
 }

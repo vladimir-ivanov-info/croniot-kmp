@@ -5,5 +5,4 @@ import croniot.models.SensorData
 interface SensorDataDao {
 
     fun insert(sensorData: SensorData)
-
 }

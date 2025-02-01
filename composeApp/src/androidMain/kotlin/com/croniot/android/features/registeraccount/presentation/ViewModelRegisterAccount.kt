@@ -36,7 +36,7 @@ class ViewModelRegisterAccount(private val registerAccountController: RegisterAc
             val result = registerAccountController.registerAccount(
                 nickname.value,
                 email.value,
-                password.value
+                password.value,
             )
             onResult(result)
         }

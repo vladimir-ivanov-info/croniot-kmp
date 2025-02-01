@@ -1,22 +1,5 @@
 package db
 
-import io.mockk.every
-import io.mockk.mockk
-
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
-import java.sql.Connection
-import java.sql.DriverManager
-import kotlin.test.assertEquals
-
-
-import io.mockk.MockKAnnotations
-import org.junit.Before
 import org.junit.jupiter.api.Assertions.*
 /*
 class RegisterControllerTest {
@@ -49,8 +32,8 @@ class RegisterControllerTest {
     }
 }*/
 
-//@Testcontainers
-//class RegisterControllerTest {
+// @Testcontainers
+// class RegisterControllerTest {
 //
 //    @Container
 //    //private val postgresContainer = PostgreSQLContainer<Nothing>("postgres:latest")
@@ -97,5 +80,5 @@ class RegisterControllerTest {
 //
 //        assertEquals("Test Name", name)
 //    }
-//}
-//}
+// }
+// }

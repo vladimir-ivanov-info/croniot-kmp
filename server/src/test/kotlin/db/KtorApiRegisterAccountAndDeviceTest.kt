@@ -1,13 +1,13 @@
 package db
 
-//import io.ktor.application.*
+// import io.ktor.application.*
 import com.google.gson.GsonBuilder
 import croniot.messages.MessageRegisterAccount
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-//import messages.MessageRegisterAccountAndDevice
+// import messages.MessageRegisterAccountAndDevice
 import com.server.croniot.application.module
 import kotlin.test.*
 
@@ -19,7 +19,6 @@ class KtorApiRegisterAccountAndDeviceTest {
             module()
         }
 
-
         val accountUuid = "test_uuid"
         val nickName = "test_nickname"
         val email = "test_email@gmail.com"
@@ -27,7 +26,7 @@ class KtorApiRegisterAccountAndDeviceTest {
 
         val response = client.post("/api/register_account_and_device") {
             contentType(ContentType.Application.Json)
-            //setBody("""{"accountId":"12345", "deviceId":"abcde"}""")
+            // setBody("""{"accountId":"12345", "deviceId":"abcde"}""")
 
             /*val email = "email1@gmail.com"
             val password = "password1"
@@ -42,8 +41,6 @@ class KtorApiRegisterAccountAndDeviceTest {
             setBody(messageRegisterAccountAndDeviceJson)*/
 
             val gson = GsonBuilder().setPrettyPrinting().create()
-
-
 
             val message = MessageRegisterAccount(accountUuid, nickName, email, password)
             val messageRegisterAccountJson = gson.toJson(message)

@@ -15,10 +15,10 @@ import com.croniot.android.core.data.entities.TaskTypeEntity
 import com.croniot.android.core.di.DependencyInjectionModule
 import com.croniot.android.core.di.NetworkModule
 import com.croniot.android.features.device.features.sensors.di.SensorsModule
-import com.croniot.android.features.registeraccount.di.RegisterAccountModule
 import com.croniot.android.features.login.di.LoginModule
-import io.realm.kotlin.RealmConfiguration
+import com.croniot.android.features.registeraccount.di.RegisterAccountModule
 import io.realm.kotlin.Realm
+import io.realm.kotlin.RealmConfiguration
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -42,12 +42,12 @@ class MyApp : Application() {
                 SensorDataEntity::class,
                 TaskEntity::class,
                 TaskStateInfoEntity::class,
-                KeyValueEntity::class
-            )
+                KeyValueEntity::class,
+            ),
         )
-        .name("croniot.realm")
-        .schemaVersion(1)
-        .build()
+            .name("croniot.realm")
+            .schemaVersion(1)
+            .build()
 
         realm = Realm.open(config)
 
@@ -59,7 +59,7 @@ class MyApp : Application() {
                 NetworkModule.networkModule,
                 RegisterAccountModule.registerAccountModule,
                 LoginModule.loginModule,
-                SensorsModule.sensorsModule
+                SensorsModule.sensorsModule,
             )
         }
     }

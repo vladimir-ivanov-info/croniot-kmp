@@ -5,7 +5,7 @@ import org.hibernate.SessionFactory
 import javax.inject.Inject
 
 class TaskStateInfoDaoImpl @Inject constructor(
-    private val sessionFactory: SessionFactory
+    private val sessionFactory: SessionFactory,
 ) : TaskStateInfoDao {
 
     override fun insert(taskStateInfo: TaskStateInfo): Long {
@@ -22,7 +22,7 @@ class TaskStateInfoDaoImpl @Inject constructor(
             transaction.rollback()
             throw e
         } finally {
-            //session.close()
+            // session.close()
         }
         return taskId
     }

@@ -5,26 +5,26 @@ import croniot.messages.MessageLoginRequest
 import croniot.models.LoginResult
 
 class LoginUseCase(
-    private val repository: LoginRepository
+    private val repository: LoginRepository,
 ) {
     suspend operator fun invoke(email: String, password: String): LoginResult {
-        lateinit var loginResult : LoginResult
+        lateinit var loginResult: LoginResult
 
         val deviceUuid = repository.getDeviceUuid()
         val deviceToken = repository.getDeviceToken()
 
-        //TODO
+        // TODO
         /*if (deviceUuid == null) {
             return Result.failure(IllegalArgumentException("Device UUID is missing"))
         }*/
 
-        if(deviceUuid != null){
+        if (deviceUuid != null) {
             val request = MessageLoginRequest(
                 email = email,
                 password = password,
                 deviceUuid = deviceUuid,
                 deviceToken = deviceToken,
-                deviceProperties = mapOf("deviceType" to "Android") // Example property
+                deviceProperties = mapOf("deviceType" to "Android"), // Example property
             )
 
             loginResult = repository.login(request)
@@ -49,20 +49,18 @@ class LoginUseCase(
                 password = accountPassword,
                 deviceUuid = deviceUuid,
                 deviceToken = deviceToken,
-                deviceProperties = repository.getDeviceProperties()
+                deviceProperties = repository.getDeviceProperties(),
             )
 
             val loginResult = repository.login(request)
 
-            if(loginResult.result.success){
+            if (loginResult.result.success) {
                 Result.success(loginResult.result.success)
             } else {
-                Result.failure(IllegalArgumentException("Could not log in")) //TODO
+                Result.failure(IllegalArgumentException("Could not log in")) // TODO
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-
-
 }

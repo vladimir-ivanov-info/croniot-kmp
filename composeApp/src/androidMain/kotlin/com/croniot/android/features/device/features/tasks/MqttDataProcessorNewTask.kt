@@ -15,5 +15,4 @@ class MqttDataProcessorNewTask(val deviceUuid: String) : MqttDataProcessor, Koin
         val newTask = MessageFactory.fromJsonWithZonedDateTime<TaskDto>(dataString)
         viewModelTasks.addTask(newTask)
     }
-
 }

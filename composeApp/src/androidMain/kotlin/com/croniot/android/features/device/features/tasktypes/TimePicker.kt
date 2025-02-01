@@ -20,13 +20,11 @@ import androidx.compose.ui.unit.dp
 import croniot.models.dto.ParameterTaskDto
 import java.util.Calendar
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePicker(
     parameter: ParameterTaskDto,
-    viewModelTask: ViewModelTaskTypes
+    viewModelTask: ViewModelTaskTypes,
 ) {
     val currentTime = Calendar.getInstance()
 
@@ -36,8 +34,8 @@ fun TimePicker(
             TimePickerState(
                 initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
                 initialMinute = currentTime.get(Calendar.MINUTE),
-                is24Hour = true
-            )
+                is24Hour = true,
+            ),
         )
     }
 
@@ -47,15 +45,14 @@ fun TimePicker(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),  // Ensure Column takes full width
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxWidth(), // Ensure Column takes full width
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            ,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)){
-
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(text = "· ${parameter.name}:", fontWeight = FontWeight.Bold)
             Text(text = "${timePickerState.value.hour}:${timePickerState.value.minute}", fontWeight = FontWeight.Bold)
             Text(text = "h", fontWeight = FontWeight.Bold)

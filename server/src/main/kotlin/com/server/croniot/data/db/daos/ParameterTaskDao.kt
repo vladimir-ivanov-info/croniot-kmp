@@ -5,6 +5,5 @@ import croniot.models.TaskType
 
 interface ParameterTaskDao {
 
-    fun getByUid(parameterTaskUid: Long, taskType: TaskType) : ParameterTask?
-
+    fun getByUid(parameterTaskUid: Long, taskType: TaskType): ParameterTask?
 }
