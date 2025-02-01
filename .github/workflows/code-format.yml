@@ -1,0 +1,49 @@
+---
+name: Code Formatter
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  format:
+    name: Format Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (for JavaScript projects)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Prettier
+        run: npm install -g prettier
+
+      - name: Run Prettier
+        run: |
+          prettier --write \
+            "**/*.js" \
+            "**/*.jsx" \
+            "**/*.ts" \
+            "**/*.tsx" \
+            "**/*.html" \
+            "**/*.css" \
+            "**/*.json" \
+            "**/*.md" \
+            || exit 0
+
+      - name: Commit Changes (if any)
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email \
+            'github-actions@users.noreply.github.com'
+          git add .
+          git commit -m "chore: auto-format code with Prettier" || exit 0
+          git push
