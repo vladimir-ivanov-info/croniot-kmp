@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.Delete
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
@@ -38,7 +40,6 @@ dependencies {
     testImplementation(libs.kotlin.test.junit5)
     implementation(libs.mysql.connector.java)
     implementation(libs.coroutinesCore)
-    //implementation(libs.gson)
     implementation(libs.paho.mqtt)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
@@ -48,7 +49,6 @@ dependencies {
     implementation(libs.ktor.content.negotiation)
     implementation(libs.ktor.cors)
     implementation(libs.logback.classic)
-    //implementation(files(libs.commons)) // Use the file path directly
     implementation(libs.postgresql)
     implementation(libs.hibernate.core)
     implementation(libs.hibernate.entitymanager)
@@ -92,14 +92,6 @@ dependencies {
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit5)
 }
-/*
-kapt {
-    correctErrorTypes = true
-    arguments {
-        arg("dagger.formatGeneratedSource", "disabled")
-        arg("dagger.gradle.incremental", "true")
-    }
-}*/
 
 tasks.test {
     useJUnitPlatform()  // Enables JUnit 5 support
@@ -133,3 +125,25 @@ tasks {
     }
 }
 
+
+// Register a task that deletes directories starting with "KotlinMQTT" in project/server
+tasks.register<Delete>("cleanKotlinMQTTFolders") {
+    group = "pre-build"
+    description = "Removes all folders starting with 'KotlinMQTT' in the croniot/server directory."
+
+    val serverDir = file("../")
+
+    if (serverDir.exists() && serverDir.isDirectory) {
+        val dirsToDelete = serverDir.listFiles { file ->
+            file.isDirectory && file.name.startsWith("KotlinMQTTServer")
+        }?.toList() ?: emptyList()
+
+        delete(dirsToDelete)
+    }
+}
+
+// Ensure that every other task depends on the cleanKotlinMQTTFolders task,
+// so that the deletion happens before any other task runs.
+tasks.matching { it.name != "cleanKotlinMQTTFolders" }.configureEach {
+    dependsOn("cleanKotlinMQTTFolders")
+}

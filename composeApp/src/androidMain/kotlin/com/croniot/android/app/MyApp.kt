@@ -8,6 +8,7 @@ import com.croniot.android.core.data.entities.ParameterEntity
 import com.croniot.android.core.data.entities.ParameterSensorEntity
 import com.croniot.android.core.data.entities.ParameterTaskEntity
 import com.croniot.android.core.data.entities.SensorDataEntity
+import com.croniot.android.core.data.entities.SensorDataRealm
 import com.croniot.android.core.data.entities.SensorTypeEntity
 import com.croniot.android.core.data.entities.TaskEntity
 import com.croniot.android.core.data.entities.TaskStateInfoEntity
@@ -25,7 +26,9 @@ import org.koin.core.context.startKoin
 
 class MyApp : Application() {
 
-    lateinit var realm: Realm
+    companion object {
+        lateinit var realm: Realm //TODO make global in another class
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -43,10 +46,12 @@ class MyApp : Application() {
                 TaskEntity::class,
                 TaskStateInfoEntity::class,
                 KeyValueEntity::class,
+                SensorDataRealm::class
             ),
         )
             .name("croniot.realm")
-            .schemaVersion(1)
+            .schemaVersion(2)
+            .deleteRealmIfMigrationNeeded() // Automatically migrate (not recommended for production)
             .build()
 
         realm = Realm.open(config)

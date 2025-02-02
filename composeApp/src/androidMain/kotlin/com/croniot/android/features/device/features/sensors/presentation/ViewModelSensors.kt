@@ -2,37 +2,23 @@ package com.croniot.android.features.device.features.sensors.presentation
 
 import androidx.lifecycle.ViewModel
 import com.croniot.android.core.data.source.repository.SensorDataRepository
+import croniot.models.dto.SensorDataDto
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 class ViewModelSensors() : ViewModel(), KoinComponent {
 
-    private val sensorDataRepositoryImpl: SensorDataRepository = get()
-    val sensorDataStateFlow = sensorDataRepositoryImpl.getStateFlow()
-}
+    private val SENSOR_DATA_CACHE_SIZE = 50
 
-// TODO experimental
-//    fun listenToMapUpdates(){
-//
-//        Global.mqttBrokerUrl = "tcp://51.77.195.204:1883"
-//
-//        val topic = "/gps"
-//        try{
-//            var mqttClient = MqttClient(
-//                Global.mqttBrokerUrl, Global.mqttClientId + Global.generateUniqueString(
-//                    8
-//                ), null) //TODO (Ver luego) sin null da: org.eclipse.paho.client.mqttv3.MqttPersistenceException
-//
-//            MqttHandler(mqttClient, MqttProcessorMap(), topic)
-//
-//        } catch (e: Exception){
-//            println("error")
-//        }
-//    }
-//
-//    //TODO experimental
-//    fun updateMap(value: String){
-//        viewModelScope.launch {
-//            _gps.emit(value)
-//        }
-//    }
+    private val sensorDataRepositoryImpl: SensorDataRepository = get()
+
+    suspend fun getInitialChartData(sensorUid: Long, deviceUuid: String): List<SensorDataDto> {
+        val listSensorDataDto = sensorDataRepositoryImpl.getLatestSensorData(deviceUuid, sensorUid, SENSOR_DATA_CACHE_SIZE)
+        return listSensorDataDto
+    }
+
+    fun observeLiveSensorData(sensorUid: Long, deviceUuid: String): StateFlow<SensorDataDto> {
+        return sensorDataRepositoryImpl.observeSensorData(deviceUuid, sensorUid)
+    }
+}
