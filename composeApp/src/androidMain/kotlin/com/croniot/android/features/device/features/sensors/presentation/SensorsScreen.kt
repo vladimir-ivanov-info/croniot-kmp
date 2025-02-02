@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.app.Global
-import croniot.models.dto.SensorDataDto
 import com.croniot.android.core.data.entities.SensorDataRealm
+import croniot.models.dto.SensorDataDto
 import java.time.ZonedDateTime
 
 fun SensorDataRealm.toSensorDataDto(): SensorDataDto {
@@ -20,13 +20,13 @@ fun SensorDataRealm.toSensorDataDto(): SensorDataDto {
         deviceUuid = this.deviceUuid,
         sensorTypeUid = this.sensorTypeUid,
         value = this.value,
-        timestamp =  ZonedDateTime.parse(this.timestamp)
+        timestamp = ZonedDateTime.parse(this.timestamp),
     )
 }
 
 @Composable
 fun SensorsScreen(navController: NavController, viewModelSensors: ViewModelSensors) {
-    val sensorTypes = Global.selectedDevice!!.sensors //TODO
+    val sensorTypes = Global.selectedDevice!!.sensors // TODO
 
     Box(
         modifier = Modifier

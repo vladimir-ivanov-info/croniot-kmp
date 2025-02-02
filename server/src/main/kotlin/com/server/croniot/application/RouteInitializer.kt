@@ -22,11 +22,10 @@ class RouteInitializer @Inject constructor(
 ) {
     fun setupRoutes(application: Application) {
         application.routing {
-
             post("/dateTime") {
                 val currentDateTime = LocalDateTime.now()
 
-                val hour = currentDateTime.hour;
+                val hour = currentDateTime.hour
                 val minute = currentDateTime.minute
 
                 val response = "$hour:$minute"
@@ -38,7 +37,7 @@ class RouteInitializer @Inject constructor(
 
             post("/hour") {
                 val currentDateTime = LocalDateTime.now()
-                val hour = currentDateTime.hour;
+                val hour = currentDateTime.hour
                 val response = "$hour"
                 val result = croniot.models.Result(true, response)
                 val responseJson = GsonBuilder().setPrettyPrinting().create().toJson(result)

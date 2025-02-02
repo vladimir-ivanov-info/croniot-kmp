@@ -59,7 +59,7 @@ fun TasksScreen(
         viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
             ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner"),
 
-        ),
+    ),
 ) {
     // Collect tasks and sort them only once
     val tasks by viewModelTasks.tasks.collectAsState()
