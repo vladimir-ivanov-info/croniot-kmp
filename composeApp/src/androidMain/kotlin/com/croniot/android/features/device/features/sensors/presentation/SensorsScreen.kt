@@ -7,17 +7,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.croniot.android.app.Global
+import croniot.models.dto.SensorDataDto
+import com.croniot.android.core.data.entities.SensorDataRealm
+import java.time.ZonedDateTime
+
+fun SensorDataRealm.toSensorDataDto(): SensorDataDto {
+    return SensorDataDto(
+        deviceUuid = this.deviceUuid,
+        sensorTypeUid = this.sensorTypeUid,
+        value = this.value,
+        timestamp =  ZonedDateTime.parse(this.timestamp)
+    )
+}
 
 @Composable
 fun SensorsScreen(navController: NavController, viewModelSensors: ViewModelSensors) {
-    val sensorMap by viewModelSensors.sensorDataStateFlow.collectAsState()
+    val sensorTypes = Global.selectedDevice!!.sensors //TODO
 
-    // TODO observe not map, but map values
     Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -31,10 +41,8 @@ fun SensorsScreen(navController: NavController, viewModelSensors: ViewModelSenso
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
             }
 
-            items(sensorMap.entries.toList()) { entry ->
-                val sensor = entry.key
-                val sensorDataFlow = entry.value
-                SensorItem(sensor, sensorDataFlow)
+            items(sensorTypes.toList()) { sensorType ->
+                SensorItem(sensorType, viewModelSensors)
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
             }
 

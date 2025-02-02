@@ -2,7 +2,11 @@ package com.croniot.android.core.data.entities
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.Index
 import io.realm.kotlin.types.annotations.PrimaryKey
+import kotlinx.serialization.Required
+import java.time.ZonedDateTime
+import java.util.UUID
 
 class AccountEntity : RealmObject {
     @PrimaryKey
@@ -99,8 +103,25 @@ class TaskTypeEntity : RealmObject {
     var realTime: Boolean = false
 }
 
-// Helper class to store key-value pairs for constraints and parametersValues.
 class KeyValueEntity : RealmObject {
     var key: String = ""
     var value: String = ""
+}
+
+open class SensorDataRealm : RealmObject {
+    //TODO remove, in this schema all tables are independent so far
+    @PrimaryKey
+    var id: String = UUID.randomUUID().toString() //TODO check RealmStorageType.UUID
+
+    @Index
+    @Required
+    var deviceUuid: String = ""
+
+    @Index
+    @Required
+    var sensorTypeUid: Long = 0
+
+    var value: String = ""
+
+    var timestamp: String = ZonedDateTime.now().toString()
 }

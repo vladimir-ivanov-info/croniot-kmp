@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.croniot.android.app.Global
 import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.di.NetworkModule
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -39,7 +40,7 @@ class SharedPreferencesViewModel : ViewModel(), KoinComponent {
             NetworkModule.reloadRetrofitRemote()
         }
 
-        viewModelScope.launch {
+        GlobalScope.launch { //TODO
             DataStoreController.saveData(DataStoreController.KEY_SERVER_MODE, newServerMode)
         }
     }
