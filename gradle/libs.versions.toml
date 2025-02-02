@@ -42,7 +42,6 @@ junitJupiter = "5.10.1" # or your desired version
 #kotlin = "1.9.22"
 mysql = "8.0.33"
 #coroutines = "1.7.3"
-#gson = "2.10.1"
 #mqtt = "1.2.5"
 #ktor = "2.1.0"
 #logback = "1.5.3"
