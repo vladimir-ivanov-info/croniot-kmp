@@ -109,9 +109,9 @@ class KeyValueEntity : RealmObject {
 }
 
 open class SensorDataRealm : RealmObject {
-    //TODO remove, in this schema all tables are independent so far
+    // TODO remove, in this schema all tables are independent so far
     @PrimaryKey
-    var id: String = UUID.randomUUID().toString() //TODO check RealmStorageType.UUID
+    var id: String = UUID.randomUUID().toString() // TODO check RealmStorageType.UUID
 
     @Index
     @Required
