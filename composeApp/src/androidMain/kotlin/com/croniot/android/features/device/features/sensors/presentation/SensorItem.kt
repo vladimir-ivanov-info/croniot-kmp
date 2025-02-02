@@ -77,11 +77,10 @@ fun SensorItem(sensor: SensorTypeDto, viewModelSensors: ViewModelSensors) {
                     .align(Alignment.BottomCenter),
             )
 
-            if(sensor.uid.toInt() != 45){ //TODO adapt later, 45 is SensorCurrentTIme
+            if (sensor.uid.toInt() != 45) { // TODO adapt later, 45 is SensorCurrentTIme
                 val latestSensorValues = chartValues.map { it.value.toFloat() }
                 PerformanceChart(sensor, modifier = Modifier, latestSensorValues)
             }
-
         }
     }
 }

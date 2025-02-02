@@ -31,7 +31,7 @@ fun StatefulParameter(
         // viewModelStoreOwner = LocalContext.current as ComponentActivity
         viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
             ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner"),
-        ),
+    ),
 ) {
     val tasks by viewModelTasks.tasks.collectAsState()
     val taskDtoFlow = remember(tasks) {

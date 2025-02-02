@@ -30,8 +30,6 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
     private val sensorSharedFlows = mutableMapOf<SensorTypeDto, MutableSharedFlow<SensorDataDto>>()
     private val _latestSensorData = mutableMapOf<Pair<String, Long>, MutableStateFlow<SensorDataDto>>()
 
-
-
     override suspend fun listenToDeviceSensors(device: DeviceDto) {
         val clientId = Global.mqttClientId + Global.generateUniqueString(8)
         val mqttClient = MqttClient(Global.mqttBrokerUrl, clientId, null)
@@ -44,11 +42,11 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
                     realm.writeBlocking {
                         copyToRealm(
                             SensorDataRealm().apply {
-                                deviceUuid = newSensorData.deviceUuid  // Ensure newSensorData carries the deviceUuid
+                                deviceUuid = newSensorData.deviceUuid // Ensure newSensorData carries the deviceUuid
                                 sensorTypeUid = newSensorData.sensorTypeUid
                                 value = newSensorData.value
                                 timestamp = ZonedDateTime.now().toString()
-                            }
+                            },
                         )
                     }
                 }
@@ -66,7 +64,7 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
                         SensorDataRealm::class,
                         "deviceUuid == $0 AND sensorTypeUid == $1",
                         deviceUuid,
-                        sensorTypeUid
+                        sensorTypeUid,
                     ).asFlow()
                         .map { it.list.maxByOrNull { it.timestamp }?.toSensorDataDto() }
                         .filterNotNull()
@@ -85,13 +83,10 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
                 SensorDataRealm::class,
                 "deviceUuid == $0 AND sensorTypeUid == $1 SORT(timestamp DESC) LIMIT($elements)",
                 deviceUuid,
-                sensorTypeUid
+                sensorTypeUid,
             )
                 .find()
                 .map { it.toSensorDataDto() }
         }
     }
-
-
-
 }

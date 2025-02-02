@@ -27,7 +27,7 @@ import org.koin.core.context.startKoin
 class MyApp : Application() {
 
     companion object {
-        lateinit var realm: Realm //TODO make global in another class
+        lateinit var realm: Realm // TODO make global in another class
     }
 
     override fun onCreate() {
@@ -46,7 +46,7 @@ class MyApp : Application() {
                 TaskEntity::class,
                 TaskStateInfoEntity::class,
                 KeyValueEntity::class,
-                SensorDataRealm::class
+                SensorDataRealm::class,
             ),
         )
             .name("croniot.realm")

@@ -40,7 +40,7 @@ class SharedPreferencesViewModel : ViewModel(), KoinComponent {
             NetworkModule.reloadRetrofitRemote()
         }
 
-        GlobalScope.launch { //TODO
+        GlobalScope.launch { // TODO
             DataStoreController.saveData(DataStoreController.KEY_SERVER_MODE, newServerMode)
         }
     }
