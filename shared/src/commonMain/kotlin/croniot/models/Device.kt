@@ -60,5 +60,5 @@ fun Device.toDto() = DeviceDto(
     description = this.description,
     sensors = this.sensorTypes.map { it.toDto() }.toMutableSet(),
     tasks = this.taskTypes.map { it.toDto() }.toMutableSet(),
-    //lastOnlineMillis = 0, // TODO implement a column in database. Another column for seconds after which the device should be considered offline.
+    // lastOnlineMillis = 0, // TODO implement a column in database. Another column for seconds after which the device should be considered offline.
 )

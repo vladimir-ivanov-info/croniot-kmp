@@ -29,7 +29,7 @@ class LoginUseCase(
                 password = password,
                 deviceUuid = deviceUuid,
                 deviceToken = deviceToken,
-                deviceProperties = DevicePropertiesController.getDeviceDetails()
+                deviceProperties = DevicePropertiesController.getDeviceDetails(),
             )
 
             loginResult = repository.login(request)
@@ -53,7 +53,7 @@ class LoginUseCase(
                             sensorDataRepository.listenToDeviceSensors(device)
                         }
                     }
-                } //TODO else?
+                } // TODO else?
                 //    _uiState.value = _uiState.value.copy(isLoading = false, loggedIn = true)
             } else {
                 /*_uiState.value = _uiState.value.copy(

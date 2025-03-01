@@ -12,5 +12,4 @@ interface SensorDataRepository {
     suspend fun getLatestSensorData(deviceUuid: String, sensorTypeUid: Long, elements: Int): List<SensorData>
 
     fun observeSensorDataInsertions(deviceUuid: String): StateFlow<Long>
-
 }

@@ -11,6 +11,6 @@ fun SensorDataRealm.toAndroidModel(): SensorData {
         deviceUuid = this.deviceUuid,
         sensorTypeUid = this.sensorTypeUid,
         value = this.value,
-        dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.timestampMillis), ZoneOffset.UTC)
+        dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.timestampMillis), ZoneOffset.UTC),
     )
 }

@@ -36,7 +36,7 @@ class LoginViewModel(
         _uiState.value = _uiState.value.copy(password = password)
     }
 
-    fun login() { //TODO move to LoginUseCase
+    fun login() { // TODO move to LoginUseCase
         viewModelScope.launch {
             val email = _uiState.value.email
             val password = _uiState.value.password

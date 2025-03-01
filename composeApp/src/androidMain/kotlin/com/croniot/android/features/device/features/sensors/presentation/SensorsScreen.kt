@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.app.Global
 import com.croniot.android.core.data.entities.SensorDataRealm
-import croniot.models.SensorData
 import croniot.models.dto.SensorDataDto
 import java.time.Instant
 import java.time.ZoneOffset
@@ -23,7 +22,7 @@ fun SensorDataRealm.toSensorDataDto(): SensorDataDto {
         deviceUuid = this.deviceUuid,
         sensorTypeUid = this.sensorTypeUid,
         value = this.value,
-        timestamp = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestampMillis), ZoneOffset.UTC) //TODO store correct time zone anywhere
+        timestamp = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestampMillis), ZoneOffset.UTC), // TODO store correct time zone anywhere
     )
 }
 

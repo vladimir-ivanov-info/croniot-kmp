@@ -86,9 +86,9 @@ object DataStoreController : KoinComponent {
                     .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
                     .setPrettyPrinting()
                     .create()
-                try{
+                try {
                     gson.fromJson(accountJson, Account::class.java)
-                } catch(e: JsonSyntaxException){
+                } catch (e: JsonSyntaxException) {
                     null
                 }
             } else {
@@ -116,9 +116,9 @@ object DataStoreController : KoinComponent {
                     .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
                     .setPrettyPrinting()
                     .create()
-                try{
+                try {
                     gson.fromJson(deviceJson, Device::class.java)
-                } catch(e: JsonSyntaxException){
+                } catch (e: JsonSyntaxException) {
                     null
                 }
             } else {
