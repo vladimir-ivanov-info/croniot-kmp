@@ -66,8 +66,8 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
                 deviceUuid,
                 sensorTypeUid,
             )
-            .find()
-            .map { it.toAndroidModel() }
+                .find()
+                .map { it.toAndroidModel() }
         }
     }
 
@@ -75,11 +75,11 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
         val key = deviceUuid to sensorTypeUid
 
         return _latestSensorData.getOrPut(key) {
-            MutableStateFlow(SensorData(deviceUuid, sensorTypeUid, "0", ZonedDateTime.now())).also { stateFlow -> //TODO the zero
+            MutableStateFlow(SensorData(deviceUuid, sensorTypeUid, "0", ZonedDateTime.now())).also { stateFlow -> // TODO the zero
                 CoroutineScope(Dispatchers.IO).launch {
                     realm.query(
                         SensorDataRealm::class,
-                        "deviceUuid == $0 AND sensorTypeUid == $1 SORT(timestampMillis DESC) LIMIT(1)", //TODO MAX(timestampMillis)
+                        "deviceUuid == $0 AND sensorTypeUid == $1 SORT(timestampMillis DESC) LIMIT(1)", // TODO MAX(timestampMillis)
                         deviceUuid,
                         sensorTypeUid,
                     ).asFlow()
@@ -95,25 +95,24 @@ class SensorDataRepositoryImpl() : SensorDataRepository {
     }
 
     override fun observeSensorDataInsertions(deviceUuid: String): StateFlow<Long> {
-
         val stateFlow = MutableStateFlow<Long>(-1) // Initialize with an invalid value (-1 means no data yet)
 
         CoroutineScope(Dispatchers.IO).launch {
             realm.query<SensorDataRealm>(
                 SensorDataRealm::class,
                 "deviceUuid == $0",
-                deviceUuid
+                deviceUuid,
             )
-            .asFlow()
-            .filter { it is UpdatedResults } // Only trigger on actual updates (ignore initial results)
-            .map { changes ->
-                changes.list.maxByOrNull { it.timestampMillis }?.sensorTypeUid // Get the most recent sensorTypeUid
-            }
-            .filterNotNull() // Ignore null values
-            .distinctUntilChanged() // Avoid emitting the same value multiple times
-            .collect { latestSensorTypeUid ->
-                stateFlow.value = latestSensorTypeUid
-            }
+                .asFlow()
+                .filter { it is UpdatedResults } // Only trigger on actual updates (ignore initial results)
+                .map { changes ->
+                    changes.list.maxByOrNull { it.timestampMillis }?.sensorTypeUid // Get the most recent sensorTypeUid
+                }
+                .filterNotNull() // Ignore null values
+                .distinctUntilChanged() // Avoid emitting the same value multiple times
+                .collect { latestSensorTypeUid ->
+                    stateFlow.value = latestSensorTypeUid
+                }
         }
 
         return stateFlow

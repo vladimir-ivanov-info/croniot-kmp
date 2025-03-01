@@ -8,7 +8,6 @@ import com.croniot.android.domain.model.ParameterTask
 import com.google.gson.GsonBuilder
 import croniot.messages.MessageAddTask
 import croniot.models.Result
-import croniot.models.dto.ParameterTaskDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

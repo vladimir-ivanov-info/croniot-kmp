@@ -34,7 +34,7 @@ fun SensorItem(sensor: SensorType, viewModelSensors: ViewModelSensors) {
     val sensorDataFlow = viewModelSensors.observeLiveSensorData(sensor.uid, deviceUuid)
 
     val sensorData by sensorDataFlow.collectAsState(
-        initial = SensorData(sensor.uid.toString(), sensor.uid, ViewModelTaskTypes.PARAMETER_VALUE_UNDEFINED, ZonedDateTime.now())
+        initial = SensorData(sensor.uid.toString(), sensor.uid, ViewModelTaskTypes.PARAMETER_VALUE_UNDEFINED, ZonedDateTime.now()),
     )
 
     val chartValues = remember { mutableStateListOf<SensorData>() }
@@ -46,7 +46,7 @@ fun SensorItem(sensor: SensorType, viewModelSensors: ViewModelSensors) {
     }
 
     if (chartValues.isEmpty() || chartValues.last().dateTime != sensorData.dateTime) {
-        if(sensorData.value != ViewModelTaskTypes.PARAMETER_VALUE_UNDEFINED){
+        if (sensorData.value != ViewModelTaskTypes.PARAMETER_VALUE_UNDEFINED) {
             chartValues.add(sensorData)
         }
         if (chartValues.size > 50) chartValues.removeAt(0)
@@ -57,7 +57,7 @@ fun SensorItem(sensor: SensorType, viewModelSensors: ViewModelSensors) {
 
     var sensorDataValueUi = sensorData.value
 
-    if(sensorDataValueUi == ViewModelTaskTypes.PARAMETER_VALUE_UNDEFINED){
+    if (sensorDataValueUi == ViewModelTaskTypes.PARAMETER_VALUE_UNDEFINED) {
         sensorDataValueUi = ""
     }
 
@@ -89,7 +89,7 @@ fun SensorItem(sensor: SensorType, viewModelSensors: ViewModelSensors) {
                     .align(Alignment.BottomCenter),
             )
 
-            if (sensor.uid.toInt() != 45) { //TODO we skip the "System time" sensor (sensorId = 45)
+            if (sensor.uid.toInt() != 45) { // TODO we skip the "System time" sensor (sensorId = 45)
                 val latestSensorValues = chartValues.map { it.value.toFloat() }
                 PerformanceChart(sensor, modifier = Modifier, latestSensorValues)
             }

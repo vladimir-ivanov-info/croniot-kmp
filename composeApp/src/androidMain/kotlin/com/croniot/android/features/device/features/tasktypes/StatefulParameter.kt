@@ -19,7 +19,6 @@ import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.util.UtilUi
 import com.croniot.android.domain.model.ParameterTask
 import com.croniot.android.features.device.features.tasks.ViewModelTasks
-import croniot.models.dto.ParameterTaskDto
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
 import org.koin.androidx.compose.koinViewModel

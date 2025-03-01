@@ -10,5 +10,4 @@ object ServerConfig {
 
     var mqttBrokerUrl = "tcp://51.77.195.204:1883"
     val mqttClientId = "AndroidMQTTClient"
-
 }

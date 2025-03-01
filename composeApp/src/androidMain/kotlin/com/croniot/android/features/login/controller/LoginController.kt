@@ -72,7 +72,7 @@ object LoginController : KoinComponent {
             account?.let {
                 for (device in account.devices) {
                     CoroutineScope(Dispatchers.IO).launch {
-                    sensorDataRepository.listenToDeviceSensors(device)
+                        sensorDataRepository.listenToDeviceSensors(device)
                     }
                 }
             }

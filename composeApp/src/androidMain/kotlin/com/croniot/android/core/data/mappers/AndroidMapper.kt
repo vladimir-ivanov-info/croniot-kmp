@@ -18,7 +18,7 @@ fun AccountDto.toAndroidModel(): Account {
         uuid = this.uuid,
         nickname = this.nickname,
         email = this.email,
-        devices = this.devices.map { it.toAndroidModel() }.toMutableSet()
+        devices = this.devices.map { it.toAndroidModel() }.toMutableSet(),
     )
 }
 
@@ -39,7 +39,7 @@ fun TaskTypeDto.toAndroidModel(): TaskType {
         name = this.name,
         description = this.description,
         parameters = this.parameters.map { it.toAndroidModel() }.toMutableSet(),
-        realTime = this.realTime
+        realTime = this.realTime,
     )
 }
 
@@ -48,7 +48,7 @@ fun SensorTypeDto.toAndroidModel(): SensorType {
         uid = this.uid,
         name = this.name,
         description = this.description,
-        parameters = this.parameters.map { it.toAndroidModel() }.toMutableSet()
+        parameters = this.parameters.map { it.toAndroidModel() }.toMutableSet(),
     )
 }
 
@@ -59,7 +59,7 @@ fun ParameterTaskDto.toAndroidModel(): ParameterTask {
         type = this.type,
         unit = this.unit,
         description = this.description,
-        constraints = this.constraints.toMutableMap()  //TODO not actually mutable map, convert to map
+        constraints = this.constraints.toMutableMap(), // TODO not actually mutable map, convert to map
     )
 }
 
@@ -70,7 +70,6 @@ fun ParameterSensorDto.toAndroidModel(): ParameterSensor {
         type = this.type,
         unit = this.unit,
         description = this.description,
-        constraints = this.constraints.toMutableMap() //TODO not actually mutable map, convert to map
+        constraints = this.constraints.toMutableMap(), // TODO not actually mutable map, convert to map
     )
 }
-

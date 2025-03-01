@@ -46,7 +46,7 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
         }
     }
 
-    fun observeMostRecentSensorMillis(deviceUuid: String) : StateFlow<Long> {
+    fun observeMostRecentSensorMillis(deviceUuid: String): StateFlow<Long> {
         return sensorDataRepositoryImpl.observeSensorDataInsertions(deviceUuid)
     }
 }

@@ -6,7 +6,7 @@ data class Device(
     val description: String,
     val sensors: MutableSet<SensorType>,
     val taskTypes: MutableSet<TaskType>,
-){
+) {
     override fun hashCode(): Int {
         return uuid.hashCode() // Ensure `uuid` is always non-null
     }
