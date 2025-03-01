@@ -1,7 +1,7 @@
 package com.croniot.android.core.data.source.remote.retrofit
 
 import ZonedDateTimeAdapter
-import com.croniot.android.app.Global
+import com.croniot.android.core.constants.ServerConfig
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,7 +17,7 @@ object RetrofitClient {
     private var BASE_URL: String
 
     init {
-        BASE_URL = "http://" + Global.SERVER_ADDRESS + ":" + Global.SERVER_PORT
+        BASE_URL = "http://" + ServerConfig.SERVER_ADDRESS + ":" + ServerConfig.SERVER_PORT
     }
 
     private val retrofit: Retrofit = Retrofit.Builder()

@@ -174,7 +174,7 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
 // TODO make this a method in another class
             // Retrieve task name
             val taskName = remember(taskValue.taskTypeUid) {
-                Global.selectedDevice?.tasks?.firstOrNull { it.uid == taskValue.taskTypeUid }?.name.orEmpty() // TODO
+                Global.selectedDevice?.taskTypes?.firstOrNull { it.uid == taskValue.taskTypeUid }?.name.orEmpty() // TODO
             }
 // TODO_end
             Column(

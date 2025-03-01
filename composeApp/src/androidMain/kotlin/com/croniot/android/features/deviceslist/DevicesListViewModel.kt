@@ -3,8 +3,8 @@ package com.croniot.android.features.deviceslist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.core.data.source.repository.AccountRepository
-import croniot.models.dto.DeviceDto
-import kotlinx.coroutines.delay
+import com.croniot.android.core.data.source.repository.SensorDataRepository
+import com.croniot.android.domain.model.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -15,10 +15,10 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
 
     private val accountRepository: AccountRepository = get()
 
-    private val _devices = MutableStateFlow<List<DeviceDto>>(emptyList())
-    val devices: StateFlow<List<DeviceDto>> get() = _devices
+    private val sensorDataRepositoryImpl: SensorDataRepository = get()
 
-    private val _lastOnlineUpdates = mutableMapOf<String, Long>()
+    private val _devices = MutableStateFlow<List<Device>>(emptyList())
+    val devices: StateFlow<List<Device>> get() = _devices
 
     init {
         viewModelScope.launch {
@@ -40,31 +40,13 @@ class DevicesListViewModel() : ViewModel(), KoinComponent {
         _devices.value = emptyList()
     }
 
-    fun startTimer() {
-        viewModelScope.launch {
-            while (true) {
-                delay(1000L) // 1 second delay
-                emitTimerTick()
-            }
-        }
-    }
-
-    private suspend fun emitTimerTick() {
-        val updatedDevices = _devices.value.map { device ->
-            val lastOnlineUpdate = _lastOnlineUpdates[device.uuid] ?: device.lastOnlineMillis
-            device.copy(lastOnlineMillis = lastOnlineUpdate)
-        }
-        _devices.emit(updatedDevices)
-    }
-
-    private fun updateDevices(devices: List<DeviceDto>) {
+    private fun updateDevices(devices: List<Device>) {
         viewModelScope.launch {
             _devices.emit(devices)
         }
     }
 
-    fun updateDeviceOnlineStatus(deviceUuid: String) {
-        val updatedTime = System.currentTimeMillis()
-        _lastOnlineUpdates[deviceUuid] = updatedTime
+    fun observeMostRecentSensorMillis(deviceUuid: String) : StateFlow<Long> {
+        return sensorDataRepositoryImpl.observeSensorDataInsertions(deviceUuid)
     }
 }

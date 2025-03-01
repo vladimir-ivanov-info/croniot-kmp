@@ -12,14 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.croniot.android.domain.model.ParameterTask
 import com.croniot.android.features.device.features.tasktypes.ViewModelTaskTypes
 import com.croniot.android.features.device.features.tasktypes.formatNumber
-import croniot.models.dto.ParameterTaskDto
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Composable
-fun CroniotSlider(currentParameter: ParameterTaskDto, index: Int, viewModelTaskTypes: ViewModelTaskTypes) {
+fun CroniotSlider(currentParameter: ParameterTask, index: Int, viewModelTaskTypes: ViewModelTaskTypes) {
     val minValue = currentParameter.constraints["minValue"]
     val maxValue = currentParameter.constraints["maxValue"]
 
@@ -55,7 +55,7 @@ fun CroniotSlider(currentParameter: ParameterTaskDto, index: Int, viewModelTaskT
 
 @Composable
 fun LabeledSlider(
-    parameter: ParameterTaskDto,
+    parameter: ParameterTask,
     modifier: Modifier = Modifier,
     value: Float,
     onValueChange: (Float) -> Unit,

@@ -17,13 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.croniot.android.domain.model.ParameterTask
 import croniot.models.dto.ParameterTaskDto
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePicker(
-    parameter: ParameterTaskDto,
+    parameter: ParameterTask,
     viewModelTask: ViewModelTaskTypes,
 ) {
     val currentTime = Calendar.getInstance()

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.app.Global
+import com.croniot.android.core.constants.ServerConfig
 import com.croniot.android.core.data.source.remote.retrofit.RetrofitClient
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
@@ -76,8 +77,8 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
                 try {
                     val topic = "/server_to_devices/task_progress_update/${Global.selectedDevice?.uuid}"
                     mqttClient = MqttClient(
-                        Global.mqttBrokerUrl,
-                        Global.mqttClientId + Global.generateUniqueString(8),
+                        ServerConfig.mqttBrokerUrl,
+                        ServerConfig.mqttClientId + Global.generateUniqueString(8),
                         null,
                     )
                     MqttHandler(mqttClient!!, MqttDataProcessorTaskProgress(), topic)
@@ -94,8 +95,8 @@ class ViewModelTasks() : ViewModel(), KoinComponent {
             try {
                 val topic = "/${Global.selectedDevice?.uuid}/newTasks"
                 val mqttClient = MqttClient(
-                    Global.mqttBrokerUrl,
-                    Global.mqttClientId + Global.generateUniqueString(
+                    ServerConfig.mqttBrokerUrl,
+                    ServerConfig.mqttClientId + Global.generateUniqueString(
                         8,
                     ),
                     null,

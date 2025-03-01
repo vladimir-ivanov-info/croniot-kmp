@@ -6,9 +6,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.croniot.android.core.util.StringUtil
+import com.croniot.android.domain.model.Account
+import com.croniot.android.domain.model.Device
 import com.google.gson.GsonBuilder
-import croniot.models.dto.AccountDto
-import croniot.models.dto.DeviceDto
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -35,7 +36,6 @@ object DataStoreController : KoinComponent {
     val KEY_DEVICE_TOKEN = stringPreferencesKey("device_token")
     val KEY_DEVICE_UUID = stringPreferencesKey("device_uuid")
 
-    // val KEY_SERVER_MODE = booleanPreferencesKey("server_mode")
     val KEY_SERVER_MODE = stringPreferencesKey("server_mode")
     val KEY_CURRENT_SCREEN = stringPreferencesKey("current_screen")
 
@@ -61,7 +61,7 @@ object DataStoreController : KoinComponent {
         }
     }
 
-    suspend fun saveAccount(account: AccountDto?) {
+    suspend fun saveAccount(account: Account?) {
         if (account == null) {
             dataStore.edit { preferences ->
                 preferences.remove(KEY_ACCOUNT)
@@ -78,7 +78,7 @@ object DataStoreController : KoinComponent {
         }
     }
 
-    fun getAccount(): Flow<AccountDto?> {
+    fun getAccount(): Flow<Account?> {
         return dataStore.data.map { preferences ->
             val accountJson = preferences[KEY_ACCOUNT]
             if (!accountJson.isNullOrEmpty()) {
@@ -86,14 +86,18 @@ object DataStoreController : KoinComponent {
                     .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
                     .setPrettyPrinting()
                     .create()
-                gson.fromJson(accountJson, AccountDto::class.java)
+                try{
+                    gson.fromJson(accountJson, Account::class.java)
+                } catch(e: JsonSyntaxException){
+                    null
+                }
             } else {
                 null
             }
         }
     }
 
-    suspend fun saveSelectedDevice(selectedDevice: DeviceDto) {
+    suspend fun saveSelectedDevice(selectedDevice: Device) {
         val gson = GsonBuilder()
             .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
             .setPrettyPrinting()
@@ -104,7 +108,7 @@ object DataStoreController : KoinComponent {
         }
     }
 
-    fun getSelectedDevice(): Flow<DeviceDto?> {
+    fun getSelectedDevice(): Flow<Device?> {
         return dataStore.data.map { preferences ->
             val deviceJson = preferences[KEY_SELECTED_DEVICE]
             if (!deviceJson.isNullOrEmpty()) {
@@ -112,7 +116,11 @@ object DataStoreController : KoinComponent {
                     .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
                     .setPrettyPrinting()
                     .create()
-                gson.fromJson(deviceJson, DeviceDto::class.java)
+                try{
+                    gson.fromJson(deviceJson, Device::class.java)
+                } catch(e: JsonSyntaxException){
+                    null
+                }
             } else {
                 null
             }

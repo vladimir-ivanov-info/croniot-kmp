@@ -30,6 +30,12 @@ class MyApp : Application() {
         lateinit var realm: Realm // TODO make global in another class
     }
 
+    suspend fun clearDatabase() {
+        realm.write {
+            deleteAll()
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -50,11 +56,15 @@ class MyApp : Application() {
             ),
         )
             .name("croniot.realm")
-            .schemaVersion(2)
+            .schemaVersion(4)
             .deleteRealmIfMigrationNeeded() // Automatically migrate (not recommended for production)
             .build()
 
         realm = Realm.open(config)
+
+        /*GlobalScope.launch(Dispatchers.IO) {
+            clearDatabase()
+        }*/
 
         startKoin {
             androidLogger()
