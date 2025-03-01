@@ -5,7 +5,6 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.Index
 import io.realm.kotlin.types.annotations.PrimaryKey
 import kotlinx.serialization.Required
-import java.time.ZonedDateTime
 import java.util.UUID
 
 class AccountEntity : RealmObject {
@@ -57,8 +56,6 @@ class ParameterTaskEntity : RealmObject {
 }
 
 class SensorDataEntity : RealmObject {
-    @PrimaryKey
-    var id: String = ""
     var deviceUuid: String = ""
     var sensorTypeUid: Long = 0L
     var value: String = ""
@@ -77,7 +74,7 @@ class TaskEntity : RealmObject {
     @PrimaryKey
     var uid: Long = 0L
     var deviceUuid: String = ""
-    var taskTypeUid: Long = 0L // ✅ Renombrado correctamente
+    var taskTypeUid: Long = 0L
     var parametersValues: RealmList<KeyValueEntity> = realmListOf()
     var stateInfos: RealmList<TaskStateInfoEntity> = realmListOf()
 }
@@ -123,5 +120,5 @@ open class SensorDataRealm : RealmObject {
 
     var value: String = ""
 
-    var timestamp: String = ZonedDateTime.now().toString()
+    var timestampMillis: Long = 0L
 }

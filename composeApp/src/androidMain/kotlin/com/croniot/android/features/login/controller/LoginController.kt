@@ -5,11 +5,11 @@ import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.data.source.repository.AccountRepository
 import com.croniot.android.core.data.source.repository.SensorDataRepository
 import com.croniot.android.core.presentation.UiConstants
+import com.croniot.android.domain.model.Account
 import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
 import com.croniot.android.features.device.features.tasks.ViewModelTasks
 import com.croniot.android.features.deviceslist.DevicesListViewModel
 import com.croniot.android.features.login.usecase.LoginUseCase
-import croniot.models.dto.AccountDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -41,7 +41,6 @@ object LoginController : KoinComponent {
 
         accountRepository.clearAccount()
 
-        // Navigate to login screen
         navController.navigate(UiConstants.ROUTE_LOGIN) {
             popUpTo(0) { inclusive = true } // Clears entire backstack
         }
@@ -73,7 +72,7 @@ object LoginController : KoinComponent {
             account?.let {
                 for (device in account.devices) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        sensorDataRepository.listenToDeviceSensors(device)
+                    sensorDataRepository.listenToDeviceSensors(device)
                     }
                 }
             }
@@ -113,7 +112,7 @@ object LoginController : KoinComponent {
         }
     }
 
-    suspend fun processLoginSuccess(account: AccountDto) {
+    suspend fun processLoginSuccess(account: Account) {
         accountRepository.updateAccount(account)
 
         for (device in account.devices) {

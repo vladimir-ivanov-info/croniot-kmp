@@ -11,17 +11,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.app.Global
+import com.croniot.android.domain.model.TaskType
 import croniot.models.dto.TaskTypeDto
 
 @Composable
 fun TaskTypesScreen(navController: NavController) {
     val selectedDevice = Global.selectedDevice
 
-    var tasks = emptyList<TaskTypeDto>()
+    var tasks = emptyList<TaskType>()
 
-    // if(selectedDevice != null){
     selectedDevice?.let {
-        tasks = selectedDevice.tasks.toList()
+        tasks = selectedDevice.taskTypes.toList()
     }
 
     Box(

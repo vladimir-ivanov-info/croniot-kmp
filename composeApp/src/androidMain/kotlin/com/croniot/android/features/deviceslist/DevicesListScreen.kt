@@ -26,7 +26,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,8 +44,8 @@ import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.presentation.util.GenericAlertDialog
 import com.croniot.android.core.presentation.util.UtilUi
+import com.croniot.android.domain.model.Device
 import com.croniot.android.features.login.controller.LoginController
-import croniot.models.dto.DeviceDto
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -57,10 +59,6 @@ fun DevicesScreen(
 
     BackHandler {
         showLogoutDialog = true
-    }
-
-    LaunchedEffect(Unit) {
-        devicesListViewModel.startTimer()
     }
 
     var expanded by remember { mutableStateOf(false) }
@@ -122,11 +120,11 @@ fun DevicesScreen(
 @Composable
 fun MainContent(navController: NavController, modifier: Modifier = Modifier, devicesListViewModel: DevicesListViewModel) {
     val clientsState by devicesListViewModel.devices.collectAsState() // Observe as state
-    DevicesList(navController, clientsState, modifier) // Pass the observed list
+    DevicesList(navController, clientsState, modifier, devicesListViewModel) // Pass the observed list
 }
 
 @Composable
-fun DevicesList(navController: NavController, items: List<DeviceDto>, modifier: Modifier) {
+fun DevicesList(navController: NavController, items: List<Device>, modifier: Modifier, devicesListViewModel: DevicesListViewModel) {
     Column(modifier = modifier) {
         Text(
             text = "Devices",
@@ -156,13 +154,13 @@ fun DevicesList(navController: NavController, items: List<DeviceDto>, modifier: 
             }
 
             items(items.size) { index ->
-                val client = items.elementAt(index)
+                val device = items.elementAt(index)
                 Row(
                     modifier = Modifier
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    DeviceItem(navController, modifier, client)
+                    DeviceItem(navController, modifier, devicesListViewModel, device)
                 }
             }
         }
@@ -170,13 +168,23 @@ fun DevicesList(navController: NavController, items: List<DeviceDto>, modifier: 
 }
 
 @Composable
-fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceDto) {
+fun DeviceItem(navController: NavController, modifier: Modifier, devicesListViewModel: DevicesListViewModel, device: Device) {
     val coroutineScope = rememberCoroutineScope()
 
-    val currentTime = remember { System.currentTimeMillis() }
+    val mostRecentSensorMillis = devicesListViewModel.observeMostRecentSensorMillis(device.uuid).collectAsState()
 
-    val isDeviceOnline = remember(device.lastOnlineMillis) {
-        currentTime - device.lastOnlineMillis < 5000
+    var lastUpdateTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
+    LaunchedEffect(mostRecentSensorMillis) {
+        if (mostRecentSensorMillis.value > 0) {
+            lastUpdateTime = System.currentTimeMillis()
+        }
+    }
+
+    val isDeviceOnline by remember {
+        derivedStateOf {
+            (System.currentTimeMillis() - lastUpdateTime) < 5000
+        }
     }
 
     val backgroundColor =
@@ -194,7 +202,6 @@ fun DeviceItem(navController: NavController, modifier: Modifier, device: DeviceD
                 Global.selectedDevice = device
 
                 coroutineScope.launch {
-                    // SharedPreferences.saveSelectedDevice(device)
                     DataStoreController.saveSelectedDevice(device)
                 }
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.util.NetworkUtil
+import com.croniot.android.domain.model.ParameterTask
 import com.google.gson.GsonBuilder
 import croniot.messages.MessageAddTask
 import croniot.models.Result
@@ -19,13 +20,12 @@ class ViewModelTaskTypes : ViewModel() {
         const val PARAMETER_VALUE_UNDEFINED: String = "*undefined*"
     }
 
-    private val _parametersValues: MutableMap<ParameterTaskDto, MutableStateFlow<String>> = mutableMapOf()
-    val parametersValues: MutableMap<ParameterTaskDto, MutableStateFlow<String>> get() = _parametersValues
+    private val _parametersValues: MutableMap<ParameterTask, MutableStateFlow<String>> = mutableMapOf()
+    val parametersValues: MutableMap<ParameterTask, MutableStateFlow<String>> get() = _parametersValues
 
     // TODO delegate this to another class, there will be more parameter types in the future
     init {
         val selectedTaskType = Global.selectedTaskType
-        // if(selectedTaskType != null){
         selectedTaskType?.let {
             for (parameter in selectedTaskType.parameters) {
 

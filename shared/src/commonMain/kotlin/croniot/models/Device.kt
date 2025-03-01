@@ -13,7 +13,6 @@ data class Device(
     var account: Account, // Reference to the Account this Device belongs to
     var deviceToken: DeviceToken? = null, // Ensure this property exists
     var deviceProperties: Map<String, String> = emptyMap(),
-
 ) {
     constructor() : this(0, "", "", "", /*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null, mutableMapOf())
 
@@ -61,5 +60,5 @@ fun Device.toDto() = DeviceDto(
     description = this.description,
     sensors = this.sensorTypes.map { it.toDto() }.toMutableSet(),
     tasks = this.taskTypes.map { it.toDto() }.toMutableSet(),
-    lastOnlineMillis = 0, // TODO implement a column in database. Another column for seconds after which the device should be considered offline.
+    //lastOnlineMillis = 0, // TODO implement a column in database. Another column for seconds after which the device should be considered offline.
 )

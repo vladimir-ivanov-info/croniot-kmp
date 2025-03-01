@@ -1,6 +1,6 @@
 package com.croniot.android.core.di
 
-import com.croniot.android.app.Global
+import com.croniot.android.core.constants.ServerConfig
 import org.koin.core.context.GlobalContext.loadKoinModules
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -11,7 +11,7 @@ object NetworkModule {
     private var BASE_URL: String
 
     init {
-        BASE_URL = "http://" + Global.SERVER_ADDRESS + ":" + Global.SERVER_PORT
+        BASE_URL = "http://" + ServerConfig.SERVER_ADDRESS + ":" + ServerConfig.SERVER_PORT
     }
 
     val networkModule = module {
@@ -25,7 +25,7 @@ object NetworkModule {
 
     // TODO observe DataStore
     fun reloadRetrofitRemote() { // TODO change name later
-        val baseUrl = Global.SERVER_ADDRESS_REMOTE
+        val baseUrl = ServerConfig.SERVER_ADDRESS_REMOTE
         loadKoinModules(
             module {
                 single {
@@ -41,7 +41,7 @@ object NetworkModule {
 
     // TODO observe DataStore
     fun reloadRetrofitLocal() {
-        val baseUrl = Global.SERVER_ADDRESS_LOCAL
+        val baseUrl = ServerConfig.SERVER_ADDRESS_LOCAL
         loadKoinModules(
             module {
                 single {

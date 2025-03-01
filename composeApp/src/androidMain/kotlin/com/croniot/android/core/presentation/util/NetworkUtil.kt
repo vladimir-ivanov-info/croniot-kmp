@@ -1,7 +1,6 @@
 package com.croniot.android.core.presentation.util
 
-import com.croniot.android.app.Global.SERVER_ADDRESS
-import com.croniot.android.app.Global.SERVER_PORT
+import com.croniot.android.core.constants.ServerConfig
 import com.google.gson.Gson
 import croniot.models.Result
 import java.io.BufferedReader
@@ -13,7 +12,7 @@ import java.net.URL
 object NetworkUtil {
 
     fun performPostRequestToEndpoint(endPoint: String, postData: String): Result {
-        val url = "http://" + SERVER_ADDRESS + ":" + SERVER_PORT + endPoint
+        val url = "http://" + ServerConfig.SERVER_ADDRESS + ":" + ServerConfig.SERVER_PORT + endPoint
         return performPostRequest(url, postData)
     }
 

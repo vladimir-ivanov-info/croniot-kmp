@@ -31,7 +31,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
-
             implementation("org.maplibre.gl:android-sdk:11.3.0")
             implementation("org.maplibre.gl:android-plugin-annotation-v9:3.0.0")
 
@@ -41,6 +40,10 @@ kotlin {
             implementation("androidx.datastore:datastore-core:1.1.2")
 
             implementation(libs.realm)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.ui.tooling)
+            implementation("androidx.compose.material3:material3:1.3.1")
+
         }
 
         val androidInstrumentedTest by getting {
@@ -73,7 +76,6 @@ kotlin {
             implementation(libs.okhttpLoggingInterceptor)
 
             implementation(libs.mqtt)
-            implementation(libs.composeMaterial3)
 
             // implementation(libs.maplibreSdkExtensions)
             implementation(libs.accompanistPermissions)

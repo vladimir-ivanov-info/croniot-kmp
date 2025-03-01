@@ -1,8 +1,7 @@
 package com.croniot.android.core.util
 
-import com.croniot.android.app.Global
+import com.croniot.android.core.constants.ServerConfig
 import com.croniot.android.core.data.source.local.DataStoreController
-// import com.croniot.android.core.data.source.local.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -27,8 +26,8 @@ object NetworkUtil {
         if (serverAddress == null) {
             resolveAndFollowRedirects("vladimiriot.com") // TODO make constant in Global. Catch error if can't be resolved
         } else {
-            Global.SERVER_ADDRESS_REMOTE = serverAddress
-            Global.mqttBrokerUrl = "tcp://${Global.SERVER_ADDRESS_REMOTE}:1883"
+            ServerConfig.SERVER_ADDRESS_REMOTE = serverAddress
+            ServerConfig.mqttBrokerUrl = "tcp://${ServerConfig.SERVER_ADDRESS_REMOTE}:1883"
         }
     }
 
@@ -46,8 +45,8 @@ object NetworkUtil {
 
                 DataStoreController.saveData(DataStoreController.KEY_SERVER_ADDRESS, ipv4Address)
 
-                Global.SERVER_ADDRESS = ipv4Address
-                Global.mqttBrokerUrl = "tcp://${Global.SERVER_ADDRESS_REMOTE}:1883"
+                ServerConfig.SERVER_ADDRESS = ipv4Address
+                ServerConfig.mqttBrokerUrl = "tcp://${ServerConfig.SERVER_ADDRESS_REMOTE}:1883"
             }
         }
     }
