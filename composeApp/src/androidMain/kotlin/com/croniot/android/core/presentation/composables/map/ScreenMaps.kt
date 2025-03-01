@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.croniot.android.app.Global
+import com.croniot.android.core.constants.ServerConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 // TODO after getting Google Maps API token
@@ -69,12 +70,11 @@ fun Login2(navController: NavController, modifier: Modifier) {
                 .size(200.dp)
                 .align(Alignment.CenterHorizontally)
                 .clickable { // for testing
-                    Global.SERVER_ADDRESS = Global.SERVER_ADDRESS_REMOTE
+                    ServerConfig.SERVER_ADDRESS = ServerConfig.SERVER_ADDRESS_REMOTE
                 },
             contentAlignment = Alignment.Center,
         ) {
         }
-
         // MAP
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.util.UtilUi
+import com.croniot.android.domain.model.ParameterTask
 import com.croniot.android.features.device.features.tasks.ViewModelTasks
 import croniot.models.dto.ParameterTaskDto
 import croniot.models.dto.TaskDto
@@ -25,7 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun StatefulParameter(
-    parameter: ParameterTaskDto,
+    parameter: ParameterTask,
     viewModelTask: ViewModelTaskTypes,
     viewModelTasks: ViewModelTasks = koinViewModel<ViewModelTasks>(
         // viewModelStoreOwner = LocalContext.current as ComponentActivity
@@ -42,7 +43,6 @@ fun StatefulParameter(
 
     val taskDto = taskDtoFlow?.value
 
-    // if(taskDto != null){
     taskDto?.let {
         var latestTaskInfoState = taskDto.getLastState()
 

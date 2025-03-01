@@ -30,7 +30,6 @@ fun DeviceDto.toRealmEntity(): DeviceEntity {
     entity.description = description
     entity.sensors = sensors.map { it.toRealmEntity() }.toRealmList()
     entity.taskTypes = tasks.map { it.toRealmEntity() }.toRealmList()
-    entity.lastOnlineMillis = lastOnlineMillis
     return entity
 }
 
@@ -40,7 +39,6 @@ fun DeviceEntity.toDto() = DeviceDto(
     description = description,
     sensors = sensors.map { it.toDto() }.toMutableSet(),
     tasks = taskTypes.map { it.toDto() }.toMutableSet(),
-    lastOnlineMillis = lastOnlineMillis,
 )
 
 fun TaskTypeDto.toRealmEntity(): TaskTypeEntity {
@@ -130,7 +128,7 @@ fun TaskStateInfoEntity.toDto() = TaskStateInfoDto(
     deviceUuid = deviceUuid,
     taskTypeUid = taskTypeUid,
     taskUid = taskUid,
-    dateTime = ZonedDateTime.now(), // TODO
+    dateTime = ZonedDateTime.now(),
     state = state,
     progress = progress,
     errorMessage = errorMessage,
@@ -172,11 +170,10 @@ fun ParameterEntity.toDto() = ParameterDto(
 
 fun SensorDataDto.toRealmEntity(): SensorDataEntity {
     val entity = SensorDataEntity()
-    entity.id = "$deviceUuid-$timestamp"
     entity.deviceUuid = deviceUuid
     entity.sensorTypeUid = sensorTypeUid
     entity.value = value
-    entity.timestamp = timestamp.toEpochSecond() * 1000
+    entity.timestamp = timestamp.toInstant().toEpochMilli()
     return entity
 }
 
@@ -184,8 +181,7 @@ fun SensorDataEntity.toDto() = SensorDataDto(
     deviceUuid = deviceUuid,
     sensorTypeUid = sensorTypeUid,
     value = value,
-    timestamp = ZonedDateTime.now(), // TODO
-
+    timestamp = ZonedDateTime.now(),
 )
 
 fun ParameterSensorDto.toRealmEntity(): ParameterSensorEntity {
@@ -217,12 +213,11 @@ fun SensorTypeEntity.toDto() = SensorTypeDto(
     uid = uid,
     name = name,
     description = description,
-    // parameters = parameters.map { it.toDto() }.toMutableSet()
     parameters = parameters.map { it.toDto() }.toMutableSet(),
 )
 
 fun <T> List<T>.toRealmList(): RealmList<T> {
     val realmList = realmListOf<T>()
-    realmList.addAll(this) // ✅ Agrega los elementos correctamente
+    realmList.addAll(this)
     return realmList
 }

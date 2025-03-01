@@ -20,10 +20,10 @@ import androidx.navigation.NavController
 import com.croniot.android.app.Global
 import com.croniot.android.core.presentation.UiConstants
 import com.croniot.android.core.presentation.util.UtilUi
-import croniot.models.dto.TaskTypeDto
+import com.croniot.android.domain.model.TaskType
 
 @Composable
-fun TaskItem(navController: NavController, task: TaskTypeDto) {
+fun TaskItem(navController: NavController, task: TaskType) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
