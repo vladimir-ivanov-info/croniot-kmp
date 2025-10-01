@@ -6,5 +6,5 @@ data class ParameterSensorDto(
     var type: String,
     var unit: String,
     var description: String,
-    var constraints: MutableMap<String, String>,
+    var constraints: /*Mutable*/Map<String, String>,
 )

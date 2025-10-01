@@ -7,27 +7,40 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.realm)
+    alias(libs.plugins.realm) //apply false //TODO ver qué singifica "apply false"
+
+    // id("com.karumi.shot")
+    id("kotlin-parcelize")
 }
+
+
 
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            //jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
-    jvm("desktop")
+   // jvm("desktop")
     
     sourceSets {
         all {
             languageSettings.languageVersion = "2.0" //Refers to the language features you want to enable. It is expressed as "1.8", "1.9", "2.0", etc., and not as a full compiler version number.
         }
 
-        val desktopMain by getting
+       // val desktopMain by getting
+
+
 
         androidMain.dependencies {
+
+
+
+            //implementation("org.jetbrains.kotlin:kotlin-stdlib")
+
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
@@ -44,11 +57,36 @@ kotlin {
             implementation(libs.compose.ui.tooling)
             implementation("androidx.compose.material3:material3:1.3.1")
 
+            implementation(libs.koin.androidx.compose)
+
+
         }
 
-        val androidInstrumentedTest by getting {
+       /* val androidInstrumentedTest by getting {
             dependencies {
                 implementation(libs.composeUiTestJunit4)
+
+                implementation("com.karumi:shot-android:6.1.0")
+                //implementation("com.karumi:shot-compose:6.1.0")
+
+               // implementation(libs.androidx.test.runner)
+               // implementation(libs.androidx.test.ext.junit)
+                //implementation("androidx.test:runner:1.6.2")
+               // implementation("androidx.test.ext:junit:1.2.1")
+                implementation(libs.composeUiTestJunit4)
+                //debugImplementation(libs.composeUiTestManifest)
+
+            }
+        }*/
+        val androidInstrumentedTest by getting {
+            dependencies {
+                // Compose test rule (alineado con tu stack)
+                implementation("androidx.compose.ui:ui-test-junit4:1.9.1")
+
+                // Shot (único artefacto necesario para screenshots)
+                implementation("com.karumi:shot-android:6.1.0")
+
+                // (No declares runner/ext aquí: vendrán transitivamente y evitas conflictos)
             }
         }
 
@@ -61,11 +99,11 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(projects.shared)
 
-            implementation(libs.koinAndroid)
-            implementation(libs.koinCompose)
+            implementation(libs.koin.android)
+            implementation(libs.koin.compose)
             implementation(libs.navigationCompose)
             implementation(libs.coreKtx)
-            implementation(project.dependencies.platform(libs.kotlinBom))
+            //implementation(project.dependencies.platform(libs.kotlinBom))
             implementation(libs.lifecycleRuntime)
             implementation(libs.lifecycleViewModelCompose)
             implementation(libs.coroutinesCore)
@@ -82,13 +120,14 @@ kotlin {
 
             implementation(libs.realm)
         }
-        desktopMain.dependencies {
+        /*desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-        }
+        }*/
 
     }
 }
 
+apply(plugin = "shot")
 android {
     namespace = "com.croniot.android"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -104,7 +143,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.karumi.shot.ShotTestRunner"
     }
     packaging {
         resources {
@@ -112,13 +152,14 @@ android {
         }
     }
     buildTypes {
+        //release {}
         getByName("release") {
             isMinifyEnabled = false
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -126,14 +167,39 @@ android {
    // buildToolsVersion = "35.0.0 rc4"
     buildToolsVersion = "35.0.0"
     ndkVersion = "27.0.11902837 rc2"
-    dependencies {
+    /*dependencies {
         debugImplementation(compose.uiTooling)
+    }*/
+
+    testOptions {
+        animationsDisabled = true
     }
 }
 dependencies {
-    testImplementation(libs.junit.jupiter)
-}
+    implementation(projects.client.features.login)
 
+    implementation(projects.client.presentation)
+    implementation(projects.client.core)
+    implementation(projects.client.data) //TODO remove later and access to RealmRef through domain module
+    implementation(projects.client.domain)
+
+    implementation(projects.client.features.login)
+    implementation(projects.client.features.sensors)
+    implementation(projects.client.features.tasktypes)
+    implementation(projects.client.core)
+
+
+    testImplementation(libs.junit.jupiter)
+
+    //androidTestImplementation("androidx.compose.ui:ui-test-junit4:6.1.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.9.1")
+
+    //debugImplementation("androidx.compose.ui:ui-test-manifest:6.1.0")
+
+    debugImplementation(compose.uiTooling)
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.9.1")
+}
+/*
 compose.desktop {
     application {
         mainClass = "MainKt"
@@ -145,4 +211,4 @@ compose.desktop {
         }
     }
 }
-
+*/

@@ -14,7 +14,7 @@
         <property name="uid" column="uid"  index="idx_sensortype_uid"/>
         <property name="name" column="name"/>
         <property name="description" column="description"/>
-
+<!--
         <set name="parameters" table="parameter_sensor" cascade="all-delete-orphan" inverse="true" lazy="false" fetch="join">
             <cache usage="read-write" region="parameters_parameter_sensor_cache"/>
             <key>
@@ -22,9 +22,23 @@
             </key>
             <one-to-many class="croniot.models.ParameterSensor" />
         </set>
+-->
+        <list name="parameters"
+            table="parameter_sensor"
+            cascade="all-delete-orphan"
+            inverse="false"
+            lazy="true"
+            fetch="select">
+            <cache usage="read-write" region="parameters_parameter_sensor_cache"/>
+            <key column="sensor_type"/>
+            <list-index column="param_order"/>
+            <one-to-many class="croniot.models.ParameterSensor"/>
+        </list>
 
 
-      <!--  <many-to-one name="device" class="croniot.models.Device" not-null="false" column="device" index="idx_sensortype_device"/> -->
+
+
+        <!--  <many-to-one name="device" class="croniot.models.Device" not-null="false" column="device" index="idx_sensortype_device"/> -->
         <many-to-one name="device" class="croniot.models.Device" column="device"/>
     </class>
 </hibernate-mapping>

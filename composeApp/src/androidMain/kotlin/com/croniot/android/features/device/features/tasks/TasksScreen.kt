@@ -1,6 +1,5 @@
 package com.croniot.android.features.device.features.tasks
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,31 +38,34 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
 import com.croniot.android.R
-import com.croniot.android.app.Global
-import com.croniot.android.core.presentation.util.UtilUi
+//import com.croniot.android.app.Global
+//import com.croniot.android.core.presentation.util.UtilUi
 import com.croniot.android.core.util.DateTimeUtil
+import com.croniot.client.presentation.constants.UtilUi
 import croniot.models.TaskState
-import croniot.models.dto.TaskDto
-import croniot.models.dto.TaskStateInfoDto
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.androidx.compose.koinViewModel
 
+import com.croniot.client.core.models.Task
+import com.croniot.client.core.models.TaskStateInfo
+
+
 @Composable
 fun TasksScreen(
+    selectedDeviceUuid: String,
     navController: NavController,
-    viewModelTasks: ViewModelTasks = koinViewModel<ViewModelTasks>(
-        // viewModelStoreOwner = LocalContext.current as ComponentActivity
-        viewModelStoreOwner = LocalActivity.current as? ViewModelStoreOwner
-            ?: throw IllegalStateException("LocalActivity is not a ViewModelStoreOwner"),
-
-    ),
+    tasksViewModel: TasksViewModel = koinViewModel(),
 ) {
+
+    LaunchedEffect(Unit){
+        tasksViewModel.initialize(selectedDeviceUuid)
+    }
+
     // Collect tasks and sort them only once
-    val tasks by viewModelTasks.tasks.collectAsState()
-    val sortedTasks = remember(tasks) { tasks.toList().sortedByDescending { it.value.getLastState().dateTime } }
+    val tasks by tasksViewModel.tasks.collectAsState()
+    val sortedTasks = remember(tasks) { tasks.toList().sortedByDescending { it.value.getMostRecentState().dateTime } }
 
     // Batch size management
     var batchSize by remember { mutableStateOf(10) } // Initial batch size
@@ -95,8 +97,9 @@ fun TasksScreen(
 
             // Display only the current batch
             itemsIndexed(sortedTasks.take(batchSize)) { index, taskFlow ->
+
                 GenericTaskItem(
-                    navController = navController,
+                    tasksViewModel = tasksViewModel,
                     taskStateFlow = taskFlow,
                     onTaskClicked = { taskToShow ->
                         // Handle click events for tasks
@@ -112,14 +115,26 @@ fun TasksScreen(
 }
 
 @Composable
-fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskDto>, onTaskClicked: (taskClicked: TaskDto) -> Unit) {
+fun GenericTaskItem(
+    tasksViewModel: TasksViewModel,
+    taskStateFlow: StateFlow<Task>,
+    onTaskClicked: (taskClicked: Task) -> Unit)
+{
     val taskValue by taskStateFlow.collectAsState()
+
+    val deviceUuid = taskValue.deviceUuid
+    val taskUid = taskValue.taskTypeUid
+
+    val taskType = tasksViewModel.getTaskType(deviceUuid, taskUid)
+
+    val taskName = taskType?.name ?: "[task_name]"
 
     val stateIconPainter: Painter
     var stateIconColor = Color.Black
 
     val stateInfos = taskValue.stateInfos.toList().sortedByDescending { it.dateTime }
-    var latestStateInfo: TaskStateInfoDto? = null
+    //var latestStateInfo: TaskStateInfoDto? = null
+    var latestStateInfo: TaskStateInfo? = null
     var latestStateInfoProgress = 0.0
 
     // if(stateInfos.isNotEmpty()){ //TODO not necessary, every task has at least 1 state
@@ -172,10 +187,19 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
             elevation = CardDefaults.elevatedCardElevation(),
         ) {
 // TODO make this a method in another class
+
+           // val selectedDevice = localDataRepository.getSelectedDevice()//.collectAsState(null)
+
             // Retrieve task name
-            val taskName = remember(taskValue.taskTypeUid) {
-                Global.selectedDevice?.taskTypes?.firstOrNull { it.uid == taskValue.taskTypeUid }?.name.orEmpty() // TODO
-            }
+//            val taskName = remember(taskValue.taskTypeUid) {
+//              //  Global.selectedDevice?.taskTypes?.firstOrNull { it.uid == taskValue.taskTypeUid }?.name.orEmpty() // TODO
+//                /*selectedDevice.value?.let { device ->
+//                    device.taskTypes.firstOrNull{ it.uid == taskValue.taskTypeUid }?.name.orEmpty()
+//                }*/
+//
+//                selectedDevice.taskTypes.
+//                firstOrNull{ it.uid == taskValue.taskTypeUid }?.name.orEmpty()
+//            }
 // TODO_end
             Column(
                 modifier = Modifier
@@ -206,7 +230,9 @@ fun GenericTaskItem(navController: NavController, taskStateFlow: StateFlow<TaskD
                     }
 
                     Text(
-                        text = taskName,
+                        text = taskName ?: "[task_name]",
+                        //text = "[task_name]",
+                        //text = viewModelTasks.getTaskType(),
                         fontSize = UtilUi.TEXT_SIZE_3,
                         modifier = Modifier
                             .fillMaxWidth()

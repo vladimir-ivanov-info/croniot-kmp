@@ -31,8 +31,8 @@ class TaskService @Inject constructor(
         return taskRepository.getLazy(deviceUuid, taskTypeUid, taskUid)
     }
 
-    fun createTaskState(taskStateInfo: TaskStateInfo) {
-        taskRepository.createTaskState(taskStateInfo)
+    fun createTaskState(task: Task, taskStateInfo: TaskStateInfo) {
+        taskRepository.createTaskState(task, taskStateInfo)
     }
 
     fun create(device: Device, taskType: TaskType): Task {
@@ -64,11 +64,11 @@ class TaskService @Inject constructor(
                     }
 
                     val taskUid = Random.nextLong(1, 10000001) // TODO -> duplicate task in TaskDaoImpl
-                    val task = Task(taskUid, parametersValuesForDatabase, taskType, mutableSetOf())
+                    val task = Task(taskUid, parametersValuesForDatabase, taskType, mutableListOf())
                     taskRepository.create(task) // 7-47 ms
 
                     val taskStateInfo = TaskStateInfo(ZonedDateTime.now(), TaskState.CREATED, 0.0, "", task) // TODO check if taskConfiguration.id gets updated from 0 to actual value
-                    taskRepository.createState(taskStateInfo)
+                    taskRepository.createState(task, taskStateInfo)
 
                     CoroutineScope(Dispatchers.IO).launch {
                         MqttController.sendNewTask(deviceUuid, task, taskStateInfo)
@@ -90,5 +90,12 @@ class TaskService @Inject constructor(
         val tasks = taskRepository.getAll(deviceUuid)
         val tasksDto = tasks.map { it.toDto() }.toMutableList()
         return tasksDto
+    }
+
+    fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long){
+        //TODO check if correct format and device/task type exist
+        CoroutineScope(Dispatchers.IO).launch {
+            MqttController.requestTaskStateInfoSync(deviceUuid, taskTypeUid)
+        }
     }
 }

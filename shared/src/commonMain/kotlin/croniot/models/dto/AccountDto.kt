@@ -4,5 +4,5 @@ data class AccountDto(
     var uuid: String,
     var nickname: String,
     var email: String,
-    var devices: MutableSet<DeviceDto>,
+    var devices: /*Mutable*/List<DeviceDto>,
 )

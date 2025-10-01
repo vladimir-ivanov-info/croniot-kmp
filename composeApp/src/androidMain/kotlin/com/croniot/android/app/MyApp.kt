@@ -10,19 +10,24 @@ import com.croniot.android.core.data.entities.ParameterTaskEntity
 import com.croniot.android.core.data.entities.SensorDataEntity
 import com.croniot.android.core.data.entities.SensorDataRealm
 import com.croniot.android.core.data.entities.SensorTypeEntity
-import com.croniot.android.core.data.entities.TaskEntity
-import com.croniot.android.core.data.entities.TaskStateInfoEntity
+import com.croniot.android.core.data.entities.TaskRealm
+import com.croniot.android.core.data.entities.TaskStateInfoRealm
 import com.croniot.android.core.data.entities.TaskTypeEntity
-import com.croniot.android.core.di.DependencyInjectionModule
-import com.croniot.android.core.di.NetworkModule
-import com.croniot.android.features.device.features.sensors.di.SensorsModule
-import com.croniot.android.features.login.di.LoginModule
+import com.croniot.android.core.di.MainDIModule
+import com.croniot.client.data.source.remote.NetworkModule
+import com.croniot.client.features.login.di.LoginModule
 import com.croniot.android.features.registeraccount.di.RegisterAccountModule
+import com.croniot.client.data.di.dataModule
+import com.croniot.client.data.source.local.RealmRef
+import com.croniot.client.domain.di.domainDiModule
+import com.croniot.client.features.sensors.di.SensorsModule
+import com.croniot.client.features.tasktypes.di.taskTypeModule
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+
 
 class MyApp : Application() {
 
@@ -49,8 +54,8 @@ class MyApp : Application() {
                 ParameterSensorEntity::class,
                 ParameterTaskEntity::class,
                 SensorDataEntity::class,
-                TaskEntity::class,
-                TaskStateInfoEntity::class,
+                TaskRealm::class,
+                TaskStateInfoRealm::class,
                 KeyValueEntity::class,
                 SensorDataRealm::class,
             ),
@@ -62,6 +67,8 @@ class MyApp : Application() {
 
         realm = Realm.open(config)
 
+        RealmRef.realmRef = realm
+
         /*GlobalScope.launch(Dispatchers.IO) {
             clearDatabase()
         }*/
@@ -69,12 +76,17 @@ class MyApp : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MyApp)
+            allowOverride(true)
             modules(
-                DependencyInjectionModule.dependencyInjectionModule,
+                MainDIModule.mainDIModule,
                 NetworkModule.networkModule,
                 RegisterAccountModule.registerAccountModule,
                 LoginModule.loginModule,
                 SensorsModule.sensorsModule,
+                dataModule,
+                domainDiModule,
+
+                taskTypeModule
             )
         }
     }

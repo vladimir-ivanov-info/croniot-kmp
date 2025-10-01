@@ -26,9 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.croniot.android.core.presentation.SharedPreferencesViewModel
-import com.croniot.android.core.presentation.UiConstants
-import com.croniot.android.core.presentation.util.UtilUi
+import com.croniot.client.presentation.constants.UiConstants
+import com.croniot.client.presentation.constants.UtilUi
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +73,6 @@ fun ConfigurationScreen(navController: NavController) {
         },
         content = { innerPadding ->
             ConfigurationScreenBody(navController, innerPadding)
-            // Content goes here
         },
     )
 }
@@ -95,11 +93,12 @@ fun ConfigurationScreenBody(navController: NavController, innerPadding: PaddingV
 }
 
 @Composable
-fun Configuration(navController: NavController, modifier: Modifier, sharedPreferencesViewModel: SharedPreferencesViewModel = koinViewModel()) {
-    val configurationViewModel: ConfigurationViewModel = koinViewModel()
-    val foregroundServiceEnabled by configurationViewModel.foregroundServiceEnabled.collectAsState()
+fun Configuration(navController: NavController,
+                  modifier: Modifier,
+                  configurationScreenViewModel: ConfigurationScreenViewModel = koinViewModel()) {
+    val foregroundServiceEnabled by configurationScreenViewModel.foregroundServiceEnabled.collectAsState()
 
-    val useRemoteServer by sharedPreferencesViewModel.serverMode.collectAsState()
+    val useRemoteServer by configurationScreenViewModel.serverMode.collectAsState()
     Column(modifier = modifier) {
         Box(
             modifier = Modifier
@@ -116,7 +115,7 @@ fun Configuration(navController: NavController, modifier: Modifier, sharedPrefer
                 modifier = Modifier.align(Alignment.CenterEnd),
                 checked = foregroundServiceEnabled,
                 onCheckedChange = {
-                    configurationViewModel.setConfigurationForegoundService(it)
+                    configurationScreenViewModel.setConfigurationForegoundService(it)
                 },
             )
         }
@@ -136,8 +135,7 @@ fun Configuration(navController: NavController, modifier: Modifier, sharedPrefer
                 modifier = Modifier.align(Alignment.CenterEnd),
                 checked = useRemoteServer == "remote", // TODO use constants
                 onCheckedChange = {
-                    // configurationViewModel.setConfigurationForegoundService(context, it)
-                    sharedPreferencesViewModel.changeServerMode()
+                    configurationScreenViewModel.changeServerMode()
                 },
             )
         }

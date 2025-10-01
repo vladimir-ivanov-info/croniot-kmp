@@ -29,7 +29,7 @@
 
         <!-- Map to Task entity -->
         <many-to-one name="taskType" class="croniot.models.TaskType" column="task_type" not-null="true"/>
-        <property name="taskTypeId" column="task_type" insert="false" update="false"/> <!-- In order to fetch ParameterTask without looking for ParameterTask -->
+        <property name="taskTypeId" column="task_type" insert="false" update="false"/>  <!-- In order to fetch ParameterTask without looking for ParameterTask -->
 
 
 

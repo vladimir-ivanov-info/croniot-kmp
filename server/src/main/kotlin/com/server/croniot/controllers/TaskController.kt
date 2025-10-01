@@ -6,6 +6,7 @@ import com.server.croniot.services.TaskService
 import com.server.croniot.services.TaskTypeService
 import croniot.messages.MessageAddTask
 import croniot.messages.MessageFactory
+import croniot.messages.MessageRequestTaskStateInfoSync
 import croniot.models.TaskProgressUpdate
 import croniot.models.TaskStateInfo
 import croniot.models.toDto
@@ -34,6 +35,7 @@ class TaskController @Inject constructor(
             val taskProgress = taskProgressUpdate.progress
             val taskState = taskProgressUpdate.state
             val errorMessage = taskProgressUpdate.errorMessage
+            //val messageSource = taskProgressUpdate.messageSource
 
             val device = deviceService.getByUuid(deviceUuid)
 
@@ -53,9 +55,10 @@ class TaskController @Inject constructor(
                                     taskStateEnum,
                                     taskProgress,
                                     errorMessage,
-                                    task,
+                                    task//,
+                                    //messageSource
                                 )
-                                taskService.createTaskState(stateInfo) // 5-7 ms
+                                taskService.createTaskState(task, stateInfo) // 5-7 ms
 
                                 val stateInfoDto = stateInfo.toDto() // 1816 ms
                                 println("Time task state: ${stateInfoDto.state} ${ZonedDateTime.now()}")
@@ -75,7 +78,7 @@ class TaskController @Inject constructor(
                                 task,
                             )
 
-                            taskService.createTaskState(stateInfo) // 5-7 ms
+                            taskService.createTaskState(task, stateInfo) // 5-7 ms
 
                             val stateInfoDto = stateInfo.toDto() // 1816 ms
                             CoroutineScope(Dispatchers.IO).launch {
@@ -86,7 +89,7 @@ class TaskController @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.printStackTrace() //org.hibernate.NonUniqueResultException: Query did not return a unique result: 2 results were returned
         }
     }
 
@@ -110,5 +113,16 @@ class TaskController @Inject constructor(
         } else {
             call.respond(HttpStatusCode.NotFound, "No configurations found for UUID: $deviceUuid")
         }
+    }
+
+    suspend fun requestTaskStateInfoSync(call: ApplicationCall){
+        val message = call.receiveText()
+        val messageAddTask = MessageFactory.fromJson<MessageRequestTaskStateInfoSync>(message)
+
+        val result = taskService.requestTaskStateInfoSync(
+            messageAddTask.deviceUuid,
+            messageAddTask.taskTypeUid.toLong()
+        )
+        call.respond(result)
     }
 }

@@ -15,14 +15,27 @@
         <property name="nickname" column="nickname" unique="true"/>
         <property name="email" column="email" unique="true"/>
         <property name="password" column="password"/>
-
+<!--
     <set name="devices" table="device" cascade="save-update" inverse="true" lazy="false" fetch="join">
         <cache usage="read-write" region="devices_cache"/>
         <key>
-            <column name="account"/>  <!-- Change this to refer to the account column in the Device table -->
+            <column name="account"/>
         </key>
         <one-to-many class="croniot.models.Device" />
     </set>
+ -->
+        <list name="devices"
+            table="device"
+            cascade="save-update"
+            inverse="false"
+            lazy="true"
+            fetch="select">
+            <cache usage="read-write" region="devices_cache"/>
+            <key column="account"/>
+            <list-index column="device_order"/>   <!-- columna INT en la tabla device -->
+            <one-to-many class="croniot.models.Device"/>
+        </list>
+
 
     </class>
 </hibernate-mapping>

@@ -9,16 +9,20 @@ data class Task(
     var parametersValues: MutableMap<ParameterTask, String>,
     @Transient
     var taskType: TaskType,
+
+    /*@Transient
+    var stateInfos: MutableSet<TaskStateInfo>,*/
+
     @Transient
-    var stateInfos: MutableSet<TaskStateInfo>,
+    var stateInfos: MutableList<TaskStateInfo>,
 ) {
 
-    constructor() : this(0, 0, mutableMapOf(), TaskType(), mutableSetOf())
+    constructor() : this(0, 0, mutableMapOf(), TaskType(), mutableListOf())
     constructor(
         uid: Long,
         parametersValues: MutableMap<ParameterTask, String>,
         taskType: TaskType,
-        stateInfos: MutableSet<TaskStateInfo>,
+        stateInfos: MutableList<TaskStateInfo>,
     ) :
         this(0, uid, parametersValues, taskType, stateInfos)
 

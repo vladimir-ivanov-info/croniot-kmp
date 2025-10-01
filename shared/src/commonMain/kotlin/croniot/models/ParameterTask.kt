@@ -3,6 +3,22 @@ package croniot.models
 import croniot.models.dto.ParameterTaskDto
 import java.util.*
 
+/*
+class ParameterTask(
+    override var id: Long = 0,
+    override var uid: Long = 0,
+    override var name: String = "",
+    override var type: String = "",
+    override var unit: String = "",
+    override var description: String = "",
+    override var constraints: MutableMap<String, String> = mutableMapOf(),
+    //  @Transient
+    var taskTypeId: Long? = null, // New property
+    //  @Transient
+    var taskType: TaskType? = null,
+
+    ) :*/
+
 class ParameterTask(
     id: Long,
     uid: Long,
@@ -16,9 +32,10 @@ class ParameterTask(
     //  @Transient
     var taskType: TaskType? = null,
 
-) : Parameter(id = id, uid = uid, name = name, type = type, unit = unit, description = description, constraints = constraints) {
+) :
+    Parameter(id = id, uid = uid, name = name, type = type, unit = unit, description = description, constraints = constraints) {
 
-    constructor() : this(0, 0, "", "", "", "", mutableMapOf(), null, null)
+    constructor() : this(0, 0, "", "", "", "", mutableMapOf(), /*null,*/ null)
 
     constructor(uid: Long, name: String, type: String, unit: String, description: String, constraints: MutableMap<String, String>, taskType: TaskType) :
         this(0, uid, name, type, unit, description, constraints, taskType.id, taskType)

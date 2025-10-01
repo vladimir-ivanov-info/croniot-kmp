@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.Delete
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinJvm)
@@ -10,6 +11,17 @@ plugins {
     kotlin("kapt")
 }
 
+kotlin{
+   // jvmToolchain(21)
+    jvmToolchain(17)
+
+    // Sustituye kotlinOptions por el nuevo DSL
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+        // freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -19,11 +31,15 @@ java {
 group = "com.croniot.server"
 version = "1.0.0"
 application {
-    mainClass.set("MainKt")
+    //mainClass.set("MainKt")
+    mainClass.set("com.server.croniot.application.MainKt")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
 }
 
 dependencies {
+
+    //annotationProcessor(libs.dagger.compiler)
+
     implementation(projects.shared)
     implementation(libs.logback)
     implementation(libs.ktor.server.core)
@@ -51,7 +67,7 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.postgresql)
     implementation(libs.hibernate.core)
-    implementation(libs.hibernate.entitymanager)
+            //implementation(libs.hibernate.entitymanager)
     implementation(libs.ehcache)
 
     implementation(libs.jaxb.impl)
@@ -60,7 +76,7 @@ dependencies {
     implementation(libs.jaxb.runtime)
     implementation(libs.jaxb.runtime.old)
     implementation("javax.activation:activation:1.1.1") // For JAXB dependencies
-    implementation("javax.xml.bind:jaxb-api:2.3.1")
+            //implementation("javax.xml.bind:jaxb-api:2.3.1")
 
 
     implementation(libs.jakarta.activation.api)
@@ -98,7 +114,7 @@ tasks.test {
 }
 
 tasks {
-    compileKotlin {
+  /*  compileKotlin {
         //kotlinOptions.jvmTarget = "1.8"
         kotlinOptions.jvmTarget = "21"
     }
@@ -107,20 +123,28 @@ tasks {
         //kotlinOptions.jvmTarget = "1.8"
         kotlinOptions.jvmTarget = "21"
     }
-
+*/
+//    shadowJar {
+//        mergeServiceFiles() //necessary for incñusion of Inifinispan dependencies
+//        archiveClassifier.set("all") //necessary for incñusion of Inifinispan dependencies
+//
+//        // Set the main class for the JAR (replace com.example.MainClass with your actual main class)
+//        manifest {
+//            attributes["Main-Class"] = "MainKt"
+//        }
+//
+//        // Optionally, configure the shadowJar task further if needed
+//        // For example, excluding files or dependencies, or merging services files
+//
+//        // Example of excluding certain files from the JAR
+//        exclude("META-INF/*.DSA", "META-INF/*.SF", "META-INF/*.RSA")
+//    }
     shadowJar {
-        mergeServiceFiles() //necessary for incñusion of Inifinispan dependencies
-        archiveClassifier.set("all") //necessary for incñusion of Inifinispan dependencies
-
-        // Set the main class for the JAR (replace com.example.MainClass with your actual main class)
+        mergeServiceFiles()
+        archiveClassifier.set("all")
         manifest {
-            attributes["Main-Class"] = "MainKt"
+            attributes["Main-Class"] = "com.server.croniot.application.MainKt"
         }
-
-        // Optionally, configure the shadowJar task further if needed
-        // For example, excluding files or dependencies, or merging services files
-
-        // Example of excluding certain files from the JAR
         exclude("META-INF/*.DSA", "META-INF/*.SF", "META-INF/*.RSA")
     }
 }

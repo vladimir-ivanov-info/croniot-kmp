@@ -10,7 +10,7 @@ class DeviceDaoImpl @Inject constructor(
     private val sessionFactory: SessionFactory,
 ) : DeviceDao {
 
-    override fun insert(device: Device): Long {
+    /*override fun insert(device: Device): Long {
         sessionFactory.openSession().use { session ->
             val transaction = session.beginTransaction()
             return try {
@@ -22,7 +22,78 @@ class DeviceDaoImpl @Inject constructor(
                 throw e
             }
         }
+    }*/
+
+   /* override fun insert(account: Account, device: Device)/*: Long*/ {
+        sessionFactory.openSession().use { session ->
+            val tx = session.beginTransaction()
+            try {
+                // 1) Asegura que el Account está gestionado (si existe)
+                /*device.account?.let { acc ->
+                    if (acc.id != 0L) {
+                        //val managedAcc = session.get(Account::class.java, acc.id)
+                        //    ?: throw IllegalArgumentException("Account ${acc.id} no existe")
+                        device.account = account
+                    } else {
+                        // Si el Account es nuevo y NO hay cascade desde Account->Device, persístelo primero o lanza error:
+                        // session.persist(acc)
+                        // (o) throw IllegalArgumentException("Account debe existir o persistirse antes")
+                    }
+                }*/
+
+                device.account = account
+
+                // 2) Sincroniza el lado hijo (bidireccional)
+                device.sensorTypes.forEach { it.device = device }  // Hibernate asignará sensor_order (inverse=false)
+                device.taskTypes.forEach { it.device = device }    // se insertarán por cascade si corresponde
+
+                // 3) Persistir el padre (cascade insertará los hijos)
+                session.persist(device)
+
+                tx.commit()
+                //return device.id
+            } catch (e: Exception) {
+                tx.rollback()
+                throw e
+            }
+        }
+    }*/
+
+
+
+    override fun insert(account: Account, device: Device) {
+        sessionFactory.openSession().use { session ->
+            val tx = session.beginTransaction()
+            try {
+                // 1) Adjunta el Account
+                val managedAcc = if (account.id != 0L) {
+                    session.get(Account::class.java, account.id)
+                        ?: throw IllegalArgumentException("Account ${account.id} no existe")
+                } else {
+                    account // nuevo
+                }
+
+                // 2) Relación bidireccional
+                device.account = managedAcc
+                managedAcc.devices.add(device)   // 👈 AQUÍ se fija el device_order
+
+                // 3) Persistencia
+                if (managedAcc === account && account.id == 0L) {
+                    session.persist(managedAcc)  // cascade inserta device
+                } else {
+                    // Account ya existe: no hace falta persistirlo
+                    // si tu cascade no cubre, puedes hacer session.persist(device)
+                }
+
+                tx.commit()
+            } catch (e: Exception) {
+                tx.rollback()
+                throw e
+            }
+        }
     }
+
+
 
     override fun getAll(): List<Device> {
         val session = sessionFactory.openSession()
@@ -75,8 +146,8 @@ class DeviceDaoImpl @Inject constructor(
                 name = "", // Uninitialized
                 description = "", // Uninitialized
                 iot = false, // Uninitialized
-                sensorTypes = mutableSetOf(), // Uninitialized
-                taskTypes = mutableSetOf(), // Uninitialized
+                sensorTypes = mutableListOf(), // Uninitialized
+                taskTypes = mutableListOf(), // Uninitialized
                 account = Account(), // Uninitialized
                 deviceToken = null, // Uninitialized
             )

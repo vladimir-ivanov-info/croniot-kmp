@@ -11,7 +11,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.*
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.croniot.android.R
-import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
+import com.croniot.client.features.sensors.presentation.SensorsViewModel
 import org.koin.java.KoinJavaComponent.get
 import org.maplibre.android.annotations.IconFactory
 import org.maplibre.android.annotations.MarkerOptions
@@ -24,7 +24,7 @@ import org.maplibre.geojson.Point
 
 // TOOD experimental
 
-private val viewModelSensors: ViewModelSensors = get(ViewModelSensors::class.java)
+private val sensorsViewModel: SensorsViewModel = get(SensorsViewModel::class.java)
 lateinit var mapLibre: MapLibreMap
 private val markersList = mutableListOf<MarkerOptions>()
 

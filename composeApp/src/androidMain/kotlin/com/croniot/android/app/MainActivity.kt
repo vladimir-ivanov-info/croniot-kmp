@@ -8,12 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.croniot.android.core.data.source.local.DataStoreController
 import com.croniot.android.core.presentation.theme.IoTClientTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import com.croniot.client.data.repositories.LocalDataRepository
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -21,29 +17,12 @@ class MainActivity : ComponentActivity() {
     private val REQUEST_NOTIFICATION_PERMISSION = 1
 
     val context: Context by inject()
+    val localDataRepository: LocalDataRepository by inject() // or koinInject?
 
-    private fun askNotificationPermissionIfNecessary() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS,
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                REQUEST_NOTIFICATION_PERMISSION,
-            )
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         askNotificationPermissionIfNecessary(); // TODO move to Configuration
-
-        CoroutineScope(Dispatchers.IO).launch {
-            Global.selectedDevice = DataStoreController.getSelectedDevice().first()
-            DataStoreController.generateAndSaveDeviceUuidIfNotExists()
-        }
 
         // MapLibre.getInstance(this, null, WellKnownTileServer.MapLibre)
         // MapLibre.getInstance(this, null)
@@ -56,10 +35,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        CoroutineScope(Dispatchers.IO).launch {
-            Global.selectedDevice = DataStoreController.getSelectedDevice().first()
+    private fun askNotificationPermissionIfNecessary() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_NOTIFICATION_PERMISSION,
+            )
         }
     }
 }

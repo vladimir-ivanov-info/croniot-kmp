@@ -2,37 +2,59 @@ package croniot.models
 
 import croniot.models.dto.DeviceDto
 
+/*
+data class Device(
+    var id: Long = 0,
+    var uuid: String = "",
+    var name: String = "",
+    var description: String = "",
+    var iot: Boolean = false,
+    var sensorTypes: MutableSet<SensorType> = mutableSetOf(),
+    var taskTypes: MutableSet<TaskType> = mutableSetOf(),
+    var account: Account = Account(),
+    var deviceToken: DeviceToken? = null,
+    var deviceProperties: Map<String, String> = emptyMap(),
+) {
+    */
+
 data class Device(
     var id: Long,
     var uuid: String,
     var name: String,
     var description: String,
     var iot: Boolean,
-    var sensorTypes: MutableSet<SensorType>,
-    var taskTypes: MutableSet<TaskType>,
+    //var sensorTypes: MutableSet<SensorType>,
+    //var taskTypes: MutableSet<TaskType>,
+
+    var sensorTypes: MutableList<SensorType>,
+    var taskTypes: MutableList<TaskType>,
     var account: Account, // Reference to the Account this Device belongs to
     var deviceToken: DeviceToken? = null, // Ensure this property exists
     var deviceProperties: Map<String, String> = emptyMap(),
 ) {
-    constructor() : this(0, "", "", "", /*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null, mutableMapOf())
+    //constructor() : this(0, "", "", "", /*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null, mutableMapOf())
+    constructor() : this(0, "", "", "", /*"",*/false, mutableListOf(), mutableListOf(), Account(), null, mutableMapOf())
 
     constructor(
         uuid: String = "",
         name: String = "",
         description: String = "",
         iot: Boolean = false,
-        sensorTypes: MutableSet<SensorType> = mutableSetOf(),
-        taskTypes: MutableSet<TaskType> = mutableSetOf(),
+        //sensorTypes: MutableSet<SensorType> = mutableSetOf(),
+        //taskTypes: MutableSet<TaskType> = mutableSetOf(),
+
+        sensorTypes: MutableList<SensorType> = mutableListOf(),
+        taskTypes: MutableList<TaskType> = mutableListOf(),
         account: Account = Account(),
         // deviceToken: DeviceToken?,
         deviceProperties: Map<String, String> = emptyMap(),
     ) : this(0, uuid, name, description, iot, sensorTypes, taskTypes, account, null, deviceProperties)
 
     constructor(id: Long, uuid: String) :
-        this(id, uuid, "", "", false, mutableSetOf(), mutableSetOf(), Account(), null)
+        this(id, uuid, "", "", false, mutableListOf(), mutableListOf(), Account(), null)
 
     constructor(id: Long, uuid: String, deviceProperties: MutableMap<String, String>) :
-        this(id, uuid, "", "", false, mutableSetOf(), mutableSetOf(), Account(), null, deviceProperties)
+        this(id, uuid, "", "", false, mutableListOf(), mutableListOf(), Account(), null, deviceProperties)
 
     override fun hashCode(): Int {
         var result = id.hashCode()
@@ -58,7 +80,7 @@ fun Device.toDto() = DeviceDto(
     uuid = this.uuid,
     name = this.name,
     description = this.description,
-    sensors = this.sensorTypes.map { it.toDto() }.toMutableSet(),
-    tasks = this.taskTypes.map { it.toDto() }.toMutableSet(),
+    sensorTypes = this.sensorTypes.map { it.toDto() }, //.toMutableSet(),
+    taskTypes = this.taskTypes.map { it.toDto() }, //.toMutableSet(),
     //lastOnlineMillis = 0, // TODO implement a column in database. Another column for seconds after which the device should be considered offline.
 )

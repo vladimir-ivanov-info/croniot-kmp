@@ -20,7 +20,7 @@ class AccountRepository @Inject constructor(
         // Perform domain-specific logic (e.g., hashing passwords)
         // val hashedPassword = hashPassword(plainPassword)
         // val account = Account(email = email, password = hashedPassword)
-        val account = Account(accountUuid, nickname, email, password, mutableSetOf())
+        val account = Account(accountUuid, nickname, email, password, mutableListOf())
         return accountDao.insert(account)
     }
 

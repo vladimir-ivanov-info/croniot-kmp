@@ -40,8 +40,8 @@ class DeviceService @Inject constructor(
 
             if (account != null) {
                 // TODO check if device exists
-                val device = Device(deviceUuid, deviceName, deviceDescription, true, mutableSetOf(), mutableSetOf(), account)
-                deviceRepository.createDevice(device)
+                val device = Device(deviceUuid, deviceName, deviceDescription, true, mutableListOf(), mutableListOf(), account)
+                deviceRepository.createDevice(account, device)
 
                 val newToken = Global.generateUniqueString(16)
                 deviceTokenRepository.createDeviceToken(device, newToken)

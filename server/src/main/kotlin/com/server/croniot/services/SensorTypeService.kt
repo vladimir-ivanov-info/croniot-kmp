@@ -27,7 +27,7 @@ class SensorTypeService @Inject constructor(
                 parameter.sensorType = sensor
             }
 
-            sensorTypeRepository.create(sensor)
+            sensorTypeRepository.insert(device, sensor)
 
             result = Result(true, "Sensor ${sensor.uid} registered")
         } else {

@@ -21,5 +21,6 @@ class LoginController @Inject constructor(
         val message = call.receive<MessageLoginRequest>()
         val result = loginService.loginIot(message)
         call.respond(result)
+
     }
 }

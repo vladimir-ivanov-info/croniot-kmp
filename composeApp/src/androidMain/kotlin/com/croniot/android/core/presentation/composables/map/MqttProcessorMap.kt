@@ -1,6 +1,6 @@
 package com.croniot.android.core.presentation.composables.map
 
-import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
+import com.croniot.client.features.sensors.presentation.SensorsViewModel
 import croniot.models.MqttDataProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,7 @@ import org.koin.core.component.get
 // TODO experimental
 class MqttProcessorMap() : MqttDataProcessor, KoinComponent {
 
-    private val viewModelSensors: ViewModelSensors = get()
+    private val sensorsViewModel: SensorsViewModel = get()
 
     override fun process(data: Any) {
         CoroutineScope(Dispatchers.IO).launch {

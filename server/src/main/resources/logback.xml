@@ -1,22 +1,23 @@
-
-
 <configuration>
-    <!--
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="trace">
-        <appender-ref ref="STDOUT"/>
-    </root>
-    <logger name="org.eclipse.jetty" level="INFO"/>
-    <logger name="io.netty" level="INFO"/>
-    <logger name="org.hibernate.SQL" level="INFO" />
-    <logger name="org.hibernate.type" level="INFO" />
-    -->
-    <logger name="org.infinispan" level="DEBUG"/>
-    <logger name="org.hibernate" level="DEBUG"/>
+
+    <!-- SQL generado -->
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <!-- Valores que se bindean a los ? -->
+    <logger name="org.hibernate.orm.jdbc.bind" level="TRACE"/>
+    <!-- Mutaciones de colecciones/índices -->
+    <logger name="org.hibernate.orm.jdbc.mutation" level="DEBUG"/>
+    <!-- Detalle de colecciones (alta/actualización) -->
+    <logger name="org.hibernate.engine.internal.Collections" level="DEBUG"/>
+
+    <!-- (Opcional) si no ves los binds con el logger anterior, prueba también: -->
+    <!-- <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/> -->
+    <!-- <logger name="org.hibernate.type.descriptor.jdbc" level="TRACE"/> -->
+
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>

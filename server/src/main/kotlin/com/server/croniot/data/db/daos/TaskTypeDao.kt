@@ -5,7 +5,7 @@ import croniot.models.TaskType
 
 interface TaskTypeDao {
 
-    fun insert(task: TaskType): Long
+    fun insert(device: Device, task: TaskType) //: Long
 
     fun get(device: Device, taskTypeUid: Long): TaskType?
     fun getLazy(device: Device, taskTypeUid: Long): TaskType?
