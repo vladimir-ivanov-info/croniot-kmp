@@ -12,12 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
 
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource,
-    private val appScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val appScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
 ) : TasksRepository {
 
     private val tasks = mutableMapOf<String, MutableList<Task>>()
@@ -28,16 +27,15 @@ class TasksRepositoryImpl(
         MutableSharedFlow(replay = 0, extraBufferCapacity = 64, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     }
 
-
-    override suspend fun fetchTasks(deviceUuid: String) : List<Task> {
+    override suspend fun fetchTasks(deviceUuid: String): List<Task> {
         var cachedTaskList = tasks[deviceUuid]
 
-        if(cachedTaskList.isNullOrEmpty()){
+        if (cachedTaskList.isNullOrEmpty()) {
             val fetchedTasks = tasksDataSource.fetchTasks(deviceUuid)
-            //TODO mutex
+            // TODO mutex
             tasks.getOrPut(deviceUuid) { mutableListOf() }.addAll(fetchedTasks)
 
-            cachedTaskList = tasks.getOrPut(deviceUuid){ mutableListOf() }
+            cachedTaskList = tasks.getOrPut(deviceUuid) { mutableListOf() }
         }
         return cachedTaskList.toList()
     }
@@ -51,7 +49,7 @@ class TasksRepositoryImpl(
                 tasks.getOrPut(deviceUuid) { mutableListOf() }.add(task)
                 shared.tryEmit(task)
 
-                //task update taskstateinfos
+                // task update taskstateinfos
                 val taskStateInfos = task.stateInfos
                 val latestTaskStateInfo = taskStateInfos.maxBy { it.dateTime }
                 busTaskStateInfo(deviceUuid).tryEmit(latestTaskStateInfo)
@@ -61,19 +59,13 @@ class TasksRepositoryImpl(
 
     override fun observeNewTasks(deviceUuid: String): Flow<Task> = bus(deviceUuid) // hot
 
-
-
-
-
-
     private val taskStateInfoJobs = mutableMapOf<String, Job>()
     private val perDeviceTaskStateInfos = ConcurrentHashMap<String, MutableSharedFlow<TaskStateInfo>>()
     private fun busTaskStateInfo(device: String) = perDeviceTaskStateInfos.computeIfAbsent(device) {
         MutableSharedFlow(replay = 0, extraBufferCapacity = 64, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     }
 
-    override fun observeTaskStateInfoUpdates(deviceUuid: String) : Flow<TaskStateInfo> = busTaskStateInfo(deviceUuid)
-
+    override fun observeTaskStateInfoUpdates(deviceUuid: String): Flow<TaskStateInfo> = busTaskStateInfo(deviceUuid)
 
     override fun listenTaskStateInfos(deviceUuid: String) {
         if (taskStateInfoJobs[deviceUuid]?.isActive == true) return
@@ -81,19 +73,17 @@ class TasksRepositoryImpl(
 
         taskStateInfoJobs[deviceUuid] = tasksDataSource.observeTaskStateInfos(deviceUuid) // cold
             .onEach { taskStateInfo ->
-                //update corresponding task
+                // update corresponding task
                 val taskList = tasks[deviceUuid]
-                if(taskList != null){
+                if (taskList != null) {
                     val foundTask = taskList.find { it.uid == taskStateInfo.taskUid }
 
-                    if(foundTask != null){
+                    if (foundTask != null) {
                         foundTask.stateInfos.add(taskStateInfo)
                     } else {
-
                     }
-
                 } else {
-                    //TODO
+                    // TODO
                 }
 
                 println("${taskStateInfo.state}")
@@ -102,16 +92,16 @@ class TasksRepositoryImpl(
             .launchIn(appScope)
     }
 
-    override fun getLatestTaskStateInfo(deviceUuid: String, taskTypeUid: Long) : TaskStateInfo?  {
-        var result : TaskStateInfo? = null
+    override fun getLatestTaskStateInfo(deviceUuid: String, taskTypeUid: Long): TaskStateInfo? {
+        var result: TaskStateInfo? = null
 
         val taskList = tasks[deviceUuid]
-        if(taskList != null){
+        if (taskList != null) {
             val filteredTasks = taskList.filter {
                 it.deviceUuid == deviceUuid && it.taskTypeUid == taskTypeUid
             }
 
-            if(filteredTasks.isNotEmpty()){
+            if (filteredTasks.isNotEmpty()) {
                 val latestTask = filteredTasks.maxByOrNull { task ->
                     task.getMostRecentState().dateTime
                 }
@@ -120,25 +110,24 @@ class TasksRepositoryImpl(
                     result = latestTask.getMostRecentState()
                 }
             }
-
         } else {
-            //TODO
+            // TODO
         }
 
         return result
     }
 
-    //TODO ConcurrentModificationException when moving slider too fast
-    override fun getLatestTaskStateInfoEmittedByIoT(deviceUuid: String, taskTypeUid: Long) : TaskStateInfo? {
-        var result : TaskStateInfo? = null
+    // TODO ConcurrentModificationException when moving slider too fast
+    override fun getLatestTaskStateInfoEmittedByIoT(deviceUuid: String, taskTypeUid: Long): TaskStateInfo? {
+        var result: TaskStateInfo? = null
 
         val taskList = tasks[deviceUuid]
-        if(taskList != null){
+        if (taskList != null) {
             val filteredTasks = taskList.filter {
                 it.deviceUuid == deviceUuid && it.taskTypeUid == taskTypeUid
             }
 
-            if(filteredTasks.isNotEmpty()){
+            if (filteredTasks.isNotEmpty()) {
                 val latestTask = filteredTasks.maxByOrNull { task ->
                     task.getMostRecentState().dateTime
                 }
@@ -147,12 +136,10 @@ class TasksRepositoryImpl(
                     result = latestTask.getMostRecentStateEmittedByIoT()
                 }
             }
-
         } else {
-            //TODO
+            // TODO
         }
 
         return result
     }
-
 }

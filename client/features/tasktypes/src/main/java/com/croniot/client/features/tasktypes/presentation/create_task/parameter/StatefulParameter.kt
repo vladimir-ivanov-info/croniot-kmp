@@ -24,10 +24,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.ParameterTask
 import com.croniot.client.core.models.TaskStateInfo
-import com.croniot.client.presentation.constants.UtilUi
 import com.croniot.client.core.models.TaskType
 import com.croniot.client.core.models.isRepresentsSlider
 import com.croniot.client.core.models.isRepresentsSwitch
+import com.croniot.client.presentation.constants.UtilUi
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -40,14 +40,12 @@ fun StatefulParameter(
     parameter: ParameterTask,
     latestTaskStateInfoFlow: StateFlow<TaskStateInfo?>,
     statefulParameterViewModel: StatefulParameterViewModel = koinViewModel(),
-    onStateChanged : (newState: String) -> Unit
+    onStateChanged: (newState: String) -> Unit,
 ) {
-
     val isSlider = remember { parameter.isRepresentsSlider() }
     val isSwitch = remember { parameter.isRepresentsSwitch() }
 
     val latestState: TaskStateInfo? by latestTaskStateInfoFlow.collectAsState()
-
 
     LaunchedEffect(Unit) {
         statefulParameterViewModel.initialize(deviceUuid, taskType.uid)
@@ -55,29 +53,26 @@ fun StatefulParameter(
 
     val taskStateInfoSynced = statefulParameterViewModel.statefulTaskInfoParameterSynced.collectAsState()
 
-    if(isSwitch){ //TODO make this if else cleaner
+    if (isSwitch) { // TODO make this if else cleaner
         SwitchTaskTypeParameter(
             taskStateInfoSynced = taskStateInfoSynced,
             parameter = parameter,
             latestState = latestState,
-            onStateChanged = onStateChanged
+            onStateChanged = onStateChanged,
         )
-    } else if(isSlider){
+    } else if (isSlider) {
         StatefulParameterSlider(
             taskStateInfoSynced = taskStateInfoSynced,
             parameter = parameter,
             latestState = latestState,
-            onStateChanged = onStateChanged
+            onStateChanged = onStateChanged,
         )
-
     } else {
         Text(
-            text = latestState?.state?: "-",
-            fontSize = UtilUi.TEXT_SIZE_3
+            text = latestState?.state ?: "-",
+            fontSize = UtilUi.TEXT_SIZE_3,
         )
     }
-
-
 }
 
 @Composable
@@ -85,34 +80,33 @@ fun SwitchTaskTypeParameter(
     taskStateInfoSynced: State<Boolean>,
     parameter: ParameterTask,
     latestState: TaskStateInfo?,
-    onStateChanged: (newState: String) -> Unit
-){
+    onStateChanged: (newState: String) -> Unit,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer)
-        ,
-        verticalAlignment = Alignment.CenterVertically
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         SyncDot(
             isSynced = taskStateInfoSynced.value,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp),
         )
 
         Text(
             // modifier = Modifier.align(Alignment.CenterStart),
             modifier = Modifier.weight(1f),
             text = parameter.name,
-            fontSize = UtilUi.TEXT_SIZE_3
+            fontSize = UtilUi.TEXT_SIZE_3,
         )
 
-        if(latestState != null){
-            val checked = latestState!!.state == "on" //TODO OOOOOOOOOO!!!
+        if (latestState != null) {
+            val checked = latestState!!.state == "on" // TODO OOOOOOOOOO!!!
             Switch(
-                //modifier = Modifier.align(Alignment.CenterEnd),
-                //enabled = taskStateInfoSynced.value,
+                // modifier = Modifier.align(Alignment.CenterEnd),
+                // enabled = taskStateInfoSynced.value,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 checked = checked,
                 onCheckedChange = { newChecked ->
@@ -121,13 +115,12 @@ fun SwitchTaskTypeParameter(
                     if (newValue != null) {
                         onStateChanged(newValue)
                     }
-                    //}
-                }
+                    // }
+                },
             )
         }
     }
 }
-
 
 @Composable
 fun SyncDot(isSynced: Boolean, modifier: Modifier = Modifier) {
@@ -139,15 +132,15 @@ fun SyncDot(isSynced: Boolean, modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier.size(16.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Box(
             modifier = Modifier
                 .size(12.dp)
                 .background(
                     color = color,
-                    shape = CircleShape
-                )
+                    shape = CircleShape,
+                ),
         )
     }
 }

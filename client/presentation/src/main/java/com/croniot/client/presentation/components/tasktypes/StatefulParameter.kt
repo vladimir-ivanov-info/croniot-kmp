@@ -1,51 +1,51 @@
 package com.croniot.client.presentation.components.tasktypes
 
-//import androidx.compose.foundation.background
-//import androidx.compose.foundation.layout.Box
-//import androidx.compose.foundation.layout.Column
-//import androidx.compose.foundation.layout.Row
-//import androidx.compose.foundation.layout.fillMaxHeight
-//import androidx.compose.foundation.layout.fillMaxWidth
-//import androidx.compose.foundation.layout.height
-//import androidx.compose.foundation.layout.padding
-//import androidx.compose.foundation.layout.size
-//import androidx.compose.foundation.layout.width
-//import androidx.compose.foundation.shape.CircleShape
-//import androidx.compose.foundation.shape.RoundedCornerShape
-//import androidx.compose.material3.CircularProgressIndicator
-//import androidx.compose.material3.MaterialTheme
-//import androidx.compose.material3.Slider
-//import androidx.compose.material3.SliderDefaults
-//import androidx.compose.material3.Switch
-//import androidx.compose.material3.Text
-//import androidx.compose.runtime.Composable
-//import androidx.compose.runtime.LaunchedEffect
-//import androidx.compose.runtime.collectAsState
-//import androidx.compose.runtime.getValue
-//import androidx.compose.runtime.mutableFloatStateOf
-//import androidx.compose.runtime.remember
-//import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.draw.clip
-//import androidx.compose.ui.unit.dp
-//import com.croniot.client.core.models.ParameterTask
-//import com.croniot.client.core.models.TaskStateInfo
-//import com.croniot.client.presentation.constants.UtilUi
-//import com.croniot.client.core.models.TaskType
-//import com.croniot.client.core.models.isRepresentsSlider
-//import com.croniot.client.core.models.isRepresentsSwitch
-//import com.croniot.client.features.tasktypes.create_task.CreateTaskViewModel
-//import org.koin.compose.viewmodel.koinViewModel
+// import androidx.compose.foundation.background
+// import androidx.compose.foundation.layout.Box
+// import androidx.compose.foundation.layout.Column
+// import androidx.compose.foundation.layout.Row
+// import androidx.compose.foundation.layout.fillMaxHeight
+// import androidx.compose.foundation.layout.fillMaxWidth
+// import androidx.compose.foundation.layout.height
+// import androidx.compose.foundation.layout.padding
+// import androidx.compose.foundation.layout.size
+// import androidx.compose.foundation.layout.width
+// import androidx.compose.foundation.shape.CircleShape
+// import androidx.compose.foundation.shape.RoundedCornerShape
+// import androidx.compose.material3.CircularProgressIndicator
+// import androidx.compose.material3.MaterialTheme
+// import androidx.compose.material3.Slider
+// import androidx.compose.material3.SliderDefaults
+// import androidx.compose.material3.Switch
+// import androidx.compose.material3.Text
+// import androidx.compose.runtime.Composable
+// import androidx.compose.runtime.LaunchedEffect
+// import androidx.compose.runtime.collectAsState
+// import androidx.compose.runtime.getValue
+// import androidx.compose.runtime.mutableFloatStateOf
+// import androidx.compose.runtime.remember
+// import androidx.compose.ui.Alignment
+// import androidx.compose.ui.Modifier
+// import androidx.compose.ui.draw.clip
+// import androidx.compose.ui.unit.dp
+// import com.croniot.client.core.models.ParameterTask
+// import com.croniot.client.core.models.TaskStateInfo
+// import com.croniot.client.presentation.constants.UtilUi
+// import com.croniot.client.core.models.TaskType
+// import com.croniot.client.core.models.isRepresentsSlider
+// import com.croniot.client.core.models.isRepresentsSwitch
+// import com.croniot.client.features.tasktypes.create_task.CreateTaskViewModel
+// import org.koin.compose.viewmodel.koinViewModel
 //
-//@Composable
-//fun StatefulParameter(
+// @Composable
+// fun StatefulParameter(
 //    deviceUuid: String,
 //    taskType: TaskType,
 //    parameter: ParameterTask,
 //    createTaskViewModel: CreateTaskViewModel,// = koinViewModel(), //TODO move to parent and pass child's flow
 //    statefulParameterViewModel: StatefulParameterViewModel = koinViewModel(),
 //    onStateChanged : (newState: String) -> Unit
-//) {
+// ) {
 //
 //    val isSlider = remember { parameter.isRepresentsSlider() }
 //    val isSwitch = remember { parameter.isRepresentsSwitch() }
@@ -149,7 +149,7 @@ package com.croniot.client.presentation.components.tasktypes
 //
 //
 //
-////            var latestStateValueFloat = latestStateValue?.toFloat() ?: 0f //TODO
+// //            var latestStateValueFloat = latestStateValue?.toFloat() ?: 0f //TODO
 //
 //
 //
@@ -197,10 +197,10 @@ package com.croniot.client.presentation.components.tasktypes
 //    }
 //
 //
-//}
+// }
 //
-//@Composable
-//fun SyncDot(isSynced: Boolean, modifier: Modifier = Modifier) {
+// @Composable
+// fun SyncDot(isSynced: Boolean, modifier: Modifier = Modifier) {
 //    val color = if (isSynced) {
 //        MaterialTheme.colorScheme.primary
 //    } else {
@@ -220,4 +220,4 @@ package com.croniot.client.presentation.components.tasktypes
 //                )
 //        )
 //    }
-//}
+// }

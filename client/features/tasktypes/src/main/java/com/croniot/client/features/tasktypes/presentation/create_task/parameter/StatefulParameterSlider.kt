@@ -1,6 +1,5 @@
 package com.croniot.client.features.tasktypes.presentation.create_task.parameter
 
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.ParameterTask
@@ -49,11 +47,11 @@ fun StatefulParameterSlider(
     taskStateInfoSynced: State<Boolean>,
     parameter: ParameterTask,
     latestState: TaskStateInfo?,
-    onStateChanged: (newState: String) -> Unit
+    onStateChanged: (newState: String) -> Unit,
 ) {
     // --- Constraints unificados ---
-    val minValue = parameter.constraints["minValue"]?.toFloatOrNull() ?: 0f //TODO don't give default values, just show error
-    val maxValue = parameter.constraints["maxValue"]?.toFloatOrNull() ?: 100f //TODO don't give default values, just show error
+    val minValue = parameter.constraints["minValue"]?.toFloatOrNull() ?: 0f // TODO don't give default values, just show error
+    val maxValue = parameter.constraints["maxValue"]?.toFloatOrNull() ?: 100f // TODO don't give default values, just show error
     val step = (parameter.constraints["stepSize"]?.toFloatOrNull() ?: 1f)
         .coerceAtLeast(0.0001f)
 
@@ -65,8 +63,8 @@ fun StatefulParameterSlider(
         val k = ((clipped - lo) / step).roundToInt()
         return (lo + k * step).coerceIn(lo, hi)
     }
-    //val steps = (((hi - lo) / step).roundToInt()).coerceAtLeast(1) - 1
-    //val safeSteps = steps.coerceAtLeast(0)
+    // val steps = (((hi - lo) / step).roundToInt()).coerceAtLeast(1) - 1
+    // val safeSteps = steps.coerceAtLeast(0)
 
     val rawSteps = (((maxValue - minValue) / step).roundToInt()).coerceAtLeast(0)
 
@@ -150,17 +148,16 @@ fun StatefulParameterSlider(
     // ---- UI en Card ----
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
         // .padding(horizontal = 16.dp, vertical = 8.dp)
-        ,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 14.dp, end = 12.dp, top = 12.dp, bottom = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             SyncIndicator(status = status)
             Spacer(Modifier.width(10.dp))
@@ -169,7 +166,7 @@ fun StatefulParameterSlider(
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             ValuePill(text = valueText)
         }
@@ -199,8 +196,8 @@ fun StatefulParameterSlider(
             steps = safeSteps,
             enabled = true,
             colors = SliderDefaults.colors(
-                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+            ),
         )
     }
 }
@@ -223,21 +220,21 @@ fun SyncIndicator(status: SyncStatus, modifier: Modifier = Modifier) {
             targetValue = 1f,
             animationSpec = infiniteRepeatable(
                 animation = tween(900),
-                repeatMode = RepeatMode.Reverse
+                repeatMode = RepeatMode.Reverse,
             ),
-            label = "alpha"
+            label = "alpha",
         ).value
-    } else 1f
+    } else {
+        1f
+    }
 
     Icon(
         imageVector = icon,
-        tint = tint,  // 👈 ahora usa un color del esquema
+        tint = tint, // 👈 ahora usa un color del esquema
         contentDescription = desc,
-        modifier = modifier.size(20.dp).alpha(alphaAnim)
+        modifier = modifier.size(20.dp).alpha(alphaAnim),
     )
 }
-
-
 
 @Composable
 private fun ValuePill(text: String, modifier: Modifier = Modifier) {
@@ -245,13 +242,14 @@ private fun ValuePill(text: String, modifier: Modifier = Modifier) {
         shape = RoundedCornerShape(999.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
         tonalElevation = 0.dp,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-            maxLines = 1, overflow = TextOverflow.Clip
+            maxLines = 1,
+            overflow = TextOverflow.Clip,
         )
     }
 }

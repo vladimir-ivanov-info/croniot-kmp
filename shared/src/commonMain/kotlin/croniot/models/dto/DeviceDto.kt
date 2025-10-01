@@ -6,5 +6,5 @@ data class DeviceDto(
     var description: String,
     var sensorTypes: List<SensorTypeDto>,
     var taskTypes: List<TaskTypeDto>, // TODO rename to "taskTypes"
-    //var lastActiveTimestamp: ZonedDateTime,
+    // var lastActiveTimestamp: ZonedDateTime,
 )

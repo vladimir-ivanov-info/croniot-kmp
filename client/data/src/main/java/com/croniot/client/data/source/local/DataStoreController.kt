@@ -47,7 +47,7 @@ class DataStoreController : LocalDatasource, KoinComponent {
         .setPrettyPrinting()
         .create()
 
-    override suspend fun getCurrentRoute() : String? {
+    override suspend fun getCurrentRoute(): String? {
         return loadData(KEY_CURRENT_ROUTE).firstOrNull()
     }
 
@@ -55,12 +55,11 @@ class DataStoreController : LocalDatasource, KoinComponent {
         saveData(KEY_CURRENT_ROUTE, route)
     }
 
-
-    override suspend fun getCurrentPassword() : String? {
+    override suspend fun getCurrentPassword(): String? {
         return loadData(KEY_ACCOUNT_PASSWORD).firstOrNull()
     }
 
-    override suspend fun getLocalDeviceUuid() : String? {
+    override suspend fun getLocalDeviceUuid(): String? {
         return loadData(KEY_DEVICE_UUID).firstOrNull()
     }
 
@@ -76,23 +75,23 @@ class DataStoreController : LocalDatasource, KoinComponent {
         }
     }
 
-    override suspend fun getIsForegroundServiceEnabled() : Boolean {
+    override suspend fun getIsForegroundServiceEnabled(): Boolean {
         return loadData(KEY_CONFIGURATION_FOREGROUND_SERVICE).first() == "true"
     }
 
     override suspend fun saveIsForegroundServiceEnabled(foregroundServiceEnabled: Boolean) {
         var stringValue = "true"
-        if(!foregroundServiceEnabled){
+        if (!foregroundServiceEnabled) {
             stringValue = "false"
         }
         saveData(KEY_CONFIGURATION_FOREGROUND_SERVICE, stringValue)
     }
 
-    override suspend fun getServerAddress() : String {
-        return loadData(KEY_SERVER_ADDRESS).first() ?: "192.168.50.163" //TODO
+    override suspend fun getServerAddress(): String {
+        return loadData(KEY_SERVER_ADDRESS).first() ?: "192.168.50.163" // TODO
     }
 
-    override suspend fun saveServerAddress(serverAddress: String){
+    override suspend fun saveServerAddress(serverAddress: String) {
         saveData(KEY_SERVER_ADDRESS, serverAddress)
     }
 
@@ -120,19 +119,19 @@ class DataStoreController : LocalDatasource, KoinComponent {
         }
     }
 
-    override suspend fun saveEmail(email: String){
+    override suspend fun saveEmail(email: String) {
         saveData(KEY_ACCOUNT_EMAIL, email)
     }
 
-    override suspend fun savePassword(password: String){
+    override suspend fun savePassword(password: String) {
         saveData(KEY_ACCOUNT_PASSWORD, password)
     }
 
-    override suspend fun saveToken(token: String){
+    override suspend fun saveToken(token: String) {
         saveData(KEY_DEVICE_TOKEN, token)
     }
 
-    override suspend fun getCurrentScreen() : String? {
+    override suspend fun getCurrentScreen(): String? {
         return loadData(KEY_CURRENT_SCREEN).first()
     }
 
@@ -144,9 +143,9 @@ class DataStoreController : LocalDatasource, KoinComponent {
         return dataStore.data.map { preferences ->
             val accountJson = preferences[KEY_ACCOUNT]
             if (!accountJson.isNullOrEmpty()) {
-                try{
+                try {
                     provideGson().fromJson(accountJson, Account::class.java)
-                } catch(e: JsonSyntaxException){
+                } catch (e: JsonSyntaxException) {
                     null
                 }
             } else {
@@ -154,7 +153,6 @@ class DataStoreController : LocalDatasource, KoinComponent {
             }
         }.firstOrNull()
     }
-
 
     override suspend fun saveSelectedDevice(device: Device) {
         val gson = GsonBuilder()
@@ -175,9 +173,9 @@ class DataStoreController : LocalDatasource, KoinComponent {
                     .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
                     .setPrettyPrinting()
                     .create()
-                try{
+                try {
                     gson.fromJson(deviceJson, Device::class.java)
-                } catch(e: JsonSyntaxException){
+                } catch (e: JsonSyntaxException) {
                     null
                 }
             } else {
@@ -186,15 +184,15 @@ class DataStoreController : LocalDatasource, KoinComponent {
         }.firstOrNull()
     }
 
-    override suspend fun getLocalDeviceToken() : String? {
+    override suspend fun getLocalDeviceToken(): String? {
         return loadData(KEY_DEVICE_TOKEN).firstOrNull()
     }
 
-    override fun getServerMode() : Flow<String?> {
+    override fun getServerMode(): Flow<String?> {
         return loadData(KEY_SERVER_MODE)
     }
 
-    override suspend fun clearAllCacheExceptDeviceUuid() { //TODO and serverMode
+    override suspend fun clearAllCacheExceptDeviceUuid() { // TODO and serverMode
         dataStore.edit { preferences ->
             val deviceUuid = preferences[KEY_DEVICE_UUID]
             val serverMode = preferences[KEY_SERVER_MODE]
@@ -206,12 +204,11 @@ class DataStoreController : LocalDatasource, KoinComponent {
         }
     }
 
-
     override suspend fun getCurrentServerMode(): Flow<String?> {
         return loadData(KEY_SERVER_MODE)
     }
 
-    override suspend fun saveServerMode(serverMode: String){
+    override suspend fun saveServerMode(serverMode: String) {
         saveData(KEY_SERVER_MODE, serverMode)
     }
 }

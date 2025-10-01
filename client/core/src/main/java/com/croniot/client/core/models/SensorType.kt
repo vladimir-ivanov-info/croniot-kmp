@@ -8,5 +8,5 @@ data class SensorType(
     var uid: Long,
     var name: String,
     var description: String,
-    var parameters: Set<ParameterSensor>
+    var parameters: Set<ParameterSensor>,
 ) : Parcelable

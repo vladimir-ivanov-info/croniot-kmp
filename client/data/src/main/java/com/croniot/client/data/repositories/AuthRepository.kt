@@ -4,7 +4,7 @@ import com.croniot.client.core.models.auth.AuthError
 import com.croniot.client.core.models.auth.Outcome
 import com.croniot.client.data.source.remote.http.login.LoginResultDomain
 
-//import com.croniot.client.data.source.remote.http.login.LoginResultDomain
+// import com.croniot.client.data.source.remote.http.login.LoginResultDomain
 
 interface AuthRepository {
 
@@ -13,7 +13,6 @@ interface AuthRepository {
         password: String,
         deviceUuid: String,
         deviceToken: String?,
-        deviceProperties: Map<String, String>
-    ) : Outcome<LoginResultDomain, AuthError>
-
+        deviceProperties: Map<String, String>,
+    ): Outcome<LoginResultDomain, AuthError>
 }

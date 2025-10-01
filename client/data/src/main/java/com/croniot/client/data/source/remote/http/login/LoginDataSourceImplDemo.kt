@@ -8,7 +8,7 @@ import croniot.models.dto.ParameterSensorDto
 import croniot.models.dto.SensorTypeDto
 
 class LoginDataSourceImplDemo(
-    //private val api: LoginApi
+    // private val api: LoginApi
 ) : LoginDataSource {
 
     override suspend fun login(request: MessageLoginRequest): Result<LoginResultDto> = runCatching {
@@ -18,32 +18,29 @@ class LoginDataSourceImplDemo(
         }
         val dto = resp.body() ?: error("Empty body")
         dto //.toDomain() // mapea DTO → LoginResult
-        */
+         */
 
         val loginResultDto = LoginResultDto(
-            result = croniot.models.Result(true, "Success",),
+            result = croniot.models.Result(true, "Success"),
             account = generateDemoAccountdto(),
-            token = "token_demo"
+            token = "token_demo",
         )
 
         return Result.success(loginResultDto)
     }
 
-
-    private fun generateDemoAccountdto() : AccountDto {
-
+    private fun generateDemoAccountdto(): AccountDto {
         val accountDto = AccountDto(
             uuid = "account_demo",
             nickname = "Demo",
             email = "demo@email.com",
-            devices = generateDemoDeviceDto()
+            devices = generateDemoDeviceDto(),
         )
 
         return accountDto
     }
 
-    private fun generateDemoDeviceDto() : List<DeviceDto> {
-
+    private fun generateDemoDeviceDto(): List<DeviceDto> {
         val result = mutableListOf<DeviceDto>()
 
         val device1 = DeviceDto(
@@ -51,7 +48,7 @@ class LoginDataSourceImplDemo(
             name = "House IoT device",
             description = "IoT device for controlling sensors and running tasks in my house.",
             sensorTypes = generateSensorTypeDtos(),
-            taskTypes = emptyList()
+            taskTypes = emptyList(),
         )
 
         result.add(device1)
@@ -59,18 +56,17 @@ class LoginDataSourceImplDemo(
         return result
     }
 
-    private fun generateSensorTypeDtos() : List<SensorTypeDto>{
+    private fun generateSensorTypeDtos(): List<SensorTypeDto> {
+        val result: MutableList<SensorTypeDto> = mutableListOf()
 
-        val result : MutableList<SensorTypeDto> = mutableListOf()
-
-        var parameters1 : MutableList<ParameterSensorDto> = mutableListOf()
+        var parameters1: MutableList<ParameterSensorDto> = mutableListOf()
         var parameterSensor1 = ParameterSensorDto(
             uid = 1,
-            name =  "WiFi level",
+            name = "WiFi level",
             type = "integer",
             unit = "dBm",
             description = "WiFi level expressed in dBm",
-            constraints = mapOf("minValue" to "-90", "maxValue" to "-30")
+            constraints = mapOf("minValue" to "-90", "maxValue" to "-30"),
         )
 
         parameters1.add(parameterSensor1)
@@ -79,10 +75,8 @@ class LoginDataSourceImplDemo(
             uid = 1L,
             name = "WiFi level",
             description = "My IoT device's WiFi singnal level",
-            parameters = parameters1
+            parameters = parameters1,
         )
-
-
 
         result.add(sensor1)
 

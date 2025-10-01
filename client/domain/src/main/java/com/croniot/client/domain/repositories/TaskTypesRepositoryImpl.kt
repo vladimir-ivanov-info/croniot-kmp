@@ -9,12 +9,12 @@ class TaskTypesRepositoryImpl : TaskTypesRepository {
     override fun add(deviceUuid: String, taskType: TaskType) {
         val key = deviceUuid + "_" + taskType.uid.toString()
 
-        if(!cache.containsKey(key)){
+        if (!cache.containsKey(key)) {
             cache[key] = taskType
         }
     }
 
-    override fun get(deviceUuid: String, taskTypeUid: Long) : TaskType? {
+    override fun get(deviceUuid: String, taskTypeUid: Long): TaskType? {
         val key = deviceUuid + "_" + taskTypeUid.toString()
         return cache[key]
     }

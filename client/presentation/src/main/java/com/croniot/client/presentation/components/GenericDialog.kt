@@ -40,7 +40,7 @@ fun GenericDialog(title: String, text: String, button1Text: String?, onButton1Cl
                         modifier = Modifier
                             .fillMaxWidth(),
 
-                        ) {
+                    ) {
                         item {
                             Text(
                                 text = title,

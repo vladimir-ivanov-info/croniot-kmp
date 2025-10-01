@@ -19,7 +19,6 @@ class MainActivity : ComponentActivity() {
     val context: Context by inject()
     val localDataRepository: LocalDataRepository by inject() // or koinInject?
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         askNotificationPermissionIfNecessary(); // TODO move to Configuration

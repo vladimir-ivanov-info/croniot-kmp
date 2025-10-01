@@ -15,11 +15,10 @@ fun SensorDataRealm.toAndroidModel(): SensorData {
         value = this.value,
         timeStamp = ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(this.timeStampMillis),
-            ZoneOffset.UTC
-        )
+            ZoneOffset.UTC,
+        ),
     )
 }
-
 
 fun TaskStateInfoRealm.toAndroidModel(): TaskStateInfo {
     return TaskStateInfo(
@@ -28,11 +27,10 @@ fun TaskStateInfoRealm.toAndroidModel(): TaskStateInfo {
         taskUid = this.taskUid,
         dateTime = ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(this.timeStampMillis),
-            ZoneOffset.UTC
+            ZoneOffset.UTC,
         ),
         state = this.state,
         progress = this.progress,
         errorMessage = this.errorMessage,
     )
 }
-

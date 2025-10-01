@@ -10,7 +10,7 @@ interface DataSourceStrategyBus {
     fun setDataSourceStrategy(strategy: DataSourceStrategy)
 }
 
-class MutableDataSourceStrategyBus(initial: DataSourceStrategy): DataSourceStrategyBus {
+class MutableDataSourceStrategyBus(initial: DataSourceStrategy) : DataSourceStrategyBus {
     private val _state = MutableStateFlow(initial)
     override val current: StateFlow<DataSourceStrategy> = _state
     override fun setDataSourceStrategy(strategy: DataSourceStrategy) { _state.value = strategy }
@@ -19,7 +19,7 @@ class MutableDataSourceStrategyBus(initial: DataSourceStrategy): DataSourceStrat
 fun DataSourceStrategyBus.setDemo(enabled: Boolean) {
     val newStrategy = if (enabled) DataSourceStrategy.DEMO else DataSourceStrategy.REAL
 
-    //TODO oldStrategy.disconnectAndClearAllCachesIfNeeded()
+    // TODO oldStrategy.disconnectAndClearAllCachesIfNeeded()
 
     setDataSourceStrategy(newStrategy)
 }

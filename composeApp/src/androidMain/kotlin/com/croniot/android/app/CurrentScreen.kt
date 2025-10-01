@@ -16,24 +16,20 @@ import com.croniot.android.core.presentation.composables.map.MapScreen
 import com.croniot.android.core.presentation.splash.SplashScreen
 import com.croniot.android.features.configuration.ConfigurationScreen
 import com.croniot.android.features.device.presentation.DeviceScreen
-import com.croniot.android.features.devicelist.DeviceListScreen
 import com.croniot.android.features.devicelist.DeviceListScreenRoot
 import com.croniot.android.features.registeraccount.presentation.ScreenRegisterAccountRoot
-import com.croniot.client.presentation.constants.UiConstants
 import com.croniot.client.data.repositories.LocalDataRepository
-import com.croniot.client.features.login.ui.LoginScreen
 import com.croniot.client.features.login.ui.LoginScreenRoot
 import com.croniot.client.features.tasktypes.presentation.create_task.CreateTaskScreen
+import com.croniot.client.presentation.constants.UiConstants
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
 fun CurrentScreen() {
-
     val navController = rememberNavController()
 
     val coroutineScope = rememberCoroutineScope()
-
 
     /*LaunchedEffect(navController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -44,10 +40,9 @@ fun CurrentScreen() {
 
     }*/
 
-    val localDataRepository : LocalDataRepository = koinInject()
+    val localDataRepository: LocalDataRepository = koinInject()
 
     LaunchedEffect(navController) {
-
         localDataRepository.generateAndSaveDeviceUuidIfNotExists()
 
         navController.addOnDestinationChangedListener { _: NavController, dest: NavDestination, _: Bundle? ->
@@ -66,15 +61,16 @@ fun CurrentScreen() {
         }
     }
 
-    val serverMode = localDataRepository.getServerMode().collectAsState(initial = "local").value ?: "local" //TODO
+    val serverMode = localDataRepository.getServerMode().collectAsState(initial = "local").value ?: "local" // TODO
 
     NavHost(
         navController = navController,
-       // startDestination = startDestination,
+        // startDestination = startDestination,
         startDestination = UiConstants.ROUTE_SPLASH,
         // enterTransition = { EnterTransition.None },
         // exitTransition = { ExitTransition.None }
-    ) {//TODO
+    ) {
+         // TODO
         // composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
 
         composable(UiConstants.ROUTE_TEST) {
@@ -83,7 +79,7 @@ fun CurrentScreen() {
 
         composable(UiConstants.ROUTE_SPLASH) {
             SplashScreen(
-                navController = navController
+                navController = navController,
             )
         }
 
@@ -95,12 +91,12 @@ fun CurrentScreen() {
                     if (!navController.popBackStack()) {
                         navController.navigate(UiConstants.ROUTE_LOGIN)
                     }
-                }
+                },
             )
         }
 
         composable(UiConstants.ROUTE_LOGIN) {
-            //LoginScreen(navController, serverMode = serverMode)
+            // LoginScreen(navController, serverMode = serverMode)
             LoginScreenRoot(
                 onNavigate = { route ->
                     navController.navigate(route) {
@@ -117,20 +113,20 @@ fun CurrentScreen() {
 
             val selectedDeviceUuid = backStackEntry.arguments?.getString("deviceUuid")
 
-            if(selectedDeviceUuid != null){
+            if (selectedDeviceUuid != null) {
                 DeviceScreen(
                     selectedDeviceUuid = selectedDeviceUuid,
                     navController = navController,
                     onTaskTypeClicked = { deviceUuid, taskUid ->
                         navController.navigate("${UiConstants.ROUTE_CREATE_TASK}/$deviceUuid/$taskUid")
-                    }
+                    },
                 )
-            } //TODO else
+            } // TODO else
         }
 
         composable(UiConstants.ROUTE_DEVICES) {
             DeviceListScreenRoot(
-                //navController = navController,
+                // navController = navController,
                 onLogOut = {
                     navController.navigate(UiConstants.ROUTE_LOGIN) {
                         popUpTo(UiConstants.ROUTE_DEVICES) { inclusive = true }
@@ -139,7 +135,7 @@ fun CurrentScreen() {
                 },
                 onDeviceClicked = { deviceUuid ->
                     navController.navigate("${UiConstants.ROUTE_DEVICE}/$deviceUuid")
-                }
+                },
             )
         }
 
@@ -147,20 +143,19 @@ fun CurrentScreen() {
             route = "${UiConstants.ROUTE_CREATE_TASK}/{deviceUuid}/{taskUid}",
             arguments = listOf(
                 navArgument("deviceUuid") { type = NavType.StringType },
-                navArgument("taskUid")    { type = NavType.LongType }
-            )
+                navArgument("taskUid") { type = NavType.LongType },
+            ),
         ) { backStackEntry ->
             val deviceUuid = backStackEntry.arguments?.getString("deviceUuid")
             val taskUid = backStackEntry.arguments?.getLong("taskUid")
 
-            if(deviceUuid != null && taskUid != null){
+            if (deviceUuid != null && taskUid != null) {
                 CreateTaskScreen(
                     deviceUuid,
                     taskUid,
-                    navController
+                    navController,
                 )
             }
         }
     }
 }
-

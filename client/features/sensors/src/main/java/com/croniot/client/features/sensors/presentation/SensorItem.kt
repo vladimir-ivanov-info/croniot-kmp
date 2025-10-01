@@ -2,8 +2,6 @@ package com.croniot.client.features.sensors.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,14 +24,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.Constants
-import com.croniot.client.presentation.constants.UtilUi
-import com.croniot.client.core.models.SensorData
 import com.croniot.client.core.models.Device
+import com.croniot.client.core.models.SensorData
 import com.croniot.client.core.models.SensorType
 import com.croniot.client.presentation.PerformanceChart
-import java.time.ZonedDateTime
+import com.croniot.client.presentation.constants.UtilUi
 
 /*
 @Composable
@@ -168,17 +164,11 @@ fun SensorItem(
 
 }*/
 
-
-
-
-
-
-
 @Composable
 fun SensorItem(
     sensor: SensorType,
     selectedDevice: Device,
-    sensorsViewModel: SensorsViewModel
+    sensorsViewModel: SensorsViewModel,
 ) {
     val deviceUuid = selectedDevice.uuid
     val sensorUid = sensor.uid
@@ -237,7 +227,6 @@ fun SensorItem(
 
     // … tu UI (igual que ya la tienes)
 
-
     val firstParam = remember(sensor.parameters) { sensor.parameters.firstOrNull() }
     val sensorName = firstParam?.name ?: ""
     val sensorUnit = firstParam?.unit ?: ""
@@ -253,34 +242,28 @@ fun SensorItem(
         "$sensorName: $valueText"
     }
 
-
     val latestSensorValues by remember(chartValues) {
         derivedStateOf { chartValues.mapNotNull { it.value.toFloatOrNull() } }
     }
-
 
     // 5) UI liviana: evita trabajo extra en layout/medición (altura fija, sin fillMaxSize en el Box si no hace falta)
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 8.dp)
-            //.height(100.dp)
-            .height(80.dp)
-
-        ,
-       // elevation = CardDefaults.elevatedCardElevation(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            // .height(100.dp)
+            .height(80.dp),
+        // elevation = CardDefaults.elevatedCardElevation(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                //.background(MaterialTheme.colorScheme.primaryContainer)
+                // .background(MaterialTheme.colorScheme.primaryContainer)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .semantics(mergeDescendants = true) {
                     contentDescription = spokenSensorItem
-                }
-            ,
+                },
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -290,7 +273,7 @@ fun SensorItem(
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .align(Alignment.Center)
-                    .clearAndSetSemantics { } // <- sin semántica propia,
+                    .clearAndSetSemantics { }, // <- sin semántica propia,
 
             )
 
@@ -301,14 +284,14 @@ fun SensorItem(
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .align(Alignment.BottomCenter)
-                    .clearAndSetSemantics { }
+                    .clearAndSetSemantics { },
             )
 
-            if(isChartable(sensor)){
+            if (isChartable(sensor)) {
                 PerformanceChart(
                     sensorType = sensor,
-                    modifier = Modifier.clearAndSetSemantics { }, //TODO poner un tamaño fijo si puedes para ahorrar layout passes
-                    list = latestSensorValues
+                    modifier = Modifier.clearAndSetSemantics { }, // TODO poner un tamaño fijo si puedes para ahorrar layout passes
+                    list = latestSensorValues,
                 )
             }
         }
@@ -341,24 +324,18 @@ fun SensorItem(
                 )
             )
         }*/
-
     }
 }
 
-
-
-
-
-fun isChartable(sensorType: SensorType) : Boolean {
+fun isChartable(sensorType: SensorType): Boolean {
     var result = false
 
     val max = sensorType.parameters.first().constraints["maxValue"]?.toFloat()
     val min = sensorType.parameters.first().constraints["minValue"]?.toFloat()
 
-    if(max != null && min != null){
+    if (max != null && min != null) {
         result = true
     }
 
     return result
-
 }

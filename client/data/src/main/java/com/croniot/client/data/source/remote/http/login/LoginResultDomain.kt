@@ -4,5 +4,5 @@ import com.croniot.client.core.models.Account
 
 data class LoginResultDomain(
     val account: Account,
-    val token: String
+    val token: String,
 )

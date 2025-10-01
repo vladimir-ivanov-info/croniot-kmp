@@ -3,42 +3,30 @@ package com.croniot.client.features.sensors.data.datasource.local
 import com.croniot.client.core.demo.DemoConstants
 import com.croniot.client.core.models.SensorData
 import com.croniot.client.data.sensors.datasource.LocalSensorDataSource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
-import kotlin.random.Random
 
 class LocalSensorDataSourceImplDemo : LocalSensorDataSource {
 
-
-
     override suspend fun save(sensorData: SensorData) {
-        //TODO
-
+        // TODO
     }
 
     override suspend fun getLatest(
         deviceUuid: String,
         sensorTypeUid: Long,
-        limit: Int
+        limit: Int,
     ): List<SensorData> {
-        //TODO
+        // TODO
         return emptyList()
     }
 
     override /*suspend*/ fun observeSensorData(
         deviceUuid: String,
-        sensorTypeUid: Long
+        sensorTypeUid: Long,
     ): /*State*/Flow<SensorData> {
-
-
         /*CoroutineScope(Dispatchers.IO).launch {
             while (true) {
                 val sensorRandomValue = Random.nextInt(from = -90, until = -30)
@@ -82,11 +70,10 @@ class LocalSensorDataSourceImplDemo : LocalSensorDataSource {
         }*/
     }
 
-
-    private fun getFakeSensorFlow(deviceUuid: String, sensorTypeUid: Long) : Flow<SensorData>{
+    private fun getFakeSensorFlow(deviceUuid: String, sensorTypeUid: Long): Flow<SensorData> {
         return flow {
-            while(true){
-                val sensorData = when(sensorTypeUid){
+            while (true) {
+                val sensorData = when (sensorTypeUid) {
                     DemoConstants.SENSOR_WIFI_LEVEL_ID -> {
                         /*val sensorRandomValue = Random.nextInt(
                             from = DemoConstants.SENSOR_WIFI_LEVEL_MIN_VALUE,
@@ -103,14 +90,14 @@ class LocalSensorDataSourceImplDemo : LocalSensorDataSource {
                             deviceUuid = deviceUuid,
                             sensorTypeUid = sensorTypeUid,
                             minValue = DemoConstants.SENSOR_WIFI_LEVEL_MIN_VALUE,
-                            maxValue = DemoConstants.SENSOR_WIFI_LEVEL_MAX_VALUE
+                            maxValue = DemoConstants.SENSOR_WIFI_LEVEL_MAX_VALUE,
                         )
                     }
-                    else -> SensorData( //TODO
+                    else -> SensorData( // TODO
                         deviceUuid = deviceUuid,
                         sensorTypeUid = sensorTypeUid,
                         value = "123",
-                        timeStamp = ZonedDateTime.now()
+                        timeStamp = ZonedDateTime.now(),
                     )
                 }
                 emit(sensorData)
@@ -118,5 +105,4 @@ class LocalSensorDataSourceImplDemo : LocalSensorDataSource {
             }
         }
     }
-
 }

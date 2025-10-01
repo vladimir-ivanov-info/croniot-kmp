@@ -9,10 +9,10 @@ data class Account(
     var nickname: String,
     var email: String,
     var password: String,
-    //var devices: MutableSet<Device>,
+    // var devices: MutableSet<Device>,
     var devices: MutableList<Device>,
 ) {
-    //constructor() : this(0, "", "", "", "", mutableSetOf())
+    // constructor() : this(0, "", "", "", "", mutableSetOf())
     constructor() : this(0, "", "", "", "", mutableListOf())
     constructor(uuid: String = "", nickname: String, email: String = "", password: String = "", devices: MutableList<Device> = mutableListOf()) : this(0, uuid, nickname, email, password, devices)
 
@@ -36,5 +36,5 @@ fun Account.toDto() = AccountDto(
     uuid = this.uuid,
     nickname = this.nickname,
     email = this.email,
-    devices = this.devices.map { it.toDto() } //.toMutableSet(),
+    devices = this.devices.map { it.toDto() }, // .toMutableSet(),
 )

@@ -13,9 +13,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-//import croniot.models.SensorType
+// import croniot.models.SensorType
 import com.croniot.client.core.models.SensorType
-//import com.croniot.android.domain.model.SensorType
+// import com.croniot.android.domain.model.SensorType
 import kotlin.random.Random
 
 private fun getValuePercentageForRange(value: Float, max: Float, min: Float) =

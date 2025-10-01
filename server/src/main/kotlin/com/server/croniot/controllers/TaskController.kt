@@ -35,7 +35,7 @@ class TaskController @Inject constructor(
             val taskProgress = taskProgressUpdate.progress
             val taskState = taskProgressUpdate.state
             val errorMessage = taskProgressUpdate.errorMessage
-            //val messageSource = taskProgressUpdate.messageSource
+            // val messageSource = taskProgressUpdate.messageSource
 
             val device = deviceService.getByUuid(deviceUuid)
 
@@ -55,8 +55,8 @@ class TaskController @Inject constructor(
                                     taskStateEnum,
                                     taskProgress,
                                     errorMessage,
-                                    task//,
-                                    //messageSource
+                                    task, // ,
+                                    // messageSource
                                 )
                                 taskService.createTaskState(task, stateInfo) // 5-7 ms
 
@@ -89,7 +89,7 @@ class TaskController @Inject constructor(
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace() //org.hibernate.NonUniqueResultException: Query did not return a unique result: 2 results were returned
+            e.printStackTrace() // org.hibernate.NonUniqueResultException: Query did not return a unique result: 2 results were returned
         }
     }
 
@@ -115,13 +115,13 @@ class TaskController @Inject constructor(
         }
     }
 
-    suspend fun requestTaskStateInfoSync(call: ApplicationCall){
+    suspend fun requestTaskStateInfoSync(call: ApplicationCall) {
         val message = call.receiveText()
         val messageAddTask = MessageFactory.fromJson<MessageRequestTaskStateInfoSync>(message)
 
         val result = taskService.requestTaskStateInfoSync(
             messageAddTask.deviceUuid,
-            messageAddTask.taskTypeUid.toLong()
+            messageAddTask.taskTypeUid.toLong(),
         )
         call.respond(result)
     }

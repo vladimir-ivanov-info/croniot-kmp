@@ -37,15 +37,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.croniot.client.presentation.components.GenericDialog
-import com.croniot.client.presentation.constants.UiConstants
-import com.croniot.client.presentation.CroniotSlider
-import com.croniot.client.presentation.components.TimePicker
-import croniot.models.ParameterTypes
-import croniot.models.Result
 import com.croniot.client.core.models.TaskType
 import com.croniot.client.features.tasktypes.presentation.create_task.parameter.StatefulParameter
-
+import com.croniot.client.presentation.CroniotSlider
+import com.croniot.client.presentation.components.GenericDialog
+import com.croniot.client.presentation.components.TimePicker
+import com.croniot.client.presentation.constants.UiConstants
+import croniot.models.ParameterTypes
+import croniot.models.Result
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -57,11 +56,10 @@ fun CreateTaskScreen(
     navController: NavController,
     createTaskViewModel: CreateTaskViewModel = koinViewModel(),
 ) {
-
     LaunchedEffect(Unit) {
         createTaskViewModel.initialize(
             _deviceUuid = deviceUuid,
-            _taskTypeUid = taskTypeUid
+            _taskTypeUid = taskTypeUid,
         )
     }
 
@@ -79,25 +77,24 @@ fun CreateTaskScreen(
         createTaskViewModel.events.collect { event ->
             when (event) {
                 is CreateTaskUiEvent.ShowSnackbar -> {
-
                     val eventResult = event.result
 
                     var snackBarMessage = "Task sent successfully"
 
-                    if(!eventResult.success){
+                    if (!eventResult.success) {
                         snackBarMessage = "Failed sending task: ${eventResult.message}"
                     }
 
                     val result = snackbarHostState.showSnackbar(
                         message = snackBarMessage,
-                        //actionLabel = event.action
-                       // actionLabel = "Dismiss",
+                        // actionLabel = event.action
+                        // actionLabel = "Dismiss",
                         duration = SnackbarDuration.Short,
                     )
                     // si necesitas actuar según el click de acción:
                     // if (result == SnackbarResult.ActionPerformed) { ... }
                 }
-                //UiEvent.NavigateBack -> onNavigateBack()
+                // UiEvent.NavigateBack -> onNavigateBack()
             }
         }
     }
@@ -130,8 +127,8 @@ fun CreateTaskScreen(
                         }
 
                         Box(contentAlignment = Alignment.CenterStart) {
-                            //Text(text = Global.selectedTaskType!!.name)
-                            if(taskType != null){
+                            // Text(text = Global.selectedTaskType!!.name)
+                            if (taskType != null) {
                                 Text(text = taskType.name)
                             } else {
                                 Text(text = "Task type")
@@ -144,19 +141,18 @@ fun CreateTaskScreen(
         },
         content = { innerPadding ->
 
-            if(taskType != null){
+            if (taskType != null) {
                 TaskScreenContent(
                     deviceUuid,
                     taskType,
                     navController,
                     innerPadding,
                     snackbarHostState,
-                    createTaskViewModel
+                    createTaskViewModel,
                 )
             } else {
-                //TODO show loading
+                // TODO show loading
             }
-
         },
     )
 }
@@ -168,7 +164,7 @@ fun TaskScreenContent(
     navController: NavController,
     innerPadding: PaddingValues,
     snackbarHostState: SnackbarHostState,
-    createTaskViewModel: CreateTaskViewModel
+    createTaskViewModel: CreateTaskViewModel,
 ) {
     Box(
         modifier = Modifier
@@ -180,7 +176,7 @@ fun TaskScreenContent(
             taskType,
             navController,
             snackbarHostState,
-            createTaskViewModel
+            createTaskViewModel,
         )
     }
 }
@@ -191,7 +187,7 @@ fun TaskConfiguration(
     taskType: TaskType,
     navController: NavController,
     snackbarHostState: SnackbarHostState,
-    createTaskViewModel: CreateTaskViewModel
+    createTaskViewModel: CreateTaskViewModel,
 ) {
     val coroutineScope = rememberCoroutineScope()
     var showDialog by remember { mutableStateOf(false) }
@@ -222,59 +218,57 @@ fun TaskConfiguration(
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
-           //items(viewModelTaskTypes.parametersValues.size) { index ->
-           items(
-               taskType.parameters.size
-           ) { index ->
+            // items(viewModelTaskTypes.parametersValues.size) { index ->
+            items(
+                taskType.parameters.size,
+            ) { index ->
 
-               Row(modifier = Modifier.fillMaxWidth()){
-                   val currentParameter = taskType.parameters.toList()[index]
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    val currentParameter = taskType.parameters.toList()[index]
 
-                   when (currentParameter.type) {
-                       ParameterTypes.NUMBER -> CroniotSlider(
-                           currentParameter,
-                           onNewValue = { newValue ->
-                               createTaskViewModel.updateParameter(currentParameter.uid, newValue)
-                           }
-                       )
-                       ParameterTypes.TIME ->
-                           TimePicker(
-                               currentParameter,
-                               onNewValue = { newValue ->
-                                   createTaskViewModel.updateParameter(currentParameter.uid, newValue)
-                               }
-                           )
-                       ParameterTypes.STATEFUL -> {
+                    when (currentParameter.type) {
+                        ParameterTypes.NUMBER -> CroniotSlider(
+                            currentParameter,
+                            onNewValue = { newValue ->
+                                createTaskViewModel.updateParameter(currentParameter.uid, newValue)
+                            },
+                        )
+                        ParameterTypes.TIME ->
+                            TimePicker(
+                                currentParameter,
+                                onNewValue = { newValue ->
+                                    createTaskViewModel.updateParameter(currentParameter.uid, newValue)
+                                },
+                            )
+                        ParameterTypes.STATEFUL -> {
+                            val latestTaskStateInfoFlow = createTaskViewModel.observeTaskTypeLatestState(deviceUuid, taskType)
 
-                           val latestTaskStateInfoFlow = createTaskViewModel.observeTaskTypeLatestState(deviceUuid, taskType)
-
-                           StatefulParameter(
-                               deviceUuid = deviceUuid,
-                               taskType = taskType,
-                               parameter = currentParameter,
-                               //createTaskViewModel = createTaskViewModel,
-                               latestTaskStateInfoFlow = latestTaskStateInfoFlow,
-                               onStateChanged = { newState ->
-                                   createTaskViewModel.sendStatefulTask(
-                                       deviceUuid = deviceUuid,
-                                       taskTypeUid = taskType.uid,
-                                       currentParameter.uid,
-                                       newState
-                                   )
-                               }
-                           )
-                       }
-                       //TODO
-                   }
-                   HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-               }
-           }
+                            StatefulParameter(
+                                deviceUuid = deviceUuid,
+                                taskType = taskType,
+                                parameter = currentParameter,
+                                // createTaskViewModel = createTaskViewModel,
+                                latestTaskStateInfoFlow = latestTaskStateInfoFlow,
+                                onStateChanged = { newState ->
+                                    createTaskViewModel.sendStatefulTask(
+                                        deviceUuid = deviceUuid,
+                                        taskTypeUid = taskType.uid,
+                                        currentParameter.uid,
+                                        newState,
+                                    )
+                                },
+                            )
+                        }
+                        // TODO
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
+            }
         }
 
         // TODO instead of checking first element, check if all elements are stateful or if task is immediate
 
-
-        //TODO
+        // TODO
         /*LaunchedEffect(Unit) {
             if (Global.selectedTaskType == null || viewModelTaskTypes.parametersValues.isEmpty()) {
                 if (!navController.popBackStack()) {
@@ -293,7 +287,7 @@ fun TaskConfiguration(
                         // TODO add confirmation dialog
                         // TODO go back?
                         coroutineScope.launch {
-                            //TODO postNewTaskResult = viewModelTaskTypes.sendTask()
+                            // TODO postNewTaskResult = viewModelTaskTypes.sendTask()
                             if (postNewTaskResult.success) {
                                 snackbarHostState.showSnackbar(
                                     message = "Task created successfully.",
@@ -322,7 +316,6 @@ fun TaskConfiguration(
                         // TODO not active for now viewModelDeviceScreen.updateCurrentTab(2) //TODO make enum
                     },
                 ) {
-
                 }
             }
         }

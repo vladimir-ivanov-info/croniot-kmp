@@ -15,7 +15,7 @@ data class Device(
     var deviceToken: DeviceToken? = null,
     var deviceProperties: Map<String, String> = emptyMap(),
 ) {
-    */
+ */
 
 data class Device(
     var id: Long,
@@ -23,8 +23,8 @@ data class Device(
     var name: String,
     var description: String,
     var iot: Boolean,
-    //var sensorTypes: MutableSet<SensorType>,
-    //var taskTypes: MutableSet<TaskType>,
+    // var sensorTypes: MutableSet<SensorType>,
+    // var taskTypes: MutableSet<TaskType>,
 
     var sensorTypes: MutableList<SensorType>,
     var taskTypes: MutableList<TaskType>,
@@ -32,7 +32,7 @@ data class Device(
     var deviceToken: DeviceToken? = null, // Ensure this property exists
     var deviceProperties: Map<String, String> = emptyMap(),
 ) {
-    //constructor() : this(0, "", "", "", /*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null, mutableMapOf())
+    // constructor() : this(0, "", "", "", /*"",*/false, mutableSetOf(), mutableSetOf(), Account(), null, mutableMapOf())
     constructor() : this(0, "", "", "", /*"",*/false, mutableListOf(), mutableListOf(), Account(), null, mutableMapOf())
 
     constructor(
@@ -40,8 +40,8 @@ data class Device(
         name: String = "",
         description: String = "",
         iot: Boolean = false,
-        //sensorTypes: MutableSet<SensorType> = mutableSetOf(),
-        //taskTypes: MutableSet<TaskType> = mutableSetOf(),
+        // sensorTypes: MutableSet<SensorType> = mutableSetOf(),
+        // taskTypes: MutableSet<TaskType> = mutableSetOf(),
 
         sensorTypes: MutableList<SensorType> = mutableListOf(),
         taskTypes: MutableList<TaskType> = mutableListOf(),
@@ -80,7 +80,7 @@ fun Device.toDto() = DeviceDto(
     uuid = this.uuid,
     name = this.name,
     description = this.description,
-    sensorTypes = this.sensorTypes.map { it.toDto() }, //.toMutableSet(),
-    taskTypes = this.taskTypes.map { it.toDto() }, //.toMutableSet(),
-    //lastOnlineMillis = 0, // TODO implement a column in database. Another column for seconds after which the device should be considered offline.
+    sensorTypes = this.sensorTypes.map { it.toDto() }, // .toMutableSet(),
+    taskTypes = this.taskTypes.map { it.toDto() }, // .toMutableSet(),
+    // lastOnlineMillis = 0, // TODO implement a column in database. Another column for seconds after which the device should be considered offline.
 )

@@ -23,8 +23,8 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePicker(
-    parameter: ParameterTask, //TODO change to string parameter name
-    onNewValue: (newTime: String) -> Unit
+    parameter: ParameterTask, // TODO change to string parameter name
+    onNewValue: (newTime: String) -> Unit,
 ) {
     val currentTime = Calendar.getInstance()
 

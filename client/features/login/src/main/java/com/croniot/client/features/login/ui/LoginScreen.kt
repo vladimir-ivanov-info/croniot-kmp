@@ -46,10 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.Global
-import com.croniot.client.presentation.constants.UiConstants
 import com.croniot.client.features.login.R
 import com.croniot.client.presentation.components.EmailTextField
 import com.croniot.client.presentation.components.PasswordTextField
+import com.croniot.client.presentation.constants.UiConstants
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -59,7 +59,7 @@ import org.koin.androidx.compose.koinViewModel
 fun LoginScreenRoot(
     onNavigate: (route: String) -> Unit,
     loginViewModel: LoginViewModel = koinViewModel(),
-){
+) {
     val state = loginViewModel.state.collectAsStateWithLifecycle()
     val effects = loginViewModel.effects
 
@@ -71,7 +71,7 @@ fun LoginScreenRoot(
                 is LoginEffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = effect.content,
-                        withDismissAction = true
+                        withDismissAction = true,
                     )
                 }
                 LoginEffect.NavigateHome -> onNavigate(UiConstants.ROUTE_DEVICES)
@@ -83,11 +83,10 @@ fun LoginScreenRoot(
 
     LoginScreen(
         state = state,
-        onAction =  loginViewModel::onAction,
-        serverMode = "local", //TODO,
-        snackbarHostState = snackbarHostState
+        onAction = loginViewModel::onAction,
+        serverMode = "local", // TODO,
+        snackbarHostState = snackbarHostState,
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,7 +95,7 @@ fun LoginScreen(
     state: State<LoginState>,
     onAction: (LoginIntent) -> Unit,
     serverMode: String,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -107,9 +106,10 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
                     ) {
-                        Text(text = Global.appName,
+                        Text(
+                            text = Global.appName,
                             style = MaterialTheme.typography.headlineMedium,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
                     }
                 },
@@ -121,7 +121,7 @@ fun LoginScreen(
                 state = state,
                 innerPadding = innerPadding,
                 serverMode = serverMode,
-                onAction = onAction
+                onAction = onAction,
             )
         },
     )
@@ -142,20 +142,18 @@ fun LoginScreenBody(
                 brush = Brush.verticalGradient(
                     colors = listOf(
                         MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f)
-                    )
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f),
+                    ),
                 ),
-                shape = MaterialTheme.shapes.medium
-            )
-            ,
+                shape = MaterialTheme.shapes.medium,
+            ),
     ) {
         LoginContent(
             state = state,
             serverMode = serverMode,
             modifier = Modifier
-                .align(Alignment.TopCenter)
-            ,
-            onAction = onAction
+                .align(Alignment.TopCenter),
+            onAction = onAction,
         )
     }
 }
@@ -169,11 +167,9 @@ fun LoginContent(
 ) {
     Column(
         modifier = modifier
-            .padding(16.dp)
-        ,
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         SlowHeroSlogan()
 
         // Logo
@@ -217,7 +213,7 @@ fun LoginContent(
             enabled = !state.value.isLoading,
             onValueChange = {
                 onAction(LoginIntent.EmailChanged(it))
-            }
+            },
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -227,14 +223,14 @@ fun LoginContent(
             enabled = !state.value.isLoading,
             onValueChange = {
                 onAction(LoginIntent.PasswordChanged(it))
-            }
+            },
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         LoginButton(
             state = state,
-            onAction = onAction
+            onAction = onAction,
         )
 
         /*Spacer(modifier = Modifier.height(16.dp))
@@ -250,7 +246,7 @@ fun LoginContent(
 
         RegisterButton(
             state = state,
-            onAction = onAction
+            onAction = onAction,
         )
     }
 }
@@ -258,21 +254,21 @@ fun LoginContent(
 @Composable
 fun LoginButton(
     state: State<LoginState>,
-    onAction: (LoginIntent) -> Unit
+    onAction: (LoginIntent) -> Unit,
 ) {
     Button(
         onClick = {
             onAction(LoginIntent.Login)
         },
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
     ) {
         if (state.value.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier
-                    .size(20.dp),   // tamaño reducido para que encaje bien en el botón
+                    .size(20.dp), // tamaño reducido para que encaje bien en el botón
                 strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onPrimary // color visible sobre el fondo
+                color = MaterialTheme.colorScheme.onPrimary, // color visible sobre el fondo
             )
         } else {
             Text(text = "Log in")
@@ -310,7 +306,6 @@ fun LoginAsGuestButton(
     }
 }*/
 
-
 @Composable
 fun RegisterButton(
     state: State<LoginState>,
@@ -322,19 +317,17 @@ fun RegisterButton(
             onAction(LoginIntent.GoToCreateAccountScreen)
         },
         modifier = Modifier
-            .testTag(UiConstants.SCREEN_LOGIN_BUTTON_REGISTER_TAG)
-        ,
+            .testTag(UiConstants.SCREEN_LOGIN_BUTTON_REGISTER_TAG),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.secondary,
-        )
+        ),
     ) {
         Text(
-            text = UiConstants.SCREEN_LOGIN_BUTTON_CREATE_ACCOUNT_TEXT
+            text = UiConstants.SCREEN_LOGIN_BUTTON_CREATE_ACCOUNT_TEXT,
         )
     }
 }
-
 
 @Composable
 fun SlowHeroSlogan() {
@@ -347,13 +340,13 @@ fun SlowHeroSlogan() {
         launch {
             alpha.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(durationMillis = 3000, easing = LinearOutSlowInEasing)
+                animationSpec = tween(durationMillis = 3000, easing = LinearOutSlowInEasing),
             )
         }
         launch {
             offsetY.animateTo(
                 targetValue = 0f,
-                animationSpec = tween(durationMillis = 3000, easing = LinearOutSlowInEasing)
+                animationSpec = tween(durationMillis = 3000, easing = LinearOutSlowInEasing),
             )
         }
     }
@@ -364,13 +357,13 @@ fun SlowHeroSlogan() {
             fontWeight = FontWeight.Light,
             letterSpacing = 0.8.sp,
             lineHeight = 28.sp,
-            color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f)
+            color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f),
         ),
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp, bottom = 24.dp)
             .graphicsLayer { translationY = offsetY.value } // ocupa sitio desde el inicio
-            .alpha(alpha.value)                              // se hace visible lentamente
+            .alpha(alpha.value), // se hace visible lentamente
     )
 }

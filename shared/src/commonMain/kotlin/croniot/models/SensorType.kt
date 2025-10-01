@@ -1,7 +1,6 @@
 package croniot.models
 
 import croniot.models.dto.SensorTypeDto
-import java.util.Objects
 
 /*
 data class SensorType(
@@ -20,19 +19,19 @@ data class SensorType(
     var uid: Long,
     var name: String,
     var description: String,
-    //var parameters: MutableSet<ParameterSensor>,
+    // var parameters: MutableSet<ParameterSensor>,
     var parameters: MutableList<ParameterSensor>,
 
-    //@Transient
+    // @Transient
     var device: Device? = null,
 
-    //var sensorOrder: Int? = null,
+    // var sensorOrder: Int? = null,
 
 ) {
 
     constructor() : this(0, 0, "", "", mutableListOf(), Device())
-    constructor(uid: Long, name: String, description: String, parameters: MutableList<ParameterSensor>, device: Device)
-            : this(0, uid, name, description, parameters, device)
+    constructor(uid: Long, name: String, description: String, parameters: MutableList<ParameterSensor>, device: Device) :
+        this(0, uid, name, description, parameters, device)
 
     constructor(id: Long, uid: Long) : this(id, uid, "", "", mutableListOf(), Device())
 
@@ -51,13 +50,11 @@ data class SensorType(
 
     override fun hashCode(): Int {
         // return Objects.hash(id) // or hash other relevant properties
-        //return Objects.hash(uid) // or hash other relevant properties
+        // return Objects.hash(uid) // or hash other relevant properties
         return id.hashCode()
     }
 
-
     override fun equals(other: Any?) = other is SensorType && id == other.id
-
 
    /* override fun equals(obj: Any?): Boolean {
         if (this === obj) return true
@@ -75,5 +72,5 @@ fun SensorType.toDto() = SensorTypeDto(
     uid = this.uid,
     name = this.name,
     description = this.description,
-    parameters = this.parameters.map { it.toDto() } //.toMutableSet(),
+    parameters = this.parameters.map { it.toDto() }, // .toMutableSet(),
 )

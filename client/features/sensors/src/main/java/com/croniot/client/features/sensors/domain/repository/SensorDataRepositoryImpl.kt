@@ -1,44 +1,31 @@
 package com.croniot.client.features.sensors.domain.repository
 
-import com.croniot.android.core.data.entities.SensorDataRealm
-import com.croniot.client.data.source.local.RealmRef
-import com.croniot.client.core.models.SensorData
-import com.croniot.client.data.mappers.toAndroidModel
 import com.croniot.client.core.models.Device
+import com.croniot.client.core.models.SensorData
 import com.croniot.client.data.sensors.datasource.LocalSensorDataSource
 import com.croniot.client.data.sensors.datasource.RemoteSensorDataSource
+import com.croniot.client.data.source.local.RealmRef
 import com.croniot.client.domain.repositories.SensorDataRepository
 import croniot.models.dto.SensorTypeDto
 import io.realm.kotlin.Realm
-import io.realm.kotlin.notifications.UpdatedResults
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
 
 class SensorDataRepositoryImpl(
     private val remoteSensorDataSource: RemoteSensorDataSource,
-    private val localSensorDataSource: LocalSensorDataSource
+    private val localSensorDataSource: LocalSensorDataSource,
 
 ) : SensorDataRepository {
 
-   // private val realm: Realm = MyApp.realm
+    // private val realm: Realm = MyApp.realm
     private val realm: Realm = RealmRef.realmRef
 
     private val sensorSharedFlows = mutableMapOf<SensorTypeDto, MutableSharedFlow<SensorData>>()
@@ -48,8 +35,8 @@ class SensorDataRepositoryImpl(
     private val _devicesLatestSensorTimestamp = MutableStateFlow<Map<String, Long>>(emptyMap())
     override val devicesLatestSensorTimestamp: StateFlow<Map<String, Long>> = _devicesLatestSensorTimestamp
 
-    override suspend fun listenToDeviceSensors(device: Device) { //TODO add useCase in the end of fun name
-        //TODO data.listenTtoDeviceSensorsUseCase
+    override suspend fun listenToDeviceSensors(device: Device) { // TODO add useCase in the end of fun name
+        // TODO data.listenTtoDeviceSensorsUseCase
 
         /*val clientId = ServerConfig.mqttClientId + Global.generateUniqueString(8)
         val mqttClient = MqttClient(ServerConfig.mqttBrokerUrl, clientId, null)
@@ -80,12 +67,11 @@ class SensorDataRepositoryImpl(
                 CoroutineScope(Dispatchers.IO).launch {
                     localSensorDataSource.save(sensorData)
 
-
                     _devicesLatestSensorTimestamp.update { oldMap ->
                         oldMap + (device.uuid to ZonedDateTime.now().toInstant().toEpochMilli())
                     }
                 }
-            }
+            },
         )
 
         /*CoroutineScope(Dispatchers.IO).launch {
@@ -106,18 +92,15 @@ class SensorDataRepositoryImpl(
         }
     }*/
 
-    override suspend fun getLatestSensorData(deviceUuid: String, sensorTypeUid: Long, elements: Int)
-            = localSensorDataSource.getLatest(deviceUuid, sensorTypeUid, elements)
+    override suspend fun getLatestSensorData(deviceUuid: String, sensorTypeUid: Long, elements: Int) = localSensorDataSource.getLatest(deviceUuid, sensorTypeUid, elements)
 
-//Si
-
-
-
+// Si
 
     override /*suspend*/ fun observeSensorData(deviceUuid: String, sensorTypeUid: Long): /*State*/Flow<SensorData> {
         val key = deviceUuid to sensorTypeUid
 
-       /* return*/ /*localSensorDataSource.observeSensorData(
+        /* return*/
+       /*localSensorDataSource.observeSensorData(
             deviceUuid = deviceUuid,
             sensorTypeUid = sensorTypeUid
         ).onEach { sensorData ->
@@ -147,9 +130,6 @@ class SensorDataRepositoryImpl(
         }*/
     }
 
-
-
-
     /*override fun observeSensorDataInsertions(deviceUuid: String): Flow<Long> {
 
         return localSensorDataSource.observeSensorData(
@@ -178,6 +158,6 @@ class SensorDataRepositoryImpl(
         //.distinctUntilChanged()         // opcional si emites timestamp (ya cambia siempre)
 
 
-        */
-    //}
+ */
+    // }
 }

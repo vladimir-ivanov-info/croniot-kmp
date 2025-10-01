@@ -18,7 +18,7 @@ import com.croniot.client.core.models.TaskType
 @Composable
 fun TaskTypeItem(
     task: TaskType,
-    onTaskTypeClicked: () -> Unit
+    onTaskTypeClicked: () -> Unit,
 ) {
     Card(
         onClick = onTaskTypeClicked,
@@ -26,21 +26,21 @@ fun TaskTypeItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp) // altura mínima accesible
+            .heightIn(min = 56.dp), // altura mínima accesible
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp)
+                .padding(horizontal = 16.dp, vertical = 14.dp),
         ) {
             Text(
                 text = task.name,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.align(Alignment.CenterStart)
+                modifier = Modifier.align(Alignment.CenterStart),
             )
         }
     }

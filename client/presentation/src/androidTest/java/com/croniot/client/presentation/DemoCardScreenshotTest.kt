@@ -17,7 +17,7 @@ class DemoCardScreenshotTest : ScreenshotTest {
         composeRule.setContent {
             MaterialTheme {
                 DemoCard()
-                //LoginScreen()
+                // LoginScreen()
             }
         }
         // Guarda/Compara la captura de la raíz de Compose

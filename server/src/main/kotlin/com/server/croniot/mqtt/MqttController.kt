@@ -138,7 +138,7 @@ object MqttController {
     suspend fun sendNewTask(deviceUuid: String, task: Task, taskStateInfo: TaskStateInfo) {
         clientLock.withLock {
             val topic = "/$deviceUuid/newTasks"
-            //val topic = "/server_to_devices/task_progress_update/$deviceUuid"
+            // val topic = "/server_to_devices/task_progress_update/$deviceUuid"
 
             val taskDto = task.toDto()
             taskDto.stateInfos.add(taskStateInfo.toDto())
@@ -181,7 +181,7 @@ object MqttController {
         }
     }
 
-    suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeId: Long){
+    suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeId: Long) {
         clientLock.withLock {
             val topic = "/server/$deviceUuid/task_state_info_sync/$taskTypeId"
             val json = gsonZonedDateTime.toJson(taskTypeId)

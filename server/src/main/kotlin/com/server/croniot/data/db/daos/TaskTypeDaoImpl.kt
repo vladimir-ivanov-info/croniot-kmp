@@ -35,7 +35,7 @@ class TaskTypeDaoImpl @Inject constructor(
             val tx = session.beginTransaction()
             try {
                 // 1. Recuperar el Device gestionado
-                //val device = task.device
+                // val device = task.device
                 //    ?: throw IllegalArgumentException("TaskType debe tener un Device asignado")
 
                 val managedDevice = if (device.id != 0L) {
@@ -58,14 +58,13 @@ class TaskTypeDaoImpl @Inject constructor(
                 }
 
                 tx.commit()
-                //return task.id
+                // return task.id
             } catch (e: Exception) {
                 tx.rollback()
                 throw e
             }
         }
     }
-
 
     override fun get(device: Device, taskTypeUid: Long): TaskType? {
         val session = sessionFactory.openSession()

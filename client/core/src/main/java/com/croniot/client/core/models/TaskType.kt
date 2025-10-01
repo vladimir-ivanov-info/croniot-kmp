@@ -9,5 +9,5 @@ data class TaskType(
     var name: String,
     var description: String,
     var parameters: /*Mutable*/Set<ParameterTask>,
-    var realTime: Boolean
+    var realTime: Boolean,
 ) : Parcelable

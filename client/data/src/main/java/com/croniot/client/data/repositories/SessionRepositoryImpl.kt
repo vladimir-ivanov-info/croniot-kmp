@@ -4,8 +4,8 @@ import com.croniot.client.core.models.auth.AuthSession
 import com.croniot.client.data.source.local.LocalDatasource
 
 class SessionRepositoryImpl(
-    private val localDataSource: LocalDatasource
-) : SessionRepository{
+    private val localDataSource: LocalDatasource,
+) : SessionRepository {
 
     override suspend fun save(session: AuthSession) {
         localDataSource.saveEmail(session.email)
@@ -13,9 +13,8 @@ class SessionRepositoryImpl(
     }
 
     override suspend fun clearAllExceptDeviceUuid() {
-        //TODO("Not yet implemented")
+        // TODO("Not yet implemented")
         localDataSource.clearAllCacheExceptDeviceUuid()
-
     }
 
     /*override suspend fun clearSession(){
@@ -23,5 +22,4 @@ class SessionRepositoryImpl(
         localDataSource.saveToken("")
         localDataSource.saveCurrentAccount(null) //TODO
     }*/
-
 }

@@ -2,26 +2,24 @@ package com.croniot.client.data.source.remote.mappers
 
 import com.croniot.client.core.models.Account
 import com.croniot.client.core.models.Device
-import com.croniot.client.core.models.SensorType
-import com.croniot.client.core.models.TaskType
 import com.croniot.client.core.models.ParameterSensor
 import com.croniot.client.core.models.ParameterTask
-
+import com.croniot.client.core.models.SensorType
+import com.croniot.client.core.models.TaskType
+import croniot.models.dto.AccountDto
+import croniot.models.dto.DeviceDto
 import croniot.models.dto.ParameterSensorDto
 import croniot.models.dto.ParameterTaskDto
 import croniot.models.dto.SensorTypeDto
 import croniot.models.dto.TaskTypeDto
 
-import croniot.models.dto.AccountDto
-import croniot.models.dto.DeviceDto
-
-//TODO maybe change toAndroidModel to toDomain
+// TODO maybe change toAndroidModel to toDomain
 fun AccountDto.toDomain(): Account {
     return Account(
         uuid = this.uuid,
         nickname = this.nickname,
         email = this.email,
-        devices = this.devices.map { it.toDomain() }//.toMutableSet()
+        devices = this.devices.map { it.toDomain() }, // .toMutableSet()
     )
 }
 
@@ -35,12 +33,12 @@ fun DeviceDto.toDomain(): Device = Device(
 
 fun TaskTypeDto.toDomain(): TaskType {
     return TaskType(
-        //id = this.id,
+        // id = this.id,
         uid = this.uid,
         name = this.name,
         description = this.description,
         parameters = this.parameters.map { it.toDomain() }.toMutableSet(),
-        realTime = this.realTime
+        realTime = this.realTime,
     )
 }
 
@@ -49,7 +47,7 @@ fun SensorTypeDto.toDomain(): SensorType {
         uid = this.uid,
         name = this.name,
         description = this.description,
-        parameters = this.parameters.map { it.toDomain() }.toMutableSet()
+        parameters = this.parameters.map { it.toDomain() }.toMutableSet(),
     )
 }
 
@@ -60,7 +58,7 @@ fun ParameterTaskDto.toDomain(): ParameterTask {
         type = this.type,
         unit = this.unit,
         description = this.description,
-        constraints = this.constraints.toMutableMap()  //TODO not actually mutable map, convert to map
+        constraints = this.constraints.toMutableMap(), // TODO not actually mutable map, convert to map
     )
 }
 
@@ -71,7 +69,6 @@ fun ParameterSensorDto.toDomain(): ParameterSensor {
         type = this.type,
         unit = this.unit,
         description = this.description,
-        constraints = this.constraints.toMutableMap() //TODO not actually mutable map, convert to map
+        constraints = this.constraints.toMutableMap(), // TODO not actually mutable map, convert to map
     )
 }
-

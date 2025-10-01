@@ -17,13 +17,13 @@ class StatefulParameterViewModel(
     private val requestTaskStateInfoSyncUseCase: RequestTaskStateInfoSyncUseCase,
 ) : ViewModel(), KoinComponent {
 
-    private val _statefulTaskInfoParameterSynced = MutableStateFlow(false) //TODO make Boolean? so first value can be null which means "loading", not "disconnected"
+    private val _statefulTaskInfoParameterSynced = MutableStateFlow(false) // TODO make Boolean? so first value can be null which means "loading", not "disconnected"
     val statefulTaskInfoParameterSynced: StateFlow<Boolean> get() = _statefulTaskInfoParameterSynced
 
-    fun initialize(deviceUuid: String, taskTypeUid: Long){
+    fun initialize(deviceUuid: String, taskTypeUid: Long) {
         val job = viewModelScope.launch {
             while (isActive) { // se cancela automáticamente al cancelar el Job
-                //val latestTaskStateInfo = tasksRepository.getLatestTaskStateInfo(deviceUuid, taskTypeUid)
+                // val latestTaskStateInfo = tasksRepository.getLatestTaskStateInfo(deviceUuid, taskTypeUid)
                 val latestTaskStateInfoFromIoT = tasksRepository.getLatestTaskStateInfoEmittedByIoT(deviceUuid, taskTypeUid)
                 latestTaskStateInfoFromIoT?.let {
                     val now = ZonedDateTime.now()
@@ -31,12 +31,12 @@ class StatefulParameterViewModel(
 
                     val isSynced = !now.isAfter(latestTaskStateInfoDateTime.plusSeconds(5))
 
-                    if(!isSynced){
+                    if (!isSynced) {
                         requestTaskStateInfoSyncUseCase(deviceUuid, taskTypeUid)
                     }
 
                     val shouldRequestUpdate = now.isAfter(latestTaskStateInfoDateTime.plusSeconds(3))
-                    if(shouldRequestUpdate){
+                    if (shouldRequestUpdate) {
                         requestTaskStateInfoSyncUseCase(deviceUuid, taskTypeUid)
                     }
 

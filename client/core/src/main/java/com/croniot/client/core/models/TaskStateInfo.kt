@@ -10,5 +10,5 @@ data class TaskStateInfo(
     var state: String,
     var progress: Double,
     var errorMessage: String,
-    //var messageSource: String
+    // var messageSource: String
 )

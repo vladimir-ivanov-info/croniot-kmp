@@ -14,7 +14,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(OkHttpClient()) // Usa el cliente por defecto, o injecta uno si lo necesitas
-            //.client(get()) // Usa el cliente por defecto, o injecta uno si lo necesitas
+            // .client(get()) // Usa el cliente por defecto, o injecta uno si lo necesitas
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -30,7 +30,7 @@ object NetworkModule {
         }
 
         single {
-            //buildRetrofit("http://${ServerConfig.SERVER_ADDRESS}:${ServerConfig.SERVER_PORT}")
+            // buildRetrofit("http://${ServerConfig.SERVER_ADDRESS}:${ServerConfig.SERVER_PORT}")
 
             Retrofit.Builder()
                 .baseUrl("http://${ServerConfig.SERVER_ADDRESS}:${ServerConfig.SERVER_PORT}/") // Debe tener protocolo, host y terminar en `/`
@@ -40,10 +40,7 @@ object NetworkModule {
         }
 
         single<LoginApi> { get<Retrofit>().create(LoginApi::class.java) }
-
     }
-
-
 
     fun reloadRetrofit(newServerAddress: String) {
         val fullUrl = "http://$newServerAddress:${ServerConfig.SERVER_PORT}"
@@ -52,7 +49,7 @@ object NetworkModule {
                 single<Retrofit> {
                     buildRetrofit(fullUrl)
                 }
-            }
+            },
         )
     }
 }

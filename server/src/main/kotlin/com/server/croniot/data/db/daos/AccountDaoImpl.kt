@@ -98,7 +98,7 @@ class AccountDaoImpl @Inject constructor(
                 // 🔴 IMPORTANTE: inicializa las colecciones anidadas aquí
                 account.devices.forEach { d ->
                     d.sensorTypes.forEach { st ->
-                        Hibernate.initialize(st.parameters)   // ← evita LazyInitializationException
+                        Hibernate.initialize(st.parameters) // ← evita LazyInitializationException
                     }
                     // Si también necesitas parámetros de TaskType:
                     // d.taskTypes.forEach { tt -> Hibernate.initialize(tt.parameters) }
@@ -116,8 +116,6 @@ class AccountDaoImpl @Inject constructor(
             }
         }
     }
-
-
 
     /*override fun getAccountEagerSkipTasks(email: String, password: String): Account? {
         val session = sessionFactory.openSession()
@@ -189,12 +187,6 @@ class AccountDaoImpl @Inject constructor(
         }
     }*/
 
-
-
-
-
-
-
     /* override fun getAccountEagerSkipTasks(email: String, password: String): Account? {
          val session = sessionFactory.openSession()
          session.use { sess ->
@@ -242,7 +234,6 @@ class AccountDaoImpl @Inject constructor(
              return account
          }
      }*/
-
 
     /*override fun getAccountEagerSkipTasks(email: String, password: String): Account? {
         val session = sessionFactory.openSession()
@@ -321,8 +312,6 @@ class AccountDaoImpl @Inject constructor(
             }
         }
     }*/
-
-
 
     override fun getAll(): List<Account> {
         val session = sessionFactory.openSession()

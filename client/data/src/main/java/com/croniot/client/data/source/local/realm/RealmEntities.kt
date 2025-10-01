@@ -78,7 +78,7 @@ class TaskRealm : RealmObject {
     var deviceUuid: String = ""
     var taskTypeUid: Long = 0L
     var parametersValues: RealmList<KeyValueEntity> = realmListOf()
-    //var stateInfos: RealmList<TaskStateInfoRealm> = realmListOf()
+    // var stateInfos: RealmList<TaskStateInfoRealm> = realmListOf()
 }
 
 class TaskStateInfoRealm : RealmObject {

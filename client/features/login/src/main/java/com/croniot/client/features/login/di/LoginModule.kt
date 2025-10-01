@@ -2,10 +2,10 @@ package com.croniot.client.features.login.di
 
 import com.croniot.client.data.source.remote.http.login.LoginDataSource
 import com.croniot.client.features.login.domain.usecase.LogInUseCase
+import com.croniot.client.features.login.ui.LoginViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import com.croniot.client.features.login.ui.LoginViewModel
 
 object LoginModule {
     val loginModule = module {
@@ -27,7 +27,7 @@ object LoginModule {
             LoginViewModel(
                 loginUseCase = get(),
                 savedStateHandle = get(),
-                dataSourceBus = get()
+                dataSourceBus = get(),
             )
         }
     }
