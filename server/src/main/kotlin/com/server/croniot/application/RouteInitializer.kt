@@ -93,6 +93,10 @@ class RouteInitializer @Inject constructor(
             post("/api/add_task") {
                 taskController.addTask(call)
             }
+
+            post("/api/request_task_state_info_sync") {
+                taskController.requestTaskStateInfoSync(call)
+            }
         }
     }
 }

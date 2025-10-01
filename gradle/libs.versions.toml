@@ -13,14 +13,17 @@ androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-plugin = "1.6.11"
 junit = "4.13.2"
-kotlin = "2.1.0"
+#kotlin = "2.1.0"
+#kotlin = "2.2.0" #realm doesn't support 2.1.0 yet
+kotlin = "2.0.20" #realm doesn't support 2.1.0 yet
 
 ktor = "2.3.12"
 logback = "1.5.6"
 
 gson = "2.11.0"
 
-koin = "3.6.0-wasm-alpha2"
+#koin = "3.6.0-wasm-alpha2"
+koin = "4.1.0"
 navigation = "2.8.8"
 compose = "1.7.8"
 
@@ -67,7 +70,8 @@ hibernate-cache-commons = "15.0.10.Final"
 javax-cache-api = "1.1.1"
 
 mapstruct = "1.6.0.Beta1"
-serializationJson = "1.7.1"
+#serializationJson = "1.7.1"
+serializationJson = "1.7.3"
 dagger = "2.55"
 #mockk = "1.13.11"
 h2 = "2.2.224"
@@ -80,7 +84,12 @@ datastoreCoreAndroid = "1.1.3"
 ##maplibre = "9.5.0" # Use the latest stable version available
 #maplibre = "11.3.0" # Use the latest stable version available
 
-realm = "2.3.0"
+#realm = "2.3.0"
+realm = "3.0.0"
+
+
+composeMultiplatform = "1.8.2"
+uiTestJunit4Android = "1.9.1"
 
 
 [libraries]
@@ -101,8 +110,14 @@ ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "k
 
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
-koinAndroid = { module = "io.insert-koin:koin-android", version.ref = "koin" }
-koinCompose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+#koinAndroid = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+#koinCompose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 coreKtx = { module = "androidx.core:core-ktx", version = "1.13.0" }
 lifecycleRuntime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -191,9 +206,29 @@ androidx-datastore-core-android = { group = "androidx.datastore", name = "datast
 
 realm = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
 
-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+        #compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
-composeMaterial3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
+#composeMaterial3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
+
+
+
+
+
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
+compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "composeMultiplatform" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMultiplatform" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
+compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
+androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
+
+
+
+
+
+
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -204,3 +239,11 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 realm = { id = "io.realm.kotlin", version.ref = "realm" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
+#compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+#composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+
+[bundles]
+
+#TODO

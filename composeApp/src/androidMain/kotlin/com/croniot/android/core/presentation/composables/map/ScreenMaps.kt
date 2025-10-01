@@ -21,8 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.croniot.android.app.Global
-import com.croniot.android.core.constants.ServerConfig
+import com.croniot.client.core.ServerConfig
+
+//import com.croniot.android.app.Global
+//import com.croniot.android.core.constants.ServerConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 // TODO after getting Google Maps API token

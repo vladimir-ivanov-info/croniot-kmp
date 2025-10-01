@@ -9,7 +9,7 @@ import android.os.IBinder
 import android.util.Log
 import com.croniot.android.R
 import com.croniot.android.app.MainActivity
-import com.croniot.android.core.presentation.UiConstants
+import com.croniot.client.presentation.constants.UiConstants
 
 class ForegroundService : Service() {
 

@@ -1,0 +1,10 @@
+package com.croniot.client.presentation.constants
+
+import androidx.compose.ui.unit.sp
+
+object UtilUi {
+    val TEXT_SIZE_1 = 32.sp
+    val TEXT_SIZE_2 = 24.sp
+    val TEXT_SIZE_3 = 20.sp
+    val TEXT_SIZE_4 = 16.sp
+}

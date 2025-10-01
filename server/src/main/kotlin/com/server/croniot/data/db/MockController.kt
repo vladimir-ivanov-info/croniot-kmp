@@ -9,10 +9,10 @@ object MockController {
 
     val connection = ControllerDb.getConnection()
 
-    fun addMockData() {
+    /*fun addMockData() {
         val account1 = Account("account1Uuid", "vladimiriot", "email1@gmail.com", "password1", mutableSetOf())
-        val device1 = Device("esp32id", "Watering system", "description123", true, /*"esp32Password",*/ mutableSetOf(), mutableSetOf(), account1)
-        val device2 = Device("android1Uuid", "Android device", "description123", false, /*"androidPassword",*/ mutableSetOf(), mutableSetOf(), account1)
+        val device1 = Device("esp32id", "Watering system", "description123", true, /*"esp32Password",*/ emptyList(), emptyList(), account1)
+        val device2 = Device("android1Uuid", "Android device", "description123", false, /*"androidPassword",*/ emptyList(), emptyList(), account1)
 
         val sensorType1 = SensorType(1, "WiFi signal", "WiFi signal strength expressed in dBm", mutableSetOf(), device1)
         val parameterSensor1 = ParameterSensor(1, "WiFi signal", "number", "dBm", "WiFi signal strength expressed in dBm", mutableMapOf(), sensorType1)
@@ -54,5 +54,5 @@ object MockController {
         account1.devices.add(device2) // hashing problem
 
         // TODO  ControllerDb.accountDao.insert(account1)
-    }
+    }*/
 }

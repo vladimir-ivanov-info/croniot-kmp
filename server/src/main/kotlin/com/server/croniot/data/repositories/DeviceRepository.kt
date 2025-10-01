@@ -1,6 +1,7 @@
 package com.server.croniot.data.repositories
 
 import com.server.croniot.data.db.daos.DeviceDao
+import croniot.models.Account
 import croniot.models.Device
 import javax.inject.Inject
 
@@ -16,8 +17,8 @@ class DeviceRepository @Inject constructor(
         return deviceDao.getAll()
     }
 
-    fun createDevice(device: Device) {
-        deviceDao.insert(device)
+    fun createDevice(account: Account, device: Device) {
+        deviceDao.insert(account, device)
     }
 
     fun getLazy(deviceUuid: String): Device? {

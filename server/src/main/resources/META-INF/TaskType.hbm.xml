@@ -15,6 +15,7 @@
         <property name="name" column="name"/>
         <property name="description" column="description"/>
 
+        <!--
         <set name="parameters" table="parameter_task" cascade="all-delete-orphan" inverse="true" lazy="false" fetch="join">
             <cache usage="read-write" region="parameters_parameter_task_cache"/>
             <key>
@@ -30,6 +31,34 @@
             </key>
             <one-to-many class="croniot.models.Task" />
         </set>
+
+        -->
+
+        <list name="parameters"
+            table="parameter_task"
+            cascade="all-delete-orphan"
+            inverse="false"
+            lazy="true"
+            fetch="select">
+            <cache usage="read-write" region="parameters_parameter_task_cache"/>
+            <key column="task_type"/>
+            <list-index column="param_order"/>
+            <one-to-many class="croniot.models.ParameterTask"/>
+        </list>
+
+        <list name="tasks"
+            table="tasks"
+            cascade="all-delete-orphan"
+            inverse="false"
+            lazy="true"
+            fetch="select">
+            <cache usage="read-write" region="tasks_cache"/>
+            <key column="task_type"/>
+            <list-index column="task_order"/>
+            <one-to-many class="croniot.models.Task"/>
+        </list>
+
+
 
         <many-to-one name="device" class="croniot.models.Device" column="device" not-null="false" index="idx_tasktype_device"/>
     </class>

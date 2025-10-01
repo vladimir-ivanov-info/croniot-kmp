@@ -17,8 +17,8 @@ class TaskRepository @Inject constructor(
         return taskDao.getLazy(deviceUuid, taskTypeUid, taskUid)
     }
 
-    fun createTaskState(taskStateInfo: TaskStateInfo) {
-        taskStateInfoDao.insert(taskStateInfo)
+    fun createTaskState(task: Task, taskStateInfo: TaskStateInfo) {
+        taskStateInfoDao.insert(task, taskStateInfo)
     }
 
     fun create(device: Device, taskType: TaskType): Task {
@@ -29,8 +29,8 @@ class TaskRepository @Inject constructor(
         taskDao.insert(task)
     }
 
-    fun createState(taskStateInfo: TaskStateInfo) {
-        taskStateInfoDao.insert(taskStateInfo)
+    fun createState(task: Task, taskStateInfo: TaskStateInfo) {
+        taskStateInfoDao.insert(task, taskStateInfo)
     }
 
     fun getAll(deviceUuid: String): List<Task> {

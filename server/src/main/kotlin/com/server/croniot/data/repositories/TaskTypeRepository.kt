@@ -20,8 +20,8 @@ class TaskTypeRepository @Inject constructor(
         return taskTypeDao.exists(device, taskTypeUid)
     }
 
-    fun create(taskType: TaskType) {
-        taskTypeDao.insert(taskType)
+    fun insert(device: Device, taskType: TaskType) {
+        taskTypeDao.insert(device, taskType)
     }
 
     fun getLazy(device: Device, taskTypeUid: Long): TaskType? {

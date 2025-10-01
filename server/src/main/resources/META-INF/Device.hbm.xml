@@ -18,6 +18,7 @@
 
         <many-to-one name="account" class="croniot.models.Account" column="account" />
 
+        <!--
         <set name="sensorTypes" table="sensor" cascade="save-update" inverse="true" lazy="false" fetch="join">
             <cache usage="read-write" region="sensorTypes_cache"/>
             <key>
@@ -32,7 +33,35 @@
                 <column name="device"/>
             </key>
             <one-to-many class="croniot.models.TaskType" />
-        </set>
+        </set> -->
+
+
+        <list name="sensorTypes"
+
+            cascade="all-delete-orphan"
+            inverse="false"
+            lazy="true"
+            fetch="select">
+            <cache usage="read-write" region="sensorTypes_cache"/>
+            <key column="device"/>
+            <list-index column="sensor_type_order"/>
+            <one-to-many class="croniot.models.SensorType"/>
+        </list>
+
+
+        <list name="taskTypes"
+
+            cascade="all-delete-orphan"
+            inverse="false"
+            lazy="true"
+            fetch="select">
+            <cache usage="read-write" region="taskTypes_cache"/>
+            <key column="device"/>
+            <list-index column="task_type_order"/> <!-- columna INT en task_type -->
+            <one-to-many class="croniot.models.TaskType"/>
+        </list>
+
+
 
         <one-to-one name="deviceToken" class="croniot.models.DeviceToken" cascade="all-delete-orphan" property-ref="device"/>
 

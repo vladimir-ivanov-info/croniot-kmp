@@ -1,13 +1,13 @@
 package croniot.models
 
 open class Parameter(
-    var id: Long,
-    var uid: Long,
-    var name: String,
-    var type: String,
-    var unit: String,
-    var description: String,
-    var constraints: MutableMap<String, String>,
+    open var id: Long,
+    open var uid: Long,
+    open var name: String,
+    open var type: String,
+    open var unit: String,
+    open var description: String,
+    open var constraints: MutableMap<String, String>,
 ) {
     // Common properties and methods
 }

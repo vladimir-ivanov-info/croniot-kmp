@@ -2,6 +2,14 @@ package croniot.models
 
 import croniot.models.dto.SensorDataDto
 import java.time.ZonedDateTime
+/*
+data class SensorData(
+    var id: Long = 0,
+    var device: Device = Device(),
+    var sensorType: SensorType = SensorType(),
+    var value: String = "",
+    var dateTime: ZonedDateTime = ZonedDateTime.now(), //TODO
+) {*/
 
 data class SensorData(
     var id: Long = 0,

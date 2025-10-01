@@ -19,7 +19,7 @@ class TaskDaoImpl @Inject constructor(
             uid = taskUid,
             parametersValues = mutableMapOf(),
             taskType = taskType,
-            stateInfos = mutableSetOf(),
+            stateInfos = mutableListOf(),
         )
 
         val session = sessionFactory.openSession()
@@ -115,7 +115,7 @@ class TaskDaoImpl @Inject constructor(
                 uid = tupleResult.get(1, Long::class.java),
                 parametersValues = mutableMapOf(), // Uninitialized
                 taskType = TaskType(), // Uninitialized
-                stateInfos = mutableSetOf(), // Uninitialized
+                stateInfos = mutableListOf(), // Uninitialized
             )
         }
     }
@@ -134,7 +134,7 @@ class TaskDaoImpl @Inject constructor(
             val query = sess.createQuery(cr)
             val idResult = query.uniqueResult() ?: return null
 
-            return Task(id = idResult, uid = taskUid, parametersValues = mutableMapOf(), taskType = TaskType(), stateInfos = mutableSetOf())
+            return Task(id = idResult, uid = taskUid, parametersValues = mutableMapOf(), taskType = TaskType(), stateInfos = mutableListOf())
         }
     }
 

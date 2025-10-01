@@ -2,7 +2,21 @@ package croniot.models
 
 import croniot.models.dto.ParameterSensorDto
 import java.util.*
+/*
+class ParameterSensor(
+    override var id: Long = 0,
+    override var uid: Long = 0,
+    override var name: String = "",
+    override var type: String = "",
+    override var unit: String = "",
+    override var description: String = "",
+    override var constraints: MutableMap<String, String> = mutableMapOf(),
+    var sensorTypeId: Long? = null, // New property
+    // @Transient
+    var sensorType: SensorType = SensorType(),
 
+    )
+*/
 class ParameterSensor(
     id: Long,
     uid: Long,
@@ -13,9 +27,11 @@ class ParameterSensor(
     constraints: MutableMap<String, String>,
     var sensorTypeId: Long? = null, // New property
     // @Transient
-    var sensorType: SensorType,
+    var sensorType: SensorType? = null,
 
-) : Parameter(id = id, uid = uid, name = name, type = type, unit = unit, description = description, constraints = constraints) {
+    //var paramOrder: Int? = null
+)
+    : Parameter(id = id, uid = uid, name = name, type = type, unit = unit, description = description, constraints = constraints) {
 
     constructor() : this(0, 0, "", "", "", "", mutableMapOf(), null, SensorType())
     constructor(uid: Long, name: String, type: String, unit: String, description: String, constraints: MutableMap<String, String>, sensorType: SensorType) :

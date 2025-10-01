@@ -11,7 +11,7 @@ class TaskTypeDaoImpl @Inject constructor(
     private val sessionFactory: SessionFactory,
 ) : TaskTypeDao {
 
-    override fun insert(task: TaskType): Long {
+    /*override fun insert(task: TaskType): Long {
         val session = sessionFactory.openSession()
         val transaction = session.beginTransaction()
         val taskId: Long
@@ -28,7 +28,44 @@ class TaskTypeDaoImpl @Inject constructor(
             // session.close()
         }
         return taskId
+    }*/
+
+    override fun insert(device: Device, task: TaskType)/*: Long*/ {
+        sessionFactory.openSession().use { session ->
+            val tx = session.beginTransaction()
+            try {
+                // 1. Recuperar el Device gestionado
+                //val device = task.device
+                //    ?: throw IllegalArgumentException("TaskType debe tener un Device asignado")
+
+                val managedDevice = if (device.id != 0L) {
+                    session.get(Device::class.java, device.id)
+                        ?: throw IllegalArgumentException("Device ${device.id} no existe")
+                } else {
+                    device
+                }
+
+                // 2. Relación bidireccional
+                task.device = managedDevice
+                managedDevice.taskTypes.add(task)
+
+                // 3. Persistencia
+                if (managedDevice === device && device.id == 0L) {
+                    // Device nuevo, persistimos el padre con cascade
+                    session.persist(managedDevice)
+                } else {
+                    // Device existente, no hace falta persistir; cascade se encargará del hijo
+                }
+
+                tx.commit()
+                //return task.id
+            } catch (e: Exception) {
+                tx.rollback()
+                throw e
+            }
+        }
     }
+
 
     override fun get(device: Device, taskTypeUid: Long): TaskType? {
         val session = sessionFactory.openSession()
@@ -80,8 +117,8 @@ class TaskTypeDaoImpl @Inject constructor(
                 uid = tupleResult.get(1, Long::class.java),
                 name = "", // Uninitialized
                 description = "", // Uninitialized
-                parameters = mutableSetOf(), // Uninitialized
-                tasks = mutableSetOf(), // Uninitialized
+                parameters = emptyList(), // Uninitialized
+                tasks = emptyList(), // Uninitialized
                 realTime = false, // Uninitialized
                 device = Device(), // Uninitialized
             )

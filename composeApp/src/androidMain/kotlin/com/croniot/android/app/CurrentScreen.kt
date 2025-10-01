@@ -1,80 +1,166 @@
 package com.croniot.android.app
 
+import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.croniot.android.core.data.source.local.DataStoreController
-import com.croniot.android.core.presentation.UiConstants
+import androidx.navigation.navArgument
 import com.croniot.android.core.presentation.composables.map.MapScreen
-import com.croniot.android.core.util.NetworkUtil
+import com.croniot.android.core.presentation.splash.SplashScreen
 import com.croniot.android.features.configuration.ConfigurationScreen
-import com.croniot.android.features.device.features.sensors.presentation.ViewModelSensors
-import com.croniot.android.features.device.features.tasktypes.CreateTaskScreen
 import com.croniot.android.features.device.presentation.DeviceScreen
-import com.croniot.android.features.deviceslist.DevicesListViewModel
-import com.croniot.android.features.deviceslist.DevicesScreen
-import com.croniot.android.features.login.controller.LoginController
-import com.croniot.android.features.login.presentation.LoginScreen
-import com.croniot.android.features.login.usecase.LoginUseCase
-import com.croniot.android.features.registeraccount.presentation.ScreenRegisterAccount
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
+import com.croniot.android.features.devicelist.DeviceListScreen
+import com.croniot.android.features.devicelist.DeviceListScreenRoot
+import com.croniot.android.features.registeraccount.presentation.ScreenRegisterAccountRoot
+import com.croniot.client.presentation.constants.UiConstants
+import com.croniot.client.data.repositories.LocalDataRepository
+import com.croniot.client.features.login.ui.LoginScreen
+import com.croniot.client.features.login.ui.LoginScreenRoot
+import com.croniot.client.features.tasktypes.presentation.create_task.CreateTaskScreen
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun CurrentScreen() {
-    LaunchedEffect(Unit) {
-        NetworkUtil.resolveServerAddressIfNotExists()
-    }
-
-    val loginUseCase: LoginUseCase = koinInject()
-
-    val devicesListViewModel: DevicesListViewModel = koinViewModel()
-    val viewModelSensors: ViewModelSensors = koinViewModel()
 
     val navController = rememberNavController()
 
-    LaunchedEffect(navController) {
+    val coroutineScope = rememberCoroutineScope()
+
+
+    /*LaunchedEffect(navController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             destination.route?.let { route ->
                 saveCurrentScreenAsync(route)
             }
         }
 
-        LoginController.processLoginOnAppEntered(loginUseCase, navController)
+    }*/
+
+    val localDataRepository : LocalDataRepository = koinInject()
+
+    LaunchedEffect(navController) {
+
+        localDataRepository.generateAndSaveDeviceUuidIfNotExists()
+
+        navController.addOnDestinationChangedListener { _: NavController, dest: NavDestination, _: Bundle? ->
+
+            val route =
+                try {
+                    dest.route
+                } catch (_: Throwable) {
+                    null
+                } ?: navController.currentBackStackEntry?.destination?.route
+            if (route != null) {
+                coroutineScope.launch {
+                    localDataRepository.saveCurrentScreen(route)
+                }
+            }
+        }
     }
 
-    val startDestination = runBlocking {
-        DataStoreController.loadData(DataStoreController.KEY_CURRENT_SCREEN).first() ?: UiConstants.ROUTE_LOGIN
-    }
+    val serverMode = localDataRepository.getServerMode().collectAsState(initial = "local").value ?: "local" //TODO
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+       // startDestination = startDestination,
+        startDestination = UiConstants.ROUTE_SPLASH,
         // enterTransition = { EnterTransition.None },
         // exitTransition = { ExitTransition.None }
-    ) {
+    ) {//TODO
         // composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
-        composable("MAPS") { MapScreen() }
-        composable(UiConstants.ROUTE_REGISTER_ACCOUNT) { ScreenRegisterAccount(navController) }
 
-        composable(UiConstants.ROUTE_LOGIN) { LoginScreen(navController) }
+        composable(UiConstants.ROUTE_TEST) {
+            CroniotDashboardPreview8()
+        }
+
+        composable(UiConstants.ROUTE_SPLASH) {
+            SplashScreen(
+                navController = navController
+            )
+        }
+
+        composable("MAPS") { MapScreen() }
+
+        composable(UiConstants.ROUTE_CREATE_ACCOUNT) {
+            ScreenRegisterAccountRoot(
+                onNavigateBack = {
+                    if (!navController.popBackStack()) {
+                        navController.navigate(UiConstants.ROUTE_LOGIN)
+                    }
+                }
+            )
+        }
+
+        composable(UiConstants.ROUTE_LOGIN) {
+            //LoginScreen(navController, serverMode = serverMode)
+            LoginScreenRoot(
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        popUpTo(UiConstants.ROUTE_LOGIN) { inclusive = true }
+                        // launchSingleTop = true
+                    }
+                },
+            )
+        }
+
         composable(UiConstants.ROUTE_CONFIGURATION) { ConfigurationScreen(navController) }
 
-        composable(UiConstants.ROUTE_DEVICE) { DeviceScreen(navController, viewModelSensors) }
-        composable(UiConstants.ROUTE_DEVICES) { DevicesScreen(navController, devicesListViewModel) }
-        composable(UiConstants.ROUTE_CREATE_TASK) { CreateTaskScreen(navController) }
+        composable("${UiConstants.ROUTE_DEVICE}/{deviceUuid}") { backStackEntry ->
+
+            val selectedDeviceUuid = backStackEntry.arguments?.getString("deviceUuid")
+
+            if(selectedDeviceUuid != null){
+                DeviceScreen(
+                    selectedDeviceUuid = selectedDeviceUuid,
+                    navController = navController,
+                    onTaskTypeClicked = { deviceUuid, taskUid ->
+                        navController.navigate("${UiConstants.ROUTE_CREATE_TASK}/$deviceUuid/$taskUid")
+                    }
+                )
+            } //TODO else
+        }
+
+        composable(UiConstants.ROUTE_DEVICES) {
+            DeviceListScreenRoot(
+                //navController = navController,
+                onLogOut = {
+                    navController.navigate(UiConstants.ROUTE_LOGIN) {
+                        popUpTo(UiConstants.ROUTE_DEVICES) { inclusive = true }
+                        // launchSingleTop = true
+                    }
+                },
+                onDeviceClicked = { deviceUuid ->
+                    navController.navigate("${UiConstants.ROUTE_DEVICE}/$deviceUuid")
+                }
+            )
+        }
+
+        composable(
+            route = "${UiConstants.ROUTE_CREATE_TASK}/{deviceUuid}/{taskUid}",
+            arguments = listOf(
+                navArgument("deviceUuid") { type = NavType.StringType },
+                navArgument("taskUid")    { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val deviceUuid = backStackEntry.arguments?.getString("deviceUuid")
+            val taskUid = backStackEntry.arguments?.getLong("taskUid")
+
+            if(deviceUuid != null && taskUid != null){
+                CreateTaskScreen(
+                    deviceUuid,
+                    taskUid,
+                    navController
+                )
+            }
+        }
     }
 }
 
-fun saveCurrentScreenAsync(currentScreen: String) {
-    CoroutineScope(Dispatchers.IO).launch {
-        DataStoreController.saveData(DataStoreController.KEY_CURRENT_SCREEN, currentScreen)
-    }
-}

@@ -37,7 +37,7 @@ class TaskTypeService @Inject constructor(
                 parameter.taskType = taskType
             }
 
-            taskTypeRepository.create(taskType)
+            taskTypeRepository.insert(device, taskType)
             result = Result(true, "Task ${taskType.uid} registered")
         } else {
             result = Result(false, "Incorrect device or token for task register process.")

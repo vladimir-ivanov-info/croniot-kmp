@@ -6,4 +6,5 @@ data class TaskProgressUpdate(
     val state: String,
     val progress: Double,
     val errorMessage: String,
+    //val messageSource: String
 )

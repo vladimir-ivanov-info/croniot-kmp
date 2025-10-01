@@ -41,13 +41,19 @@
             <one-to-many class="croniot.models.TaskStateInfo" />
         </set>-->
 
-        <set name="stateInfos" table="task_state_info" cascade="save-update" inverse="true" lazy="false" fetch="join">
+        <list name="stateInfos"
+            table="task_state_info"
+            cascade="save-update"
+            inverse="false"
+            lazy="true"
+            fetch="select">
             <cache usage="read-write" region="task_state_infos_cache"/>
-             <key>
-                 <column name="task"/>
-            </key>
-            <one-to-many class="croniot.models.TaskStateInfo" />
-        </set>
+            <key column="task"/>
+            <list-index column="state_order"/>
+            <one-to-many class="croniot.models.TaskStateInfo"/>
+        </list>
+
+
 
     </class>
     <!-- Define composite index on device, task_type, and uid columns. |||| ERROR:  column "device" does not exist -->

@@ -138,6 +138,7 @@ object MqttController {
     suspend fun sendNewTask(deviceUuid: String, task: Task, taskStateInfo: TaskStateInfo) {
         clientLock.withLock {
             val topic = "/$deviceUuid/newTasks"
+            //val topic = "/server_to_devices/task_progress_update/$deviceUuid"
 
             val taskDto = task.toDto()
             taskDto.stateInfos.add(taskStateInfo.toDto())
@@ -150,7 +151,7 @@ object MqttController {
             val json = gson2.toJson(taskDto)
 
             val message = MqttMessage(json.toByteArray())
-            message.qos = 2 // TODO when Arduino implements compatible with QOS=2 MQTT library
+            message.qos = 2
             message.isRetained = false
             deviceMqttClient.publish(topic, message) // TODO
         }
@@ -163,7 +164,7 @@ object MqttController {
             val json = gsonZonedDateTime.toJson(sensorDataDto)
 
             val message = MqttMessage(json.toByteArray())
-            message.qos = 2 // TODO when Arduino implements compatible with QOS=2 MQTT library
+            message.qos = 2
             message.isRetained = false
             deviceMqttClient.publish(topic, message) // TODO
         }
@@ -173,6 +174,17 @@ object MqttController {
         clientLock.withLock {
             val topic = "/server_to_devices/task_progress_update/$deviceUuid"
             val json = gsonZonedDateTime.toJson(taskStateInfoDto)
+            val message = MqttMessage(json.toByteArray())
+            message.qos = 2
+            message.isRetained = false
+            deviceMqttClient.publish(topic, message) // TODO
+        }
+    }
+
+    suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeId: Long){
+        clientLock.withLock {
+            val topic = "/server/$deviceUuid/task_state_info_sync/$taskTypeId"
+            val json = gsonZonedDateTime.toJson(taskTypeId)
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
