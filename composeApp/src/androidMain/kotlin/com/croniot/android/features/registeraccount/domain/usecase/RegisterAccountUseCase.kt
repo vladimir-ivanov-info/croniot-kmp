@@ -8,7 +8,7 @@ import croniot.models.Result
 import java.util.UUID
 
 class RegisterAccountUseCase(
-    private val networkUtilImpl: NetworkUtilImpl
+    private val networkUtilImpl: NetworkUtilImpl,
 ) {
 
     suspend operator fun invoke(nickname: String, email: String, password: String): Result {

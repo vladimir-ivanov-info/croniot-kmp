@@ -17,6 +17,4 @@ object TaskUtil {
 
         return result
     }
-
-
 }

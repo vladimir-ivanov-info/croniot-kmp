@@ -1,36 +1,36 @@
-//package com.croniot.android.android.testing
+// package com.croniot.android.android.testing
 //
-//import androidx.compose.ui.test.assertIsDisplayed
-//import androidx.compose.ui.test.junit4.createComposeRule
-//import androidx.compose.ui.test.onNodeWithTag
-//import androidx.compose.ui.test.onRoot
-//import androidx.compose.ui.test.performClick
-//import androidx.compose.ui.test.printToLog
-//import androidx.test.ext.junit.runners.AndroidJUnit4
-//import androidx.test.platform.app.InstrumentationRegistry
-//import com.croniot.android.app.Global
-//import com.croniot.android.core.di.MainDIModule
-//import com.croniot.android.core.presentation.UiConstants
-//import com.croniot.android.core.presentation.theme.IoTClientTheme
-//import org.junit.After
-//import org.junit.Before
-//import org.junit.Rule
-//import org.junit.Test
-//import org.junit.runner.RunWith
-//import org.koin.android.ext.koin.androidContext
-//import org.koin.android.ext.koin.androidLogger
-//import org.koin.core.context.GlobalContext
-//import org.koin.core.context.startKoin
-//import org.koin.core.context.stopKoin
+// import androidx.compose.ui.test.assertIsDisplayed
+// import androidx.compose.ui.test.junit4.createComposeRule
+// import androidx.compose.ui.test.onNodeWithTag
+// import androidx.compose.ui.test.onRoot
+// import androidx.compose.ui.test.performClick
+// import androidx.compose.ui.test.printToLog
+// import androidx.test.ext.junit.runners.AndroidJUnit4
+// import androidx.test.platform.app.InstrumentationRegistry
+// import com.croniot.android.app.Global
+// import com.croniot.android.core.di.MainDIModule
+// import com.croniot.android.core.presentation.UiConstants
+// import com.croniot.android.core.presentation.theme.IoTClientTheme
+// import org.junit.After
+// import org.junit.Before
+// import org.junit.Rule
+// import org.junit.Test
+// import org.junit.runner.RunWith
+// import org.koin.android.ext.koin.androidContext
+// import org.koin.android.ext.koin.androidLogger
+// import org.koin.core.context.GlobalContext
+// import org.koin.core.context.startKoin
+// import org.koin.core.context.stopKoin
 //
-//// import org.robolectric.RobolectricTestRunner
-//// import org.robolectric.annotation.Config
-//// import kotlin.test.assertEquals
+// // import org.robolectric.RobolectricTestRunner
+// // import org.robolectric.annotation.Config
+// // import kotlin.test.assertEquals
 //
-//// @RunWith(RobolectricTestRunner::class)
-//// @Config(manifest = Config.NONE, sdk = [34])
-//@RunWith(AndroidJUnit4::class) // Use AndroidJUnit4 as you are using Android components
-//class AccountRegisterTest {
+// // @RunWith(RobolectricTestRunner::class)
+// // @Config(manifest = Config.NONE, sdk = [34])
+// @RunWith(AndroidJUnit4::class) // Use AndroidJUnit4 as you are using Android components
+// class AccountRegisterTest {
 //
 //    @get:Rule
 //    val composeTestRule = createComposeRule()
@@ -43,13 +43,13 @@
 //
 //    // private val testModule = DependencyInjectionModule.dependencyInjectionModule /*module {
 //
-////        viewModel { LoginViewModel() }
-////        viewModel { ViewModelRegisterAccount() }
-////
-////        single { DevicesViewModel() }
-////        single { ViewModelSensorData() }
-////        single { com.croniot.android.ui.task.ViewModelTask() }
-////    }
+// //        viewModel { LoginViewModel() }
+// //        viewModel { ViewModelRegisterAccount() }
+// //
+// //        single { DevicesViewModel() }
+// //        single { ViewModelSensorData() }
+// //        single { com.croniot.android.ui.task.ViewModelTask() }
+// //    }
 //
 //    @Before
 //    fun setup() {
@@ -142,4 +142,4 @@
 //        //   signUpNode.performClick()
 //        Thread.sleep(3000)
 //    }
-//}
+// }

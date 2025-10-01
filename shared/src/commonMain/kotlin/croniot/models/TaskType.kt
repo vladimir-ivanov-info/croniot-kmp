@@ -21,32 +21,32 @@ data class TaskType(
     var uid: Long,
     var name: String,
     var description: String,
-    //var parameters: MutableSet<ParameterTask> = mutableSetOf(),
-    //var tasks: MutableSet<Task> = mutableSetOf(),
+    // var parameters: MutableSet<ParameterTask> = mutableSetOf(),
+    // var tasks: MutableSet<Task> = mutableSetOf(),
     var parameters: List<ParameterTask> = emptyList(),
     var tasks: List<Task> = emptyList(),
     var realTime: Boolean,
 
-    //@Transient
+    // @Transient
     var device: Device? = null,
 
-    //var paramOrder: Int? = null
+    // var paramOrder: Int? = null
 
-    ) {
+) {
 
     constructor() : this(0, 0, "", "", emptyList(), emptyList(), false, Device())
     constructor(
         uid: Long,
         name: String,
         description: String,
-        //parameters: MutableSet<ParameterTask>,
+        // parameters: MutableSet<ParameterTask>,
         parameters: List<ParameterTask>,
         realTime: Boolean,
         device: Device,
     ) : this(0, uid, name, description, parameters, emptyList(), realTime, device)
 
     override fun hashCode(): Int {
-       // return Objects.hash(id) // TODO or hash other relevant properties
+        // return Objects.hash(id) // TODO or hash other relevant properties
         return id.hashCode()
     }
 

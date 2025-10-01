@@ -30,12 +30,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.croniot.android.features.device.features.sensors.presentation.SensorsScreen
 import com.croniot.android.features.device.features.tasks.TasksScreen
-import com.croniot.client.presentation.constants.UiConstants
-import org.koin.androidx.compose.koinViewModel
 import com.croniot.client.core.models.Device
 import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesScreen
+import com.croniot.client.presentation.constants.UiConstants
+import org.koin.androidx.compose.koinViewModel
 
-//val deviceScreenTabsNames = listOf("Sensors", "Task types", "Tasks")
+// val deviceScreenTabsNames = listOf("Sensors", "Task types", "Tasks")
 val deviceScreenTabsNames = listOf("Sensors", "Task types")
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,25 +44,24 @@ fun DeviceScreen(
     selectedDeviceUuid: String,
     navController: NavController,
     viewModelDeviceScreen: DeviceScreenViewModel = koinViewModel(),
-    onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit
+    onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
 ) {
-
     val device = viewModelDeviceScreen.device.value
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         viewModelDeviceScreen.initialize(selectedDeviceUuid)
     }
 
     BackHandler {
         if (!navController.popBackStack()) {
-            //viewModel.resetCurrentScreen() //TODO
+            // viewModel.resetCurrentScreen() //TODO
             navController.navigate(UiConstants.ROUTE_DEVICES)
         }
     }
 
     SideEffect {
-        //viewModel.saveCurrentScreen() //TODO
-       // viewModelDeviceScreen.saveCurrentScreen()
+        // viewModel.saveCurrentScreen() //TODO
+        // viewModelDeviceScreen.saveCurrentScreen()
     }
 
     Scaffold(
@@ -77,10 +76,10 @@ fun DeviceScreen(
                         IconButton(
                             modifier = Modifier.padding(end = 8.dp),
                             onClick = {
-                                //val result = navController.popBackStack()
-                               // if (!result) {
-                                    navController.navigate(UiConstants.ROUTE_DEVICES)
-                               // }
+                                // val result = navController.popBackStack()
+                                // if (!result) {
+                                navController.navigate(UiConstants.ROUTE_DEVICES)
+                                // }
                             },
                         ) {
                             Icon(
@@ -92,7 +91,7 @@ fun DeviceScreen(
                         Box(contentAlignment = Alignment.CenterStart) {
                             device?.let {
                                 Text(text = device.name)
-                            } //TODO ?: LoginController.forceLogOut(navController)
+                            } // TODO ?: LoginController.forceLogOut(navController)
                         }
                     }
                 },
@@ -100,7 +99,7 @@ fun DeviceScreen(
             )
         },
         content = { innerPadding ->
-            if(device != null){
+            if (device != null) {
                 DeviceScreenContent(
                     selectedDevice = device,
                     navController = navController,
@@ -108,10 +107,10 @@ fun DeviceScreen(
                     viewModelDeviceScreen = viewModelDeviceScreen,
                     onTaskTypeClicked = { deviceUuid, taskUid ->
                         onTaskTypeClicked(deviceUuid, taskUid)
-                    }
+                    },
                 )
             } else {
-                //TODO loading...
+                // TODO loading...
             }
         },
     )
@@ -123,9 +122,8 @@ fun DeviceScreenContent(
     navController: NavController,
     innerPadding: PaddingValues,
     onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
-    viewModelDeviceScreen: DeviceScreenViewModel// = koinViewModel()
+    viewModelDeviceScreen: DeviceScreenViewModel, // = koinViewModel()
 ) {
-
     val currentTab = viewModelDeviceScreen.currentTab.collectAsState()
 
     var selectedTabIndex = currentTab.value
@@ -152,13 +150,13 @@ fun DeviceScreenContent(
             )
             1 -> TaskTypesScreen(
                 selectedDevice = selectedDevice,
-                onTaskTypeClicked = { deviceUuid,taskTypeUid ->
-                    onTaskTypeClicked(deviceUuid,taskTypeUid)
-                }
+                onTaskTypeClicked = { deviceUuid, taskTypeUid ->
+                    onTaskTypeClicked(deviceUuid, taskTypeUid)
+                },
             )
             2 -> TasksScreen(
                 selectedDeviceUuid = selectedDevice.uuid,
-                navController = navController
+                navController = navController,
             )
         }
     }

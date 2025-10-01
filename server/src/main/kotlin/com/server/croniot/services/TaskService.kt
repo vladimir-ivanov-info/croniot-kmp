@@ -92,8 +92,8 @@ class TaskService @Inject constructor(
         return tasksDto
     }
 
-    fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long){
-        //TODO check if correct format and device/task type exist
+    fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long) {
+        // TODO check if correct format and device/task type exist
         CoroutineScope(Dispatchers.IO).launch {
             MqttController.requestTaskStateInfoSync(deviceUuid, taskTypeUid)
         }

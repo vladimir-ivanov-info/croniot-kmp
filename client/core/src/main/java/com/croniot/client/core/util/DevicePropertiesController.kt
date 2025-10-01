@@ -1,6 +1,5 @@
 package com.croniot.client.core.util
 
-
 import android.content.Context
 import android.os.Build
 import android.util.DisplayMetrics

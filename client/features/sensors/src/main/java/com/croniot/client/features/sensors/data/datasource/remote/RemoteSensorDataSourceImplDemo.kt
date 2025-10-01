@@ -13,19 +13,19 @@ class RemoteSensorDataSourceImplDemo() : RemoteSensorDataSource {
 
     override suspend fun listenDeviceSensors(
         deviceUuid: String,
-        onNewSensorData: (sensorData: SensorData) -> Unit
+        onNewSensorData: (sensorData: SensorData) -> Unit,
     ) {
-        //TODO randomly generate values
+        // TODO randomly generate values
 
         CoroutineScope(Dispatchers.IO).launch {
             while (true) {
                 val sensorRandomValue = Random.nextInt(from = -90, until = -30)
 
                 val sensorData = SensorData(
-                    deviceUuid = deviceUuid,   // usa el que recibes
+                    deviceUuid = deviceUuid, // usa el que recibes
                     sensorTypeUid = 1L,
                     value = sensorRandomValue.toString(), // random sencillo
-                    timeStamp = ZonedDateTime.now()
+                    timeStamp = ZonedDateTime.now(),
                 )
 
                 onNewSensorData(sensorData)
@@ -36,7 +36,6 @@ class RemoteSensorDataSourceImplDemo() : RemoteSensorDataSource {
     }
 
     override suspend fun stopListening(deviceUuid: String?) {
-        //TODO
-
+        // TODO
     }
 }

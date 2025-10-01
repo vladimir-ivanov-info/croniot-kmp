@@ -1,20 +1,20 @@
-//package com.croniot.android.core.presentation
+// package com.croniot.android.core.presentation
 //
-//import androidx.lifecycle.ViewModel
-//import androidx.lifecycle.viewModelScope
-//import com.croniot.android.core.constants.ServerConfig
-//import com.croniot.android.core.data.source.local.DataStoreController
-//import com.croniot.android.core.data.source.remote.retrofit.HostSelectionInterceptor
-//import com.croniot.client.data.source.remote.NetworkModule
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.flow.MutableStateFlow
-//import kotlinx.coroutines.flow.StateFlow
-//import kotlinx.coroutines.launch
-//import org.koin.core.component.KoinComponent
-//import org.koin.core.component.inject
+// import androidx.lifecycle.ViewModel
+// import androidx.lifecycle.viewModelScope
+// import com.croniot.android.core.constants.ServerConfig
+// import com.croniot.android.core.data.source.local.DataStoreController
+// import com.croniot.android.core.data.source.remote.retrofit.HostSelectionInterceptor
+// import com.croniot.client.data.source.remote.NetworkModule
+// import kotlinx.coroutines.Dispatchers
+// import kotlinx.coroutines.flow.MutableStateFlow
+// import kotlinx.coroutines.flow.StateFlow
+// import kotlinx.coroutines.launch
+// import org.koin.core.component.KoinComponent
+// import org.koin.core.component.inject
 //
-//// TODO turn into controller, shouldn't be a viewmodel
-//class SharedPreferencesViewModel : ViewModel(), KoinComponent {
+// // TODO turn into controller, shouldn't be a viewmodel
+// class SharedPreferencesViewModel : ViewModel(), KoinComponent {
 //
 //    private var _serverMode = MutableStateFlow("remote")
 //    val serverMode: StateFlow<String> get() = _serverMode
@@ -69,4 +69,4 @@
 //            }
 //        }
 //    }
-//}
+// }

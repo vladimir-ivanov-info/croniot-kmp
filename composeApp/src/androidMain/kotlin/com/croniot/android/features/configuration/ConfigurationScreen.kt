@@ -93,9 +93,11 @@ fun ConfigurationScreenBody(navController: NavController, innerPadding: PaddingV
 }
 
 @Composable
-fun Configuration(navController: NavController,
-                  modifier: Modifier,
-                  configurationScreenViewModel: ConfigurationScreenViewModel = koinViewModel()) {
+fun Configuration(
+    navController: NavController,
+    modifier: Modifier,
+    configurationScreenViewModel: ConfigurationScreenViewModel = koinViewModel(),
+) {
     val foregroundServiceEnabled by configurationScreenViewModel.foregroundServiceEnabled.collectAsState()
 
     val useRemoteServer by configurationScreenViewModel.serverMode.collectAsState()

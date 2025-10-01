@@ -5,7 +5,7 @@ import croniot.models.Device
 
 interface DeviceDao {
 
-    fun insert(account: Account, device: Device)//: Long
+    fun insert(account: Account, device: Device) // : Long
 
     fun getAll(): List<Device>
 

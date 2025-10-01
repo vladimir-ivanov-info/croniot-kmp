@@ -5,13 +5,11 @@ import com.croniot.client.core.models.TaskStateInfo
 import kotlinx.coroutines.flow.Flow
 
 interface TasksDataSource {
-    fun observeTasks(deviceUuid: String) : Flow<Task>
+    fun observeTasks(deviceUuid: String): Flow<Task>
 
-
-
-    suspend fun fetchTasks(deviceUuid: String) : List<Task>
+    suspend fun fetchTasks(deviceUuid: String): List<Task>
 
     fun observeTaskStateInfos(
-        _deviceUuid: String
-    ) : Flow<TaskStateInfo>
+        _deviceUuid: String,
+    ): Flow<TaskStateInfo>
 }

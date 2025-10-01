@@ -7,10 +7,10 @@ import croniot.messages.MessageAddTask
 import croniot.models.Result
 
 class SendNewTaskUseCase(
-    private val networkUtilImpl: NetworkUtilImpl
+    private val networkUtilImpl: NetworkUtilImpl,
 ) {
 
-    suspend operator fun invoke(deviceUuid: String, taskUid: Long, parametersValues: Map<Long, String>) : Result {
+    suspend operator fun invoke(deviceUuid: String, taskUid: Long, parametersValues: Map<Long, String>): Result {
         val messageAddTask = MessageAddTask(deviceUuid, taskUid.toString(), parametersValues)
 
         val gson = GsonBuilder().setPrettyPrinting().create()

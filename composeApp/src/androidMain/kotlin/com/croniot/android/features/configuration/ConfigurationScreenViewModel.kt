@@ -1,10 +1,7 @@
 package com.croniot.android.features.configuration
 
-
-import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.android.core.services.ForegroundService
 import com.croniot.client.core.ServerConfig
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.data.source.remote.HostSelectionInterceptor
@@ -16,7 +13,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class ConfigurationScreenViewModel(
-    private val localDatasource: LocalDatasource
+    private val localDatasource: LocalDatasource,
 ) : ViewModel(), KoinComponent {
 
     private val _foregroundServiceEnabled = MutableStateFlow(false)
@@ -25,24 +22,24 @@ class ConfigurationScreenViewModel(
     private var _serverMode = MutableStateFlow("remote")
     val serverMode: StateFlow<String> get() = _serverMode
 
-    private val hostInterceptor: HostSelectionInterceptor by inject() //TODO move to constructor
+    private val hostInterceptor: HostSelectionInterceptor by inject() // TODO move to constructor
 
     init {
 
         viewModelScope.launch {
             loadConfigurationForegoundService()
 
-            localDatasource.getCurrentServerMode().collect{ serverMode ->
+            localDatasource.getCurrentServerMode().collect { serverMode ->
                 serverMode?.let {
                     _serverMode.value = serverMode
 
                     if (serverMode == "remote") {
-                        //NetworkModule.reloadRetrofitRemote()
-                        //NetworkModule.reloadRetrofit(ServerConfig.SERVER_ADDRESS_REMOTE)
+                        // NetworkModule.reloadRetrofitRemote()
+                        // NetworkModule.reloadRetrofit(ServerConfig.SERVER_ADDRESS_REMOTE)
                         hostInterceptor.host = ServerConfig.SERVER_ADDRESS_REMOTE
                     } else {
-                        //NetworkModule.reloadRetrofitLocal()
-                        //NetworkModule.reloadRetrofit(ServerConfig.SERVER_ADDRESS_LOCAL)
+                        // NetworkModule.reloadRetrofitLocal()
+                        // NetworkModule.reloadRetrofit(ServerConfig.SERVER_ADDRESS_LOCAL)
                         hostInterceptor.host = ServerConfig.SERVER_ADDRESS_LOCAL
                     }
                 }
@@ -76,11 +73,11 @@ class ConfigurationScreenViewModel(
 
     private fun loadConfigurationForegoundService() {
         val configurationForegoundService = runBlocking {
-            //DataStoreController.loadData(DataStoreController.KEY_CONFIGURATION_FOREGROUND_SERVICE).first()
+            // DataStoreController.loadData(DataStoreController.KEY_CONFIGURATION_FOREGROUND_SERVICE).first()
             localDatasource.getIsForegroundServiceEnabled()
         }
 
-        //configurationForegoundService?.let {
+        // configurationForegoundService?.let {
         viewModelScope.launch {
             if (configurationForegoundService) {
                 _foregroundServiceEnabled.emit(true)
@@ -88,7 +85,7 @@ class ConfigurationScreenViewModel(
                 _foregroundServiceEnabled.emit(false)
             }
         }
-        //}
+        // }
     }
 
     fun changeServerMode() {
@@ -100,19 +97,19 @@ class ConfigurationScreenViewModel(
                 newServerMode = "local"
                 ServerConfig.SERVER_ADDRESS = ServerConfig.SERVER_ADDRESS_LOCAL
                 // NetworkModule.reloadRetrofitLocal()
-                //NetworkModule.reloadRetrofit(ServerConfig.SERVER_ADDRESS_LOCAL)
+                // NetworkModule.reloadRetrofit(ServerConfig.SERVER_ADDRESS_LOCAL)
 
                 hostInterceptor.host = ServerConfig.SERVER_ADDRESS_LOCAL
             } else {
                 ServerConfig.SERVER_ADDRESS = ServerConfig.SERVER_ADDRESS_REMOTE
                 // NetworkModule.reloadRetrofit(ServerConfig.SERVER_ADDRESS_REMOTE)
-                //NetworkModule.reloadRetrofitRemote()
+                // NetworkModule.reloadRetrofitRemote()
 
                 hostInterceptor.host = ServerConfig.SERVER_ADDRESS_REMOTE
             }
 
             viewModelScope.launch {
-            //    DataStoreController.saveData(DataStoreController.KEY_SERVER_MODE, newServerMode)
+                //    DataStoreController.saveData(DataStoreController.KEY_SERVER_MODE, newServerMode)
                 localDatasource.saveServerMode(newServerMode)
             }
         }

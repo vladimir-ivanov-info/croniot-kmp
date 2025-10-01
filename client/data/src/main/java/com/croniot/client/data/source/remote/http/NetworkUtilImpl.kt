@@ -13,7 +13,6 @@ import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 class NetworkUtilImpl(private val localDataStoreRepository: LocalDataRepository) : NetworkUtil {
 
     private val client = OkHttpClient.Builder().followRedirects(false).build()
@@ -93,11 +92,6 @@ class NetworkUtilImpl(private val localDataStoreRepository: LocalDataRepository)
         }
     }*/
 
-
-
-
-
-
     suspend fun post(endPoint: String, postData: String): Result {
         val url = "http://" + ServerConfig.SERVER_ADDRESS + ":" + ServerConfig.SERVER_PORT + endPoint
         return withContext(Dispatchers.IO) {
@@ -142,5 +136,4 @@ class NetworkUtilImpl(private val localDataStoreRepository: LocalDataRepository)
 
         return result
     }
-
 }

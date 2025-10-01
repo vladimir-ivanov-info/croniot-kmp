@@ -59,8 +59,6 @@ class DeviceDaoImpl @Inject constructor(
         }
     }*/
 
-
-
     override fun insert(account: Account, device: Device) {
         sessionFactory.openSession().use { session ->
             val tx = session.beginTransaction()
@@ -75,11 +73,11 @@ class DeviceDaoImpl @Inject constructor(
 
                 // 2) Relación bidireccional
                 device.account = managedAcc
-                managedAcc.devices.add(device)   // 👈 AQUÍ se fija el device_order
+                managedAcc.devices.add(device) // 👈 AQUÍ se fija el device_order
 
                 // 3) Persistencia
                 if (managedAcc === account && account.id == 0L) {
-                    session.persist(managedAcc)  // cascade inserta device
+                    session.persist(managedAcc) // cascade inserta device
                 } else {
                     // Account ya existe: no hace falta persistirlo
                     // si tu cascade no cubre, puedes hacer session.persist(device)
@@ -92,8 +90,6 @@ class DeviceDaoImpl @Inject constructor(
             }
         }
     }
-
-
 
     override fun getAll(): List<Device> {
         val session = sessionFactory.openSession()

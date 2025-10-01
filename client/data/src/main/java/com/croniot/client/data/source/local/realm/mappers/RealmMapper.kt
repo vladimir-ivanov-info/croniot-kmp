@@ -37,8 +37,8 @@ fun DeviceEntity.toDto() = DeviceDto(
     uuid = uuid,
     name = name,
     description = description,
-    sensorTypes = sensors.map { it.toDto() },//.toMutableSet(),
-    taskTypes = taskTypes.map { it.toDto() }//.toMutableSet(),
+    sensorTypes = sensors.map { it.toDto() }, // .toMutableSet(),
+    taskTypes = taskTypes.map { it.toDto() }, // .toMutableSet(),
 )
 
 fun TaskTypeDto.toRealmEntity(): TaskTypeEntity {
@@ -119,7 +119,7 @@ fun TaskRealm.toDto() = TaskDto(
     deviceUuid = deviceUuid,
     taskTypeUid = taskTypeUid,
     parametersValues = parametersValues.associate { it.key.toLong() to it.value }.toMutableMap(),
-    //stateInfos = stateInfos.map { it.toDto() }.toMutableSet(),
+    // stateInfos = stateInfos.map { it.toDto() }.toMutableSet(),
 )
 
 fun TaskStateInfoRealm.toDto() = TaskStateInfoDto(
@@ -211,7 +211,7 @@ fun SensorTypeEntity.toDto() = SensorTypeDto(
     uid = uid,
     name = name,
     description = description,
-    parameters = parameters.map { it.toDto() } //.toMutableSet(),
+    parameters = parameters.map { it.toDto() }, // .toMutableSet(),
 )
 
 fun <T> List<T>.toRealmList(): RealmList<T> {

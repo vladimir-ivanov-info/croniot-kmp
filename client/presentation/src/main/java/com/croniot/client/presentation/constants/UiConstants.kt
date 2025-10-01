@@ -1,6 +1,5 @@
 package com.croniot.client.presentation.constants
 
-
 object UiConstants {
     val ROUTE_TEST = "test"
 

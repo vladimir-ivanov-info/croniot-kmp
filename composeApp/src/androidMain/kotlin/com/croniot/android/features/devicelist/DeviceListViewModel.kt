@@ -4,21 +4,17 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.client.core.Constants
-import com.croniot.client.domain.repositories.SensorDataRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import com.croniot.client.core.models.Device
-import com.croniot.client.core.models.SensorData
 import com.croniot.client.data.repositories.LocalDataRepository
 import com.croniot.client.data.repositories.SessionRepository
+import com.croniot.client.domain.repositories.SensorDataRepository
 import com.croniot.client.domain.usecases.LogoutUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -28,37 +24,35 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.time.ZonedDateTime
+import org.koin.core.component.KoinComponent
 
 class DeviceListViewModel(
     private val localDataRepository: LocalDataRepository,
     private val sensorDataRepository: SensorDataRepository,
     private val logOutUseCase: LogoutUseCase,
     private val sessionRepository: SessionRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), KoinComponent {
 
-    //private val _devices = MutableStateFlow<List<Device>>(emptyList())
-    //val devices: StateFlow<List<Device>> get() = _devices
+    // private val _devices = MutableStateFlow<List<Device>>(emptyList())
+    // val devices: StateFlow<List<Device>> get() = _devices
 
     private val _lastSeenMillis = MutableStateFlow<Map<String, Long?>>(emptyMap())
     val lastSeenMillis: StateFlow<Map<String, Long?>> = _lastSeenMillis
+
     // Para cancelar colectores cuando cambie la lista de devices
     private var devicesCollectors: MutableMap<String, Job> = mutableMapOf()
-
 
     companion object {
         private const val KEY_DEVICE_LIST_STATE = "device_list_state"
     }
 
     private val _state = MutableStateFlow(
-        savedStateHandle.get<DeviceListState>(KEY_DEVICE_LIST_STATE) ?: DeviceListState()
+        savedStateHandle.get<DeviceListState>(KEY_DEVICE_LIST_STATE) ?: DeviceListState(),
     )
     val state: StateFlow<DeviceListState> = _state.asStateFlow()
-
-
-
 
     /*private val _events = MutableSharedFlow<DevicesListUiEvent>(
         replay = 0,                 // <- MUY importante para one-time
@@ -68,7 +62,6 @@ class DeviceListViewModel(
 
     private val _effects = Channel<DeviceListEffect>(capacity = Channel.BUFFERED)
     val effects: Flow<DeviceListEffect> = _effects.receiveAsFlow()
-
 
     /*init {
         //TODO
@@ -136,11 +129,10 @@ class DeviceListViewModel(
         }
     }
 
-
     private inline fun updateState(transform: (DeviceListState) -> DeviceListState) {
         _state.update { current ->
             val newState = transform(current)
-            //TODO for production: savedStateHandle[KEY_STATE] = newState.copy(password = "")
+            // TODO for production: savedStateHandle[KEY_STATE] = newState.copy(password = "")
             savedStateHandle[KEY_DEVICE_LIST_STATE] = newState
             newState
         }
@@ -159,15 +151,11 @@ class DeviceListViewModel(
         }
     }
 
-    private fun sendEffect(effect: DeviceListEffect){
+    private fun sendEffect(effect: DeviceListEffect) {
         viewModelScope.launch {
             _effects.send(effect)
         }
     }
-
-
-
-
 
     private fun resubscribeToDevices(uuids: List<String>) {
         // 1) Cancela colectores de devices que ya no están
@@ -192,9 +180,8 @@ class DeviceListViewModel(
         }
     }
 
-
     private fun observeMostRecentSensorMillis(deviceUuid: String): StateFlow<Long?> {
-        //TODO
+        // TODO
         /*return sensorDataRepository.observeSensorDataInsertions(deviceUuid) // <- Flow<Long>
             .stateIn(
                 scope = viewModelScope,
@@ -207,7 +194,7 @@ class DeviceListViewModel(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = 1L
+                initialValue = 1L,
             )
 
         /*sensorDataRepository.observeSensorData(deviceUuid, sensorUid).stateIn(
@@ -222,7 +209,6 @@ class DeviceListViewModel(
         )
 
         return MutableStateFlow<Long>(value = 123) //TODO*/
-
     }
 
    /* fun saveSelectedDevice(device: Device){
@@ -231,7 +217,7 @@ class DeviceListViewModel(
         }
     }*/
 
-    private fun logOut(){
+    private fun logOut() {
         viewModelScope.launch {
             logOutUseCase()
 
@@ -240,20 +226,18 @@ class DeviceListViewModel(
     }
 }
 
-
-
 sealed interface DeviceListEffect {
     data object LogOut : DeviceListEffect
 }
 
-sealed interface DeviceListIntent{
-    data class DeviceListUpdated(val devices: List<Device>): DeviceListIntent
-    data object LogOut: DeviceListIntent
-    data class DeviceClicked(val deviceUuid: String): DeviceListIntent
+sealed interface DeviceListIntent {
+    data class DeviceListUpdated(val devices: List<Device>) : DeviceListIntent
+    data object LogOut : DeviceListIntent
+    data class DeviceClicked(val deviceUuid: String) : DeviceListIntent
 }
 
 @Parcelize
 data class DeviceListState(
     val devices: List<Device> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
 ) : Parcelable

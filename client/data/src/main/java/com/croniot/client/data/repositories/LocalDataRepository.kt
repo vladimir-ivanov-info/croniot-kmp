@@ -6,35 +6,35 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalDataRepository {
 
-    suspend fun getCurrentRoute() : String?
+    suspend fun getCurrentRoute(): String?
 
     suspend fun saveCurrentRoute(route: String)
 
-    suspend fun getCurrentPassword() : String?
+    suspend fun getCurrentPassword(): String?
 
-    suspend fun getLocalDeviceUuid() : String?
+    suspend fun getLocalDeviceUuid(): String?
 
-    suspend fun getIsForegroundServiceEnabled() : Boolean
+    suspend fun getIsForegroundServiceEnabled(): Boolean
 
     suspend fun saveIsForegroundServiceEnabled(foregroundServiceEnabled: Boolean)
 
-    suspend fun getServerAddress() : String
+    suspend fun getServerAddress(): String
 
     suspend fun saveServerAddress(serverAddress: String)
 
     suspend fun generateAndSaveDeviceUuidIfNotExists()
 
-    suspend fun getCurrentScreen() : String?
+    suspend fun getCurrentScreen(): String?
 
     suspend fun saveCurrentScreen(screen: String)
 
-    suspend fun getCurrentAccount() : Account?
+    suspend fun getCurrentAccount(): Account?
 
-    suspend fun getSelectedDevice() : Device?
+    suspend fun getSelectedDevice(): Device?
     suspend fun saveSelectedDevice(device: Device)
-    //TODO resetSelectedDevice -> remove value from DataStore or store null
+    // TODO resetSelectedDevice -> remove value from DataStore or store null
 
-    suspend fun getLocalDeviceToken() : String?
+    suspend fun getLocalDeviceToken(): String?
 
     fun saveCurrentAccount(account: Account?)
 
@@ -48,5 +48,5 @@ interface LocalDataRepository {
 
     suspend fun clearAllCacheExceptDeviceUuid()
 
-    fun getServerMode() : Flow<String?>
+    fun getServerMode(): Flow<String?>
 }

@@ -31,7 +31,7 @@ class LoginService @Inject constructor(
         val deviceProperties = messageLoginRequest.deviceProperties
 
         val account = accountRepository.getAccountEagerSkipTasks(accountEmail, accountPassword) // 1500 ms -> 52 ms
-       // account?.devices?.filter { it. }
+        // account?.devices?.filter { it. }
         // TODO if account null throw new exception "account doesn't exist". Or better check account existence in another method and if exists, pass it to this one
         if (account != null) {
             var device: Device? = null
@@ -48,7 +48,7 @@ class LoginService @Inject constructor(
                     MqttController.listenToNewDevice(newDevice)
                 }
                 newToken = Global.generateUniqueString(8)
-         //       deviceTokenRepository.createDeviceToken(newDevice, newToken)
+                //       deviceTokenRepository.createDeviceToken(newDevice, newToken)
             }
 
             // TODO try to authenticate with token first
@@ -73,8 +73,8 @@ class LoginService @Inject constructor(
         deviceToken?.let {
             device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken) // TODO test for when the device is contained in multiple accounts
         } ?: {
-            //TODO try to login with email and password
-            //result = Result(false, "Login failed: no token provided.")
+            // TODO try to login with email and password
+            // result = Result(false, "Login failed: no token provided.")
         }
 // ////////
 // TODO try to authenticate with token first

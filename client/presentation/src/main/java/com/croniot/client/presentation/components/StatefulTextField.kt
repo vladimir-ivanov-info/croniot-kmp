@@ -1,13 +1,14 @@
 package com.croniot.client.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -20,15 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import kotlinx.coroutines.flow.StateFlow
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-
 
 @Composable
 fun StatefulTextField(
@@ -52,7 +50,7 @@ fun StatefulTextField(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
             unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            //TODO
+            // TODO
             /*focusedContainerColor = Color.White,
             unfocusedContainerColor = Color.LightGray,
             disabledContainerColor = Color.Gray,
@@ -66,11 +64,9 @@ fun StatefulTextField(
             unfocusedLabelColor = Color.Gray,
             errorLabelColor = Color.Red*/
 
-
-            //focusedLabelColor = Color.Red,
-        )
+            // focusedLabelColor = Color.Red,
+        ),
     )
-
 }
 
 @Composable
@@ -80,7 +76,7 @@ fun StatefulTextField(
     label: String = "",
     placeholderString: String = "",
     isPassword: Boolean = false,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     TextField(
         value = value,
@@ -100,10 +96,9 @@ fun StatefulTextField(
 
             focusedLabelColor = MaterialTheme.colorScheme.primary,
             unfocusedLabelColor = MaterialTheme.colorScheme.primary,
-        )
+        ),
     )
 }
-
 
 @Composable
 fun PasswordField(
@@ -120,15 +115,16 @@ fun PasswordField(
         enabled = enabled,
         label = { Text(label) },
         singleLine = true,
-        visualTransformation = if (passwordVisible)
+        visualTransformation = if (passwordVisible) {
             VisualTransformation.None
-        else
-            PasswordVisualTransformation(),
+        } else {
+            PasswordVisualTransformation()
+        },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
-            val (icon, desc) = if (passwordVisible)
+            val (icon, desc) = if (passwordVisible) {
                 Icons.Default.Visibility to "Hide password"
-            else
+            } else
                 Icons.Default.VisibilityOff to "Show password"
 
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -142,13 +138,9 @@ fun PasswordField(
             focusedLabelColor = MaterialTheme.colorScheme.primary,
             unfocusedLabelColor = MaterialTheme.colorScheme.primary,
         ),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     )
 }
-
-
-
-
 
 @Composable
 fun UsernameTextField(
@@ -162,7 +154,7 @@ fun UsernameTextField(
         enabled = enabled,
         label = { Text("Nombre de usuario") },
         singleLine = true,
-        isError = false, //TODO: validación si lo necesitas
+        isError = false, // TODO: validación si lo necesitas
         /*supportingText = {
             if (usernameError) Text("El nombre de usuario no es válido")
         },*/
@@ -170,7 +162,7 @@ fun UsernameTextField(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Next,
             autoCorrect = false,
-            capitalization = KeyboardCapitalization.None
+            capitalization = KeyboardCapitalization.None,
         ),
         /*keyboardActions = KeyboardActions(
             onNext = { nextFocusRequester.requestFocus() }
@@ -182,25 +174,24 @@ fun UsernameTextField(
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor = Color.Transparent,
             focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
-            errorContainerColor = Color.Transparent
-        )
+            errorContainerColor = Color.Transparent,
+        ),
     )
 }
-
 
 @Composable
 fun EmailTextField(
     value: String,
     onValueChange: (String) -> Unit,
     enabled: Boolean = true,
-){
+) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         enabled = enabled,
         label = { Text("Email") },
         singleLine = true,
-        isError = false, //TODO
+        isError = false, // TODO
         /*supportingText = {
             if (emailError) Text("Formato de email no válido")
         },*/
@@ -208,23 +199,22 @@ fun EmailTextField(
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next,
             autoCorrect = false,
-            capitalization = KeyboardCapitalization.None
+            capitalization = KeyboardCapitalization.None,
         ),
         /*keyboardActions = KeyboardActions(
             onNext = { passFocus.requestFocus() }
         ),*/
         modifier = Modifier
-            .fillMaxWidth()
-            //.focusRequester(emailFocus)
-        ,
-        //colors = TextFieldDefaults.outlinedTextFieldColors() // usa los del tema
+            .fillMaxWidth(),
+        // .focusRequester(emailFocus)
+        // colors = TextFieldDefaults.outlinedTextFieldColors() // usa los del tema
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor = Color.Transparent,
             focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
-            errorContainerColor = Color.Transparent
-        )
+            errorContainerColor = Color.Transparent,
+        ),
     )
 }
 
@@ -252,7 +242,7 @@ fun PasswordTextField(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done,
             autoCorrect = false,
-            capitalization = KeyboardCapitalization.None
+            capitalization = KeyboardCapitalization.None,
         ),
         trailingIcon = {
             val (icon, desc) = if (passwordVisible) {
@@ -271,9 +261,7 @@ fun PasswordTextField(
             unfocusedContainerColor = Color.Transparent,
             disabledContainerColor = Color.Transparent,
             focusedIndicatorColor = MaterialTheme.colorScheme.tertiary,
-            errorContainerColor = Color.Transparent
-        )
+            errorContainerColor = Color.Transparent,
+        ),
     )
 }
-
-

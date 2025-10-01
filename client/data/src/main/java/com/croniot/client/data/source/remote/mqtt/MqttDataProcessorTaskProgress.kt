@@ -4,13 +4,12 @@ import com.croniot.client.core.models.TaskStateInfo
 import com.croniot.client.core.models.mappers.toModel
 import croniot.messages.MessageFactory
 import croniot.models.MqttDataProcessor
-import croniot.models.dto.SensorDataDto
 import croniot.models.dto.TaskStateInfoDto
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
 class MqttDataProcessorTaskProgress(
-    private val onNewData: (TaskStateInfo) -> Unit
+    private val onNewData: (TaskStateInfo) -> Unit,
 ) : MqttDataProcessor, KoinComponent {
 
     override fun process(data: Any) {

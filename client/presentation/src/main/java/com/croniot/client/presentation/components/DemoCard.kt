@@ -15,7 +15,7 @@ fun DemoCard(title: String = "Croniot", subtitle: String = "Hello, screenshots!"
                 .fillMaxWidth()
                 .height(120.dp)
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.titleLarge)

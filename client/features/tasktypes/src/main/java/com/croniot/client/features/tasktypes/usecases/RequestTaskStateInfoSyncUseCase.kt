@@ -7,10 +7,10 @@ import croniot.messages.MessageRequestTaskStateInfoSync
 import croniot.models.Result
 
 class RequestTaskStateInfoSyncUseCase(
-    private val networkUtilImpl: NetworkUtilImpl
+    private val networkUtilImpl: NetworkUtilImpl,
 ) {
 
-    suspend operator fun invoke(deviceUuid: String, taskUid: Long) : Result {
+    suspend operator fun invoke(deviceUuid: String, taskUid: Long): Result {
         val message = MessageRequestTaskStateInfoSync(deviceUuid, taskUid.toString())
 
         val gson = GsonBuilder().setPrettyPrinting().create()
@@ -19,6 +19,6 @@ class RequestTaskStateInfoSyncUseCase(
 
         return result
 
-       // return Result(false, "")
+        // return Result(false, "")
     }
 }

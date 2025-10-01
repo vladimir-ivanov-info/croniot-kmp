@@ -14,12 +14,12 @@ import java.time.ZonedDateTime
 
 class RemoteSensorDataSourceImpl() : RemoteSensorDataSource {
 
-    private val realm: Realm = RealmRef.realmRef //TODO inject correctly
+    private val realm: Realm = RealmRef.realmRef // TODO inject correctly
 
     override suspend fun listenDeviceSensors(
         deviceUuid: String,
-        onNewSensorData: (sensorData: SensorData) -> Unit) {
-
+        onNewSensorData: (sensorData: SensorData) -> Unit,
+    ) {
         val clientId = ServerConfig.mqttClientId + Global.generateUniqueString(8)
         val mqttClient = MqttClient(ServerConfig.mqttBrokerUrl, clientId, null)
 
@@ -48,19 +48,18 @@ class RemoteSensorDataSourceImpl() : RemoteSensorDataSource {
     }
 
     override suspend fun stopListening(deviceUuid: String?) {
-        //TODO("Not yet implemented")
+        // TODO("Not yet implemented")
 
-        //TODO
+        // TODO
     }
-
 }
 
-//TODO move to corresponding place
-fun SensorDataDto.toDomain() : SensorData {
+// TODO move to corresponding place
+fun SensorDataDto.toDomain(): SensorData {
     return SensorData(
         deviceUuid = this.deviceUuid,
         sensorTypeUid = this.sensorTypeUid,
         value = this.value,
-        timeStamp = ZonedDateTime.now()
+        timeStamp = ZonedDateTime.now(),
     )
 }

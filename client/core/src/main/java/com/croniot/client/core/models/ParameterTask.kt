@@ -14,18 +14,18 @@ data class ParameterTask(
     var constraints: /*Mutable*/Map<String, String>,
 ) : Parcelable
 
-fun ParameterTask.isStateful() : Boolean {
+fun ParameterTask.isStateful(): Boolean {
     return this.type == ParameterTypes.STATEFUL
 }
 
-fun ParameterTask.isRepresentsSwitch() : Boolean {
-    return this.constraints.size == 2
-        && this.constraints.containsKey("state_1")
-        && this.constraints.containsKey("state_2")
+fun ParameterTask.isRepresentsSwitch(): Boolean {
+    return this.constraints.size == 2 &&
+        this.constraints.containsKey("state_1") &&
+        this.constraints.containsKey("state_2")
 }
 
-fun ParameterTask.isRepresentsSlider() : Boolean {
-    return this.constraints.containsKey("minValue")
-        && this.constraints.containsKey("maxValue")
-        && this.constraints.containsKey("stepSize")
+fun ParameterTask.isRepresentsSlider(): Boolean {
+    return this.constraints.containsKey("minValue") &&
+        this.constraints.containsKey("maxValue") &&
+        this.constraints.containsKey("stepSize")
 }

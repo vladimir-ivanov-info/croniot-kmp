@@ -10,5 +10,4 @@ val domainDiModule = module {
     single<TaskTypesRepository> { TaskTypesRepositoryImpl() }
 
     factory { LogoutUseCase(sessionRepository = get()) }
-
 }

@@ -26,9 +26,10 @@ import org.koin.androidx.compose.koinViewModel
 }*/
 
 @Composable
-fun SensorsScreen(selectedDevice: Device,
-                  navController: NavController,
-                  sensorsViewModel: SensorsViewModel = koinViewModel()
+fun SensorsScreen(
+    selectedDevice: Device,
+    navController: NavController,
+    sensorsViewModel: SensorsViewModel = koinViewModel(),
 ) {
     val sensorTypes = selectedDevice.sensorTypes
 
@@ -40,8 +41,7 @@ fun SensorsScreen(selectedDevice: Device,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item {
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
@@ -50,7 +50,7 @@ fun SensorsScreen(selectedDevice: Device,
             items(
                 items = sensorTypes,
                 key = { it.uid },
-                contentType = { "sensorItem" }   // ayuda al recycler
+                contentType = { "sensorItem" }, // ayuda al recycler
             ) { sensorType ->
                 SensorItem(sensorType, selectedDevice, sensorsViewModel)
             }

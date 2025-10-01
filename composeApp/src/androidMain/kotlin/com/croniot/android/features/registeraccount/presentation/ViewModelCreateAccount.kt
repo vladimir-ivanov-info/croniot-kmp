@@ -5,10 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.android.features.registeraccount.domain.usecase.RegisterAccountUseCase
-import com.croniot.client.features.login.ui.LoginEffect
-import com.croniot.client.features.login.ui.LoginViewModel
-import com.croniot.client.features.login.ui.LoginViewModel.Companion
-import croniot.models.Result
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +18,7 @@ import kotlinx.parcelize.Parcelize
 
 class ViewModelRegisterAccount(
     private val registerAccountUseCase: RegisterAccountUseCase,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     companion object {
@@ -31,85 +27,83 @@ class ViewModelRegisterAccount(
     }
 
     private val _state = MutableStateFlow(
-        savedStateHandle.get<CreateAccountState>(KEY_CREATE_ACCOUNT_STATE) ?: CreateAccountState()
+        savedStateHandle.get<CreateAccountState>(KEY_CREATE_ACCOUNT_STATE) ?: CreateAccountState(),
     )
     val state: StateFlow<CreateAccountState> = _state.asStateFlow()
 
     private val _effects = Channel<CreateAccountEffect>(capacity = Channel.BUFFERED)
     val effects: Flow<CreateAccountEffect> = _effects.receiveAsFlow()
 
-
     private inline fun updateState(transform: (CreateAccountState) -> CreateAccountState) {
         _state.update { current ->
             val newState = transform(current)
-            //TODO for production: savedStateHandle[KEY_STATE] = newState.copy(password = "")
+            // TODO for production: savedStateHandle[KEY_STATE] = newState.copy(password = "")
             savedStateHandle[KEY_CREATE_ACCOUNT_STATE] = newState
             newState
         }
     }
 
-    fun onAction(action: RegisterAccountIntent){
-        when(action){
-            is RegisterAccountIntent.NicknameChanged -> updateState{ it.copy(nickname = action.value) }
-            is RegisterAccountIntent.EmailChanged -> updateState{ it.copy(email = action.value) }
-            is RegisterAccountIntent.PasswordChanged -> updateState{ it.copy(password = action.value) }
+    fun onAction(action: RegisterAccountIntent) {
+        when (action) {
+            is RegisterAccountIntent.NicknameChanged -> updateState { it.copy(nickname = action.value) }
+            is RegisterAccountIntent.EmailChanged -> updateState { it.copy(email = action.value) }
+            is RegisterAccountIntent.PasswordChanged -> updateState { it.copy(password = action.value) }
             is RegisterAccountIntent.RegisterAccount -> registerAccount()
             is RegisterAccountIntent.NavigateBack -> sendEffect(CreateAccountEffect.NavigateBack)
         }
     }
 
-    private fun sendEffect(effect: CreateAccountEffect){
+    private fun sendEffect(effect: CreateAccountEffect) {
         viewModelScope.launch {
             _effects.send(effect)
         }
     }
 
-    private fun registerAccount(){
+    private fun registerAccount() {
         viewModelScope.launch {
-            updateState{ it.copy(isLoading = true) }
+            updateState { it.copy(isLoading = true) }
 
-            //TODO check all fields correct (not empty, etc) before registering
-            withTimeoutOrNull(CREATE_ACCOUNT_TIMEOUT_MILLIS){
+            // TODO check all fields correct (not empty, etc) before registering
+            withTimeoutOrNull(CREATE_ACCOUNT_TIMEOUT_MILLIS) {
                 val result = registerAccountUseCase.invoke(
                     nickname = state.value.nickname,
                     email = state.value.email,
                     password = state.value.password,
                 )
 
-                //For testing: val result  = Result(true, "good")
+                // For testing: val result  = Result(true, "good")
                 if (result.success) {
-                    updateState{
+                    updateState {
                         it.copy(isLoading = false)
                     }
                     sendEffect(
                         CreateAccountEffect.ShowSnackbar(
                             title = "Create account",
-                            content = "Account created successfully"
-                        )
+                            content = "Account created successfully",
+                        ),
                     )
-
                 } else {
-                    updateState{
+                    updateState {
                         it.copy(isLoading = false)
                     }
 
                     sendEffect(
                         CreateAccountEffect.ShowSnackbar(
                             title = "Create account failed",
-                            content = result.message
-                        )
+                            content = result.message,
+                        ),
                     )
                 }
             } ?: run {
-                updateState{
+                updateState {
                     it.copy(isLoading = false)
                 }
 
                 sendEffect(
                     CreateAccountEffect.ShowSnackbar(
                         title = "Create account failed",
-                        content = "Could not connect to server"
-                    )
+                        content = "Could not connect to server",
+                    ),
                 )
             }
         }
@@ -121,18 +115,18 @@ data class CreateAccountState(
     val nickname: String = "vladimir",
     val email: String = "email1@gmail.com",
     val password: String = "password1",
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
 ) : Parcelable
 
 sealed interface CreateAccountEffect {
     data object NavigateBack : CreateAccountEffect
-    data class ShowSnackbar(val title: String, val content: String): CreateAccountEffect
+    data class ShowSnackbar(val title: String, val content: String) : CreateAccountEffect
 }
 
-sealed interface RegisterAccountIntent{
-    data class NicknameChanged(val value: String): RegisterAccountIntent
-    data class EmailChanged(val value: String): RegisterAccountIntent
-    data class PasswordChanged(val value: String): RegisterAccountIntent
-    data object RegisterAccount: RegisterAccountIntent
-    data object NavigateBack: RegisterAccountIntent
+sealed interface RegisterAccountIntent {
+    data class NicknameChanged(val value: String) : RegisterAccountIntent
+    data class EmailChanged(val value: String) : RegisterAccountIntent
+    data class PasswordChanged(val value: String) : RegisterAccountIntent
+    data object RegisterAccount : RegisterAccountIntent
+    data object NavigateBack : RegisterAccountIntent
 }

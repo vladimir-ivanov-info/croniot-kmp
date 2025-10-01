@@ -2,7 +2,6 @@ package com.server.croniot.data.db.daos
 
 import croniot.models.Device
 import croniot.models.SensorType
-import croniot.models.TaskType
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.JoinType
@@ -115,8 +114,6 @@ class SensorTypeDaoImpl @Inject constructor(
 //        }
 //    }
 
-
-
     /*override fun insert(device: Device, sensorType: SensorType) {
         sessionFactory.openSession().use { session ->
             val tx = session.beginTransaction()
@@ -190,11 +187,6 @@ class SensorTypeDaoImpl @Inject constructor(
             }
         }
     }
-
-
-
-
-
 
     override fun getLazy(deviceUuid: String, sensorTypeUid: Long): SensorType? {
         val session = sessionFactory.openSession()

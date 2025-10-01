@@ -13,11 +13,11 @@ class LogInUseCase(
     private val authRepository: AuthRepository,
     private val localDataRepository: LocalDataRepository,
     private val sessionRepository: SessionRepository,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
 ) {
 
     suspend operator fun invoke(email: String, password: String): Outcome<Unit, AuthError> {
-        var result : Outcome<Unit, AuthError>
+        var result: Outcome<Unit, AuthError>
 
         if (email.isBlank() || password.isBlank()) {
             result = Outcome.Err(AuthError.InvalidCredentials)
@@ -26,7 +26,7 @@ class LogInUseCase(
             val deviceToken = localDataRepository.getLocalDeviceToken()
             val deviceProperties = DevicePropertiesController.getDeviceDetails()
 
-            //TODO los !!
+            // TODO los !!
             val loginResult = authRepository.login(email, password, deviceUuid!!, deviceToken, deviceProperties)
 
             result = when (loginResult) {
@@ -34,7 +34,7 @@ class LogInUseCase(
                     val token = loginResult.value.token
 
                     sessionRepository.save(
-                        session = AuthSession(email = email, token = token)
+                        session = AuthSession(email = email, token = token),
                     )
                     accountRepository.save(account = loginResult.value.account)
                     localDataRepository.savePassword(password = password)

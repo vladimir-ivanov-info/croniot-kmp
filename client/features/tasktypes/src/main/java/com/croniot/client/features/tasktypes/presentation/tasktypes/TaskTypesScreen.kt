@@ -56,17 +56,16 @@ fun TaskTypesScreen(
 @Composable
 fun TaskTypesScreen(
     selectedDevice: Device, // TODO: idealmente pasar solo deviceUuid y obtener por VM
-    onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit
+    onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
 ) {
-    val tasksTypes = selectedDevice.taskTypes  // ya es una colección; no hace falta toList()
+    val tasksTypes = selectedDevice.taskTypes // ya es una colección; no hace falta toList()
 
     Box(modifier = Modifier.fillMaxSize()) {
-
         if (tasksTypes.isEmpty()) {
             // Empty state simple (opcional)
             Text(
                 text = "No task types available",
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             )
             return@Box
         }
@@ -74,18 +73,18 @@ fun TaskTypesScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(
                 items = tasksTypes,
-                key = { taskType -> "${selectedDevice.uuid}|taskType:${taskType.uid}" } // clave única y estable
+                key = { taskType -> "${selectedDevice.uuid}|taskType:${taskType.uid}" }, // clave única y estable
             ) { task ->
                 TaskTypeItem(
                     task = task,
                     onTaskTypeClicked = {
                         // Si es stateful y necesitas pedir sync al IoT, hazlo aquí antes de navegar
                         onTaskTypeClicked(selectedDevice.uuid, task.uid)
-                    }
+                    },
                 )
             }
         }

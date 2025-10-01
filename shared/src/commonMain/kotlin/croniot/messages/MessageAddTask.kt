@@ -3,7 +3,7 @@ package croniot.messages
 data class MessageAddTask(
     val deviceUuid: String,
     val taskTypeUid: String,
-    //val parametersValues: MutableMap<Long, String>,
+    // val parametersValues: MutableMap<Long, String>,
     val parametersValues: Map<Long, String>,
 )
 

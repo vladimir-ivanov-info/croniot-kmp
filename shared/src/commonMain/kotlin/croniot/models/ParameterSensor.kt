@@ -29,9 +29,9 @@ class ParameterSensor(
     // @Transient
     var sensorType: SensorType? = null,
 
-    //var paramOrder: Int? = null
-)
-    : Parameter(id = id, uid = uid, name = name, type = type, unit = unit, description = description, constraints = constraints) {
+    // var paramOrder: Int? = null
+) :
+    Parameter(id = id, uid = uid, name = name, type = type, unit = unit, description = description, constraints = constraints) {
 
     constructor() : this(0, 0, "", "", "", "", mutableMapOf(), null, SensorType())
     constructor(uid: Long, name: String, type: String, unit: String, description: String, constraints: MutableMap<String, String>, sensorType: SensorType) :

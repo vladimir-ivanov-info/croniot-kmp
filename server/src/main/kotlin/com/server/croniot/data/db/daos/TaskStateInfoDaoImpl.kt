@@ -33,7 +33,7 @@ class TaskStateInfoDaoImpl @Inject constructor(
             val tx = session.beginTransaction()
             try {
                 // 1) El padre debe venir seteado
-                //val task = taskStateInfo.task
+                // val task = taskStateInfo.task
                 //    ?: throw IllegalArgumentException("TaskStateInfo debe tener 'task' asignado")
 
                 // 2) Adjunta el Task gestionado si ya existe
@@ -61,5 +61,4 @@ class TaskStateInfoDaoImpl @Inject constructor(
             }
         }
     }
-
 }

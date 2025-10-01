@@ -8,7 +8,7 @@ import com.croniot.client.data.source.remote.mappers.toDomain
 import croniot.messages.MessageLoginRequest
 
 class AuthRepositoryImpl(
-    private val loginDataSource: LoginDataSource
+    private val loginDataSource: LoginDataSource,
 ) : AuthRepository {
 
     override suspend fun login(
@@ -16,9 +16,9 @@ class AuthRepositoryImpl(
         password: String,
         deviceUuid: String,
         deviceToken: String?,
-        deviceProperties: Map<String, String>
+        deviceProperties: Map<String, String>,
     ): Outcome<LoginResultDomain, AuthError> {
-        var result : Outcome<LoginResultDomain, AuthError> = Outcome.Err(AuthError.Unknown)
+        var result: Outcome<LoginResultDomain, AuthError> = Outcome.Err(AuthError.Unknown)
 
         try {
             val loginRequest = MessageLoginRequest(
@@ -26,7 +26,7 @@ class AuthRepositoryImpl(
                 password = password,
                 deviceUuid = deviceUuid,
                 deviceToken = deviceToken,
-                deviceProperties = deviceProperties
+                deviceProperties = deviceProperties,
             )
 
             val loginResponse = loginDataSource.login(loginRequest)
@@ -39,36 +39,34 @@ class AuthRepositoryImpl(
                 Outcome.Err(AuthError.Server(loginResponse.getOrNull()?.result?.message))
             }
 
+            val body = loginResponse.getOrNull() // body()
 
-            val body = loginResponse.getOrNull() //body()
-
-            if(body == null){
+            if (body == null) {
                 Outcome.Err(AuthError.Unknown)
             } else {
-                //if (!loginResponse.isSuccessful ) {
-               // val responseMessage = loginResponse.message()
-                    val responseMessage = body.toString() //TODO test and check the body
+                // if (!loginResponse.isSuccessful ) {
+                // val responseMessage = loginResponse.message()
+                val responseMessage = body.toString() // TODO test and check the body
 
-                    val account = body.account
-                    val token = body.token
+                val account = body.account
+                val token = body.token
 
-                    if(account != null && token != null){
-                        result = Outcome.Ok(
-                            LoginResultDomain(
-                                account = account.toDomain(),
-                                token = token
-                            )
-                        )
-                    } else {
-                        result = when {
-                            responseMessage.contains("invalid", ignoreCase = true) -> Outcome.Err(AuthError.InvalidCredentials)
-                            account == null -> Outcome.Err(AuthError.AccountMissing)
-                            token == null -> Outcome.Err(AuthError.TokenMissing)
-                            else -> Outcome.Err(AuthError.Unknown)
-                        }
+                if (account != null && token != null) {
+                    result = Outcome.Ok(
+                        LoginResultDomain(
+                            account = account.toDomain(),
+                            token = token,
+                        ),
+                    )
+                } else {
+                    result = when {
+                        responseMessage.contains("invalid", ignoreCase = true) -> Outcome.Err(AuthError.InvalidCredentials)
+                        account == null -> Outcome.Err(AuthError.AccountMissing)
+                        token == null -> Outcome.Err(AuthError.TokenMissing)
+                        else -> Outcome.Err(AuthError.Unknown)
                     }
+                }
             }
-
         } catch (e: Exception) {
             result = Outcome.Err(AuthError.Network)
         }

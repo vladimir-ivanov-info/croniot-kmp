@@ -10,9 +10,7 @@ class AccountRepositoryImpl(private val localDataSource: LocalDatasource) : Acco
     }
 
     override suspend fun get(email: String): Account? {
-        //TODO
+        // TODO
         return localDataSource.getCurrentAccount()
     }
-
-
 }

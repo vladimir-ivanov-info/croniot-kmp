@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.croniot.android.R
-//import com.croniot.android.app.Global
-//import com.croniot.android.core.presentation.util.UtilUi
+// import com.croniot.android.app.Global
+// import com.croniot.android.core.presentation.util.UtilUi
 import com.croniot.android.core.util.DateTimeUtil
 import com.croniot.client.presentation.constants.UtilUi
 import croniot.models.TaskState
@@ -51,15 +51,13 @@ import org.koin.androidx.compose.koinViewModel
 import com.croniot.client.core.models.Task
 import com.croniot.client.core.models.TaskStateInfo
 
-
 @Composable
 fun TasksScreen(
     selectedDeviceUuid: String,
     navController: NavController,
     tasksViewModel: TasksViewModel = koinViewModel(),
 ) {
-
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         tasksViewModel.initialize(selectedDeviceUuid)
     }
 
@@ -118,8 +116,8 @@ fun TasksScreen(
 fun GenericTaskItem(
     tasksViewModel: TasksViewModel,
     taskStateFlow: StateFlow<Task>,
-    onTaskClicked: (taskClicked: Task) -> Unit)
-{
+    onTaskClicked: (taskClicked: Task) -> Unit,
+) {
     val taskValue by taskStateFlow.collectAsState()
 
     val deviceUuid = taskValue.deviceUuid
@@ -133,7 +131,7 @@ fun GenericTaskItem(
     var stateIconColor = Color.Black
 
     val stateInfos = taskValue.stateInfos.toList().sortedByDescending { it.dateTime }
-    //var latestStateInfo: TaskStateInfoDto? = null
+    // var latestStateInfo: TaskStateInfoDto? = null
     var latestStateInfo: TaskStateInfo? = null
     var latestStateInfoProgress = 0.0
 
@@ -188,7 +186,7 @@ fun GenericTaskItem(
         ) {
 // TODO make this a method in another class
 
-           // val selectedDevice = localDataRepository.getSelectedDevice()//.collectAsState(null)
+            // val selectedDevice = localDataRepository.getSelectedDevice()//.collectAsState(null)
 
             // Retrieve task name
 //            val taskName = remember(taskValue.taskTypeUid) {
@@ -231,8 +229,8 @@ fun GenericTaskItem(
 
                     Text(
                         text = taskName ?: "[task_name]",
-                        //text = "[task_name]",
-                        //text = viewModelTasks.getTaskType(),
+                        // text = "[task_name]",
+                        // text = viewModelTasks.getTaskType(),
                         fontSize = UtilUi.TEXT_SIZE_3,
                         modifier = Modifier
                             .fillMaxWidth()

@@ -17,21 +17,20 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.croniot.client.core.util.TaskUtil
 import com.croniot.client.core.models.ParameterTask
+import com.croniot.client.core.util.TaskUtil
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Composable
 fun CroniotSlider(
     currentParameter: ParameterTask,
-    onNewValue : (newValue: String) -> Unit
+    onNewValue: (newValue: String) -> Unit,
 ) {
-
     val minValue = currentParameter.constraints["minValue"]
     val maxValue = currentParameter.constraints["maxValue"]
 
-    val initialSliderValue = (maxValue!!.toDouble() - minValue!!.toDouble())/2
+    val initialSliderValue = (maxValue!!.toDouble() - minValue!!.toDouble()) / 2
 
     var value by rememberSaveable { mutableStateOf(initialSliderValue.toString()) }
 

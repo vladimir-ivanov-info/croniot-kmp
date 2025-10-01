@@ -1,6 +1,5 @@
 package com.croniot.client.core.util
 
-
 object StringUtil {
     fun generateRandomString(length: Int = 3): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')

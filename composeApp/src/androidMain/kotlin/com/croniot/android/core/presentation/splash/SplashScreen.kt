@@ -25,9 +25,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SplashScreen(
     navController: NavController,
-    splashScreenViewModel: SplashScreenViewModel = koinViewModel()
-){
-
+    splashScreenViewModel: SplashScreenViewModel = koinViewModel(),
+) {
     LaunchedEffect(Unit) {
         splashScreenViewModel.initSplash()
     }
@@ -36,17 +35,17 @@ fun SplashScreen(
         splashScreenViewModel.uiEvents.collect { event ->
             when (event) {
                 is SplashScreenUiEvent.NavigateToDeviceList -> {
-                    navController.navigate(UiConstants.ROUTE_DEVICES){
+                    navController.navigate(UiConstants.ROUTE_DEVICES) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
                 is SplashScreenUiEvent.NavigateToDevice -> {
-                    navController.navigate("${UiConstants.ROUTE_DEVICE}/${event.deviceUuid}"){
+                    navController.navigate("${UiConstants.ROUTE_DEVICE}/${event.deviceUuid}") {
                         popUpTo(0) { inclusive = true }
                     }
                 }
                 is SplashScreenUiEvent.NavigateToLogin -> {
-                    navController.navigate(UiConstants.ROUTE_LOGIN){
+                    navController.navigate(UiConstants.ROUTE_LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
@@ -56,14 +55,14 @@ fun SplashScreen(
 
     BackHandler {
         if (!navController.popBackStack()) {
-            //viewModel.resetCurrentScreen() //TODO
+            // viewModel.resetCurrentScreen() //TODO
             navController.navigate(UiConstants.ROUTE_DEVICES)
         }
     }
 
     SideEffect {
-        //viewModel.saveCurrentScreen() //TODO
-       // viewModelDeviceScreen.saveCurrentScreen()
+        // viewModel.saveCurrentScreen() //TODO
+        // viewModelDeviceScreen.saveCurrentScreen()
     }
 
     Scaffold(
@@ -86,17 +85,16 @@ fun SplashScreen(
         content = { innerPadding ->
             SplashScreenContent(
                 navController = navController,
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
             )
         },
     )
-
 }
 
 @Composable
 fun SplashScreenContent(
     navController: NavController,
-    innerPadding: PaddingValues
-){
-    //Nothing
+    innerPadding: PaddingValues,
+) {
+    // Nothing
 }

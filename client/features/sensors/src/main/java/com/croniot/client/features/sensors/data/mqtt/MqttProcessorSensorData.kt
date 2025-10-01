@@ -8,7 +8,7 @@ import org.koin.core.component.KoinComponent
 import java.time.ZonedDateTime
 
 class MqttProcessorSensorData(
-    private val onNewSensorDataDto: (SensorDataDto) -> Unit
+    private val onNewSensorDataDto: (SensorDataDto) -> Unit,
 ) : MqttDataProcessor, KoinComponent {
 
     val gsonZonedDateTime = GsonBuilder()

@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,13 +11,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,31 +56,25 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.Global
-import com.croniot.client.presentation.components.GenericAlertDialog
-import org.koin.androidx.compose.koinViewModel
 import com.croniot.client.core.models.Device
 import com.croniot.client.features.login.R
+import com.croniot.client.presentation.components.GenericAlertDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.surfaceColorAtElevation
-
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DeviceListScreenRoot(
     onLogOut: () -> Unit,
     onDeviceClicked: (deviceUuid: String) -> Unit,
     deviceListViewModel: DeviceListViewModel = koinViewModel(),
-){
-
+) {
     val state = deviceListViewModel.state.collectAsStateWithLifecycle()
     val effects = deviceListViewModel.effects
 
     val lastSeenInfo by deviceListViewModel.lastSeenMillis.collectAsStateWithLifecycle(emptyMap())
 
-    //val snackbarHostState = remember { SnackbarHostState() }
+    // val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         effects.collectLatest { effect ->
@@ -91,15 +87,14 @@ fun DeviceListScreenRoot(
     DeviceListScreen(
         state = state.value,
         lastSeenInfo = lastSeenInfo,
-        onAction =  { action ->
-            when(action){
+        onAction = { action ->
+            when (action) {
                 is DeviceListIntent.DeviceClicked -> onDeviceClicked(action.deviceUuid)
                 else -> deviceListViewModel.onAction(action)
             }
         },
-        //snackbarHostState = snackbarHostState
+        // snackbarHostState = snackbarHostState
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,18 +129,16 @@ fun DeviceListScreen(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                    ){
-
+                    ) {
                         Box(
                             modifier = Modifier.size(32.dp),
                             contentAlignment = Alignment.Center,
                         ) {
-
                             Image(
                                 painter = painterResource(id = R.drawable.logo_cockroach),
                                 contentDescription = null,
                                 modifier = Modifier.clip(CircleShape).clearAndSetSemantics { },
-                                contentScale = ContentScale.Fit
+                                contentScale = ContentScale.Fit,
                             )
                         }
 
@@ -163,7 +156,7 @@ fun DeviceListScreen(
                     IconButton(onClick = { expanded = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            //painter = painterResource(id = android.R.drawable.ic_menu_more), // Triple-dot icon
+                            // painter = painterResource(id = android.R.drawable.ic_menu_more), // Triple-dot icon
                             contentDescription = "Actions",
                             tint = Color.Black, // Set icon color to black
                         )
@@ -191,8 +184,8 @@ fun DeviceListScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
-                onAction = onAction
-                //deviceListViewModel,
+                onAction = onAction,
+                // deviceListViewModel,
 
                 /*onDeviceClicked = {
                     onDeviceClicked(it)
@@ -209,15 +202,12 @@ fun DeviceListScreenBody(
     lastSeenInfo: Map<String, Long?>,
     onAction: (DeviceListIntent) -> Unit,
 ) {
-
     val devices = state.devices
-
 
 // Un solo ticker para TODA la lista
     val now by produceState(System.currentTimeMillis()) {
         while (true) { delay(1_000); value = System.currentTimeMillis() }
     }
-
 
     Column(modifier = modifier) {
         Text(
@@ -227,7 +217,7 @@ fun DeviceListScreenBody(
             modifier = Modifier.padding(16.dp).semantics { heading() },
         )
 
-        if(devices.isEmpty()){
+        if (devices.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -236,7 +226,7 @@ fun DeviceListScreenBody(
                 Text(
                     text = "No IoT devices yet",
                     color = MaterialTheme.colorScheme.primary,
-                    //fontSize = UtilUi.TEXT_SIZE_2,
+                    // fontSize = UtilUi.TEXT_SIZE_2,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(4.dp),
                 )
@@ -245,19 +235,17 @@ fun DeviceListScreenBody(
             LazyColumn(
                 modifier = Modifier.padding(horizontal = 16.dp),
             ) {
-
                 /*stickyHeader {
                     SectionHeader(title = "Online (${3})")
                 }*/
                 items(
                     items = devices,
-                   //TODO key = { device -> device.uuid }
+                    // TODO key = { device -> device.uuid }
                 ) { device ->
                     Row(
-                        modifier = Modifier
-                            //.padding(horizontal = 4.dp)
-                        //.semantics { contentDescription = "Sensor ${device.name}" }
-                        ,
+                        modifier = Modifier,
+                        // .padding(horizontal = 4.dp)
+                        // .semantics { contentDescription = "Sensor ${device.name}" }
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         val isOnline = lastSeenInfo[device.uuid]?.let { ts -> (now - ts) < 5_000 } == true
@@ -273,7 +261,7 @@ fun DeviceListScreenBody(
                             isOnline = isOnline,
                             lastSeen = lastSeenInfo[device.uuid],
                             now = now,
-                            onClick = { onAction(DeviceListIntent.DeviceClicked(deviceUuid = device.uuid)) }
+                            onClick = { onAction(DeviceListIntent.DeviceClicked(deviceUuid = device.uuid)) },
                         )
                     }
                 }
@@ -288,13 +276,13 @@ private fun SectionHeader(title: String) {
         Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
-            .padding(vertical = 6.dp)
+            .padding(vertical = 6.dp),
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp),
         )
     }
 }
@@ -356,12 +344,13 @@ fun DeviceRow(
     isOnline: Boolean,
     lastSeen: Long?,
     now: Long,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val bg by animateColorAsState(
-        if (isOnline) MaterialTheme.colorScheme.primaryContainer
-        else MaterialTheme.colorScheme.surfaceVariant,
-        label = "row-bg"
+        if (isOnline) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else MaterialTheme.colorScheme.surfaceVariant,
+        label = "row-bg",
     )
 
     val statusText = if (isOnline) "Online" else "Offline"
@@ -379,15 +368,14 @@ fun DeviceRow(
                 onClick(label = "Abrir ${device.name}") { onClick(); true }
             },
         colors = CardDefaults.cardColors(containerColor = bg),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-
             StatusDot(isOnline = isOnline)
 
             Spacer(Modifier.width(12.dp))
@@ -396,14 +384,14 @@ fun DeviceRow(
                 Text(
                     device.name,
                     style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1
+                    maxLines = 1,
                 )
                 Text(
                     // Cambia por device.type / location si lo tienes
                     text = relative,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
 
@@ -430,20 +418,19 @@ private fun relativeTime(now: Long, last: Long?): String {
     }
 }
 
-
 @Composable
 private fun StatusDot(isOnline: Boolean) {
     val color by animateColorAsState(
-        if (isOnline) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.error,
-        label = "dot-color"
+        if (isOnline) {
+            MaterialTheme.colorScheme.primary
+        } else MaterialTheme.colorScheme.error,
+        label = "dot-color",
     )
     Box(
         Modifier
             .size(14.dp)
             .clip(CircleShape)
             .background(color)
-            .semantics { contentDescription = if (isOnline) "Online" else "Offline" }
+            .semantics { contentDescription = if (isOnline) "Online" else "Offline" },
     )
 }
-

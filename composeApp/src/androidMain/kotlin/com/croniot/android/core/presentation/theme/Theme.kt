@@ -36,30 +36,29 @@ private val DarkColorScheme = darkColorScheme(
     secondary = PurpleGrey80,
     tertiary = Pink80,*/
 
-    primary = Color(0xFFFF4081),      // rosa neón
-    secondary = Color(0xFF18FFFF),    // cyan neón
-    background = Color(0xFF0A0A0F),   // negro azulado
-    surface = Color(0xFF212121),      // gris carbón
-    error = Color(0xFFFF1744),        // rojo neón
+    primary = Color(0xFFFF4081), // rosa neón
+    secondary = Color(0xFF18FFFF), // cyan neón
+    background = Color(0xFF0A0A0F), // negro azulado
+    surface = Color(0xFF212121), // gris carbón
+    error = Color(0xFFFF1744), // rojo neón
     onPrimary = Color.Black,
     onBackground = Color.White,
-    onSurface = Color.White
+    onSurface = Color.White,
 )
-
 
 private val LightColorScheme = lightColorScheme(
    /* primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40,*/
 
-    primary = Color(0xFFFF4081),      // rosa neón
-    secondary = Color(0xFF18FFFF),    // cyan neón
-    background = Color(0xFF0A0A0F),   // negro azulado
-    surface = Color(0xFF212121),      // gris carbón
-    error = Color(0xFFFF1744),        // rojo neón
+    primary = Color(0xFFFF4081), // rosa neón
+    secondary = Color(0xFF18FFFF), // cyan neón
+    background = Color(0xFF0A0A0F), // negro azulado
+    surface = Color(0xFF212121), // gris carbón
+    error = Color(0xFFFF1744), // rojo neón
     onPrimary = Color.Black,
     onBackground = Color.White,
-    onSurface = Color.White
+    onSurface = Color.White,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -404,13 +403,13 @@ private val LightColorScheme = lightColorScheme(
 //    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 // )
 
-//@Composable
-//fun IoTClientTheme(
+// @Composable
+// fun IoTClientTheme(
 //    darkTheme: Boolean = isSystemInDarkTheme(),
 //    // Dynamic color is available on Android 12+
 //    dynamicColor: Boolean = true,
 //    content: @Composable () -> Unit,
-//) {
+// ) {
 //    val colorScheme = when {
 //        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
 //            val context = LocalContext.current
@@ -450,9 +449,7 @@ private val LightColorScheme = lightColorScheme(
 //        content = content,
 //    )*/
 //
-//}
-
-
+// }
 
 @Composable
 fun IoTClientTheme(
@@ -466,13 +463,13 @@ fun IoTClientTheme(
             val ctx = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(ctx) else dynamicLightColorScheme(ctx)
         }
-        darkTheme -> DarkColorScheme   // ← define estos dos como fallback propios
+        darkTheme -> DarkColorScheme // ← define estos dos como fallback propios
         else -> LightColorScheme
     }
 
     // 2) Pequeños “tuneos” de roles que quieres controlar siempre
     val colorScheme = base.copy(
-        surfaceVariant   = if (darkTheme) Color(0xFF2C2C2E) else Color(0xFFE9EEF6),
+        surfaceVariant = if (darkTheme) Color(0xFF2C2C2E) else Color(0xFFE9EEF6),
         onSurfaceVariant = if (darkTheme) Color(0xFFCAC4D0) else Color(0xFF2B2F33),
         // opcionales:
         // outlineVariant   = if (darkTheme) Color(0xFF3F3F46) else Color(0xFFD5DBE3),
@@ -486,13 +483,13 @@ fun IoTClientTheme(
             WindowCompat.setDecorFitsSystemWindows(window, false)
             window.statusBarColor = Color.Transparent.toArgb()
             WindowCompat.getInsetsController(window, view)
-                .isAppearanceLightStatusBars = !darkTheme  // ← F I J O
+                .isAppearanceLightStatusBars = !darkTheme // ← F I J O
         }
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

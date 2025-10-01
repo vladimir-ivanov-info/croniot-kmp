@@ -5,7 +5,7 @@ import croniot.models.LoginResultDto
 import retrofit2.HttpException
 
 class LoginDataSourceImpl(
-    private val api: LoginApi
+    private val api: LoginApi,
 ) : LoginDataSource {
     override suspend fun login(request: MessageLoginRequest): Result<LoginResultDto> = runCatching {
         val resp = api.login(request)
@@ -13,6 +13,6 @@ class LoginDataSourceImpl(
             throw HttpException(resp) // o crea tu propio error
         }
         val dto = resp.body() ?: error("Empty body")
-        dto //.toDomain() // mapea DTO → LoginResult
+        dto // .toDomain() // mapea DTO → LoginResult
     }
 }

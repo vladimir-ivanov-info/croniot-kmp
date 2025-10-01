@@ -43,13 +43,11 @@ import com.croniot.client.presentation.constants.UiConstants
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
-
 @Composable
 fun ScreenRegisterAccountRoot(
     onNavigateBack: () -> Unit,
-    viewModelRegisterAccount: ViewModelRegisterAccount = koinViewModel()
-){
-
+    viewModelRegisterAccount: ViewModelRegisterAccount = koinViewModel(),
+) {
     val state = viewModelRegisterAccount.state.collectAsStateWithLifecycle()
     val effects = viewModelRegisterAccount.effects
 
@@ -61,7 +59,7 @@ fun ScreenRegisterAccountRoot(
                 is CreateAccountEffect.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = effect.content,
-                        withDismissAction = true
+                        withDismissAction = true,
                     )
                 }
                 CreateAccountEffect.NavigateBack -> onNavigateBack()
@@ -85,7 +83,6 @@ fun ScreenRegisterAccountRoot(
             }
         },
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,7 +90,7 @@ fun ScreenRegisterAccountRoot(
 fun ScreenRegisterAccount(
     state: State<CreateAccountState>,
     snackbarHostState: SnackbarHostState,
-    onAction: (RegisterAccountIntent) -> Unit
+    onAction: (RegisterAccountIntent) -> Unit,
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -125,9 +122,9 @@ fun ScreenRegisterAccount(
                 state = state,
                 innerPadding = innerPadding,
                 modifier = Modifier,
-                onAction = onAction
+                onAction = onAction,
             )
-        }
+        },
     )
 }
 
@@ -136,9 +133,8 @@ fun ScreenRegisterAccountBody(
     state: State<CreateAccountState>,
     innerPadding: PaddingValues,
     modifier: Modifier,
-    onAction: (RegisterAccountIntent) -> Unit
+    onAction: (RegisterAccountIntent) -> Unit,
 ) {
-
     Box(modifier = Modifier.padding(innerPadding), contentAlignment = Alignment.Center) {
         Column(modifier = Modifier.padding(16.dp)) {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -167,7 +163,7 @@ fun ScreenRegisterAccountBody(
                 enabled = !state.value.isLoading,
                 onValueChange = {
                     onAction(RegisterAccountIntent.NicknameChanged(it))
-                }
+                },
             )
 
             Spacer(modifier = Modifier.size(8.dp))
@@ -177,7 +173,7 @@ fun ScreenRegisterAccountBody(
                 enabled = !state.value.isLoading,
                 onValueChange = {
                     onAction(RegisterAccountIntent.EmailChanged(it))
-                }
+                },
             )
 
             Spacer(modifier = Modifier.size(8.dp))
@@ -187,7 +183,7 @@ fun ScreenRegisterAccountBody(
                 enabled = !state.value.isLoading,
                 onValueChange = {
                     onAction(RegisterAccountIntent.PasswordChanged(it))
-                }
+                },
             )
 
             Spacer(modifier = Modifier.size(8.dp))
@@ -202,20 +198,19 @@ fun ScreenRegisterAccountBody(
                         .fillMaxWidth()
                         .testTag(UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP_TAG),
                 ) {
-
-                    if(state.value.isLoading){
+                    if (state.value.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier
-                                .size(20.dp),   // tamaño reducido para que encaje bien en el botón
+                                .size(20.dp), // tamaño reducido para que encaje bien en el botón
                             strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary // color visible sobre el fondo
+                            color = MaterialTheme.colorScheme.onPrimary, // color visible sobre el fondo
                         )
                     } else {
                         Text(
                             text = UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP,
                             modifier = Modifier.testTag(
                                 UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP,
-                            )
+                            ),
                         )
                     }
                 }
