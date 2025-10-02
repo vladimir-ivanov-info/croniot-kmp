@@ -66,4 +66,3 @@ config/passwords.txt
 **/secrets.json
 
 
-gradle_dependencies.txt
