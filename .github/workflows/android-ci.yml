@@ -22,11 +22,7 @@ jobs:
         with:
           min-wrapper-count: 1
           allow-snapshots: false
-          gradle-files: |
-            gradle/wrapper/gradle-wrapper.properties
-            gradle/wrapper/gradle-wrapper.jar
-            gradlew
-            gradlew.bat
+          allow-checksums: false
 
       - name: Setup Java
         uses: actions/setup-java@v4
