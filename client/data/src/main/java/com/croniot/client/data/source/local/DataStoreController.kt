@@ -22,7 +22,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 class DataStoreController : LocalDatasource, KoinComponent {
 
-    val context: Context by inject()
+    val context: Context by inject() //TODO move to constructor
 
     private val dataStore: DataStore<Preferences> by lazy {
         context.dataStore

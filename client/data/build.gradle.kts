@@ -330,7 +330,7 @@ android {
 
     defaultConfig {
         //minSdk = 21 // o el que uses en el proyecto (no necesitas targetSdk en libs)
-        libs.versions.android.minSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
         // NO applicationId en módulos library
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
