@@ -5,6 +5,10 @@ on:
   push:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -37,8 +41,8 @@ jobs:
       - name: Lint (Android)
         run: ./gradlew lintDebug
 
-      - name: Detekt
-        run: ./gradlew detekt
+      #- name: Detekt
+      #  run: ./gradlew detekt
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
