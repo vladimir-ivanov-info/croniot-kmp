@@ -21,12 +21,12 @@ jobs:
         uses: gradle/wrapper-validation-action@v2
         with:
           min-wrapper-count: 1
-	  allow-snapshots: false
-	  gradle-files: |
-	    gradle/wrapper/gradle-wrapper.properties
-	    gradle/wrapper/gradle-wrapper.jar
-	    gradlew
-	    gradlew.bat
+          allow-snapshots: false
+          gradle-files: |
+            gradle/wrapper/gradle-wrapper.properties
+            gradle/wrapper/gradle-wrapper.jar
+            gradlew
+            gradlew.bat
 
       - name: Setup Java
         uses: actions/setup-java@v4
