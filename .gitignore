@@ -65,3 +65,5 @@ config/passwords.txt
 **/persistence.xml
 **/secrets.json
 
+
+gradle_dependencies.txt
