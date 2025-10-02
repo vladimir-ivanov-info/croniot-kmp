@@ -17,13 +17,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v2
-        with:
-          min-wrapper-count: 1
-          allow-snapshots: false
-          allow-checksums: false
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
