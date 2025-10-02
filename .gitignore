@@ -21,6 +21,21 @@ androidApp/build/
 *.apk
 *.ap_
 
+.gradle/
+.idea/
+.kotlinc/
+.compose-cache/
+**/build/
+*.iml
+local.properties
+.cxx/
+.externalNativeBuild/
+
+
+
+
+
+
 # iOS specific files
 iosApp/.gradle/
 iosApp/build/
