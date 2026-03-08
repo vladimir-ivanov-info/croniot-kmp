@@ -135,6 +135,7 @@ dependencies {
     implementation(libs.common)
 
     // Test
+    testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.9.1")
     androidTestImplementation("com.karumi:shot-android:6.1.0")

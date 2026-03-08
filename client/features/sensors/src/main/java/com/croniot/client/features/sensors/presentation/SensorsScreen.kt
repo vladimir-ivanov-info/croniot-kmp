@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.Device
@@ -55,13 +56,13 @@ fun SensorsScreen(
                 val initialData = sensorsInitialData[sensorTypeUid] ?: emptyList()
 
                 if (isLoaded) {
+                    val sensorDataFlow = remember(sensorTypeUid, selectedDeviceUuid) {
+                        sensorsViewModel.listenSensorData(sensorTypeUid, selectedDeviceUuid)
+                    }
                     SensorItem(
                         sensorType = sensorType,
                         initialSensorData = initialData,
-                        sensorDataFlow = sensorsViewModel.listenSensorData(
-                            sensorTypeUid,
-                            selectedDeviceUuid
-                        )
+                        sensorDataFlow = sensorDataFlow,
                     )
                 }
             }

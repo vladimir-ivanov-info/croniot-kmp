@@ -160,7 +160,7 @@ fun DeviceListScreenBody(
                     .background(MaterialTheme.colorScheme.surface),
                 onIntent = onIntent,
             )
-        },
+        }
     )
 }
 
@@ -168,7 +168,7 @@ fun DeviceListScreenBody(
 fun DeviceListScreenBody(
     state: DeviceListState,
     modifier: Modifier = Modifier,
-    onIntent: (DeviceListIntent) -> Unit,
+    onIntent: (DeviceListIntent) -> Unit
 ) {
     val now by produceState(System.currentTimeMillis()) {
         while (true) { delay(1_000); value = System.currentTimeMillis() }
@@ -206,7 +206,9 @@ fun DeviceListScreenBody(
                         isOnline = isOnline,
                         lastSeen = state.lastSeenMillis[device.uuid],
                         now = now,
-                        onClick = { onIntent(DeviceListIntent.DeviceClicked(device.uuid)) },
+                        onClick = {
+                            onIntent(DeviceListIntent.DeviceClicked(device.uuid))
+                        },
                     )
                 }
             }
@@ -229,7 +231,7 @@ fun DeviceRow(
 
     val statusText = if (isOnline) "Online" else "Offline"
     val relative = remember(lastSeen, now) { getRelativeTimeText(now, lastSeen) }
-    val spoken = "$statusText. ${device.name}. Última señal $relative"
+    val spoken = remember(statusText, device.name, relative) { "$statusText. ${device.name}. Última señal $relative" }
 
     Card(
         onClick = onClick,

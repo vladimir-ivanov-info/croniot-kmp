@@ -7,13 +7,13 @@ import com.croniot.client.core.models.SensorData
 import com.croniot.client.core.models.SensorType
 import com.croniot.client.domain.repositories.SensorDataRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-/*import com.croniot.android.core.data.source.repository.SensorDataRepository
-import com.croniot.android.domain.model.SensorData*/
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import java.time.ZonedDateTime
@@ -39,10 +39,12 @@ class SensorsViewModel(
 
     fun loadAllInitialData(deviceUuid: String, sensorTypes: List<SensorType>) {
         viewModelScope.launch(Dispatchers.IO) {
-            val dataMap = sensorTypes.associate { sensorType ->
-                sensorType.uid to getInitialChartData(deviceUuid, sensorType.uid)
-            }
-            _sensorsInitialData.value = dataMap
+            sensorTypes.map { sensorType ->
+                async {
+                    val data = getInitialChartData(deviceUuid, sensorType.uid)
+                    _sensorsInitialData.update { it + (sensorType.uid to data) }
+                }
+            }.awaitAll()
         }
     }
 
@@ -59,9 +61,6 @@ class SensorsViewModel(
         return liveFlows.getOrPut(key) {
             // Flow -> StateFlow con valor inicial
             sensorDataRepository.observeSensorData(deviceUuid, sensorUid)
-                .onEach { item ->
-                    println(item) // TODO
-                }
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),

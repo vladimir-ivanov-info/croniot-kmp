@@ -74,11 +74,12 @@ dependencies {
    /// testImplementation(libs.kotlin.test.junit)
    // implementation(libs.kotlin.stdlib)  // Kotlin standard library
 
-    // JUnit 5 dependencies
+    // JUnit 6 dependencies
+    testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
 
-    // Kotlin test with JUnit 5
+    // Kotlin test with JUnit 6
     testImplementation(libs.kotlin.test.junit5)
     implementation(libs.coroutinesCore)
     implementation(libs.paho.mqtt)
@@ -123,7 +124,7 @@ dependencies {
 }
 
 tasks.test {
-    useJUnitPlatform()  // Enables JUnit 5 support
+    useJUnitPlatform()
 }
 
 tasks {

@@ -14,8 +14,6 @@ import croniot.models.dto.ParameterTaskDto
 import croniot.models.dto.SensorDataDto
 import croniot.models.dto.SensorTypeDto
 import croniot.models.dto.TaskTypeDto
-import java.time.ZonedDateTime
-
 // TODO maybe change toAndroidModel to toDomain
 fun AccountDto.toDomain(): Account {
     return Account(
@@ -80,5 +78,5 @@ fun SensorDataDto.toDomain(): SensorData = SensorData(
     deviceUuid = deviceUuid,
     sensorTypeUid = sensorTypeUid,
     value = value,
-    timeStamp = ZonedDateTime.now(),
+    timeStamp = timestamp,
 )

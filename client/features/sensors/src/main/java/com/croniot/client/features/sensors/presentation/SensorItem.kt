@@ -41,17 +41,22 @@ fun SensorItem(
 
     val chartValues = remember { mutableStateListOf<SensorData>() }
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         chartValues.clear()
         chartValues.addAll(initialSensorData)
     }
-    
+
     LaunchedEffect(sensorData.timeStamp) {
         if (sensorData.value != Constants.PARAMETER_VALUE_UNDEFINED) {
             val lastTime = chartValues.lastOrNull()?.timeStamp
             if (lastTime != sensorData.timeStamp) {
-                chartValues.add(sensorData)
-                if (chartValues.size > 50) chartValues.removeAt(0)
+                if (chartValues.size >= 50) {
+                    val trimmed = chartValues.drop(1) + sensorData
+                    chartValues.clear()
+                    chartValues.addAll(trimmed)
+                } else {
+                    chartValues.add(sensorData)
+                }
             }
         }
     }

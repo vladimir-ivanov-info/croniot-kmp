@@ -29,26 +29,6 @@ fun StatusDot(isOnline: Boolean, modifier: Modifier = Modifier) {
         label = "status-dot-color",
     )
 
-    val pulse = rememberInfiniteTransition(label = "status-pulse")
-    val pulseScale by pulse.animateFloat(
-        initialValue = 1f,
-        targetValue = 2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(900, easing = EaseOut),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "pulse-scale",
-    )
-    val pulseAlpha by pulse.animateFloat(
-        initialValue = 0.5f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(900, easing = EaseOut),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "pulse-alpha",
-    )
-
     Box(
         modifier = modifier
             .size(20.dp)
@@ -56,6 +36,25 @@ fun StatusDot(isOnline: Boolean, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         if (isOnline) {
+            val pulse = rememberInfiniteTransition(label = "status-pulse")
+            val pulseScale by pulse.animateFloat(
+                initialValue = 1f,
+                targetValue = 2f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(900, easing = EaseOut),
+                    repeatMode = RepeatMode.Restart,
+                ),
+                label = "pulse-scale",
+            )
+            val pulseAlpha by pulse.animateFloat(
+                initialValue = 0.5f,
+                targetValue = 0f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(900, easing = EaseOut),
+                    repeatMode = RepeatMode.Restart,
+                ),
+                label = "pulse-alpha",
+            )
             Box(
                 modifier = Modifier
                     .size(10.dp)
