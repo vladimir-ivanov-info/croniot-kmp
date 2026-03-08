@@ -3,6 +3,7 @@ package com.croniot.client.data.repositories
 import com.croniot.client.core.models.Account
 import com.croniot.client.core.models.Device
 import com.croniot.client.core.util.DevicePropertiesController
+import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.data.source.local.LocalDatasource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +90,7 @@ class LocalDataRepositoryImpl(
 
     override fun savePassword(password: String) {
         repositoryScope.launch {
-            localDatasource.savePassword(password)
+            localDatasource.savePassword(password) //TODO plain text, fix later
         }
     }
 

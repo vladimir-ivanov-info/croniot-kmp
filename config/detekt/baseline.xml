@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CommentWrapping:CroniotSlider.kt$/*Mutable*/</ID>
+    <ID>ForbiddenComment:StatefulTextField.kt$// TODO: validación real</ID>
+    <ID>ForbiddenComment:StatefulTextField.kt$// TODO: validación si lo necesitas</ID>
+    <ID>FunctionNaming:CroniotSlider.kt$@Composable fun CroniotSlider( currentParameter: ParameterTask, onNewValue: (newValue: String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:CroniotSlider.kt$@Composable fun LabeledSlider( parameter: ParameterTask, modifier: Modifier = Modifier, value: Float, onValueChange: (Float) -&gt; Unit, valueRange: ClosedFloatingPointRange&lt;Float&gt;, steps: Int, minValue: Float, maxValue: Float, minValueLabel: String, maxValueLabel: String, currentValueLabel: String, constraints: /*Mutable*/Map&lt;String, String&gt;, )</ID>
+    <ID>FunctionNaming:DemoCard.kt$@Composable fun DemoCard(title: String = "Croniot", subtitle: String = "Hello, screenshots!")</ID>
+    <ID>FunctionNaming:GenericAlertDialog.kt$@Composable fun GenericAlertDialog(title: String, content: String, onResult: (result: Boolean) -&gt; Unit)</ID>
+    <ID>FunctionNaming:GenericDialog.kt$@Composable fun GenericDialog( title: String, text: String, button1Text: String?, onButton1Clicked: () -&gt; Unit, button2Text: String, onButton2Clicked: () -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:PerformanceChart.kt$@Composable fun PerformanceChart(sensorType: SensorType, modifier: Modifier, list: List&lt;Float&gt;)</ID>
+    <ID>FunctionNaming:StatefulTextField.kt$@Composable fun EmailTextField( value: String, onValueChange: (String) -&gt; Unit, enabled: Boolean = true, )</ID>
+    <ID>FunctionNaming:StatefulTextField.kt$@Composable fun PasswordField( value: String, onValueChange: (String) -&gt; Unit, enabled: Boolean = true, label: String = "Password", )</ID>
+    <ID>FunctionNaming:StatefulTextField.kt$@Composable fun PasswordTextField( value: String, onValueChange: (String) -&gt; Unit, enabled: Boolean = true, )</ID>
+    <ID>FunctionNaming:StatefulTextField.kt$@Composable fun StatefulTextField( stringFlow: StateFlow&lt;String&gt;, placeholderString: String, isPassword: Boolean = false, onValueChange: (String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:StatefulTextField.kt$@Composable fun StatefulTextField( value: String, onValueChange: (String) -&gt; Unit, label: String = "", placeholderString: String = "", isPassword: Boolean = false, enabled: Boolean = true, )</ID>
+    <ID>FunctionNaming:StatefulTextField.kt$@Composable fun UsernameTextField( value: String, onValueChange: (String) -&gt; Unit, enabled: Boolean = true, )</ID>
+    <ID>FunctionNaming:TimePicker.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun TimePicker( parameter: ParameterTask, // TODO change to string parameter name onNewValue: (newTime: String) -&gt; Unit, )</ID>
+    <ID>ImportOrdering:PerformanceChart.kt$import androidx.compose.foundation.Canvas import androidx.compose.foundation.layout.Box import androidx.compose.foundation.layout.Row import androidx.compose.foundation.layout.fillMaxHeight import androidx.compose.foundation.layout.height import androidx.compose.foundation.layout.padding import androidx.compose.material3.MaterialTheme import androidx.compose.runtime.Composable import androidx.compose.ui.Modifier import androidx.compose.ui.geometry.Offset import androidx.compose.ui.graphics.Path import androidx.compose.ui.graphics.drawscope.Stroke import androidx.compose.ui.unit.dp // import croniot.models.SensorType import com.croniot.client.core.models.SensorType // import com.croniot.android.domain.model.SensorType import kotlin.random.Random</ID>
+    <ID>LongParameterList:CroniotSlider.kt$( parameter: ParameterTask, modifier: Modifier = Modifier, value: Float, onValueChange: (Float) -&gt; Unit, valueRange: ClosedFloatingPointRange&lt;Float&gt;, steps: Int, minValue: Float, maxValue: Float, minValueLabel: String, maxValueLabel: String, currentValueLabel: String, constraints: /*Mutable*/Map&lt;String, String&gt;, )</ID>
+    <ID>LongParameterList:GenericDialog.kt$( title: String, text: String, button1Text: String?, onButton1Clicked: () -&gt; Unit, button2Text: String, onButton2Clicked: () -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongParameterList:StatefulTextField.kt$( value: String, onValueChange: (String) -&gt; Unit, label: String = "", placeholderString: String = "", isPassword: Boolean = false, enabled: Boolean = true, )</ID>
+    <ID>MagicNumber:GenericDialog.kt$0.5F</ID>
+    <ID>MagicNumber:PerformanceChart.kt$30</ID>
+    <ID>MaxLineLength:StatefulParameter.kt$// onStateChanged(newValue.toInt().toString()) //TODO do it with a timer, only send latest value after 0.5 seconds</ID>
+    <ID>MaxLineLength:StatefulParameter.kt$// val newValue = if (newChecked) parameter.constraints["state_1"] else parameter.constraints["state_2"]</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_CONFIGURATION = "configuration"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_CREATE_ACCOUNT = "register_account"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_CREATE_TASK = "ROUTE_CREATE_TASK"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_DEVICE = "device"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_DEVICES = "devices"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_LOGIN = "login"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_MAPS = "maps"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_SPLASH = "splash"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val ROUTE_TEST = "test"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val SCREEN_LOGIN_BUTTON_CREATE_ACCOUNT_TEXT = "Create account"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val SCREEN_LOGIN_BUTTON_REGISTER_TAG = "ButtonRegister"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val SCREEN_REGISTER_BUTTON_SIGN_UP = "Sign up!"</ID>
+    <ID>MayBeConst:UiConstants.kt$UiConstants$val SCREEN_REGISTER_BUTTON_SIGN_UP_TAG = "ButtonSignUp"</ID>
+    <ID>NoWildcardImports:DemoCard.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>NoWildcardImports:DemoCard.kt$import androidx.compose.material3.*</ID>
+    <ID>TooGenericExceptionCaught:PerformanceChart.kt$e: Throwable</ID>
+    <ID>UnusedParameter:CroniotSlider.kt$currentValueLabel: String</ID>
+    <ID>UnusedParameter:CroniotSlider.kt$maxValue: Float</ID>
+    <ID>UnusedParameter:CroniotSlider.kt$maxValueLabel: String</ID>
+    <ID>UnusedParameter:CroniotSlider.kt$minValue: Float</ID>
+    <ID>UnusedParameter:CroniotSlider.kt$minValueLabel: String</ID>
+    <ID>UnusedParameter:CroniotSlider.kt$modifier: Modifier = Modifier</ID>
+    <ID>UnusedParameter:CroniotSlider.kt$steps: Int</ID>
+    <ID>UnusedParameter:GenericDialog.kt$button2Text: String</ID>
+    <ID>UnusedParameter:GenericDialog.kt$onButton2Clicked: () -&gt; Unit</ID>
+    <ID>UnusedParameter:GenericDialog.kt$text: String</ID>
+    <ID>WildcardImport:DemoCard.kt$import androidx.compose.foundation.layout.*</ID>
+    <ID>WildcardImport:DemoCard.kt$import androidx.compose.material3.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

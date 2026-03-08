@@ -42,6 +42,8 @@ class DataStoreController : LocalDatasource, KoinComponent {
 
     val KEY_CURRENT_ROUTE = stringPreferencesKey("current_route")
 
+    val KEY_SERVER_IP = stringPreferencesKey("server_ip")
+
     private fun provideGson() = GsonBuilder()
         .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
         .setPrettyPrinting()
@@ -210,5 +212,13 @@ class DataStoreController : LocalDatasource, KoinComponent {
 
     override suspend fun saveServerMode(serverMode: String) {
         saveData(KEY_SERVER_MODE, serverMode)
+    }
+
+    override suspend fun getServerIp() : Flow<String?> {
+        return loadData(KEY_SERVER_IP)
+    }
+
+    override suspend fun saveServerIp(serverIp: String) {
+        saveData(KEY_SERVER_IP, serverIp)
     }
 }

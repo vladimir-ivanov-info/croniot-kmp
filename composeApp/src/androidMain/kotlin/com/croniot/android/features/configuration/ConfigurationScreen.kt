@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,24 +24,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.croniot.client.presentation.constants.UiConstants
+import com.croniot.client.presentation.components.StatefulTextField
 import com.croniot.client.presentation.constants.UtilUi
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConfigurationScreen(navController: NavController) {
-    BackHandler {
-        if (!navController.popBackStack()) {
-            navController.navigate(UiConstants.ROUTE_LOGIN)
-        }
-    }
+fun ConfigurationScreen(
+    onNavigateBack: () -> Unit,
+    viewModel: ConfigurationScreenViewModel = koinViewModel(),
+) {
+    val state by viewModel.state.collectAsState()
+
+    BackHandler { onNavigateBack() }
 
     Scaffold(
         topBar = {
-            TopAppBar( // This material API is experimental and is likely to change or to be removed in the future.
+            TopAppBar(
                 title = {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -50,19 +52,13 @@ fun ConfigurationScreen(navController: NavController) {
                     ) {
                         IconButton(
                             modifier = Modifier.padding(end = 8.dp),
-                            onClick = {
-                                val result = navController.popBackStack()
-                                if (!result) {
-                                    navController.navigate(UiConstants.ROUTE_LOGIN)
-                                }
-                            },
+                            onClick = onNavigateBack,
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back",
                             )
                         }
-
                         Box(contentAlignment = Alignment.CenterStart) {
                             Text(text = "Configuration")
                         }
@@ -72,74 +68,55 @@ fun ConfigurationScreen(navController: NavController) {
             )
         },
         content = { innerPadding ->
-            ConfigurationScreenBody(navController, innerPadding)
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(16.dp),
+            ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterStart),
+                        text = "Run app in foreground service",
+                        fontSize = UtilUi.TEXT_SIZE_4,
+                    )
+                    Switch(
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        checked = state.foregroundServiceEnabled,
+                        onCheckedChange = {
+                            viewModel.onIntent(ConfigurationIntent.SetForegroundService(it))
+                        },
+                    )
+                }
+
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterStart),
+                        text = "Use remote server",
+                        fontSize = UtilUi.TEXT_SIZE_4,
+                    )
+                    Switch(
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        checked = state.serverMode == "remote",
+                        onCheckedChange = { viewModel.onIntent(ConfigurationIntent.ToggleServerMode) },
+                    )
+                }
+
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = "Server IP:",
+                        fontSize = UtilUi.TEXT_SIZE_4,
+                    )
+                    StatefulTextField(
+                        value = state.serverIp,
+                        placeholderString = "server IP",
+                        isPassword = false,
+                        onValueChange = { /* TODO */ },
+                    )
+                }
+            }
         },
     )
-}
-
-@Composable
-fun ConfigurationScreenBody(navController: NavController, innerPadding: PaddingValues) {
-    Box(
-        Modifier
-            .padding(innerPadding),
-    ) {
-        Configuration(
-            navController,
-            Modifier
-                .align(Alignment.Center)
-                .padding(16.dp),
-        )
-    }
-}
-
-@Composable
-fun Configuration(
-    navController: NavController,
-    modifier: Modifier,
-    configurationScreenViewModel: ConfigurationScreenViewModel = koinViewModel(),
-) {
-    val foregroundServiceEnabled by configurationScreenViewModel.foregroundServiceEnabled.collectAsState()
-
-    val useRemoteServer by configurationScreenViewModel.serverMode.collectAsState()
-    Column(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(),
-        ) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterStart),
-                text = "Run app in foreground service",
-                fontSize = UtilUi.TEXT_SIZE_4,
-            )
-
-            Switch(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                checked = foregroundServiceEnabled,
-                onCheckedChange = {
-                    configurationScreenViewModel.setConfigurationForegoundService(it)
-                },
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(),
-        ) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterStart),
-                text = "Use remote server",
-                fontSize = UtilUi.TEXT_SIZE_4,
-            )
-
-            Switch(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                checked = useRemoteServer == "remote", // TODO use constants
-                onCheckedChange = {
-                    configurationScreenViewModel.changeServerMode()
-                },
-            )
-        }
-    }
 }

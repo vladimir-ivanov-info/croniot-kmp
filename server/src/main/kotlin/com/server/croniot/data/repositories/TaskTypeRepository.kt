@@ -12,23 +12,27 @@ class TaskTypeRepository @Inject constructor(
     private val parameterTaskDao: ParameterTaskDao,
 ) {
 
+    fun getId(deviceId: Long, taskTypeUid: Long) : Long? {
+        return taskTypeDao.getId(deviceId, taskTypeUid)
+    }
+
     fun get(device: Device, taskTypeUid: Long): TaskType? {
         return taskTypeDao.get(device, taskTypeUid)
     }
 
-    fun exists(device: Device, taskTypeUid: Long): Boolean {
-        return taskTypeDao.exists(device, taskTypeUid)
+    fun exists(taskTypeUid: Long, deviceId: Long): Boolean {
+        return taskTypeDao.exists(taskTypeUid = taskTypeUid, deviceId = deviceId)
     }
 
-    fun insert(device: Device, taskType: TaskType) {
-        taskTypeDao.insert(device, taskType)
+    fun insert(/*device: Device,*/ taskType: TaskType, deviceId: Long) {
+        taskTypeDao.upsert(/*device, */taskType, deviceId)
     }
 
     fun getLazy(device: Device, taskTypeUid: Long): TaskType? {
         return taskTypeDao.getLazy(device, taskTypeUid)
     }
 
-    fun getParameterTaskByUid(parameterUid: Long, taskType: TaskType): ParameterTask? {
-        return parameterTaskDao.getByUid(parameterUid, taskType)
+    fun getParameterTaskByUid(parameterUid: Long, taskTypeId: Long/*, taskType: TaskType*/): ParameterTask? {
+        return parameterTaskDao.getByUid(parameterUid, taskTypeId)
     }
 }

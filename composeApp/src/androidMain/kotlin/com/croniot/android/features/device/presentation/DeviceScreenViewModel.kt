@@ -1,53 +1,43 @@
 package com.croniot.android.features.device.presentation
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.croniot.client.core.models.Device
-import com.croniot.client.data.repositories.LocalDataRepository
+import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.FetchTasksUseCase
-import com.croniot.client.presentation.constants.UiConstants.ROUTE_DEVICE
-import kotlinx.coroutines.Dispatchers
+import com.croniot.client.presentation.viewmodel.launchInVmScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
+import kotlinx.coroutines.flow.update
 
 class DeviceScreenViewModel(
     private val localDataRepository: LocalDataRepository,
     private val fetchTasksUseCase: FetchTasksUseCase,
-) : ViewModel(), KoinComponent {
+) : ViewModel() {
 
-    private val _currentTab = MutableStateFlow(0)
-    val currentTab: StateFlow<Int> get() = _currentTab
+    val state: StateFlow<DeviceState>
+        field = MutableStateFlow(DeviceState())
 
-    private val _device = mutableStateOf<Device?>(null)
-    val device: State<Device?> = _device
-
-    fun initialize(deviceUuid: String) {
-        viewModelScope.launch {
-            val account = localDataRepository.getCurrentAccount()
-            if (account != null) {
-                val selectedDevice = account.devices.find { it.uuid == deviceUuid }
-                if (selectedDevice != null) {
-                    _device.value = selectedDevice
-                }
-
-                fetchTasksUseCase(deviceUuid) // TODO rename to preCacheTasks
-            }
+    fun onIntent(intent: DeviceIntent) {
+        when (intent) {
+            is DeviceIntent.Initialize -> showDevice(intent.deviceUuid)
+            is DeviceIntent.SelectTab -> state.update { it.copy(selectedTab = intent.index) }
         }
     }
 
-    fun updateCurrentTab(newTab: Int) {
-        viewModelScope.launch(Dispatchers.Main) {
-            _currentTab.emit(newTab)
-        }
+    private fun showDevice(deviceUuid: String) = launchInVmScope {
+        val account = localDataRepository.getCurrentAccount() ?: return@launchInVmScope
+        val device = account.devices.find { it.uuid == deviceUuid } ?: return@launchInVmScope
+        state.update { it.copy(device = device) }
+        fetchTasksUseCase(deviceUuid)
     }
+}
 
-    fun saveCurrentScreen() {
-        viewModelScope.launch {
-            localDataRepository.saveCurrentScreen(ROUTE_DEVICE)
-        }
-    }
+data class DeviceState(
+    val device: Device? = null,
+    val selectedTab: Int = 0,
+)
+
+sealed interface DeviceIntent {
+    data class Initialize(val deviceUuid: String) : DeviceIntent
+    data class SelectTab(val index: Int) : DeviceIntent
 }

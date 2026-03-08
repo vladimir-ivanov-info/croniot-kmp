@@ -35,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.ParameterTask
@@ -63,12 +62,10 @@ fun StatefulParameterSlider(
         val k = ((clipped - lo) / step).roundToInt()
         return (lo + k * step).coerceIn(lo, hi)
     }
-    // val steps = (((hi - lo) / step).roundToInt()).coerceAtLeast(1) - 1
-    // val safeSteps = steps.coerceAtLeast(0)
+
 
     val rawSteps = (((maxValue - minValue) / step).roundToInt()).coerceAtLeast(0)
 
-// si hay más de 15 → quitamos puntitos
     val safeSteps = if (rawSteps > 15) 0 else rawSteps
 
     // Comparación en enteros (evita falsos desync por redondeos)
@@ -85,7 +82,7 @@ fun StatefulParameterSlider(
     }
     val serverInt: Int? = serverFloat?.let(::toDomainInt)
 
-    // Estados persistentes por parámetro
+
     var sliderValue by rememberSaveable(parameter.uid) { mutableStateOf(serverFloat ?: lo) }
     var isDragging by rememberSaveable(parameter.uid) { mutableStateOf(false) }
     var awaitingAck by rememberSaveable(parameter.uid) { mutableStateOf(false) }
@@ -230,7 +227,7 @@ fun SyncIndicator(status: SyncStatus, modifier: Modifier = Modifier) {
 
     Icon(
         imageVector = icon,
-        tint = tint, // 👈 ahora usa un color del esquema
+        tint = tint,
         contentDescription = desc,
         modifier = modifier.size(20.dp).alpha(alphaAnim),
     )

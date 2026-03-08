@@ -12,57 +12,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.Device
-/*
-@Composable
-fun TaskTypesScreen(
-    selectedDevice: Device, //TODO pass deviceUuid and fetch via viewmodel/repository
-    onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit
-) {
-
-    val tasks = selectedDevice.taskTypes.toList()
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxSize(),
-        ) {
-            item {
-                Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            }
-            items(tasks) { task ->
-                TaskTypeItem(
-                    task = task,
-                    onTaskTypeClicked = {
-
-                        //TODO if it's stateful, send query to server so it asks iot to state update
-                        //RequestTaskStateInfoSyncIfNecessaryUseCase(device_uuid, task_type)
-
-                        onTaskTypeClicked(
-                            selectedDevice.uuid,
-                            task.uid
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-            }
-        }
-    }
-}*/
+import androidx.compose.runtime.LaunchedEffect
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TaskTypesScreen(
     selectedDevice: Device, // TODO: idealmente pasar solo deviceUuid y obtener por VM
+    taskTypesViewModel: TaskTypesViewModel = koinViewModel(),
     onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
 ) {
-    val tasksTypes = selectedDevice.taskTypes // ya es una colección; no hace falta toList()
+
+    LaunchedEffect(Unit) {
+        taskTypesViewModel.initialize(selectedDevice.uuid, selectedDevice.taskTypes)
+    }
+
+    val tasksTypes = selectedDevice.taskTypes
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (tasksTypes.isEmpty()) {
-            // Empty state simple (opcional)
             Text(
                 text = "No task types available",
                 modifier = Modifier.align(Alignment.Center),
@@ -80,11 +47,12 @@ fun TaskTypesScreen(
                 key = { taskType -> "${selectedDevice.uuid}|taskType:${taskType.uid}" }, // clave única y estable
             ) { task ->
                 TaskTypeItem(
-                    task = task,
+                    deviceUuid = selectedDevice.uuid,
+                    taskType = task,
+                    viewModel = taskTypesViewModel,
                     onTaskTypeClicked = {
-                        // Si es stateful y necesitas pedir sync al IoT, hazlo aquí antes de navegar
                         onTaskTypeClicked(selectedDevice.uuid, task.uid)
-                    },
+                    }
                 )
             }
         }

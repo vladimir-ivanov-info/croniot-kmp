@@ -2,12 +2,15 @@ package com.croniot.android.features.device.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,51 +25,37 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.croniot.android.features.device.features.sensors.presentation.SensorsScreen
-import com.croniot.android.features.device.features.tasks.TasksScreen
 import com.croniot.client.core.models.Device
+import com.croniot.client.features.sensors.presentation.SensorsScreen
 import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesScreen
-import com.croniot.client.presentation.constants.UiConstants
 import org.koin.androidx.compose.koinViewModel
 
-// val deviceScreenTabsNames = listOf("Sensors", "Task types", "Tasks")
 val deviceScreenTabsNames = listOf("Sensors", "Task types")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceScreen(
     selectedDeviceUuid: String,
-    navController: NavController,
-    viewModelDeviceScreen: DeviceScreenViewModel = koinViewModel(),
+    onNavigateBack: () -> Unit,
     onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
+    viewModel: DeviceScreenViewModel = koinViewModel(),
 ) {
-    val device = viewModelDeviceScreen.device.value
+    val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModelDeviceScreen.initialize(selectedDeviceUuid)
+    LaunchedEffect(selectedDeviceUuid) {
+        viewModel.onIntent(DeviceIntent.Initialize(selectedDeviceUuid))
     }
 
-    BackHandler {
-        if (!navController.popBackStack()) {
-            // viewModel.resetCurrentScreen() //TODO
-            navController.navigate(UiConstants.ROUTE_DEVICES)
-        }
-    }
-
-    SideEffect {
-        // viewModel.saveCurrentScreen() //TODO
-        // viewModelDeviceScreen.saveCurrentScreen()
-    }
+    BackHandler { onNavigateBack() }
 
     Scaffold(
         topBar = {
-            TopAppBar( // This material API is experimental and is likely to change or to be removed in the future.
+            TopAppBar(
                 title = {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -75,23 +64,15 @@ fun DeviceScreen(
                     ) {
                         IconButton(
                             modifier = Modifier.padding(end = 8.dp),
-                            onClick = {
-                                // val result = navController.popBackStack()
-                                // if (!result) {
-                                navController.navigate(UiConstants.ROUTE_DEVICES)
-                                // }
-                            },
+                            onClick = onNavigateBack,
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Navigate back",
                             )
                         }
-
                         Box(contentAlignment = Alignment.CenterStart) {
-                            device?.let {
-                                Text(text = device.name)
-                            } // TODO ?: LoginController.forceLogOut(navController)
+                            state.device?.let { Text(text = it.name) }
                         }
                     }
                 },
@@ -99,64 +80,48 @@ fun DeviceScreen(
             )
         },
         content = { innerPadding ->
-            if (device != null) {
+            state.device?.let { device ->
                 DeviceScreenContent(
-                    selectedDevice = device,
-                    navController = navController,
+                    device = device,
+                    selectedTab = state.selectedTab,
                     innerPadding = innerPadding,
-                    viewModelDeviceScreen = viewModelDeviceScreen,
-                    onTaskTypeClicked = { deviceUuid, taskUid ->
-                        onTaskTypeClicked(deviceUuid, taskUid)
-                    },
+                    onTabSelected = { viewModel.onIntent(DeviceIntent.SelectTab(it)) },
+                    onTaskTypeClicked = onTaskTypeClicked,
                 )
-            } else {
-                // TODO loading...
             }
         },
     )
 }
 
 @Composable
-fun DeviceScreenContent(
-    selectedDevice: Device,
-    navController: NavController,
+private fun DeviceScreenContent(
+    device: Device,
+    selectedTab: Int,
     innerPadding: PaddingValues,
+    onTabSelected: (Int) -> Unit,
     onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
-    viewModelDeviceScreen: DeviceScreenViewModel, // = koinViewModel()
 ) {
-    val currentTab = viewModelDeviceScreen.currentTab.collectAsState()
-
-    var selectedTabIndex = currentTab.value
-
-    Column(modifier = Modifier.padding(innerPadding)) {
-        TabRow(
-            selectedTabIndex = selectedTabIndex,
-        ) {
+    Column(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()
+            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+            .background(MaterialTheme.colorScheme.surface),
+    ) {
+        TabRow(selectedTabIndex = selectedTab) {
             deviceScreenTabsNames.forEachIndexed { index, title ->
                 Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = {
-                        viewModelDeviceScreen.updateCurrentTab(index)
-                        selectedTabIndex = index
-                    },
+                    selected = selectedTab == index,
+                    onClick = { onTabSelected(index) },
                     text = { Text(title) },
                 )
             }
         }
-        when (selectedTabIndex) {
-            0 -> SensorsScreen(
-                selectedDevice,
-                navController,
-            )
+        when (selectedTab) {
+            0 -> SensorsScreen(device)
             1 -> TaskTypesScreen(
-                selectedDevice = selectedDevice,
-                onTaskTypeClicked = { deviceUuid, taskTypeUid ->
-                    onTaskTypeClicked(deviceUuid, taskTypeUid)
-                },
-            )
-            2 -> TasksScreen(
-                selectedDeviceUuid = selectedDevice.uuid,
-                navController = navController,
+                selectedDevice = device,
+                onTaskTypeClicked = onTaskTypeClicked,
             )
         }
     }

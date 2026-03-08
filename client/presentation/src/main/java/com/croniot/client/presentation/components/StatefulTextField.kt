@@ -124,8 +124,9 @@ fun PasswordField(
         trailingIcon = {
             val (icon, desc) = if (passwordVisible) {
                 Icons.Default.Visibility to "Hide password"
-            } else
+            } else {
                 Icons.Default.VisibilityOff to "Show password"
+            }
 
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(imageVector = icon, contentDescription = desc)

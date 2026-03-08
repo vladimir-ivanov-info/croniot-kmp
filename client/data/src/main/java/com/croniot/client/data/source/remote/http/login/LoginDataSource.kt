@@ -1,8 +1,10 @@
 package com.croniot.client.data.source.remote.http.login
 
-import croniot.messages.MessageLoginRequest
+import Outcome
+import com.croniot.client.core.models.auth.AuthError
+import croniot.messages.LoginDto
 import croniot.models.LoginResultDto
 
 interface LoginDataSource {
-    suspend fun login(request: MessageLoginRequest): Result<LoginResultDto>
+    suspend fun login(request: LoginDto): Outcome<LoginResultDto, AuthError>
 }

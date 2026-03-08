@@ -11,7 +11,7 @@ import com.croniot.android.R
 import com.croniot.android.app.MainActivity
 import com.croniot.client.presentation.constants.UiConstants
 
-class ForegroundService : Service() {
+class ForegroundService : Service() { //TODO refactor later
 
     override fun onCreate() {
         super.onCreate()

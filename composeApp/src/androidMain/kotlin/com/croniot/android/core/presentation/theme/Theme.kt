@@ -46,30 +46,66 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = Color.White,
 )
 
+//private val LightColorScheme = lightColorScheme(
+//   /* primary = Purple40,
+//    secondary = PurpleGrey40,
+//    tertiary = Pink40,*/
+//
+//    primary = Color(0xFFFF4081), // rosa neón
+//    secondary = Color(0xFF18FFFF), // cyan neón
+//    background = Color(0xFF0A0A0F), // negro azulado
+//    surface = Color(0xFF212121), // gris carbón
+//    error = Color(0xFFFF1744), // rojo neón
+//    onPrimary = Color.Black,
+//    onBackground = Color.White,
+//    onSurface = Color.White,
+//
+//
+//
+//    /* Other default colors to override
+//    background = Color(0xFFFFFBFE),
+//    surface = Color(0xFFFFFBFE),
+//    onPrimary = Color.White,
+//    onSecondary = Color.White,
+//    onTertiary = Color.White,
+//    onBackground = Color(0xFF1C1B1F),
+//    onSurface = Color(0xFF1C1B1F),
+//     */
+//)
+
 private val LightColorScheme = lightColorScheme(
-   /* primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,*/
-
-    primary = Color(0xFFFF4081), // rosa neón
-    secondary = Color(0xFF18FFFF), // cyan neón
-    background = Color(0xFF0A0A0F), // negro azulado
-    surface = Color(0xFF212121), // gris carbón
-    error = Color(0xFFFF1744), // rojo neón
-    onPrimary = Color.Black,
-    onBackground = Color.White,
-    onSurface = Color.White,
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-     */
+    primary = Color(0xFF5B5BD6),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFE0DFFF),
+    onPrimaryContainer = Color(0xFF1E1B4B),
+    secondary = Color(0xFF7C5CFC),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFE8DEFF),
+    onSecondaryContainer = Color(0xFF2D1A6E),
+    tertiary = Color(0xFFD946EF),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFF5D0FC),
+    onTertiaryContainer = Color(0xFF4A0E55),
+    error = Color(0xFFEF4444),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002),
+    background = Color(0xFFF3F2F8),
+    onBackground = Color(0xFF1E1B3A),
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF1E1B3A),
+    surfaceVariant = Color(0xFFEDE9F6),
+    onSurfaceVariant = Color(0xFF6E6A8E),
+    outline = Color(0xFFD8D4E8),
+    outlineVariant = Color(0xFFE8E4F2),
+    inverseSurface = Color(0xFF1E1B3A),
+    inverseOnSurface = Color(0xFFF3F2F8),
+    inversePrimary = Color(0xFFB4B4FF),
+    surfaceTint = Color(0xFF5B5BD6),
+    scrim = Color(0xFF000000),
 )
+
+
 
 //
 // @Composable
@@ -454,16 +490,16 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun IoTClientTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    // 1) Base scheme (dinámico si se puede)
+
     val base = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        dynamicColor && true -> {
             val ctx = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(ctx) else dynamicLightColorScheme(ctx)
         }
-        darkTheme -> DarkColorScheme // ← define estos dos como fallback propios
+        darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 

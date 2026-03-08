@@ -9,12 +9,21 @@ class DeviceTokenRepository @Inject constructor(
     private val deviceTokenDao: DeviceTokenDao,
 ) {
 
-    fun createDeviceToken(device: Device, token: String) {
-        val deviceToken = DeviceToken(device, token)
+    //fun createDeviceToken(device: Device, token: String) {
+    fun createDeviceToken(deviceId: Long, token: String) {
+        val deviceToken = DeviceToken(deviceId, token)
         deviceTokenDao.insert(deviceToken)
     }
 
-    fun getDeviceAssociatedWithToken(token: String): Device? {
+    fun getDevice(token: String): Device? {
         return deviceTokenDao.getDeviceAssociatedWithToken(token)
+    }
+
+    fun getDeviceUuid(token: String): String? {
+        return deviceTokenDao.getDeviceUuidAssociatedWithToken(token)
+    }
+
+    fun isTokenCorrect(deviceUuid: String, token: String): Boolean {
+        return deviceTokenDao.isTokenCorrect(deviceUuid, token)
     }
 }

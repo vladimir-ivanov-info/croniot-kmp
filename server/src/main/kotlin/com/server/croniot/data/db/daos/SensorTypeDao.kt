@@ -1,11 +1,10 @@
 package com.server.croniot.data.db.daos
 
-import croniot.models.Device
 import croniot.models.SensorType
 
 interface SensorTypeDao {
 
-    fun insert(device: Device, sensorType: SensorType) // : Long
+    fun upsert(sensorType: SensorType, deviceId: Long) : Long?
 
-    fun getLazy(deviceUuid: String, sensorTypeUid: Long): SensorType?
+    fun getByDeviceIds(deviceIds: List<Long>) : Map<Long, List<SensorType>>
 }

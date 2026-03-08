@@ -1,13 +1,22 @@
 package com.server.croniot.data.repositories
 
 import com.server.croniot.data.db.daos.DeviceDao
-import croniot.models.Account
+import com.server.croniot.data.mappers.toEntity
 import croniot.models.Device
 import javax.inject.Inject
 
 class DeviceRepository @Inject constructor(
     private val deviceDao: DeviceDao,
 ) {
+
+    fun getId(deviceUuid: String) : Long? {
+        return deviceDao.getDeviceId(deviceUuid)
+    }
+
+    fun isDeviceExists(deviceUuid: String) : Boolean {
+        return deviceDao.isDeviceExists(deviceUuid)
+    }
+
 
     fun getByUuid(deviceUuid: String): Device? {
         return deviceDao.getByUuid(deviceUuid)
@@ -17,8 +26,11 @@ class DeviceRepository @Inject constructor(
         return deviceDao.getAll()
     }
 
-    fun createDevice(account: Account, device: Device) {
-        deviceDao.insert(account, device)
+    fun createDevice(device: Device, accountId: Long) : Long {
+        val device = device.toEntity(accountId)
+       // return deviceDao.insert(device)
+        return deviceDao.upsert(device)
+        //println()
     }
 
     fun getLazy(deviceUuid: String): Device? {

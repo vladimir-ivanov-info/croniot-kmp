@@ -1,20 +1,23 @@
-
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    //alias(libs.plugins.kotlin.android)
+    // alias(libs.plugins.kotlin.android)
 
     alias(libs.plugins.jetbrainsCompose)
 
     alias(libs.plugins.compose.compiler) // ✅ Uncommented - Required for Kotlin 2.0+
 
-    //id("org.jetbrains.kotlin.plugin.serialization")
+    // id("org.jetbrains.kotlin.plugin.serialization")
+
+    id("io.gitlab.arturbosch.detekt")
+
+
 }
 
 kotlin {
-
-
 
     /* listOf(
          iosX64(),
@@ -76,10 +79,9 @@ kotlin {
         }
     }*/
 
+    jvmToolchain(21)
 
-    jvmToolchain(17)
-
-    applyDefaultHierarchyTemplate()  // 🔑 Requerido en Kotlin ≥1.9.20
+    applyDefaultHierarchyTemplate() // 🔑 Requerido en Kotlin ≥1.9.20
 
     androidTarget()
 
@@ -140,58 +142,40 @@ kotlin {
 
         //  val mlVersion = libs.versions.meetingLawyers.get()   // ← recupera la versión del catálogo
 
-
         val commonMain by getting {
-            //resources.srcDirs("src/commonMain/resources")
+            // resources.srcDirs("src/commonMain/resources")
             dependencies {
-                //implementation(libs.plugins.realm)
+                // implementation(libs.plugins.realm)
 
                 //   implementation(project(":core"))
                 //   implementation(project(":domain"))
                 //          implementation(project(":shared"))
-                //implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
-                //implementation("org.jetbrains.compose.runtime:runtime:1.6.10")
+                // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+                // implementation("org.jetbrains.compose.runtime:runtime:1.6.10")
 
-                //implementation(libs.bundles.compose)
+                // implementation(libs.bundles.compose)
 
                 // implementation(libs.bundles.common)
                 //  implementation(libs.compose.resources) //❗ A veces los bundles no funcionan correctamente en todos los entornos KMP. Es mejor probar añadiendo esa dependencia individualmente primero.
-
             }
         }
         val androidMain by getting {
 
-
-
             dependencies {
 
-
-                //implementation(compose.preview)
+                // implementation(compose.preview)
                 implementation(libs.androidx.activity.compose)
-
-                implementation("org.maplibre.gl:android-sdk:11.3.0")
-                implementation("org.maplibre.gl:android-plugin-annotation-v9:3.0.0")
 
                 implementation(libs.androidx.datastore.core.android)
 
                 implementation("androidx.datastore:datastore-preferences:1.1.2")
                 implementation("androidx.datastore:datastore-core:1.1.2")
 
-                implementation(libs.realm)
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling)
                 implementation("androidx.compose.material3:material3:1.3.1")
 
                 implementation(libs.koin.androidx.compose)
-
-
-
-
-
-
-
-
-
 
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -200,12 +184,11 @@ kotlin {
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
 
-
                 implementation(libs.koin.android)
                 implementation(libs.koin.compose)
                 implementation(libs.navigationCompose)
                 implementation(libs.coreKtx)
-                //implementation(project.dependencies.platform(libs.kotlinBom))
+                // implementation(project.dependencies.platform(libs.kotlinBom))
                 implementation(libs.lifecycleRuntime)
                 implementation(libs.lifecycleViewModelCompose)
                 implementation(libs.coroutinesCore)
@@ -217,10 +200,8 @@ kotlin {
 
                 implementation(libs.mqtt)
 
-                // implementation(libs.maplibreSdkExtensions)
                 implementation(libs.accompanistPermissions)
 
-                implementation(libs.realm)
 
                 implementation("androidx.compose.material:material-icons-extended:1.7.8")
                 // implementation(libs.realm)
@@ -244,26 +225,22 @@ kotlin {
                 //        compileOnly("org.jetbrains:annotations:23.0.0")
                 //       implementation("org.jetbrains:annotations:23.0.0")
 
-                //implementation(project(":core"))
+                // implementation(project(":core"))
                 //      implementation(project(":domain"))
 
                 //       implementation(libs.bundles.android)
 
                 //       implementation(libs.meeting.doctors)
                 //       implementation(libs.meeting.doctors.video)
-                //implementation(libs.meeting.lawyers)
+                // implementation(libs.meeting.lawyers)
 
-                //implementation(files("../koin3-shadow/build/libs/koin3-shadow.jar"))
-                //implementation(project(":koin3-shadow", configuration = "shadow"))
+                // implementation(files("../koin3-shadow/build/libs/koin3-shadow.jar"))
+                // implementation(project(":koin3-shadow", configuration = "shadow"))
                 //     implementation(project(":koin3-shadow", configuration = "shadowRuntimeElements"))
-
 
                 /*implementation(project(":meeting-lawyers-wrapper")) {
                     isTransitive = false
                 }*/
-
-
-
 
                 /*configurations.all {
                     exclude(group = "org.jetbrains", module = "annotations")
@@ -302,9 +279,6 @@ kotlin {
                                 implementation("com.github.poovamraj:PinEditTextField:1.2.6")
                                 implementation("androidx.compose.material:material-icons-extended:1.7.8")
                                 implementation(libs.bundles.retrofit)*/
-
-
-
             }
 
             /*val androidInstrumentedTest by getting {
@@ -335,7 +309,6 @@ kotlin {
                     // (No declares runner/ext aquí: vendrán transitivamente y evitas conflictos)
                 }
             }
-
         }
         /*val iosMain by getting {
             dependencies {
@@ -350,7 +323,7 @@ kotlin {
 apply(plugin = "shot")
 android {
     namespace = "com.croniot.client.presentation"
-    //compileSdk = 35
+    // compileSdk = 35
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     /* defaultConfig {
@@ -363,15 +336,14 @@ android {
          testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
      }*/
 
-
     defaultConfig {
         testApplicationId = "com.croniot.client.presentation.test"
-        //minSdk = 21 // o el que uses en el proyecto (no necesitas targetSdk en libs)
-        //libs.versions.android.minSdk.get().toInt()
+        // minSdk = 21 // o el que uses en el proyecto (no necesitas targetSdk en libs)
+        // libs.versions.android.minSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
         // NO applicationId en módulos library
-        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner = "com.karumi.shot.ShotTestRunner"
     }
 
@@ -385,16 +357,59 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     /* kotlinOptions {
          jvmTarget = "21"
      }*/
 }
 
+detekt {
+    buildUponDefaultConfig = true // parte de la config por defecto
+    allRules = false // solo reglas estables
+    autoCorrect = true // aplica arreglos de formatting cuando se pueda
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    baseline = file("$rootDir/config/detekt/baseline.xml")
+
+    source.setFrom(
+        "src/commonMain/kotlin",
+        "src/androidMain/kotlin",
+        "src/jvmMain/kotlin",
+        "src/main/kotlin" // por si acaso
+    )
+
+    debug = true
+}
+
+tasks.withType(Detekt::class).configureEach {
+    // Escanea TODO el módulo
+    setSource(files(project.projectDir))
+
+    include("**/*.kt", "**/*.kts") // analiza Kotlin y scripts
+    exclude(
+        "**/*.gradle.kts",
+        "**/build/**",
+        "**/.gradle/**",
+        "**/generated/**",
+        "**/resources/**"
+    )
+}
+
+// 2) Mismo scope para la generación del baseline
+tasks.withType(DetektCreateBaselineTask::class).configureEach {
+    setSource(files(project.projectDir))
+    include("**/*.kt", "**/*.kts")
+    exclude(
+        "**/*.gradle.kts",
+        "**/build/**",
+        "**/.gradle/**",
+        "**/generated/**",
+        "**/resources/**"
+    )
+}
+
 dependencies {
-   // implementation(projects.client.data) //TODO no
     implementation(projects.client.core)
 
     implementation(projects.client.domain)
@@ -404,10 +419,19 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.material)
     implementation(libs.androidx.ui.test.junit4.android)
-    testImplementation(libs.junit)
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
     debugImplementation(compose.uiTooling)
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.9.1")
+
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
 }
+
+
+
+
+

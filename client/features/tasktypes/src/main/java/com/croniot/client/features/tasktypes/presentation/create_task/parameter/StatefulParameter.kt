@@ -1,5 +1,12 @@
 package com.croniot.client.features.tasktypes.presentation.create_task.parameter
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -21,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.ParameterTask
 import com.croniot.client.core.models.TaskStateInfo
@@ -96,26 +104,24 @@ fun SwitchTaskTypeParameter(
         )
 
         Text(
-            // modifier = Modifier.align(Alignment.CenterStart),
             modifier = Modifier.weight(1f),
             text = parameter.name,
             fontSize = UtilUi.TEXT_SIZE_3,
         )
 
         if (latestState != null) {
-            val checked = latestState!!.state == "on" // TODO OOOOOOOOOO!!!
+            val state1 = parameter.constraints["state_1"]
+            val checked = latestState.state == state1
             Switch(
                 // modifier = Modifier.align(Alignment.CenterEnd),
                 // enabled = taskStateInfoSynced.value,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 checked = checked,
                 onCheckedChange = { newChecked ->
-                    // if(taskStateInfoSynced.value){
                     val newValue = if (newChecked) parameter.constraints["state_1"] else parameter.constraints["state_2"]
                     if (newValue != null) {
                         onStateChanged(newValue)
                     }
-                    // }
                 },
             )
         }
@@ -124,23 +130,49 @@ fun SwitchTaskTypeParameter(
 
 @Composable
 fun SyncDot(isSynced: Boolean, modifier: Modifier = Modifier) {
-    val color = if (isSynced) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.error // o gris, depende de lo que quieras
-    }
+    val dotColor by animateColorAsState(
+        targetValue = if (isSynced) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+        animationSpec = tween(500),
+        label = "sync-dot-color",
+    )
+
+    val pulse = rememberInfiniteTransition(label = "sync-pulse")
+    val pulseScale by pulse.animateFloat(
+        initialValue = 1f,
+        targetValue = 2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(900, easing = EaseOut),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "pulse-scale",
+    )
+    val pulseAlpha by pulse.animateFloat(
+        initialValue = 0.5f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(900, easing = EaseOut),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "pulse-alpha",
+    )
 
     Box(
-        modifier = modifier.size(16.dp),
+        modifier = modifier.size(20.dp),
         contentAlignment = Alignment.Center,
     ) {
+        if (isSynced) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .graphicsLayer { scaleX = pulseScale; scaleY = pulseScale; alpha = pulseAlpha }
+                    .background(color = dotColor, shape = CircleShape),
+            )
+        }
+
         Box(
             modifier = Modifier
-                .size(12.dp)
-                .background(
-                    color = color,
-                    shape = CircleShape,
-                ),
+                .size(10.dp)
+                .background(color = dotColor, shape = CircleShape),
         )
     }
 }

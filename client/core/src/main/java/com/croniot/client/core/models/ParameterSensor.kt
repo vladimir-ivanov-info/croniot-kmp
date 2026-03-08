@@ -10,5 +10,5 @@ data class ParameterSensor(
     var type: String,
     var unit: String,
     var description: String,
-    var constraints: /*Mutable*/Map<String, String>,
+    var constraints: Map<String, String>,
 ) : Parcelable

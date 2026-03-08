@@ -48,12 +48,17 @@ iosApp/DerivedData/
 config/passwords.txt
 .env
 *.keystore
-
+*.p12
 # Miscellaneous
 .vscode/
 
+# Kotlin metadata cache
+.kotlin/
+
 #Ignore folder content
-/KotlinMQTTServer*/*
+/croniot-server*/
+server/croniot-server*/
+server/KotlinMQTTServer*/
 /.fleet/*
 /secrets/*
 

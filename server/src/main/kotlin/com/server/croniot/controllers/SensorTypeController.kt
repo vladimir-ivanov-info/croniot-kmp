@@ -10,22 +10,10 @@ import javax.inject.Inject
 class SensorTypeController @Inject constructor(
     private val sensorTypeService: SensorTypeService,
 ) {
-    // private val json = Json { ignoreUnknownKeys = true }
 
     suspend fun registerSensorType(call: ApplicationCall) {
-        /*val rawBody = call.receiveText()
-        println("RAW BODY: $rawBody")
-        call.respond("He recibido: $rawBody")
-*/
         val message = call.receive<MessageRegisterSensorType>()
         val result = sensorTypeService.registerSensorType(message)
         call.respond(result)
-
-       /* val raw = call.receiveText()
-        call.application.environment.log.info("RAW BODY: $raw")
-
-        val message = json.decodeFromString<MessageRegisterSensorType>(raw)
-        val result = sensorTypeService.registerSensorType(message)
-        call.respond(result)*/
     }
 }

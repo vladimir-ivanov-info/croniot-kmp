@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.android.features.registeraccount.domain.usecase.RegisterAccountUseCase
+import com.croniot.client.domain.usecases.RegisterAccountUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -115,7 +115,7 @@ data class CreateAccountState(
     val nickname: String = "vladimir",
     val email: String = "email1@gmail.com",
     val password: String = "password1",
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = false
 ) : Parcelable
 
 sealed interface CreateAccountEffect {

@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -44,7 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ScreenRegisterAccountRoot(
+fun ScreenRegisterAccount(
     onNavigateBack: () -> Unit,
     viewModelRegisterAccount: ViewModelRegisterAccount = koinViewModel(),
 ) {
@@ -71,7 +74,7 @@ fun ScreenRegisterAccountRoot(
         onNavigateBack()
     }
 
-    ScreenRegisterAccount(
+    ScreenRegisterAccountBody(
         state = state,
         snackbarHostState = snackbarHostState,
         onAction = { action ->
@@ -87,7 +90,7 @@ fun ScreenRegisterAccountRoot(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenRegisterAccount(
+fun ScreenRegisterAccountBody(
     state: State<CreateAccountState>,
     snackbarHostState: SnackbarHostState,
     onAction: (RegisterAccountIntent) -> Unit,
@@ -121,7 +124,6 @@ fun ScreenRegisterAccount(
             ScreenRegisterAccountBody(
                 state = state,
                 innerPadding = innerPadding,
-                modifier = Modifier,
                 onAction = onAction,
             )
         },
@@ -132,15 +134,21 @@ fun ScreenRegisterAccount(
 fun ScreenRegisterAccountBody(
     state: State<CreateAccountState>,
     innerPadding: PaddingValues,
-    modifier: Modifier,
     onAction: (RegisterAccountIntent) -> Unit,
 ) {
-    Box(modifier = Modifier.padding(innerPadding), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()
+            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+            .background(MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center,
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = UiConstants.SCREEN_LOGIN_BUTTON_CREATE_ACCOUNT_TEXT,
-                    color = MaterialTheme.colorScheme.primary,
+                    //color = MaterialTheme.colorScheme.primary,
                     fontSize = 32.sp,
                 )
             }
@@ -148,7 +156,7 @@ fun ScreenRegisterAccountBody(
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Warning! This is a TESTING version of the app.\n\nDo NOT use a real password that you already use somewhere else.\n\nThe connection with the server is NOT secure and the password will NOT be stored encrypted in the server's database.",
+                    text = "Warning! This is a TESTING version of the app.\n\nDo NOT use a real password that you're already using somewhere else.",
                     fontSize = 20.sp,
                     color = Color.Red,
                     fontWeight = FontWeight.ExtraBold,
@@ -201,9 +209,9 @@ fun ScreenRegisterAccountBody(
                     if (state.value.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier
-                                .size(20.dp), // tamaño reducido para que encaje bien en el botón
+                                .size(20.dp),
                             strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary, // color visible sobre el fondo
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     } else {
                         Text(

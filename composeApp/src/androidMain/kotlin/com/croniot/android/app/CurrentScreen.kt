@@ -3,159 +3,127 @@ package com.croniot.android.app
 import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.croniot.android.core.presentation.composables.map.MapScreen
+import androidx.navigation.toRoute
 import com.croniot.android.core.presentation.splash.SplashScreen
 import com.croniot.android.features.configuration.ConfigurationScreen
 import com.croniot.android.features.device.presentation.DeviceScreen
-import com.croniot.android.features.devicelist.DeviceListScreenRoot
-import com.croniot.android.features.registeraccount.presentation.ScreenRegisterAccountRoot
-import com.croniot.client.data.repositories.LocalDataRepository
-import com.croniot.client.features.login.ui.LoginScreenRoot
+import com.croniot.android.features.devicelist.DeviceListScreen
+import com.croniot.android.features.registeraccount.presentation.ScreenRegisterAccount
+import com.croniot.client.features.login.presentation.LoginScreen
 import com.croniot.client.features.tasktypes.presentation.create_task.CreateTaskScreen
-import com.croniot.client.presentation.constants.UiConstants
-import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CurrentScreen() {
+fun CurrentScreen(viewModel: AppViewModel = koinViewModel()) {
     val navController = rememberNavController()
 
-    val coroutineScope = rememberCoroutineScope()
-
-    /*LaunchedEffect(navController) {
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            destination.route?.let { route ->
-                saveCurrentScreenAsync(route)
-            }
-        }
-
-    }*/
-
-    val localDataRepository: LocalDataRepository = koinInject()
-
     LaunchedEffect(navController) {
-        localDataRepository.generateAndSaveDeviceUuidIfNotExists()
-
         navController.addOnDestinationChangedListener { _: NavController, dest: NavDestination, _: Bundle? ->
-
-            val route =
-                try {
-                    dest.route
-                } catch (_: Throwable) {
-                    null
-                } ?: navController.currentBackStackEntry?.destination?.route
+            val route = dest.route ?: navController.currentBackStackEntry?.destination?.route
             if (route != null) {
-                coroutineScope.launch {
-                    localDataRepository.saveCurrentScreen(route)
-                }
+                viewModel.onScreenChanged(route)
             }
         }
     }
 
-    val serverMode = localDataRepository.getServerMode().collectAsState(initial = "local").value ?: "local" // TODO
-
     NavHost(
         navController = navController,
-        // startDestination = startDestination,
-        startDestination = UiConstants.ROUTE_SPLASH,
-        // enterTransition = { EnterTransition.None },
-        // exitTransition = { ExitTransition.None }
+        startDestination = AppRoute.Splash,
     ) {
-         // TODO
-        // composable(UiConstants.ROUTE_MAPS) { ScreenMaps(navController) }
-
-        composable(UiConstants.ROUTE_TEST) {
+        composable<AppRoute.Test> {
             CroniotDashboardPreview8()
         }
 
-        composable(UiConstants.ROUTE_SPLASH) {
+        composable<AppRoute.Splash> {
             SplashScreen(
-                navController = navController,
+                onNavigateToLogin = {
+                    navController.navigate(AppRoute.Login) { popUpTo(0) { inclusive = true } }
+                },
+                onNavigateToDeviceList = {
+                    navController.navigate(AppRoute.Devices) { popUpTo(0) { inclusive = true } }
+                },
+                onNavigateToDevice = { deviceUuid ->
+                    navController.navigate(AppRoute.Device(deviceUuid)) { popUpTo(0) { inclusive = true } }
+                },
             )
         }
 
-        composable("MAPS") { MapScreen() }
-
-        composable(UiConstants.ROUTE_CREATE_ACCOUNT) {
-            ScreenRegisterAccountRoot(
+        composable<AppRoute.CreateAccount> {
+            ScreenRegisterAccount(
                 onNavigateBack = {
                     if (!navController.popBackStack()) {
-                        navController.navigate(UiConstants.ROUTE_LOGIN)
+                        navController.navigate(AppRoute.Login)
                     }
                 },
             )
         }
 
-        composable(UiConstants.ROUTE_LOGIN) {
-            // LoginScreen(navController, serverMode = serverMode)
-            LoginScreenRoot(
-                onNavigate = { route ->
-                    navController.navigate(route) {
-                        popUpTo(UiConstants.ROUTE_LOGIN) { inclusive = true }
-                        // launchSingleTop = true
+        composable<AppRoute.Login> {
+            LoginScreen(
+                onNavigateToDeviceList = {
+                    navController.navigate(AppRoute.Devices) {
+                        popUpTo<AppRoute.Login> { inclusive = true }
+                    }
+                },
+                onNavigateToRegisterAccount = {
+                    navController.navigate(AppRoute.CreateAccount) {
+                        popUpTo<AppRoute.Login> { inclusive = true }
+                    }
+                },
+                onNavigateToConfiguration = {
+                    navController.navigate(AppRoute.Configuration) {
+                        popUpTo<AppRoute.Login> { inclusive = true }
                     }
                 },
             )
         }
 
-        composable(UiConstants.ROUTE_CONFIGURATION) { ConfigurationScreen(navController) }
-
-        composable("${UiConstants.ROUTE_DEVICE}/{deviceUuid}") { backStackEntry ->
-
-            val selectedDeviceUuid = backStackEntry.arguments?.getString("deviceUuid")
-
-            if (selectedDeviceUuid != null) {
-                DeviceScreen(
-                    selectedDeviceUuid = selectedDeviceUuid,
-                    navController = navController,
-                    onTaskTypeClicked = { deviceUuid, taskUid ->
-                        navController.navigate("${UiConstants.ROUTE_CREATE_TASK}/$deviceUuid/$taskUid")
-                    },
-                )
-            } // TODO else
+        composable<AppRoute.Configuration> {
+            ConfigurationScreen(
+                onNavigateBack = {
+                    if (!navController.popBackStack()) {
+                        navController.navigate(AppRoute.Login)
+                    }
+                },
+            )
         }
 
-        composable(UiConstants.ROUTE_DEVICES) {
-            DeviceListScreenRoot(
-                // navController = navController,
+        composable<AppRoute.Device> { backStackEntry ->
+            val route = backStackEntry.toRoute<AppRoute.Device>()
+            DeviceScreen(
+                selectedDeviceUuid = route.deviceUuid,
+                onNavigateBack = { navController.navigate(AppRoute.Devices) },
+                onTaskTypeClicked = { deviceUuid, taskUid ->
+                    navController.navigate(AppRoute.CreateTask(deviceUuid, taskUid))
+                },
+            )
+        }
+
+        composable<AppRoute.Devices> {
+            DeviceListScreen(
                 onLogOut = {
-                    navController.navigate(UiConstants.ROUTE_LOGIN) {
-                        popUpTo(UiConstants.ROUTE_DEVICES) { inclusive = true }
-                        // launchSingleTop = true
+                    navController.navigate(AppRoute.Login) {
+                        popUpTo<AppRoute.Devices> { inclusive = true }
                     }
                 },
                 onDeviceClicked = { deviceUuid ->
-                    navController.navigate("${UiConstants.ROUTE_DEVICE}/$deviceUuid")
+                    navController.navigate(AppRoute.Device(deviceUuid))
                 },
             )
         }
 
-        composable(
-            route = "${UiConstants.ROUTE_CREATE_TASK}/{deviceUuid}/{taskUid}",
-            arguments = listOf(
-                navArgument("deviceUuid") { type = NavType.StringType },
-                navArgument("taskUid") { type = NavType.LongType },
-            ),
-        ) { backStackEntry ->
-            val deviceUuid = backStackEntry.arguments?.getString("deviceUuid")
-            val taskUid = backStackEntry.arguments?.getLong("taskUid")
-
-            if (deviceUuid != null && taskUid != null) {
-                CreateTaskScreen(
-                    deviceUuid,
-                    taskUid,
-                    navController,
-                )
-            }
+        composable<AppRoute.CreateTask> { backStackEntry ->
+            val route = backStackEntry.toRoute<AppRoute.CreateTask>()
+            CreateTaskScreen(
+                deviceUuid = route.deviceUuid,
+                taskTypeUid = route.taskUid,
+                onNavigateBack = { navController.popBackStack() },
+            )
         }
     }
 }
