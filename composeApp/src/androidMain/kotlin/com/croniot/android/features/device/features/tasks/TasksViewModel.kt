@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 // import com.croniot.android.core.constants.ServerConfig
 import com.croniot.client.core.models.Task
 import com.croniot.client.core.models.TaskStateInfo
-import com.croniot.client.data.repositories.TasksRepository
-import com.croniot.client.data.repositories.LocalDataRepository
+import com.croniot.client.domain.repositories.TasksRepository
+import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.TaskTypesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,11 +20,16 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import com.croniot.client.core.models.TaskType
 import com.croniot.client.domain.usecases.FetchTasksUseCase
+import com.croniot.client.domain.usecases.ObserveNewTasksUseCase
+import com.croniot.client.domain.usecases.ObserveTaskStateInfoUseCase
+import Outcome
 
 class TasksViewModel(
     private val localDataRepository: LocalDataRepository,
     private val tasksRepository: TasksRepository,
     private val fetchTasksUseCase: FetchTasksUseCase,
+    private val observeNewTasksUseCase: ObserveNewTasksUseCase,
+    private val observeTaskStateInfoUseCase: ObserveTaskStateInfoUseCase,
     private val taskTypesRepository: TaskTypesRepository,
 ) : ViewModel(), KoinComponent {
 
@@ -104,21 +109,24 @@ class TasksViewModel(
                 // Si tu live depende de arrancar MQTT:
 // tasksRepository.listenTasks(deviceUuid)
 
-                val fetchedTasks = fetchTasksUseCase(deviceUuid)
+                val outcome = fetchTasksUseCase(deviceUuid)
+                if (outcome is Outcome.Ok) {
+                    _tasks.value += outcome.value.map { MutableStateFlow(it) }
+                }
 
-                val newFlows = fetchedTasks.map { MutableStateFlow(it) }
-                _tasks.value += newFlows
-
-                fetchTasksUseCase.observeNewTasks(deviceUuid).onEach { task ->
+                observeNewTasksUseCase(deviceUuid).onEach { task ->
                     // println(it.uid)
                     _tasks.update { it + MutableStateFlow(task) }
                     // upsertTask(task)
                 }.launchIn(viewModelScope)
 
-                fetchTasksUseCase.observeTaskStateInfoUpdates(deviceUuid).onEach { taskStateInfo ->
+                observeTaskStateInfoUseCase(deviceUuid).onEach { taskStateInfo ->
                     // println("${taskStateInfo.state}")
 // 5215287 received
-                    val flow = _tasks.value.find { // 3452
+
+
+                    //TODO
+                    /*val flow = _tasks.value.find { // 3452
                         it.value.uid == taskStateInfo.taskUid && it.value.deviceUuid == taskStateInfo.deviceUuid
                     }
                     flow?.update { current ->
@@ -127,7 +135,7 @@ class TasksViewModel(
                             // si usas lista:
                             // stateInfos = current.stateInfos.toMutableList().apply { add(si) }
                         )
-                    }
+                    }*/
 
                    /* val taskStateFlow = _tasks.value.find { it.value.uid == taskStateInfo.taskUid }
                     if(taskStateFlow != null){
@@ -159,69 +167,6 @@ class TasksViewModel(
         _newTasksBeingListened = false
     }
 
-    /*fun loadTasks() {
-        if (!_tasksLoaded) {
-            _tasksLoaded = true
-
-            viewModelScope.launch(Dispatchers.IO) {
-                println("Inside viewModelScope.launch before try-catch")
-
-                try {
-                    //val selectedDeviceUuid = Global.selectedDevice?.uuid // TODO
-                    val selectedDevice = localDataRepository.getSelectedDevice() //.first()
-                    var selectedDeviceUuid : String? = null
-
-                    selectedDevice?.let { device ->
-                        selectedDeviceUuid = device.uuid
-                    }
-
-                    val response = selectedDeviceUuid?.let {
-                        RetrofitClient.taskConfigurationApiService.requestTaskConfigurations(
-                            it,
-                        )
-                    }
-                    val taskDtos = response?.body()
-
-                    if (response != null) {
-                        if (response.isSuccessful && taskDtos != null) {
-                            for (task in taskDtos) {
-                               // addTask(task)
-                                tasksRepository.addTask(task.toModel())
-                            }
-                        } else {
-                            println("Error: ${response.errorBody()?.string()}")
-                        }
-                    }
-                } catch (e: Exception) {
-                    println("Error: ${e.message}")
-                }
-            }
-        }
-    }*/
-
-   /* fun listenToTasksUpdates() {
-        if (!_tasksBeingListened) {
-            _tasksBeingListened = true
-
-            viewModelScope.launch(Dispatchers.IO) {
-                try {
-
-                    val selectedDevice = localDataRepository.getSelectedDevice() //.first()
-
-                   // val topic = "/server_to_devices/task_progress_update/${Global.selectedDevice?.uuid}"
-                    val topic = "/server_to_devices/task_progress_update/${selectedDevice?.uuid}"
-                    mqttClient = MqttClient(
-                        ServerConfig.mqttBrokerUrl,
-                        ServerConfig.mqttClientId + Global.generateUniqueString(8),
-                        null,
-                    )
-                    MqttHandler(mqttClient!!, MqttDataProcessorTaskProgress(), topic)
-                } catch (e: Exception) {
-                    println("Error: ${e.message}")
-                }
-            }
-        }
-    }*/
 
     fun listenToNewTasks() {
        /* viewModelScope.launch {
@@ -253,7 +198,8 @@ class TasksViewModel(
 
     // fun updateTaskProgress(taskStateInfoDto: TaskStateInfoDto) {
     fun updateTaskProgress(taskStateInfoDto: TaskStateInfo) {
-        val listOfMutableStateFlows = _tasks.value
+        //TODO
+        /*val listOfMutableStateFlows = _tasks.value
         val taskMutableStateFlow = listOfMutableStateFlows.find { it.value.uid == taskStateInfoDto.taskUid }
 
         taskMutableStateFlow?.let {
@@ -264,7 +210,7 @@ class TasksViewModel(
                     },
                 )
             }
-        }
+        }*/
     }
 
     /*fun addTask(taskDto: TaskDto) {

@@ -1,5 +1,6 @@
 package com.server.croniot.services
 
+import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.DeviceTokenRepository
 import com.server.croniot.data.repositories.TaskTypeRepository
 import croniot.messages.MessageRegisterTaskType
@@ -10,15 +11,26 @@ import javax.inject.Inject
 
 class TaskTypeService @Inject constructor(
     private val taskTypeRepository: TaskTypeRepository,
+    private val deviceRepository: DeviceRepository,
     private val deviceTokenRepository: DeviceTokenRepository,
 ) {
+
+    fun getId(deviceId: Long, taskTypeUid: Long) : Long? {
+        return taskTypeRepository.getId(deviceId, taskTypeUid)
+    }
 
     fun get(device: Device, taskTypeUid: Long): TaskType? {
         return taskTypeRepository.get(device, taskTypeUid)
     }
 
-    fun exists(device: Device, taskTypeUid: Long): Boolean {
-        return taskTypeRepository.exists(device, taskTypeUid)
+    fun exists(deviceUid: String, taskTypeUid: Long): Boolean {
+        val deviceId = deviceRepository.getId(deviceUid)
+            ?: return false //TODO
+        return taskTypeRepository.exists(
+            deviceId = deviceId,
+            taskTypeUid = taskTypeUid
+        )
+        //return taskTypeRepository.exists(device, taskTypeUid)
     }
 
     fun registerTaskType(message: MessageRegisterTaskType): Result {
@@ -27,18 +39,29 @@ class TaskTypeService @Inject constructor(
         val deviceUuid = message.deviceUuid
         val deviceToken = message.deviceToken
 
-        val device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken)
+        val device = deviceTokenRepository.getDevice(deviceToken)
+        //TODO change for: deviceExists and deviceTokenCorrect
+        //val device = deviceTokenRepository.getDevice(deviceToken)
 
         if (device != null && device.uuid == deviceUuid) {
             val taskType = message.taskType
-            taskType.device = device
+            //taskType.device = device
 
-            for (parameter in taskType.parameters) {
+            /*for (parameter in taskType.parameters) {
                 parameter.taskType = taskType
+            }*/
+
+
+            val deviceId = deviceRepository.getId(message.deviceUuid)
+            if(deviceId != null){
+                taskTypeRepository.insert(taskType, deviceId)
+                result = Result(true, "Task ${taskType.uid} registered")
+            } else {
+                //TODO
+                result = Result(false, "Incorrect device or token for task register process.")
             }
 
-            taskTypeRepository.insert(device, taskType)
-            result = Result(true, "Task ${taskType.uid} registered")
+
         } else {
             result = Result(false, "Incorrect device or token for task register process.")
         }

@@ -5,19 +5,6 @@
         </encoder>
     </appender>
 
-    <!-- SQL generado -->
-    <logger name="org.hibernate.SQL" level="DEBUG"/>
-    <!-- Valores que se bindean a los ? -->
-    <logger name="org.hibernate.orm.jdbc.bind" level="TRACE"/>
-    <!-- Mutaciones de colecciones/índices -->
-    <logger name="org.hibernate.orm.jdbc.mutation" level="DEBUG"/>
-    <!-- Detalle de colecciones (alta/actualización) -->
-    <logger name="org.hibernate.engine.internal.Collections" level="DEBUG"/>
-
-    <!-- (Opcional) si no ves los binds con el logger anterior, prueba también: -->
-    <!-- <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/> -->
-    <!-- <logger name="org.hibernate.type.descriptor.jdbc" level="TRACE"/> -->
-
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>

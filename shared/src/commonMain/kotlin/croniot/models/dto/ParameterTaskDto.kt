@@ -1,10 +1,10 @@
 package croniot.models.dto
 
 data class ParameterTaskDto(
-    var uid: Long,
-    var name: String,
-    var type: String,
-    var unit: String,
-    var description: String,
-    var constraints: /*Mutable*/Map<String, String>,
+    val uid: Long,
+    val name: String,
+    val type: String,
+    val unit: String,
+    val description: String,
+    val constraints: Map<String, String>,
 )

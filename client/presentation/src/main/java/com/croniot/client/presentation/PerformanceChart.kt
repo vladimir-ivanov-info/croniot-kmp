@@ -1,90 +1,52 @@
 package com.croniot.client.presentation
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-// import croniot.models.SensorType
 import com.croniot.client.core.models.SensorType
-// import com.croniot.android.domain.model.SensorType
-import kotlin.random.Random
-
-private fun getValuePercentageForRange(value: Float, max: Float, min: Float) =
-    (value - min) / (max - min)
-
-fun getRandomEntries2(): List<Float> {
-    // entryOf(it, Random.nextFloat() * 20f)
-    // val random = Random()
-    val listSize = 30
-    val floatList = MutableList(listSize) { Random.nextFloat() }
-    return floatList
-}
 
 @Composable
 fun PerformanceChart(sensorType: SensorType, modifier: Modifier, list: List<Float>) {
-    if (list.isEmpty()) return
+    if (list.size < 2) return
 
-    val zipList: List<Pair<Float, Float>> = list.zipWithNext()
+    val firstParam = remember(sensorType.uid) { sensorType.parameters.firstOrNull() }
+    val max = remember(firstParam) { firstParam?.constraints?.get("maxValue")?.toFloatOrNull() } ?: return
+    val min = remember(firstParam) { firstParam?.constraints?.get("minValue")?.toFloatOrNull() } ?: return
+    val range = max - min
+    if (range == 0f) return
 
-    Box(modifier = Modifier) {
-        Box(modifier = Modifier.height(150.dp)) {
-            Row(modifier = modifier.padding(8.dp)) {
-                val max = sensorType.parameters.first().constraints["maxValue"]?.toFloat()
-                val min = sensorType.parameters.first().constraints["minValue"]?.toFloat()
+    val lineColor = MaterialTheme.colorScheme.inversePrimary
 
-                val lineColor = MaterialTheme.colorScheme.inversePrimary
+    Canvas(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(8.dp),
+    ) {
+        val w = size.width
+        val h = size.height
+        val segmentCount = list.size - 1
 
-                for (pair in zipList) {
-                    var fromValuePercentage = 0.0F
-                    var toValuePercentage = 0.0F
+        val path = Path().apply {
+            val startY = h * (1f - (list[0] - min) / range)
+            moveTo(0f, startY)
 
-                    try {
-                        fromValuePercentage = getValuePercentageForRange(pair.first, max!!, min!!)
-                        toValuePercentage = getValuePercentageForRange(pair.second, max!!, min!!)
-                    } catch (e: Throwable) {
-                        println("Error processing chart data: $e")
-                    }
-
-                    Canvas(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f),
-                        onDraw = {
-                            val fromPoint = Offset(x = 0f, y = size.height.times(1 - fromValuePercentage))
-                            val toPoint = Offset(x = size.width, y = size.height.times(1 - toValuePercentage))
-
-                            // Control points for cubic Bézier curve
-                            val controlPoint1 = Offset(x = size.width * 0.5f, y = fromPoint.y)
-                            val controlPoint2 = Offset(x = size.width * 0.5f, y = toPoint.y)
-
-                            drawPath(
-                                path = Path().apply {
-                                    moveTo(fromPoint.x, fromPoint.y)
-                                    cubicTo(
-                                        controlPoint1.x,
-                                        controlPoint1.y,
-                                        controlPoint2.x,
-                                        controlPoint2.y,
-                                        toPoint.x,
-                                        toPoint.y,
-                                    )
-                                },
-                                color = lineColor,
-                                style = Stroke(width = 5f),
-                            )
-                        },
-                    )
-                }
+            for (i in 0 until segmentCount) {
+                val x0 = w * i / segmentCount
+                val x1 = w * (i + 1) / segmentCount
+                val y0 = h * (1f - (list[i] - min) / range)
+                val y1 = h * (1f - (list[i + 1] - min) / range)
+                val cx = (x0 + x1) / 2f
+                cubicTo(cx, y0, cx, y1, x1, y1)
             }
         }
+
+        drawPath(path, color = lineColor, style = Stroke(width = 8f))
     }
 }

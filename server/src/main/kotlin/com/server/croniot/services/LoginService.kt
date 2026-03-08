@@ -4,15 +4,15 @@ import com.server.croniot.data.repositories.AccountRepository
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.DeviceTokenRepository
 import com.server.croniot.mqtt.MqttController
-import croniot.messages.MessageLoginRequest
+import croniot.messages.LoginDto
 import croniot.models.Device
 import croniot.models.LoginResultDto
 import croniot.models.Result
-import croniot.models.toDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.server.croniot.data.mappers.toDto
 
 class LoginService @Inject constructor(
     private val accountRepository: AccountRepository,
@@ -20,74 +20,70 @@ class LoginService @Inject constructor(
     private val deviceTokenRepository: DeviceTokenRepository,
 ) {
 
-    fun login(messageLoginRequest: MessageLoginRequest): LoginResultDto {
-        var result = LoginResultDto(Result(false, ""), null, null)
+    fun login(loginDto: LoginDto): LoginResultDto {
+        val accountEmail = loginDto.email
+        val deviceUuid = loginDto.deviceUuid
+        val deviceToken = loginDto.deviceToken
 
-// TODO first check email and password
-        val accountEmail = messageLoginRequest.email
-        val accountPassword = messageLoginRequest.password
-        val deviceUuid = messageLoginRequest.deviceUuid
-        val deviceToken = messageLoginRequest.deviceToken
-        val deviceProperties = messageLoginRequest.deviceProperties
-
-        val account = accountRepository.getAccountEagerSkipTasks(accountEmail, accountPassword) // 1500 ms -> 52 ms
-        // account?.devices?.filter { it. }
-        // TODO if account null throw new exception "account doesn't exist". Or better check account existence in another method and if exists, pass it to this one
-        if (account != null) {
-            var device: Device? = null
-            deviceToken?.let {
-                device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken)
-            }
-            var newToken: String? = null
-
-            if (device == null) {
-                val newDevice = Device(uuid = deviceUuid, account = account, deviceProperties = deviceProperties)
-                deviceRepository.createDevice(account, newDevice)
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    MqttController.listenToNewDevice(newDevice)
-                }
-                newToken = Global.generateUniqueString(8)
-                //       deviceTokenRepository.createDeviceToken(newDevice, newToken)
-            }
-
-            // TODO try to authenticate with token first
-            val checkToken = false // TODO temporarily we don't need token so I can log in from any device into the same account.
-            // if(!checkToken && device != null) {
-            result = LoginResultDto(Result(true, ""), account.toDto(), newToken)
-            println()
-            // }
+        // TODO validate email and password
+        val accountExists = accountRepository.isAccountExists(accountEmail)
+        if (!accountExists) {
+            return LoginResultDto(Result(false, ""), null, null)
         }
-        return result
-    }
-
-    fun loginIot(message: MessageLoginRequest): Result {
-        var result = Result(false, "Login failed.")
-
-        val accountEmail = message.email
-        val accountPassword = message.password
-        val deviceUuid = message.deviceUuid
-        val deviceToken = message.deviceToken
 
         var device: Device? = null
         deviceToken?.let {
-            device = deviceTokenRepository.getDeviceAssociatedWithToken(deviceToken) // TODO test for when the device is contained in multiple accounts
-        } ?: {
-            // TODO try to login with email and password
-            // result = Result(false, "Login failed: no token provided.")
-        }
-// ////////
-// TODO try to authenticate with token first
-        device?.let {
-            val account = accountRepository.getAccountEagerSkipTasks(accountEmail, accountPassword)
-
-            if (account != null) {
-                result = Result(true, "Login success")
-            }
-        } ?: {
-            result = Result(false, "Login failed: no device found for given token.")
+            device = deviceTokenRepository.getDevice(deviceToken)
         }
 
-        return result
+        if (device != null) {
+            return LoginResultDto(Result(false, ""), null, null)
+        }
+
+        val newDevice = Device(
+            uuid = deviceUuid,
+            name = deviceUuid, //TODO use actual device name
+            iot = false,
+        )
+
+        val accountId = accountRepository.getAccountId(accountEmail)
+            ?: return LoginResultDto(Result(false, ""), null, null)
+
+        deviceRepository.createDevice(newDevice, accountId)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            MqttController.listenToNewDevice(newDevice)
+        }
+
+        val newToken = Global.generateUniqueString(8)
+        //TODO deviceTokenRepository.createDeviceToken(newDevice, newToken)
+
+        val account = accountRepository.getAccount(accountEmail)
+            ?: return LoginResultDto(Result(false, ""), null, null)
+
+        return LoginResultDto(
+            result = Result(true, ""),
+            accountDto = account.toDto(),
+            token = newToken
+        )
+    }
+
+    fun loginIot(message: LoginDto): Result {
+        val accountEmail = message.email
+        val accountPassword = message.password
+        val deviceToken = message.deviceToken
+
+        if (deviceToken == null) {
+            return Result(false, "Login failed: no token provided.")
+        }
+
+        val device = deviceTokenRepository.getDevice(deviceToken)
+            ?: return Result(false, "Login failed: no device found for given token.")
+
+        // TODO avoid fetching full account graph just to check existence
+        val account = accountRepository.getAccountEagerSkipTasks(accountEmail, accountPassword)
+            ?: return Result(false, "Login failed.")
+
+        return Result(true, "Login success")
     }
 }
