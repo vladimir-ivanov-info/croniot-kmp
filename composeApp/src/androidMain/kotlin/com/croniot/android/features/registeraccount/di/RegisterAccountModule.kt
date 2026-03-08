@@ -1,24 +1,17 @@
 package com.croniot.android.features.registeraccount.di
 
-import com.croniot.android.features.registeraccount.domain.usecase.RegisterAccountUseCase
+import com.croniot.android.features.registeraccount.data.RegisterAccountRepositoryImpl
+import com.croniot.client.domain.repositories.RegisterAccountRepository
+import com.croniot.client.domain.usecases.RegisterAccountUseCase
 import com.croniot.android.features.registeraccount.presentation.ViewModelRegisterAccount
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 object RegisterAccountModule {
 
     val registerAccountModule = module {
-        factory {
-            RegisterAccountUseCase(
-                networkUtilImpl = get(),
-            )
-        }
-        /*single {
-            RegisterAccountUseCase(
-                registerAccountUseCase = get(),
-                localDataRepository = get()
-            )
-        }*/
+        single<RegisterAccountRepository> { RegisterAccountRepositoryImpl(networkUtil = get()) }
+        factory { RegisterAccountUseCase(repository = get()) }
         viewModel {
             ViewModelRegisterAccount(
                 registerAccountUseCase = get(),

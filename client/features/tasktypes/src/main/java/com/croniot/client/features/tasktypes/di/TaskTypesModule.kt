@@ -2,34 +2,37 @@ package com.croniot.client.features.tasktypes.di
 
 import com.croniot.client.features.tasktypes.presentation.create_task.CreateTaskViewModel
 import com.croniot.client.features.tasktypes.presentation.create_task.parameter.StatefulParameterViewModel
-import com.croniot.client.features.tasktypes.usecases.RequestTaskStateInfoSyncUseCase
-import com.croniot.client.features.tasktypes.usecases.SendNewTaskUseCase
+import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val taskTypeModule = module {
+object TaskTypesModule {
 
-    factory { SendNewTaskUseCase(networkUtilImpl = get()) }
+    val taskTypesModule = module {
 
-    viewModel {
-        CreateTaskViewModel(
-            localDataRepository = get(),
-            tasksRepository = get(),
-            sendNewTaskUseCase = get(),
-            fetchTasksUseCase = get(),
-        )
-    }
+        viewModel {
+            CreateTaskViewModel(
+                localDataRepository = get(),
+                sendNewTaskUseCase = get(),
+                observeTaskStateInfoUseCase = get(),
+                getLatestTaskStateInfoUseCase = get(),
+            )
+        }
 
-    viewModel {
-        StatefulParameterViewModel(
-            tasksRepository = get(),
-            requestTaskStateInfoSyncUseCase = get(),
-        )
-    }
+        viewModel {
+            StatefulParameterViewModel(
+                tasksRepository = get(),
+                requestTaskStateInfoSyncUseCase = get(),
+            )
+        }
 
-    factory {
-        RequestTaskStateInfoSyncUseCase(
-            networkUtilImpl = get(),
-        )
+        viewModel {
+            TaskTypesViewModel(
+                fetchTasksUseCase = get(),
+                requestTaskStateInfoSyncUseCase = get(),
+                observeTaskStateInfoUseCase = get(),
+                getLatestTaskStateInfoUseCase = get(),
+            )
+        }
     }
 }

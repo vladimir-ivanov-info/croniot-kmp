@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.compose.compiler) // ✅ Uncommented - Required for Kotlin 2.0+
 
     //id("org.jetbrains.kotlin.plugin.serialization")
-    alias(libs.plugins.realm)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -78,7 +78,7 @@ kotlin {
     }*/
 
 
-    jvmToolchain(17)
+    jvmToolchain(21)
 
     applyDefaultHierarchyTemplate()  // 🔑 Requerido en Kotlin ≥1.9.20
 
@@ -158,23 +158,36 @@ kotlin {
                 // implementation(libs.bundles.common)
                 //  implementation(libs.compose.resources) //❗ A veces los bundles no funcionan correctamente en todos los entornos KMP. Es mejor probar añadiendo esa dependencia individualmente primero.
 
+                implementation(kotlin("stdlib"))
+                implementation(libs.room.runtime)
+                implementation(libs.compose.runtime)
+
+                implementation(libs.coroutinesCore)  // ← AÑADE ESTO
+                implementation(libs.koin.core)       // ← si usas Koin en código común
+            }
+        }
+
+        val iosMain by getting {
+            dependencies {
+                implementation(libs.sqlite.bundled)
             }
         }
         val androidMain by getting {
+            kotlin.srcDirs("src/main/java", "src/main/kotlin")
 
             dependencies {
+                implementation(projects.client.core)
+                implementation(projects.client.domain)
+                implementation(projects.shared)
+
                 //implementation(compose.preview)
                 implementation(libs.androidx.activity.compose)
-
-                implementation("org.maplibre.gl:android-sdk:11.3.0")
-                implementation("org.maplibre.gl:android-plugin-annotation-v9:3.0.0")
 
                 implementation(libs.androidx.datastore.core.android)
 
                 implementation("androidx.datastore:datastore-preferences:1.1.2")
                 implementation("androidx.datastore:datastore-core:1.1.2")
 
-                implementation(libs.realm)
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling)
                 implementation("androidx.compose.material3:material3:1.3.1")
@@ -190,12 +203,12 @@ kotlin {
 
 
 
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.ui)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.resources)
+                implementation(libs.compose.ui.tooling.preview)
 
 
                 implementation(libs.koin.android)
@@ -205,7 +218,7 @@ kotlin {
                 //implementation(project.dependencies.platform(libs.kotlinBom))
                 implementation(libs.lifecycleRuntime)
                 implementation(libs.lifecycleViewModelCompose)
-                implementation(libs.coroutinesCore)
+               // implementation(libs.coroutinesCore)
                 implementation(libs.coroutinesAndroid)
                 implementation(libs.retrofit)
                 implementation(libs.converterGson)
@@ -214,13 +227,8 @@ kotlin {
 
                 implementation(libs.mqtt)
 
-                // implementation(libs.maplibreSdkExtensions)
                 implementation(libs.accompanistPermissions)
 
-                implementation(libs.realm)
-
-
-                // implementation(libs.realm)
 
                 //   implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
                 //   implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
@@ -345,8 +353,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     /* kotlinOptions {
          jvmTarget = "21"
@@ -354,13 +362,16 @@ android {
 }
 
 dependencies {
-    implementation(projects.client.core)
-    implementation(projects.shared)
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.material)
-    testImplementation(libs.junit)
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

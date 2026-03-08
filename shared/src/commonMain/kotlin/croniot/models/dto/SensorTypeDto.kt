@@ -1,8 +1,8 @@
 package croniot.models.dto
 
 data class SensorTypeDto(
-    var uid: Long,
-    var name: String,
-    var description: String,
-    var parameters: /*Mutable*/List<ParameterSensorDto>,
+    val uid: Long,
+    val name: String,
+    val description: String,
+    val parameters: List<ParameterSensorDto>,
 )

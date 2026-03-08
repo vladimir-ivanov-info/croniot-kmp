@@ -1,8 +1,7 @@
 package com.server.croniot.http
 
+import Global
 import MqttHandler
-import com.server.croniot.application.AppComponent
-import com.server.croniot.application.DaggerAppComponent
 import com.server.croniot.mqtt.MqttController
 import com.server.croniot.mqtt.MqttDataProcessorSensor
 import com.server.croniot.services.DeviceService
@@ -28,22 +27,16 @@ class SensorsDataController(
 
                 val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
 
-                val appComponent: AppComponent = DaggerAppComponent.create()
-
-                val sensorsDataController = appComponent.sensorDataController() // TODO pass this            MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, sensorsDataController), topic)
-                MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, sensorsDataController), topic)
+                MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, this@SensorsDataController), topic)
             }
         }
     }
 
     fun processSensorData(deviceUuid: String, messageSensorData: MessageSensorData) {
-        // TODO
         val sensorDataDto = SensorDataDto(deviceUuid, messageSensorData.sensorTypeId, messageSensorData.value, ZonedDateTime.now())
 
         val device = deviceService.getLazy(deviceUuid)
         device?.let {
-            // TODO should check if sensor type actually exists
-            // val sensorType = ControllerDb.sensorDao.getLazy(deviceUuid, sensorTypeUid)
             CoroutineScope(Dispatchers.IO).launch {
                 MqttController.sendSensorData(sensorDataDto)
             }

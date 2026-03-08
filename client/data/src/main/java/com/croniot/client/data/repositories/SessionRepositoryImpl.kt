@@ -1,6 +1,7 @@
 package com.croniot.client.data.repositories
 
 import com.croniot.client.core.models.auth.AuthSession
+import com.croniot.client.domain.repositories.SessionRepository
 import com.croniot.client.data.source.local.LocalDatasource
 
 class SessionRepositoryImpl(
@@ -13,7 +14,6 @@ class SessionRepositoryImpl(
     }
 
     override suspend fun clearAllExceptDeviceUuid() {
-        // TODO("Not yet implemented")
         localDataSource.clearAllCacheExceptDeviceUuid()
     }
 

@@ -5,15 +5,13 @@ import com.server.croniot.data.repositories.TaskRepository
 import com.server.croniot.data.repositories.TaskTypeRepository
 import com.server.croniot.mqtt.MqttController
 import croniot.messages.MessageAddTask
-import croniot.models.Device
 import croniot.models.ParameterTask
 import croniot.models.Result
 import croniot.models.Task
 import croniot.models.TaskState
 import croniot.models.TaskStateInfo
-import croniot.models.TaskType
 import croniot.models.dto.TaskDto
-import croniot.models.toDto
+import com.server.croniot.data.mappers.toDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,75 +25,71 @@ class TaskService @Inject constructor(
     private val deviceRepository: DeviceRepository,
 ) {
 
-    fun getLazy(deviceUuid: String, taskTypeUid: Long, taskUid: Long): Task? {
-        return taskRepository.getLazy(deviceUuid, taskTypeUid, taskUid)
+    fun createTaskState(taskStateInfo: TaskStateInfo, taskId: Long) {
+        taskRepository.createTaskState(taskStateInfo, taskId)
     }
 
-    fun createTaskState(task: Task, taskStateInfo: TaskStateInfo) {
-        taskRepository.createTaskState(task, taskStateInfo)
-    }
-
-    fun create(device: Device, taskType: TaskType): Task {
-        return taskRepository.create(device, taskType)
+    fun create(taskTypeId: Long, taskTypeUid: Long): Task? {
+        return taskRepository.create(taskTypeId, taskTypeUid)
     }
 
     fun addTask(message: MessageAddTask): Result {
-        var result = Result(false, "")
         try {
             val deviceUuid = message.deviceUuid
             val taskTypeUid = message.taskTypeUid
             val parametersValues = message.parametersValues
 
-            val device = deviceRepository.getLazy(deviceUuid) // 2482 ms -> 1089 ms without logback -> 32 ms with val query = sess.createQuery(cr).uniqueResultOptional()
-            device?.let {
-                val taskType = taskTypeRepository.getLazy(device, taskTypeUid.toLong()) // 53-129 ms ->  2-11ms
+            val device = deviceRepository.getLazy(deviceUuid) ?: return Result(false, "")
+            val deviceId = deviceRepository.getId(deviceUuid) ?: return Result(false, "")
 
-                taskType?.let {
-                    val parametersValuesForDatabase = mutableMapOf<ParameterTask, String>()
-                    for (parameterValueEntry in parametersValues) {
-                        val parameterUid = parameterValueEntry.key
-                        val value = parameterValueEntry.value
+            val taskTypeExists = taskTypeRepository.exists(
+                taskTypeUid = taskTypeUid.toLong(),
+                deviceId = deviceId
+            )
+            if (!taskTypeExists) return Result(false, "")
 
-                        val parameterTask = taskTypeRepository.getParameterTaskByUid(parameterUid, taskType)
+            val parametersValuesForDatabase = mutableMapOf<ParameterTask, String>()
+            for ((parameterUid, value) in parametersValues) {
+                val taskTypeId = taskTypeRepository.getId(deviceId = deviceId, taskTypeUid = taskTypeUid.toLong())
+                    ?: continue
 
-                        parameterTask?.let {
-                            parametersValuesForDatabase[parameterTask] = value
-                        }
-                    }
-
-                    val taskUid = Random.nextLong(1, 10000001) // TODO -> duplicate task in TaskDaoImpl
-                    val task = Task(taskUid, parametersValuesForDatabase, taskType, mutableListOf())
-                    taskRepository.create(task) // 7-47 ms
-
-                    val taskStateInfo = TaskStateInfo(ZonedDateTime.now(), TaskState.CREATED, 0.0, "", task) // TODO check if taskConfiguration.id gets updated from 0 to actual value
-                    taskRepository.createState(task, taskStateInfo)
-
-                    CoroutineScope(Dispatchers.IO).launch {
-                        MqttController.sendNewTask(deviceUuid, task, taskStateInfo)
-                        MqttController.sendTaskToDevice(deviceUuid, task) // 468-620 ms  ->  99-616 ms
-                    }
-
-                    result = Result(true, "")
-                }
+                val parameterTask = taskTypeRepository.getParameterTaskByUid(
+                    parameterUid = parameterUid,
+                    taskTypeId = taskTypeId
+                )
+                parameterTask?.let { parametersValuesForDatabase[it] = value }
             }
+
+            val taskUid = Random.nextLong(1, 10000001) //TODO use UUID or DB sequence to avoid collisions
+            val task = Task(taskUid, parametersValuesForDatabase, taskTypeUid.toLong())
+            taskRepository.create(task)
+
+            val taskStateInfo = TaskStateInfo(taskUid, ZonedDateTime.now(), TaskState.CREATED.name, 0.0, "")
+            taskRepository.createState(task, taskStateInfo)
+
+            val taskWithState = task.copy(mostRecentStateInfo = taskStateInfo)
+            CoroutineScope(Dispatchers.IO).launch {
+                MqttController.sendNewTask(deviceUuid, taskWithState)
+                MqttController.sendTaskToDevice(deviceUuid, taskWithState)
+            }
+
+            return Result(true, "")
         } catch (e: Exception) {
             e.printStackTrace()
-            result = Result(false, "")
+            return Result(false, "")
         }
-
-        return result
     }
 
     fun getTasksByDeviceUuid(deviceUuid: String): List<TaskDto> {
         val tasks = taskRepository.getAll(deviceUuid)
-        val tasksDto = tasks.map { it.toDto() }.toMutableList()
-        return tasksDto
+        return tasks.map { it.toDto() }
     }
 
-    fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long) {
-        // TODO check if correct format and device/task type exist
+    fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Result {
+        // TODO validate device/task type existence
         CoroutineScope(Dispatchers.IO).launch {
             MqttController.requestTaskStateInfoSync(deviceUuid, taskTypeUid)
         }
+        return Result(true, "")
     }
 }

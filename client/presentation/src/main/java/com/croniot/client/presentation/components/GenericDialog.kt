@@ -21,7 +21,15 @@ import androidx.compose.ui.window.Dialog
 import com.croniot.client.presentation.constants.UtilUi
 
 @Composable
-fun GenericDialog(title: String, text: String, button1Text: String?, onButton1Clicked: () -> Unit, button2Text: String, onButton2Clicked: () -> Unit, onDismiss: () -> Unit) {
+fun GenericDialog(
+    title: String,
+    text: String,
+    button1Text: String?,
+    onButton1Clicked: () -> Unit,
+    button2Text: String,
+    onButton2Clicked: () -> Unit,
+    onDismiss: () -> Unit
+) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
