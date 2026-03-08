@@ -1,54 +1,44 @@
 package com.croniot.client.features.tasktypes.presentation.create_task.parameter
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.croniot.client.data.repositories.TasksRepository
-import com.croniot.client.features.tasktypes.usecases.RequestTaskStateInfoSyncUseCase
+import com.croniot.client.domain.repositories.TasksRepository
+import com.croniot.client.domain.usecases.RequestTaskStateInfoSyncUseCase
+import com.croniot.client.presentation.viewmodel.launchInVmScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import java.time.ZonedDateTime
 
 class StatefulParameterViewModel(
     private val tasksRepository: TasksRepository,
     private val requestTaskStateInfoSyncUseCase: RequestTaskStateInfoSyncUseCase,
-) : ViewModel(), KoinComponent {
+) : ViewModel() {
 
-    private val _statefulTaskInfoParameterSynced = MutableStateFlow(false) // TODO make Boolean? so first value can be null which means "loading", not "disconnected"
+    private val _statefulTaskInfoParameterSynced = MutableStateFlow(false)
     val statefulTaskInfoParameterSynced: StateFlow<Boolean> get() = _statefulTaskInfoParameterSynced
 
-    fun initialize(deviceUuid: String, taskTypeUid: Long) {
-        val job = viewModelScope.launch {
-            while (isActive) { // se cancela automáticamente al cancelar el Job
-                // val latestTaskStateInfo = tasksRepository.getLatestTaskStateInfo(deviceUuid, taskTypeUid)
-                val latestTaskStateInfoFromIoT = tasksRepository.getLatestTaskStateInfoEmittedByIoT(deviceUuid, taskTypeUid)
-                latestTaskStateInfoFromIoT?.let {
-                    val now = ZonedDateTime.now()
-                    val latestTaskStateInfoDateTime = latestTaskStateInfoFromIoT.dateTime
+    fun initialize(deviceUuid: String, taskTypeUid: Long) = launchInVmScope {
+        while (isActive) {
+            val latestTaskStateInfoFromIoT = tasksRepository.getLatestTaskStateInfoEmittedByIoT(deviceUuid, taskTypeUid)
+            if (latestTaskStateInfoFromIoT != null) {
+                val now = ZonedDateTime.now()
+                val latestDateTime = latestTaskStateInfoFromIoT.dateTime
 
-                    val isSynced = !now.isAfter(latestTaskStateInfoDateTime.plusSeconds(5))
+                val isSynced = !now.isAfter(latestDateTime.plusSeconds(5))
+                val shouldRequestSync = now.isAfter(latestDateTime.plusSeconds(3))
 
-                    if (!isSynced) {
-                        requestTaskStateInfoSyncUseCase(deviceUuid, taskTypeUid)
-                    }
-
-                    val shouldRequestUpdate = now.isAfter(latestTaskStateInfoDateTime.plusSeconds(3))
-                    if (shouldRequestUpdate) {
-                        requestTaskStateInfoSyncUseCase(deviceUuid, taskTypeUid)
-                    }
-
-                    _statefulTaskInfoParameterSynced.value = isSynced
-                } ?: run {
-                    _statefulTaskInfoParameterSynced.value = false
-
+                if (shouldRequestSync) {
                     requestTaskStateInfoSyncUseCase(deviceUuid, taskTypeUid)
                 }
 
-                delay(1000)
+                _statefulTaskInfoParameterSynced.value = isSynced
+            } else {
+                _statefulTaskInfoParameterSynced.value = false
+                requestTaskStateInfoSyncUseCase(deviceUuid, taskTypeUid)
             }
+
+            delay(1000)
         }
     }
 }

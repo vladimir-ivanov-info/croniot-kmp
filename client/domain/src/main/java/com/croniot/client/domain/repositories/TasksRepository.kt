@@ -1,0 +1,35 @@
+package com.croniot.client.domain.repositories
+
+import com.croniot.client.core.models.Task
+import com.croniot.client.core.models.TaskStateInfo
+import com.croniot.client.core.models.events.TaskStateInfoEvent
+import com.croniot.client.domain.errors.TaskError
+import Outcome
+import kotlinx.coroutines.flow.Flow
+
+interface TasksRepository {
+
+    fun getLatestTaskStateInfo(deviceUuid: String, taskTypeUid: Long): TaskStateInfo?
+
+    fun getLatestTaskUidForTaskType(deviceUuid: String, taskTypeUid: Long): Long?
+
+    fun getLatestTaskStateInfoEmittedByIoT(deviceUuid: String, taskTypeUid: Long): TaskStateInfo?
+
+    suspend fun fetchTasks(deviceUuid: String): Outcome<List<Task>, TaskError>
+
+    fun listenTasks(deviceUuid: String)
+
+    fun listenTaskStateInfos(deviceUuid: String)
+
+    suspend fun stopAllListeners()
+
+    fun observeNewTasks(deviceUuid: String): Flow<Task>
+
+    fun observeTaskStateInfoUpdates(deviceUuid: String): Flow<TaskStateInfoEvent>
+
+    suspend fun sendNewTask(newTask: Task): Outcome<Unit, TaskError>
+
+    suspend fun addTask(task: Task)
+
+    suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Outcome<Unit, TaskError>
+}

@@ -4,7 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -13,9 +13,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-// import croniot.models.SensorType
 import com.croniot.client.core.models.SensorType
-// import com.croniot.android.domain.model.SensorType
 import kotlin.random.Random
 
 private fun getValuePercentageForRange(value: Float, max: Float, min: Float) =
@@ -36,7 +34,7 @@ fun PerformanceChart(sensorType: SensorType, modifier: Modifier, list: List<Floa
     val zipList: List<Pair<Float, Float>> = list.zipWithNext()
 
     Box(modifier = Modifier) {
-        Box(modifier = Modifier.height(150.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Row(modifier = modifier.padding(8.dp)) {
                 val max = sensorType.parameters.first().constraints["maxValue"]?.toFloat()
                 val min = sensorType.parameters.first().constraints["minValue"]?.toFloat()
@@ -50,7 +48,7 @@ fun PerformanceChart(sensorType: SensorType, modifier: Modifier, list: List<Floa
                     try {
                         fromValuePercentage = getValuePercentageForRange(pair.first, max!!, min!!)
                         toValuePercentage = getValuePercentageForRange(pair.second, max!!, min!!)
-                    } catch (e: Throwable) {
+                    } catch (e: Throwable) { //TODO delegate to ViewModel
                         println("Error processing chart data: $e")
                     }
 
@@ -79,7 +77,7 @@ fun PerformanceChart(sensorType: SensorType, modifier: Modifier, list: List<Floa
                                     )
                                 },
                                 color = lineColor,
-                                style = Stroke(width = 5f),
+                                style = Stroke(width = 8f),
                             )
                         },
                     )

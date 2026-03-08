@@ -1,44 +1,49 @@
 package com.croniot.client.features.tasktypes.presentation.create_task
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.client.core.models.TaskStateInfo
 import com.croniot.client.core.models.TaskType
-import com.croniot.client.data.repositories.LocalDataRepository
-import com.croniot.client.data.repositories.TasksRepository
-import com.croniot.client.domain.usecases.FetchTasksUseCase
-import com.croniot.client.features.tasktypes.usecases.SendNewTaskUseCase
-import croniot.models.Result
+import com.croniot.client.domain.errors.TaskError
+import com.croniot.client.presentation.toUiText
+import com.croniot.client.domain.repositories.LocalDataRepository
+import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
+import com.croniot.client.domain.usecases.ObserveTaskStateInfoUseCase
+import com.croniot.client.features.tasktypes.R
+import com.croniot.client.domain.usecases.SendNewTaskUseCase
+import com.croniot.client.presentation.UiText
+import Outcome
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-
 class CreateTaskViewModel(
     private val localDataRepository: LocalDataRepository,
-    private val tasksRepository: TasksRepository,
     private val sendNewTaskUseCase: SendNewTaskUseCase,
-    private val fetchTasksUseCase: FetchTasksUseCase,
-) : ViewModel(), KoinComponent {
+    private val observeTaskStateInfoUseCase: ObserveTaskStateInfoUseCase,
+    private val getLatestTaskStateInfoUseCase: GetLatestTaskStateInfoUseCase,
+) : ViewModel() {
 
-    private val _taskType = mutableStateOf<TaskType?>(null)
-    val taskType: State<TaskType?> = _taskType
+    private val _taskType = MutableStateFlow<TaskType?>(null)
+    val taskType: StateFlow<TaskType?> = _taskType.asStateFlow()
 
-    var deviceUuid: String? = null
-    val parametersValues = mutableMapOf<Long, String>()
+    private var deviceUuid: String? = null
+    private val parametersValues = mutableMapOf<Long, String>()
 
     private val _events = MutableSharedFlow<CreateTaskUiEvent>(
         replay = 0,
         extraBufferCapacity = 1,
     )
-    val events = _events // asSharedFlow() si prefieres exponerlo inmutable
+    val events = _events.asSharedFlow()
+
+    private var _latestStateFlow: StateFlow<TaskStateInfo?>? = null
 
     fun initialize(_deviceUuid: String, _taskTypeUid: Long) {
+        if (deviceUuid != null) return
         viewModelScope.launch {
             val account = localDataRepository.getCurrentAccount()
 
@@ -49,7 +54,6 @@ class CreateTaskViewModel(
 
                     val taskType = device.taskTypes.find { it.uid == _taskTypeUid }
                     if (taskType != null) {
-                        // taskTypeUid = taskType.uid
                         _taskType.value = taskType
                     }
                 }
@@ -58,19 +62,17 @@ class CreateTaskViewModel(
     }
 
     fun updateParameter(parameterTaskUid: Long, newValue: String) {
-        viewModelScope.launch {
-            parametersValues[parameterTaskUid] = newValue
-        }
+        parametersValues[parameterTaskUid] = newValue
     }
 
     fun observeTaskTypeLatestState(deviceUuid: String, taskType: TaskType): StateFlow<TaskStateInfo?> {
-        return fetchTasksUseCase.observeTaskStateInfoUpdates(deviceUuid)
-            .filter { it.taskTypeUid == taskType.uid }
+        return _latestStateFlow ?: observeTaskStateInfoUseCase(deviceUuid, taskType.uid)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = fetchTasksUseCase.getLatestTaskStateInfo(deviceUuid, taskType.uid),
+                initialValue = getLatestTaskStateInfoUseCase(deviceUuid, taskType.uid),
             )
+            .also { _latestStateFlow = it }
     }
 
     fun sendTask() {
@@ -80,26 +82,29 @@ class CreateTaskViewModel(
 
             if (finalDeviceUuid != null && finalTaskTypeUid != null) {
                 val result = sendNewTaskUseCase(finalDeviceUuid, finalTaskTypeUid, parametersValues)
-
-                // val isTaskStateful = _taskType.value?.parameters?.any { it.isStateful()  } ?: false
-
-                // if(!isTaskStateful){ //If task is stateful, don't show info to user
-                _events.tryEmit(CreateTaskUiEvent.ShowSnackbar(result))
-                // }
+                _events.tryEmit(
+                    CreateTaskUiEvent.ShowSnackbar(result.toUiText())
+                )
             }
         }
     }
 
     fun sendStatefulTask(deviceUuid: String, taskTypeUid: Long, parameterUid: Long, newValue: String) {
         viewModelScope.launch {
-            val parametersValues = mutableMapOf<Long, String>()
-            parametersValues[parameterUid] = newValue
-            val result = sendNewTaskUseCase(deviceUuid, taskTypeUid, parametersValues)
-            // _events.tryEmit(CreateTaskUiEvent.ShowSnackbar(result))
+            val params = mutableMapOf(parameterUid to newValue)
+            val result = sendNewTaskUseCase(deviceUuid, taskTypeUid, params)
+            _events.tryEmit(CreateTaskUiEvent.ShowSnackbar(result.toUiText()))
         }
     }
 }
 
 sealed interface CreateTaskUiEvent {
-    data class ShowSnackbar(val result: Result) : CreateTaskUiEvent
+    data class ShowSnackbar(val message: UiText) : CreateTaskUiEvent
+}
+
+private fun Outcome<Unit, TaskError>.toUiText(): UiText = when (this) {
+    is Outcome.Ok -> UiText.Resource(R.string.task_sent_successfully)
+    is Outcome.Err -> when (val taskError = error) {
+        is TaskError.Remote -> taskError.error.toUiText()
+    }
 }

@@ -12,6 +12,6 @@ data class Device(
     val taskTypes: List<TaskType> = emptyList(),
 ) : Parcelable {
     override fun hashCode(): Int {
-        return uuid.hashCode() // Ensure `uuid` is always non-null
+        return uuid.hashCode()
     }
 }

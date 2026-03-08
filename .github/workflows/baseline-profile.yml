@@ -1,0 +1,98 @@
+name: Baseline Profile & Performance
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+jobs:
+  baseline-profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Accept Android licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      - name: Validate baseline profile exists
+        run: |
+          PROFILE_PATH="composeApp/src/androidMain/generated/baselineProfiles/baseline-prof.txt"
+          if [ -f "$PROFILE_PATH" ]; then
+            echo "✅ Baseline profile found ($(wc -l < $PROFILE_PATH) rules)"
+          else
+            echo "⚠️ Baseline profile not found"
+          fi
+
+      - name: Generate Baseline Profile
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          profile: pixel_6
+          script: ./gradlew :composeApp:generateRealBaselineProfile
+
+      - name: Commit updated profile
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add composeApp/src/androidMain/generated/baselineProfiles/
+          git diff --staged --quiet || git commit -m "chore: update baseline profile for ${{ github.ref_name }}"
+          git push origin HEAD:main || echo "Nothing to push"
+
+      - name: Run startup benchmarks
+        if: github.event_name == 'pull_request'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          profile: pixel_6
+          script: |
+            ./gradlew :baselineprofile:connectedRealBenchmarkReleaseAndroidTest \
+              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR
+
+      - name: Upload benchmark results
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: baselineprofile/build/outputs/connected_android_test_additional_output/
+
+      - name: Show benchmark summary
+        if: github.event_name == 'pull_request'
+        run: |
+          JSON_FILE=$(find baselineprofile/build/outputs -name "*benchmarkData.json" | head -1)
+
+          if [ -f "$JSON_FILE" ]; then
+            echo "## 📊 Startup Benchmark Results" >> $GITHUB_STEP_SUMMARY
+
+            NONE_MEDIAN=$(jq '.benchmarks[] | select(.name=="startupCompilationNone") | .metrics.timeToInitialDisplayMs.median' "$JSON_FILE")
+            BP_MEDIAN=$(jq '.benchmarks[] | select(.name=="startupCompilationBaselineProfiles") | .metrics.timeToInitialDisplayMs.median' "$JSON_FILE")
+
+            echo "| Modo | Tiempo (ms) |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|-------------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Sin optimizar | ${NONE_MEDIAN} |" >> $GITHUB_STEP_SUMMARY
+            echo "| Con Baseline Profile | ${BP_MEDIAN} |" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -18,7 +18,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.ParameterTask
-import com.croniot.client.core.util.TaskUtil
+import com.croniot.client.core.models.formatValue
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -86,7 +86,7 @@ fun LabeledSlider(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(text = "· ${parameter.name}:", fontWeight = FontWeight.Bold)
-            Text(text = TaskUtil.formatNumber(value, constraints), fontWeight = FontWeight.Bold)
+            Text(text = parameter.formatValue(value), fontWeight = FontWeight.Bold)
             Text(text = parameter.unit, fontWeight = FontWeight.Bold)
         }
         Slider(

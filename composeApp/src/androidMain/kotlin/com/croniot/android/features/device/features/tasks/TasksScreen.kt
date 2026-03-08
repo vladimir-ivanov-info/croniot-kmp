@@ -42,7 +42,7 @@ import androidx.navigation.NavController
 import com.croniot.android.R
 // import com.croniot.android.app.Global
 // import com.croniot.android.core.presentation.util.UtilUi
-import com.croniot.android.core.util.DateTimeUtil
+import com.croniot.client.core.util.DateTimeUtil
 import com.croniot.client.presentation.constants.UtilUi
 import croniot.models.TaskState
 import kotlinx.coroutines.flow.StateFlow
@@ -63,7 +63,7 @@ fun TasksScreen(
 
     // Collect tasks and sort them only once
     val tasks by tasksViewModel.tasks.collectAsState()
-    val sortedTasks = remember(tasks) { tasks.toList().sortedByDescending { it.value.getMostRecentState().dateTime } }
+    val sortedTasks = remember(tasks) { tasks.toList().sortedByDescending { it.value.initialTaskStateInfo?.dateTime } }
 
     // Batch size management
     var batchSize by remember { mutableStateOf(10) } // Initial batch size
@@ -130,25 +130,19 @@ fun GenericTaskItem(
     val stateIconPainter: Painter
     var stateIconColor = Color.Black
 
-    val stateInfos = taskValue.stateInfos.toList().sortedByDescending { it.dateTime }
-    // var latestStateInfo: TaskStateInfoDto? = null
-    var latestStateInfo: TaskStateInfo? = null
-    var latestStateInfoProgress = 0.0
+    val latestStateInfo = taskValue.initialTaskStateInfo
+    var latestStateInfoProgress = latestStateInfo?.progress ?: 0.0
 
-    // if(stateInfos.isNotEmpty()){ //TODO not necessary, every task has at least 1 state
-    latestStateInfo = stateInfos[0]
-    latestStateInfoProgress = latestStateInfo.progress
-
-    when (latestStateInfo.state) {
-        TaskState.CREATED -> {
+    when (latestStateInfo?.state) {
+        TaskState.CREATED.name -> {
             stateIconPainter = painterResource(id = R.drawable.baseline_schedule_24)
             // stateIconColor = null
         }
-        TaskState.RUNNING -> {
+        TaskState.RUNNING.name -> {
             stateIconPainter = painterResource(id = R.drawable.baseline_update_24)
             // stateIconColor = null // Or set a specific color
         }
-        TaskState.COMPLETED -> {
+        TaskState.COMPLETED.name -> {
             stateIconPainter = painterResource(id = R.drawable.baseline_done_24)
             stateIconColor = Color.Green
         }
@@ -246,7 +240,7 @@ fun GenericTaskItem(
                 ) {
                     var latestStateInfoProgressText = "$latestStateInfoProgress %"
 
-                    if (latestStateInfo.state != TaskState.RUNNING) {
+                    if (latestStateInfo?.state != TaskState.RUNNING.name) {
                         latestStateInfoProgressText = ""
                     }
 

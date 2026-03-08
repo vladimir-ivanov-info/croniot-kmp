@@ -144,6 +144,14 @@
 //        val commonMain by getting {
 //            //resources.srcDirs("src/commonMain/resources")
 //            dependencies {
+//                implementation(libs.androidx.activity.compose)
+//                implementation(compose.preview)
+//                implementation(libs.compose.ui)
+//                implementation(libs.compose.ui.tooling)
+//
+//                implementation(libs.koin.androidx.compose)
+//
+//
 //                //implementation(libs.plugins.realm)
 //
 //             //   implementation(project(":core"))

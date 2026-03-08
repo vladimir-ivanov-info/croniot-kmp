@@ -10,3 +10,10 @@ data class SensorType(
     var description: String,
     var parameters: Set<ParameterSensor>,
 ) : Parcelable
+
+fun SensorType.isChartable(): Boolean {
+    val firstParam = parameters.firstOrNull() ?: return false
+    val max = firstParam.constraints["maxValue"]?.toFloat()
+    val min = firstParam.constraints["minValue"]?.toFloat()
+    return max != null && min != null
+}
