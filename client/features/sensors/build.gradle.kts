@@ -13,7 +13,7 @@ kotlin {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
-    jvmToolchain(17)
+    jvmToolchain(21)
     applyDefaultHierarchyTemplate()
 
     iosArm64()

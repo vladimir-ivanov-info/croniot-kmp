@@ -38,7 +38,7 @@ plugins {
 
 kotlin{
    // jvmToolchain(21)
-    jvmToolchain(17)
+    jvmToolchain(21)
 
     // Sustituye kotlinOptions por el nuevo DSL
     compilerOptions {
