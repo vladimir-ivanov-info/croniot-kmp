@@ -3,7 +3,7 @@ package com.croniot.client.core.util
 import java.util.UUID
 
 object StringUtil {
-    //TODO leave only 1 function of the next 2:
+    // TODO leave only 1 function of the next 2:
 
     fun generateRandomString(length: Int = 3): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
@@ -18,7 +18,6 @@ object StringUtil {
         return uniqueString
     }
 }
-
 
 fun getRelativeTimeText(now: Long, last: Long?): String {
     if (last == null || last <= 0L) return "no recent signal"

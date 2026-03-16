@@ -20,9 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,38 +28,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.models.ParameterTask
 import com.croniot.client.core.models.TaskStateInfo
-import com.croniot.client.core.models.TaskType
 import com.croniot.client.core.models.isRepresentsSlider
 import com.croniot.client.core.models.isRepresentsSwitch
 import com.croniot.client.presentation.constants.UtilUi
 import kotlinx.coroutines.flow.StateFlow
-import org.koin.compose.viewmodel.koinViewModel
 
 enum class SyncStatus { Synced, Pending, Desynced }
 
 @Composable
 fun StatefulParameter(
-    deviceUuid: String,
-    taskType: TaskType,
     parameter: ParameterTask,
     latestTaskStateInfoFlow: StateFlow<TaskStateInfo?>,
-    statefulParameterViewModel: StatefulParameterViewModel = koinViewModel(),
+    isSyncedFlow: StateFlow<Boolean>,
     onStateChanged: (newState: String) -> Unit,
 ) {
     val isSlider = remember { parameter.isRepresentsSlider() }
     val isSwitch = remember { parameter.isRepresentsSwitch() }
 
-    val latestState: TaskStateInfo? by latestTaskStateInfoFlow.collectAsState()
+    val latestState: TaskStateInfo? by latestTaskStateInfoFlow.collectAsStateWithLifecycle()
+    val taskStateInfoSynced = isSyncedFlow.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        statefulParameterViewModel.initialize(deviceUuid, taskType.uid)
-    }
-
-    val taskStateInfoSynced = statefulParameterViewModel.statefulTaskInfoParameterSynced.collectAsState()
-
-    if (isSwitch) { // TODO make this if else cleaner
+    if (isSwitch) {
         SwitchTaskTypeParameter(
             taskStateInfoSynced = taskStateInfoSynced,
             parameter = parameter,
@@ -109,12 +99,12 @@ fun SwitchTaskTypeParameter(
             fontSize = UtilUi.TEXT_SIZE_3,
         )
 
-        if (latestState != null) {
-            val state1 = parameter.constraints["state_1"]
+        val state1 = parameter.constraints["state_1"]
+        val state2 = parameter.constraints["state_2"]
+
+        if (latestState != null && (latestState.state == state1 || latestState.state == state2)) {
             val checked = latestState.state == state1
             Switch(
-                // modifier = Modifier.align(Alignment.CenterEnd),
-                // enabled = taskStateInfoSynced.value,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 checked = checked,
                 onCheckedChange = { newChecked ->
@@ -164,7 +154,11 @@ fun SyncDot(isSynced: Boolean, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .size(10.dp)
-                    .graphicsLayer { scaleX = pulseScale; scaleY = pulseScale; alpha = pulseAlpha }
+                    .graphicsLayer {
+                        scaleX = pulseScale;
+                        scaleY = pulseScale;
+                        alpha = pulseAlpha
+                    }
                     .background(color = dotColor, shape = CircleShape),
             )
         }

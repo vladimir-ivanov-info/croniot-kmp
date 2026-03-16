@@ -2,16 +2,15 @@ package com.server.croniot.mqtt
 
 import Global
 import MqttHandler
-import ZonedDateTimeAdapter
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.server.croniot.data.mappers.toDto
+import croniot.measure
 import com.server.croniot.di.DI
+import croniot.messages.MessageFactory
 import croniot.messages.MessageTask
 import croniot.models.Device
 import croniot.models.Task
 import croniot.models.dto.SensorDataDto
 import croniot.models.dto.TaskStateInfoDto
-import com.server.croniot.data.mappers.toDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,19 +22,14 @@ import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
-import java.time.ZonedDateTime
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
 object MqttController {
-
-    private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-    private val gsonZonedDateTime: Gson = GsonBuilder()
-        .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
-        .setPrettyPrinting()
-        .create()
 
     private val deviceMqttClient: MqttClient = MqttClient(
         Global.secrets.mqttBrokerUrl,
         Global.secrets.mqttClientId + Global.generateUniqueString(8),
+        MemoryPersistence(),
     )
 
     private val clientLock = Mutex()
@@ -79,11 +73,17 @@ object MqttController {
                 val mqttClient = MqttClient(
                     Global.secrets.mqttBrokerUrl,
                     Global.secrets.mqttClientId + Global.generateUniqueString(8),
+                    MemoryPersistence(),
                 )
                 synchronized(deviceClients) { deviceClients.add(mqttClient) }
 
                 val taskController = DI.appComponent.taskController()
-                MqttHandler(mqttClient, MqttDataProcessorTaskProgress(device.uuid, taskController), topic)
+                MqttHandler(
+                    mqttClient,
+                    MqttDataProcessorTaskProgress(device.uuid, taskController),
+                    topic,
+                    CoroutineScope(Dispatchers.IO)
+                )
             }
         }
     }
@@ -93,15 +93,23 @@ object MqttController {
         val mqttClient = MqttClient(
             Global.secrets.mqttBrokerUrl,
             Global.secrets.mqttClientId + Global.generateUniqueString(8),
+            MemoryPersistence(),
         )
         synchronized(deviceClients) { deviceClients.add(mqttClient) }
 
         val taskController = DI.appComponent.taskController()
-        MqttHandler(mqttClient, MqttDataProcessorTaskProgress(device.uuid, taskController), topic)
+        MqttHandler(
+            mqttClient,
+            MqttDataProcessorTaskProgress(device.uuid, taskController),
+            topic,
+            CoroutineScope(Dispatchers.IO)
+        )
     }
 
     suspend fun sendTaskToDevice(deviceUuid: String, task: Task) {
+        val t0 = System.nanoTime()
         clientLock.withLock {
+            val waitMs = (System.nanoTime() - t0) / 1_000_000
             val topic = "/server/$deviceUuid/task_type/${task.taskTypeUid}"
 
             val parametersValuesMap = mutableMapOf<Long, String>()
@@ -111,36 +119,49 @@ object MqttController {
 
             val messageTask = MessageTask(task.taskTypeUid, parametersValuesMap, task.uid)
 
-            val json = gson.toJson(messageTask)
+            val json = MessageFactory.toJson(messageTask)
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            deviceMqttClient.publish(topic, message)
+            measure("### sendTaskToDevice publish") {
+                deviceMqttClient.publish(topic, message)
+            }
+            println("### sendTaskToDevice lockWait=${waitMs}ms")
         }
     }
 
     suspend fun sendNewTask(deviceUuid: String, task: Task) {
+        val t0 = System.nanoTime()
         clientLock.withLock {
+            val waitMs = (System.nanoTime() - t0) / 1_000_000
             val topic = "/$deviceUuid/newTasks"
             val taskDto = task.toDto()
-            val json = gsonZonedDateTime.toJson(taskDto)
+            val json = MessageFactory.toJson(taskDto)
 
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            deviceMqttClient.publish(topic, message)
+            measure("### sendNewTask publish") {
+                deviceMqttClient.publish(topic, message)
+            }
+            println("### sendNewTask lockWait=${waitMs}ms")
         }
     }
 
     suspend fun sendSensorData(sensorDataDto: SensorDataDto) {
+        val t0 = System.nanoTime()
         clientLock.withLock {
+            val waitMs = (System.nanoTime() - t0) / 1_000_000
             val topic = "/server_to_app/${sensorDataDto.deviceUuid}/sensor_data"
-            val json = gsonZonedDateTime.toJson(sensorDataDto)
+            val json = MessageFactory.toJson(sensorDataDto)
 
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            deviceMqttClient.publish(topic, message)
+            measure("### sendSensorData publish") {
+                deviceMqttClient.publish(topic, message)
+            }
+            //println("### sendSensorData lockWait=${waitMs}ms")
         }
     }
 
@@ -150,24 +171,30 @@ object MqttController {
         taskUid: Long,
         payload: TaskStateInfoDto
     ) {
+        val t0 = System.nanoTime()
         clientLock.withLock {
+            val waitMs = (System.nanoTime() - t0) / 1_000_000
             val topic =
                 "/server_to_devices/$deviceUuid/task_types/$taskTypeUid/tasks/$taskUid/progress"
 
-            val json = gsonZonedDateTime.toJson(payload)
+            val json = MessageFactory.toJson(payload)
             val message = MqttMessage(json.toByteArray()).apply {
                 qos = 2
                 isRetained = false
             }
 
-            deviceMqttClient.publish(topic, message)
+            measure("### sendNewTaskStateInfo publish") {
+                deviceMqttClient.publish(topic, message)
+            }
+            //println("### sendNewTaskStateInfo lockWait=${waitMs}ms")
+            //println("[RTT] sendNewTaskStateInfo published to: $topic (${json.length} bytes)")
         }
     }
 
     suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeId: Long) {
         clientLock.withLock {
             val topic = "/server/$deviceUuid/task_state_info_sync/$taskTypeId"
-            val json = gsonZonedDateTime.toJson(taskTypeId)
+            val json = MessageFactory.toJson(taskTypeId)
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false

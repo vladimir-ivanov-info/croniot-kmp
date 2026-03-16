@@ -38,8 +38,8 @@ fun TaskTypeDto.toDomain(): TaskType {
         uid = this.uid,
         name = this.name,
         description = this.description,
-        parameters = this.parameters.map { it.toDomain() }//.toMutableSet(),
-        //TODO realTime = this.realTime,
+        parameters = this.parameters.map { it.toDomain() } // .toMutableSet(),
+        // TODO realTime = this.realTime,
     )
 }
 

@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.eclipse.paho.client.mqttv3.MqttClient
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import java.time.ZonedDateTime
 
 class SensorsDataController(
@@ -25,15 +26,29 @@ class SensorsDataController(
                 val deviceUuid = device.uuid
                 val topic = "/${device.uuid}/sensor_data"
 
-                val mqttClient = MqttClient(Global.secrets.mqttBrokerUrl, Global.secrets.mqttClientId + Global.generateUniqueString(8))
+                val mqttClient = MqttClient(
+                    Global.secrets.mqttBrokerUrl,
+                    Global.secrets.mqttClientId + Global.generateUniqueString(8),
+                    MemoryPersistence()
+                )
 
-                MqttHandler(mqttClient, MqttDataProcessorSensor(deviceUuid, this@SensorsDataController), topic)
+                MqttHandler(
+                    mqttClient,
+                    MqttDataProcessorSensor(deviceUuid, this@SensorsDataController),
+                    topic,
+                    CoroutineScope(Dispatchers.IO)
+                )
             }
         }
     }
 
     fun processSensorData(deviceUuid: String, messageSensorData: MessageSensorData) {
-        val sensorDataDto = SensorDataDto(deviceUuid, messageSensorData.sensorTypeId, messageSensorData.value, ZonedDateTime.now())
+        val sensorDataDto = SensorDataDto(
+            deviceUuid,
+            messageSensorData.sensorTypeId,
+            messageSensorData.value,
+            ZonedDateTime.now()
+        )
 
         val device = deviceService.getLazy(deviceUuid)
         device?.let {

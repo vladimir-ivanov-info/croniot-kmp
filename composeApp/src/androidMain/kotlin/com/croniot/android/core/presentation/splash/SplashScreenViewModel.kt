@@ -3,9 +3,9 @@ package com.croniot.android.core.presentation.splash
 import Outcome
 import androidx.lifecycle.ViewModel
 import com.croniot.client.domain.repositories.LocalDataRepository
+import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.LogoutUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
-import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.presentation.viewmodel.launchInVmScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

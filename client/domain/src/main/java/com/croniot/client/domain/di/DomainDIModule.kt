@@ -1,6 +1,5 @@
 package com.croniot.client.domain.di
 
-import com.croniot.client.domain.repositories.TaskTypesRepository
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.LogoutUseCase

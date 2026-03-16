@@ -1,5 +1,8 @@
 package croniot.messages
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class MessageAddTask(
     val deviceUuid: String,
     val taskTypeUid: String,

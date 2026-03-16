@@ -3,9 +3,11 @@ package com.croniot.client.core.models
 import android.os.Parcelable
 import croniot.models.ParameterTypes
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
 @Parcelize
+@Serializable
 data class ParameterTask(
     var uid: Long,
     var name: String,
@@ -21,14 +23,14 @@ fun ParameterTask.isStateful(): Boolean {
 
 fun ParameterTask.isRepresentsSwitch(): Boolean {
     return this.constraints.size == 2 &&
-            this.constraints.containsKey("state_1") &&
-            this.constraints.containsKey("state_2")
+        this.constraints.containsKey("state_1") &&
+        this.constraints.containsKey("state_2")
 }
 
 fun ParameterTask.isRepresentsSlider(): Boolean {
     return this.constraints.containsKey("minValue") &&
-            this.constraints.containsKey("maxValue") &&
-            this.constraints.containsKey("stepSize")
+        this.constraints.containsKey("maxValue") &&
+        this.constraints.containsKey("stepSize")
 }
 
 fun ParameterTask.formatValue(value: Float): String {

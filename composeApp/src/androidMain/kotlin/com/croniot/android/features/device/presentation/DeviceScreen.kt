@@ -2,18 +2,15 @@ package com.croniot.android.features.device.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,11 +22,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.models.Device
 import com.croniot.client.features.sensors.presentation.SensorsScreen
 import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesScreen
@@ -45,7 +43,7 @@ fun DeviceScreen(
     onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
     viewModel: DeviceScreenViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(selectedDeviceUuid) {
         viewModel.onIntent(DeviceIntent.Initialize(selectedDeviceUuid))
@@ -57,37 +55,49 @@ fun DeviceScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        IconButton(
-                            modifier = Modifier.padding(end = 8.dp),
-                            onClick = onNavigateBack,
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Navigate back",
-                            )
-                        }
-                        Box(contentAlignment = Alignment.CenterStart) {
-                            state.device?.let { Text(text = it.name) }
-                        }
+                    if (state is DeviceState.Content) {
+                        Text(text = (state as DeviceState.Content).device.name)
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Navigate back",
+                        )
                     }
                 },
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
             )
         },
         content = { innerPadding ->
-            state.device?.let { device ->
-                DeviceScreenContent(
-                    device = device,
-                    selectedTab = state.selectedTab,
-                    innerPadding = innerPadding,
-                    onTabSelected = { viewModel.onIntent(DeviceIntent.SelectTab(it)) },
-                    onTaskTypeClicked = onTaskTypeClicked,
-                )
+            when (state) {
+                is DeviceState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize().padding(innerPadding),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+                is DeviceState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize().padding(innerPadding),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(text = (state as DeviceState.Error).message)
+                    }
+                }
+                is DeviceState.Content -> {
+                    val content = state as DeviceState.Content
+                    DeviceScreenContent(
+                        device = content.device,
+                        selectedTab = content.selectedTab,
+                        innerPadding = innerPadding,
+                        onTabSelected = { viewModel.onIntent(DeviceIntent.SelectTab(it)) },
+                        onTaskTypeClicked = onTaskTypeClicked,
+                    )
+                }
             }
         },
     )

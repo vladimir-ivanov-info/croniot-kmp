@@ -9,6 +9,5 @@ interface RemoteSensorDataSource {
         onNewSensorData: (sensorData: SensorData) -> Unit,
     )
 
-
     suspend fun stopListening(deviceUuid: String? = null)
 }

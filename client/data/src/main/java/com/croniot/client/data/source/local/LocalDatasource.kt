@@ -52,7 +52,7 @@ interface LocalDatasource {
 
     suspend fun clearAllCacheExceptDeviceUuid()
 
-    suspend fun getServerIp() : Flow<String?>
+    suspend fun getServerIp(): Flow<String?>
 
     suspend fun saveServerIp(serverIp: String)
 }

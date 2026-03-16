@@ -2,12 +2,15 @@ package com.croniot.client.presentation
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.SensorType
@@ -22,18 +25,19 @@ fun PerformanceChart(sensorType: SensorType, modifier: Modifier, list: List<Floa
     val range = max - min
     if (range == 0f) return
 
-    val lineColor = MaterialTheme.colorScheme.inversePrimary
+    val lineColor = MaterialTheme.colorScheme.primary
+    val fillColor = MaterialTheme.colorScheme.primary
+    val ceilingColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Canvas(
         modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp),
+            .fillMaxSize(),
     ) {
         val w = size.width
         val h = size.height
         val segmentCount = list.size - 1
 
-        val path = Path().apply {
+        val linePath = Path().apply {
             val startY = h * (1f - (list[0] - min) / range)
             moveTo(0f, startY)
 
@@ -47,6 +51,28 @@ fun PerformanceChart(sensorType: SensorType, modifier: Modifier, list: List<Floa
             }
         }
 
-        drawPath(path, color = lineColor, style = Stroke(width = 8f))
+        // Area fill: close the path along the bottom edge
+        val fillPath = Path().apply {
+            addPath(linePath)
+            lineTo(w, h)
+            lineTo(0f, h)
+            close()
+        }
+
+        // Dashed ceiling line at max value
+        val dashEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f), phase = 0f)
+        drawLine(
+            color = ceilingColor.copy(alpha = 0.25f),
+            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+            end = androidx.compose.ui.geometry.Offset(w, 0f),
+            strokeWidth = 1.5f,
+            pathEffect = dashEffect,
+        )
+
+        val gradient = Brush.verticalGradient(
+            colors = listOf(fillColor.copy(alpha = 0.3f), Color.Transparent),
+        )
+        drawPath(fillPath, brush = gradient, style = Fill)
+        drawPath(linePath, color = lineColor, style = Stroke(width = 3.5f))
     }
 }

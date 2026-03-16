@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,27 +21,40 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.presentation.components.StatefulTextField
 import com.croniot.client.presentation.constants.UtilUi
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfigurationScreen(
     onNavigateBack: () -> Unit,
     viewModel: ConfigurationScreenViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     BackHandler { onNavigateBack() }
 
+    ConfigurationScreenBody(
+        state = state,
+        onIntent = viewModel::onIntent,
+        onNavigateBack = onNavigateBack,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ConfigurationScreenBody(
+    state: ConfigurationState,
+    onIntent: (ConfigurationIntent) -> Unit,
+    onNavigateBack: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,7 +65,9 @@ fun ConfigurationScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         IconButton(
-                            modifier = Modifier.padding(end = 8.dp),
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .testTag("config_back_button"),
                             onClick = onNavigateBack,
                         ) {
                             Icon(
@@ -83,10 +99,12 @@ fun ConfigurationScreen(
                         fontSize = UtilUi.TEXT_SIZE_4,
                     )
                     Switch(
-                        modifier = Modifier.align(Alignment.CenterEnd),
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .testTag("config_foreground_switch"),
                         checked = state.foregroundServiceEnabled,
                         onCheckedChange = {
-                            viewModel.onIntent(ConfigurationIntent.SetForegroundService(it))
+                            onIntent(ConfigurationIntent.SetForegroundService(it))
                         },
                     )
                 }
@@ -98,9 +116,11 @@ fun ConfigurationScreen(
                         fontSize = UtilUi.TEXT_SIZE_4,
                     )
                     Switch(
-                        modifier = Modifier.align(Alignment.CenterEnd),
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .testTag("config_remote_server_switch"),
                         checked = state.serverMode == "remote",
-                        onCheckedChange = { viewModel.onIntent(ConfigurationIntent.ToggleServerMode) },
+                        onCheckedChange = { onIntent(ConfigurationIntent.ToggleServerMode) },
                     )
                 }
 

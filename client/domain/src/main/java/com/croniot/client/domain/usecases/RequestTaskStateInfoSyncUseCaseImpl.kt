@@ -1,8 +1,8 @@
 package com.croniot.client.domain.usecases
 
+import Outcome
 import com.croniot.client.domain.errors.TaskError
 import com.croniot.client.domain.repositories.TasksRepository
-import Outcome
 
 class RequestTaskStateInfoSyncUseCaseImpl(
     private val tasksRepository: TasksRepository,

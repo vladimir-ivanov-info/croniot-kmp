@@ -7,15 +7,14 @@ import croniot.models.TaskType
 
 fun Device.toEntity(accountId: Long): DeviceEntity =
     DeviceEntity(
-        //id = this.id,
+        // id = this.id,
         uuid = this.uuid,
         name = this.name,
         description = this.description,
         iot = this.iot,
         accountId = accountId,
-        //deviceProperties = this.deviceProperties,
+        // deviceProperties = this.deviceProperties,
     )
-
 
 fun DeviceEntity.toDomain(
     sensorTypes: List<SensorType> = emptyList(),

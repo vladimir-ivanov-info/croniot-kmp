@@ -11,12 +11,15 @@ class MqttDataProcessorTaskProgress(
 ) : MqttDataProcessor {
 
     override fun process(topic: String, data: Any) {
+        // measure("###SERVER MQTT messageArrived processing") {
         try {
             val message = data as String
             val taskProgressUpdate = MessageFactory.fromJson<TaskProgressUpdate>(message)
+
             taskController.addTaskProgress(deviceUuid, taskProgressUpdate)
         } catch (e: Exception) {
             println("Error processing task progress for device $deviceUuid: ${e.message}")
         }
+        // }
     }
 }

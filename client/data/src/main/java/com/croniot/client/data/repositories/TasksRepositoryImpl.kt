@@ -1,19 +1,17 @@
 package com.croniot.client.data.repositories
 
+import Outcome
 import com.croniot.client.core.models.Task
 import com.croniot.client.core.models.TaskStateInfo
 import com.croniot.client.core.models.events.TaskStateInfoEvent
+import com.croniot.client.data.source.remote.mqtt.TasksDataSource
 import com.croniot.client.domain.errors.TaskError
 import com.croniot.client.domain.repositories.TasksRepository
-import com.croniot.client.data.source.remote.mqtt.TasksDataSource
-import Outcome
 import croniot.messages.MessageAddTask
 import croniot.models.TaskKey
 import croniot.models.TaskState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,13 +19,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import onSuccess
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource,
-    private val appScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
+    private val appScope: CoroutineScope,
 ) : TasksRepository {
 
-    private val tasksByDevice = ConcurrentHashMap<String, MutableList<Task>>()
+    private val tasksByDevice = ConcurrentHashMap<String, CopyOnWriteArrayList<Task>>()
 
     private val newTaskFlowByDevice = ConcurrentHashMap<String, MutableSharedFlow<Task>>()
     private val newTaskListenerJobs = ConcurrentHashMap<String, Job>()
@@ -41,7 +40,7 @@ class TasksRepositoryImpl(
             )
         }
     }
-    
+
     private val taskStateInfoFlowByDevice = ConcurrentHashMap<String, MutableSharedFlow<TaskStateInfoEvent>>()
     private val taskStateInfoListenerJobs = ConcurrentHashMap<String, Job>()
     private val latestStateByTaskKey = ConcurrentHashMap<TaskKey, TaskStateInfo>()
@@ -68,26 +67,28 @@ class TasksRepositoryImpl(
                         latestStateByTaskKey[key] = initialState
                     }
                 }
-                val list = tasksByDevice.getOrPut(deviceUuid) { mutableListOf() }
+                val list = tasksByDevice.getOrPut(deviceUuid) { CopyOnWriteArrayList() }
                 list.addAll(fetchedTasks)
             }
     }
 
     override fun listenTasks(deviceUuid: String) {
-        if (newTaskListenerJobs[deviceUuid]?.isActive == true) return
-        val taskFlow = taskFlowFor(deviceUuid)
+        synchronized(newTaskListenerJobs) {
+            if (newTaskListenerJobs[deviceUuid]?.isActive == true) return
+            val taskFlow = taskFlowFor(deviceUuid)
 
-        newTaskListenerJobs[deviceUuid] = tasksDataSource.observeTasks(deviceUuid) // cold
-            .onEach { task ->
-                tasksByDevice.getOrPut(deviceUuid) { mutableListOf() }.add(task)
-                taskFlow.tryEmit(task)
+            newTaskListenerJobs[deviceUuid] = tasksDataSource.observeTasks(deviceUuid) // cold
+                .onEach { task ->
+                    tasksByDevice.getOrPut(deviceUuid) { CopyOnWriteArrayList() }.add(task)
+                    taskFlow.tryEmit(task)
 
-                val key = TaskKey(deviceUuid = deviceUuid, taskUid = task.uid, taskTypeUid = task.taskTypeUid)
-                val initialState = task.initialTaskStateInfo ?: return@onEach
-                latestStateByTaskKey[key] = initialState
-                taskStateInfoFlowFor(deviceUuid).tryEmit(TaskStateInfoEvent(key = key, info = initialState))
-            }
-            .launchIn(appScope)
+                    val key = TaskKey(deviceUuid = deviceUuid, taskUid = task.uid, taskTypeUid = task.taskTypeUid)
+                    val initialState = task.initialTaskStateInfo ?: return@onEach
+                    latestStateByTaskKey[key] = initialState
+                    taskStateInfoFlowFor(deviceUuid).tryEmit(TaskStateInfoEvent(key = key, info = initialState))
+                }
+                .launchIn(appScope)
+        }
     }
 
     override fun observeNewTasks(deviceUuid: String): Flow<Task> = taskFlowFor(deviceUuid)
@@ -96,27 +97,32 @@ class TasksRepositoryImpl(
         taskStateInfoFlowFor(deviceUuid)
 
     override fun listenTaskStateInfos(deviceUuid: String) {
-        if (taskStateInfoListenerJobs[deviceUuid]?.isActive == true) return
+        synchronized(taskStateInfoListenerJobs) {
+            if (taskStateInfoListenerJobs[deviceUuid]?.isActive == true) return
+            val shared = taskStateInfoFlowFor(deviceUuid)
 
-        val shared = taskStateInfoFlowFor(deviceUuid)
-
-        taskStateInfoListenerJobs[deviceUuid] = tasksDataSource.observeTaskStateInfos(deviceUuid)
-            .onEach { event ->
-                latestStateByTaskKey[event.key] = event.info
-                shared.tryEmit(event)
-            }
-            .launchIn(appScope)
+            taskStateInfoListenerJobs[deviceUuid] = tasksDataSource.observeTaskStateInfos(deviceUuid)
+                .onEach { event ->
+                    latestStateByTaskKey[event.key] = event.info
+                    shared.tryEmit(event)
+                }
+                .launchIn(appScope)
+        }
     }
 
     override suspend fun stopAllListeners() {
-        newTaskListenerJobs.values.forEach { it.cancel() }
-        newTaskListenerJobs.clear()
-        taskStateInfoListenerJobs.values.forEach { it.cancel() }
-        taskStateInfoListenerJobs.clear()
+        synchronized(newTaskListenerJobs) {
+            newTaskListenerJobs.values.forEach { it.cancel() }
+            newTaskListenerJobs.clear()
+            newTaskFlowByDevice.clear()
+        }
+        synchronized(taskStateInfoListenerJobs) {
+            taskStateInfoListenerJobs.values.forEach { it.cancel() }
+            taskStateInfoListenerJobs.clear()
+            taskStateInfoFlowByDevice.clear()
+        }
         tasksByDevice.clear()
         latestStateByTaskKey.clear()
-        newTaskFlowByDevice.clear()
-        taskStateInfoFlowByDevice.clear()
     }
 
     override fun getLatestTaskUidForTaskType(deviceUuid: String, taskTypeUid: Long): Long? {
@@ -139,19 +145,19 @@ class TasksRepositoryImpl(
             .values
             .filter {
                 it.state != TaskState.CREATED.name &&
-                it.state != TaskState.UNDEFINED.name &&
-                it.state != TaskState.ERROR.name
+                    it.state != TaskState.UNDEFINED.name &&
+                    it.state != TaskState.ERROR.name
             }
             .maxByOrNull { it.dateTime }
     }
 
     override suspend fun sendNewTask(newTask: Task): Outcome<Unit, TaskError> {
-        val messageAddTask = MessageAddTask( //TODO refactor MessageAddTask so it can receive Task object directly
+        val messageAddTask = MessageAddTask( // TODO refactor MessageAddTask so it can receive Task object directly
             newTask.deviceUuid,
             newTask.taskTypeUid.toString(),
             newTask.parametersValues
         )
-        taskFlowFor(newTask.deviceUuid).tryEmit(newTask) //TODO add TaskStateInfo como "SENT_TO_SERVER"
+        taskFlowFor(newTask.deviceUuid).tryEmit(newTask) // TODO add TaskStateInfo como "SENT_TO_SERVER"
         return tasksDataSource.sendNewTask(messageAddTask)
     }
 

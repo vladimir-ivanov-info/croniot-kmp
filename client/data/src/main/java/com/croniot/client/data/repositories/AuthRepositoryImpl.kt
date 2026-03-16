@@ -4,8 +4,8 @@ import Outcome
 import com.croniot.client.core.models.auth.AuthError
 import com.croniot.client.data.source.remote.http.login.LoginDataSource
 import com.croniot.client.data.source.remote.mappers.toDomain
-import com.croniot.client.domain.repositories.AuthRepository
 import com.croniot.client.domain.LoginResult
+import com.croniot.client.domain.repositories.AuthRepository
 import croniot.messages.LoginDto
 import croniot.models.LoginResultDto
 

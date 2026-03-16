@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import java.time.ZonedDateTime
+import java.util.concurrent.ConcurrentHashMap
 
 class SensorsViewModel(
     private val sensorDataRepository: SensorDataRepository,
@@ -28,11 +29,10 @@ class SensorsViewModel(
 
     private data class Key(val deviceUuid: String, val sensorUid: Long)
 
-    private val liveFlows = mutableMapOf<Key, StateFlow<SensorData>>()
-    private val historyCache = mutableMapOf<Key, List<SensorData>>() // opcional: cache de histórico
+    private val liveFlows = ConcurrentHashMap<Key, StateFlow<SensorData>>()
+    private val historyCache = ConcurrentHashMap<Key, List<SensorData>>()
 
     // TODO delegate data saving into viewmodel and observe it from UI
-
 
     private val _sensorsInitialData = MutableStateFlow<Map<Long, List<SensorData>>>(emptyMap())
     val sensorsInitialData: StateFlow<Map<Long, List<SensorData>>> = _sensorsInitialData
@@ -47,7 +47,6 @@ class SensorsViewModel(
             }.awaitAll()
         }
     }
-
 
     private suspend fun getInitialChartData(deviceUuid: String, sensorUid: Long): List<SensorData> {
         val key = Key(deviceUuid, sensorUid)

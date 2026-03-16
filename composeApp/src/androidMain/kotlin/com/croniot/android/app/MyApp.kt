@@ -1,10 +1,12 @@
 package com.croniot.android.app
 
 import android.app.Application
+import android.os.StrictMode
+import com.croniot.android.BuildConfig
 import com.croniot.android.core.di.MainDIModule
 import com.croniot.android.features.registeraccount.di.RegisterAccountModule
-import com.croniot.client.data.di.dataModule
 import com.croniot.client.data.di.NetworkModule
+import com.croniot.client.data.di.dataModule
 import com.croniot.client.domain.di.domainDiModule
 import com.croniot.client.features.login.di.LoginModule
 import com.croniot.client.features.sensors.di.SensorsModule
@@ -17,6 +19,10 @@ class MyApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        if (BuildConfig.DEBUG) {
+            enableStrictMode()
+        }
 
         startKoin {
             androidLogger()
@@ -33,5 +39,21 @@ class MyApp : Application() {
                 TaskTypesModule.taskTypesModule,
             )
         }
+    }
+
+    private fun enableStrictMode() {
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build()
+        )
+
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build()
+        )
     }
 }

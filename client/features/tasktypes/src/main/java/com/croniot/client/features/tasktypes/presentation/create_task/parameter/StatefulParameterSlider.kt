@@ -63,7 +63,6 @@ fun StatefulParameterSlider(
         return (lo + k * step).coerceIn(lo, hi)
     }
 
-
     val rawSteps = (((maxValue - minValue) / step).roundToInt()).coerceAtLeast(0)
 
     val safeSteps = if (rawSteps > 15) 0 else rawSteps
@@ -81,7 +80,6 @@ fun StatefulParameterSlider(
         parseNumeric(latestState?.state)?.coerceIn(lo, hi)
     }
     val serverInt: Int? = serverFloat?.let(::toDomainInt)
-
 
     var sliderValue by rememberSaveable(parameter.uid) { mutableStateOf(serverFloat ?: lo) }
     var isDragging by rememberSaveable(parameter.uid) { mutableStateOf(false) }

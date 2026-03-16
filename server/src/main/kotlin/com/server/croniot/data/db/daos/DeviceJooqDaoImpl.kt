@@ -1,15 +1,13 @@
 package com.server.croniot.data.db.daos
 
+import com.server.croniot.data.db.entities.DeviceEntity
+import com.server.croniot.jooq.tables.Account.Companion.ACCOUNT
+import com.server.croniot.jooq.tables.Device.Companion.DEVICE
 import croniot.models.Account
 import croniot.models.Device
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.using
 import javax.inject.Inject
-
-import com.server.croniot.jooq.tables.Device.Companion.DEVICE
-import com.server.croniot.jooq.tables.Account.Companion.ACCOUNT
-import com.server.croniot.data.db.entities.AccountEntity
-import com.server.croniot.data.db.entities.DeviceEntity
 
 class DeviceJooqDaoImpl @Inject constructor(
     private val dsl: DSLContext,
@@ -32,7 +30,7 @@ class DeviceJooqDaoImpl @Inject constructor(
                     description = rec.description ?: "",
                     iot = rec.iot ?: false,
                     accountId = rec.account!!,
-                    //deviceProperties = emptyMap() // o mapear si lo tienes en DB
+                    // deviceProperties = emptyMap() // o mapear si lo tienes en DB
                 )
             }
     }
@@ -61,7 +59,7 @@ class DeviceJooqDaoImpl @Inject constructor(
     override fun insert(device: DeviceEntity): Long {
         require(device.accountId != 0L) {
             "insert(device) requiere device.accountId (PK interna). " +
-                    "Si solo tienes account.uuid/email, primero resuélvelo."
+                "Si solo tienes account.uuid/email, primero resuélvelo."
         }
 
         return dsl.transactionResult { cfg ->
@@ -92,7 +90,7 @@ class DeviceJooqDaoImpl @Inject constructor(
                 .set(DEVICE.DESCRIPTION, device.description)
                 .set(DEVICE.IOT, device.iot)
                 .set(DEVICE.ACCOUNT, device.accountId)
-                .onConflict(DEVICE.UUID)              // conflicto por UNIQUE(uuid)
+                .onConflict(DEVICE.UUID) // conflicto por UNIQUE(uuid)
                 .doUpdate()
                 .set(DEVICE.NAME, device.name)
                 .set(DEVICE.DESCRIPTION, device.description)
@@ -104,7 +102,6 @@ class DeviceJooqDaoImpl @Inject constructor(
             rec.get(DEVICE.ID) ?: error("Upsert DEVICE no devolvió DEVICE.ID.")
         }
     }
-
 
     override fun getAll(): List<Device> {
         // Join with ACCOUNT so Device has a non-null accountId.
@@ -127,25 +124,25 @@ class DeviceJooqDaoImpl @Inject constructor(
             .fetch()
             .map { r ->
                 val account = Account(
-                    //id = r.get(ACCOUNT.ID)!!,
+                    // id = r.get(ACCOUNT.ID)!!,
                     uuid = r.get(ACCOUNT.UUID) ?: "",
                     nickname = r.get(ACCOUNT.NICKNAME) ?: "",
                     email = r.get(ACCOUNT.EMAIL) ?: "",
-                    //password = r.get(ACCOUNT.PASSWORD) ?: "",
+                    // password = r.get(ACCOUNT.PASSWORD) ?: "",
                     devices = mutableListOf(), // evitamos ciclos
                 )
 
                 Device(
-                    //id = r.get(DEVICE.ID)!!,
+                    // id = r.get(DEVICE.ID)!!,
                     uuid = r.get(DEVICE.UUID) ?: "",
                     name = r.get(DEVICE.NAME) ?: "",
                     description = r.get(DEVICE.DESCRIPTION) ?: "",
                     iot = r.get(DEVICE.IOT) ?: false,
                     sensorTypes = mutableListOf(), // lazy aquí
-                    taskTypes = mutableListOf(),   // lazy aquí
-                    //account = account,
-                    //deviceToken = null,
-                    //deviceProperties = emptyMap(), // si lo tienes en DB, mapea aquí
+                    taskTypes = mutableListOf(), // lazy aquí
+                    // account = account,
+                    // deviceToken = null,
+                    // deviceProperties = emptyMap(), // si lo tienes en DB, mapea aquí
                 )
             }
     }
@@ -174,25 +171,25 @@ class DeviceJooqDaoImpl @Inject constructor(
             ?: return null
 
         val account = Account(
-            //id = r.get(ACCOUNT.ID)!!,
+            // id = r.get(ACCOUNT.ID)!!,
             uuid = r.get(ACCOUNT.UUID) ?: "",
             nickname = r.get(ACCOUNT.NICKNAME) ?: "",
             email = r.get(ACCOUNT.EMAIL) ?: "",
-            //password = r.get(ACCOUNT.PASSWORD) ?: "",
+            // password = r.get(ACCOUNT.PASSWORD) ?: "",
             devices = mutableListOf(),
         )
 
         return Device(
-            //id = r.get(DEVICE.ID)!!,
+            // id = r.get(DEVICE.ID)!!,
             uuid = r.get(DEVICE.UUID) ?: "",
             name = r.get(DEVICE.NAME) ?: "",
             description = r.get(DEVICE.DESCRIPTION) ?: "",
             iot = r.get(DEVICE.IOT) ?: false,
             sensorTypes = mutableListOf(), // lazy
-            taskTypes = mutableListOf(),   // lazy
-            //account = account,
-            //deviceToken = null,
-            //deviceProperties = emptyMap(),
+            taskTypes = mutableListOf(), // lazy
+            // account = account,
+            // deviceToken = null,
+            // deviceProperties = emptyMap(),
         )
     }
 
@@ -214,11 +211,11 @@ class DeviceJooqDaoImpl @Inject constructor(
 
         // Account “lite” (para no dejarlo vacío/inválido)
         val accountLite = Account(
-            //id = accountId,
+            // id = accountId,
             uuid = "",
             nickname = "",
             email = "",
-            //password = "",
+            // password = "",
             devices = mutableListOf(),
         )
 
@@ -230,9 +227,9 @@ class DeviceJooqDaoImpl @Inject constructor(
             iot = false,
             sensorTypes = mutableListOf(),
             taskTypes = mutableListOf(),
-            //account = accountLite,
-            //deviceToken = null,
-            //deviceProperties = emptyMap(),
+            // account = accountLite,
+            // deviceToken = null,
+            // deviceProperties = emptyMap(),
         )
     }
 
@@ -251,5 +248,4 @@ class DeviceJooqDaoImpl @Inject constructor(
             .where(DEVICE.UUID.eq(deviceUuid))
             .fetchOne(0, Int::class.java)!! > 0
     }
-
 }

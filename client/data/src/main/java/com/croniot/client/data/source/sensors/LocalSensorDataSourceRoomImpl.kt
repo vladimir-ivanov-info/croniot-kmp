@@ -1,8 +1,8 @@
 package com.croniot.client.data.source.sensors
 
 import com.croniot.client.core.models.SensorData
-import com.croniot.client.data.source.local.room.SensorDataDao
-import com.croniot.client.data.source.local.room.SensorDataEntity
+import com.croniot.client.data.source.local.database.daos.SensorDataDao
+import com.croniot.client.data.source.local.database.entities.SensorDataEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map

@@ -15,27 +15,46 @@ class DeviceScreenViewModel(
 ) : ViewModel() {
 
     val state: StateFlow<DeviceState>
-        field = MutableStateFlow(DeviceState())
+        field = MutableStateFlow<DeviceState>(DeviceState.Loading)
 
     fun onIntent(intent: DeviceIntent) {
         when (intent) {
-            is DeviceIntent.Initialize -> showDevice(intent.deviceUuid)
-            is DeviceIntent.SelectTab -> state.update { it.copy(selectedTab = intent.index) }
+            is DeviceIntent.Initialize -> {
+                val current = state.value
+                if (current is DeviceState.Content && current.device.uuid == intent.deviceUuid) return
+                loadDevice(intent.deviceUuid)
+            }
+            is DeviceIntent.SelectTab -> {
+                val current = state.value
+                if (current is DeviceState.Content) {
+                    state.update { current.copy(selectedTab = intent.index) }
+                }
+            }
         }
     }
 
-    private fun showDevice(deviceUuid: String) = launchInVmScope {
-        val account = localDataRepository.getCurrentAccount() ?: return@launchInVmScope
-        val device = account.devices.find { it.uuid == deviceUuid } ?: return@launchInVmScope
-        state.update { it.copy(device = device) }
+    private fun loadDevice(deviceUuid: String) = launchInVmScope {
+        state.value = DeviceState.Loading
+        val account = localDataRepository.getCurrentAccount()
+        if (account == null) {
+            state.value = DeviceState.Error("No account found")
+            return@launchInVmScope
+        }
+        val device = account.devices.find { it.uuid == deviceUuid }
+        if (device == null) {
+            state.value = DeviceState.Error("Device not found")
+            return@launchInVmScope
+        }
+        state.value = DeviceState.Content(device = device)
         fetchTasksUseCase(deviceUuid)
     }
 }
 
-data class DeviceState(
-    val device: Device? = null,
-    val selectedTab: Int = 0,
-)
+sealed interface DeviceState {
+    data object Loading : DeviceState
+    data class Content(val device: Device, val selectedTab: Int = 0) : DeviceState
+    data class Error(val message: String) : DeviceState
+}
 
 sealed interface DeviceIntent {
     data class Initialize(val deviceUuid: String) : DeviceIntent

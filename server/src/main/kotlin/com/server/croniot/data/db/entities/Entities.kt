@@ -28,7 +28,7 @@ data class DeviceEntity(
     val accountId: Long,
 
     // JSON / key-value si lo tienes así en DB
-    //val deviceProperties: Map<String, String> = emptyMap(),
+    // val deviceProperties: Map<String, String> = emptyMap(),
 )
 
 /* =========================
@@ -113,7 +113,7 @@ data class TaskTypeEntity(
     val uid: Long,
     val name: String,
     val description: String,
-    //val realTime: Boolean,
+    // val realTime: Boolean,
 
     // FK
     val deviceId: Long,

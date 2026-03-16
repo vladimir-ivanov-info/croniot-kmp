@@ -4,7 +4,7 @@ import croniot.models.Task
 
 interface TaskDao {
 
-    fun create(taskTypeId: Long, taskTypeUid: Long) : Task?
+    fun create(taskTypeId: Long, taskTypeUid: Long): Task?
 
     fun insert(task: Task): Long
 

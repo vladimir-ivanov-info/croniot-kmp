@@ -1,6 +1,5 @@
 package com.croniot.client.data.source.local
 
-import ZonedDateTimeAdapter
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
@@ -8,25 +7,18 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.croniot.client.core.models.Account
 import com.croniot.client.core.models.Device
 import com.croniot.client.core.util.StringUtil
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonSyntaxException
+import croniot.messages.MessageFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import java.time.ZonedDateTime
-
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "secure_prefs")
 
-class DataStoreController : LocalDatasource, KoinComponent {
+class DataStoreController(
+    context: Context,
+) : LocalDatasource {
 
-    val context: Context by inject() //TODO move to constructor
-
-    private val dataStore: DataStore<Preferences> by lazy {
-        context.dataStore
-    }
+    private val dataStore: DataStore<Preferences> = context.dataStore
 
     val KEY_SERVER_ADDRESS = stringPreferencesKey("server_address")
     val KEY_CONFIGURATION_FOREGROUND_SERVICE = stringPreferencesKey("configuration_foreground_service")
@@ -43,11 +35,6 @@ class DataStoreController : LocalDatasource, KoinComponent {
     val KEY_CURRENT_ROUTE = stringPreferencesKey("current_route")
 
     val KEY_SERVER_IP = stringPreferencesKey("server_ip")
-
-    private fun provideGson() = GsonBuilder()
-        .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
-        .setPrettyPrinting()
-        .create()
 
     override suspend fun getCurrentRoute(): String? {
         return loadData(KEY_CURRENT_ROUTE).firstOrNull()
@@ -113,7 +100,7 @@ class DataStoreController : LocalDatasource, KoinComponent {
                 preferences.remove(KEY_ACCOUNT)
             }
         } else {
-            val accountJson = provideGson().toJson(account)
+            val accountJson = MessageFactory.toJson(account)
 
             dataStore.edit { preferences ->
                 preferences[KEY_ACCOUNT] = accountJson
@@ -146,8 +133,8 @@ class DataStoreController : LocalDatasource, KoinComponent {
             val accountJson = preferences[KEY_ACCOUNT]
             if (!accountJson.isNullOrEmpty()) {
                 try {
-                    provideGson().fromJson(accountJson, Account::class.java)
-                } catch (e: JsonSyntaxException) {
+                    MessageFactory.fromJson<Account>(accountJson)
+                } catch (e: Exception) {
                     null
                 }
             } else {
@@ -157,11 +144,7 @@ class DataStoreController : LocalDatasource, KoinComponent {
     }
 
     override suspend fun saveSelectedDevice(device: Device) {
-        val gson = GsonBuilder()
-            .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
-            .setPrettyPrinting()
-            .create()
-        val deviceJson = gson.toJson(device)
+        val deviceJson = MessageFactory.toJson(device)
         dataStore.edit { preferences ->
             preferences[KEY_SELECTED_DEVICE] = deviceJson
         }
@@ -171,13 +154,9 @@ class DataStoreController : LocalDatasource, KoinComponent {
         return dataStore.data.map { preferences ->
             val deviceJson = preferences[KEY_SELECTED_DEVICE]
             if (!deviceJson.isNullOrEmpty()) {
-                val gson = GsonBuilder()
-                    .registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
-                    .setPrettyPrinting()
-                    .create()
                 try {
-                    gson.fromJson(deviceJson, Device::class.java)
-                } catch (e: JsonSyntaxException) {
+                    MessageFactory.fromJson<Device>(deviceJson)
+                } catch (e: Exception) {
                     null
                 }
             } else {
@@ -214,7 +193,7 @@ class DataStoreController : LocalDatasource, KoinComponent {
         saveData(KEY_SERVER_MODE, serverMode)
     }
 
-    override suspend fun getServerIp() : Flow<String?> {
+    override suspend fun getServerIp(): Flow<String?> {
         return loadData(KEY_SERVER_IP)
     }
 

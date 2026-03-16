@@ -25,7 +25,6 @@ fun Account.toDto() =
         devices = this.devices.map { it.toDto() }
     )
 
-
 fun Device.toDto() =
     DeviceDto(
         uuid = this.uuid,
@@ -44,8 +43,6 @@ fun SensorType.toDto() =
         parameters = this.parameters.map { it.toDto() },
     )
 
-
-
 fun ParameterSensor.toDto() =
     ParameterSensorDto(
         uid = this.uid,
@@ -55,7 +52,6 @@ fun ParameterSensor.toDto() =
         description = this.description,
         constraints = this.constraints
     )
-
 
 fun TaskType.toDto() =
     TaskTypeDto(

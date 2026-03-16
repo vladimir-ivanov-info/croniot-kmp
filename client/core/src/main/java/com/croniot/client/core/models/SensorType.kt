@@ -2,8 +2,10 @@ package com.croniot.client.core.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class SensorType(
     var uid: Long,
     var name: String,

@@ -12,7 +12,7 @@ class TaskTypeRepository @Inject constructor(
     private val parameterTaskDao: ParameterTaskDao,
 ) {
 
-    fun getId(deviceId: Long, taskTypeUid: Long) : Long? {
+    fun getId(deviceId: Long, taskTypeUid: Long): Long? {
         return taskTypeDao.getId(deviceId, taskTypeUid)
     }
 

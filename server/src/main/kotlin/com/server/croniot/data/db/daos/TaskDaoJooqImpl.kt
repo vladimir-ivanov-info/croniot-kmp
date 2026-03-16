@@ -1,19 +1,19 @@
 package com.server.croniot.data.db.daos
 
-import croniot.models.Task
-import org.jooq.DSLContext
-import org.jooq.impl.DSL.*
-import javax.inject.Inject
-import kotlin.random.Random
-import com.server.croniot.jooq.tables.Task.Companion.TASK
-import com.server.croniot.jooq.tables.TaskType.Companion.TASK_TYPE
 import com.server.croniot.jooq.tables.Device.Companion.DEVICE
 import com.server.croniot.jooq.tables.ParameterTask.Companion.PARAMETER_TASK
+import com.server.croniot.jooq.tables.Task.Companion.TASK
 import com.server.croniot.jooq.tables.TaskParameterValue.Companion.TASK_PARAMETER_VALUE
 import com.server.croniot.jooq.tables.TaskStateInfo.Companion.TASK_STATE_INFO
+import com.server.croniot.jooq.tables.TaskType.Companion.TASK_TYPE
 import croniot.models.ParameterTask
+import croniot.models.Task
 import croniot.models.TaskStateInfo
+import org.jooq.DSLContext
+import org.jooq.impl.DSL.*
 import java.time.ZoneId
+import javax.inject.Inject
+import kotlin.random.Random
 
 class TaskDaoJooqImpl @Inject constructor(
     private val dsl: DSLContext,
@@ -45,7 +45,7 @@ class TaskDaoJooqImpl @Inject constructor(
     }
 
     override fun insert(task: Task): Long {
-        //TODO implement jOOQ insert
+        // TODO implement jOOQ insert
         return -1
     }
 

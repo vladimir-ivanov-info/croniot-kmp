@@ -28,7 +28,7 @@ class TaskRepository @Inject constructor(
     }
 
     fun createState(task: Task, taskStateInfo: TaskStateInfo) {
-        //TODO taskStateInfoDao.insert(task, taskStateInfo)
+        // TODO taskStateInfoDao.insert(task, taskStateInfo)
     }
 
     fun getAll(deviceUuid: String): List<Task> {

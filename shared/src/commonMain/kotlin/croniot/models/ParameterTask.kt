@@ -1,5 +1,8 @@
 package croniot.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ParameterTask(
     val uid: Long,
     val name: String,

@@ -1,8 +1,12 @@
 package com.croniot.client.domain.usecases
 
-import com.croniot.client.domain.errors.TaskError
 import Outcome
+import com.croniot.client.domain.errors.TaskError
 
 interface SendNewTaskUseCase {
-    suspend operator fun invoke(deviceUuid: String, taskTypeUid: Long, parametersValues: Map<Long, String>): Outcome<Unit, TaskError>
+    suspend operator fun invoke(
+        deviceUuid: String,
+        taskTypeUid: Long,
+        parametersValues: Map<Long, String>
+    ): Outcome<Unit, TaskError>
 }

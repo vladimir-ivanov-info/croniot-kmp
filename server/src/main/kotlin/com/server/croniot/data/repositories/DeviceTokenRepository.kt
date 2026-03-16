@@ -9,7 +9,7 @@ class DeviceTokenRepository @Inject constructor(
     private val deviceTokenDao: DeviceTokenDao,
 ) {
 
-    //fun createDeviceToken(device: Device, token: String) {
+    // fun createDeviceToken(device: Device, token: String) {
     fun createDeviceToken(deviceId: Long, token: String) {
         val deviceToken = DeviceToken(deviceId, token)
         deviceTokenDao.insert(deviceToken)

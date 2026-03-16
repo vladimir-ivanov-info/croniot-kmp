@@ -1,15 +1,14 @@
 package com.server.croniot.data.db.daos
 
 import com.server.croniot.data.db.entities.DeviceEntity
-import croniot.models.Account
 import croniot.models.Device
 
 interface DeviceDao {
 
-    fun getDevices(accountId: Long) : List<DeviceEntity>
+    fun getDevices(accountId: Long): List<DeviceEntity>
 
-   // fun insert(account: Account, device: Device) // : Long
-    fun insert(device: DeviceEntity) : Long
+    // fun insert(account: Account, device: Device) // : Long
+    fun insert(device: DeviceEntity): Long
 
     fun upsert(device: DeviceEntity): Long
 
@@ -22,5 +21,4 @@ interface DeviceDao {
     fun getDeviceId(deviceUuid: String): Long?
 
     fun isDeviceExists(deviceUuid: String): Boolean
-
 }

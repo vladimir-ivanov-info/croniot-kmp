@@ -102,7 +102,12 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideTaskController(taskService: TaskService, taskTypeService: TaskTypeService, deviceService: DeviceService, taskRepository: TaskRepository): TaskController {
+    fun provideTaskController(
+        taskService: TaskService,
+        taskTypeService: TaskTypeService,
+        deviceService: DeviceService,
+        taskRepository: TaskRepository
+    ): TaskController {
         return TaskController(taskService, taskTypeService, deviceService, taskRepository)
     }
 
@@ -150,7 +155,12 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideAccountRepository(accountDao: AccountDao, deviceDao: DeviceDao, sensorTypeDao: SensorTypeDao, taskTypeDao: TaskTypeDao): AccountRepository {
+    fun provideAccountRepository(
+        accountDao: AccountDao,
+        deviceDao: DeviceDao,
+        sensorTypeDao: SensorTypeDao,
+        taskTypeDao: TaskTypeDao
+    ): AccountRepository {
         return AccountRepository(accountDao, deviceDao, sensorTypeDao, taskTypeDao)
     }
 

@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.croniot.client.baselineprofile"
-    compileSdk = 35
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         minSdk = 28
-        targetSdk = 35
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
