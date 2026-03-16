@@ -33,12 +33,15 @@ jobs:
 
       - name: Build Release AAB
         run: ./gradlew :composeApp:bundleRelease
+        
+      - name: Find AAB location
+        run: find . -name "*.aab" -type f
 
       - name: Sign AAB
         uses: r0adkll/sign-android-release@v1
         id: sign_aab
         with:
-          releaseDirectory: composeApp/build/outputs/bundle/release
+          releaseDirectory: composeApp/real/release
           signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
