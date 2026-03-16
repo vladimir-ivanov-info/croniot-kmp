@@ -7,14 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.croniot.android.core.presentation.theme.IoTClientTheme
 import com.croniot.android.BuildConfig
+import com.croniot.android.core.presentation.theme.IoTClientTheme
 import com.croniot.client.core.config.AppConfig
 
 class MainActivity : ComponentActivity() {
 
     private val REQUEST_NOTIFICATION_PERMISSION = 1
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

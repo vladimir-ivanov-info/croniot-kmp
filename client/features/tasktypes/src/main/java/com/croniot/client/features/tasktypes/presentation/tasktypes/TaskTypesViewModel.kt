@@ -9,11 +9,11 @@ import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.ObserveTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.RequestTaskStateInfoSyncUseCase
 import croniot.models.TaskState
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
 class TaskTypesViewModel(
@@ -57,17 +57,16 @@ class TaskTypesViewModel(
         }
     }
 
-    private fun formatStateInfo(info: TaskStateInfo?): String {
-        info ?: return ""
-        val time = info.dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-        //val time = ""
-        val stateLabel = info.state.lowercase().replace('_', ' ')
-            .replaceFirstChar { it.uppercase() }
-        return when (info.state) {
-            TaskState.RUNNING.name -> "$stateLabel • ${info.progress.toInt()}% · $time"
-            TaskState.ERROR.name   -> "Error: ${info.errorMessage.take(50)} · $time"
-           else              -> "$stateLabel · $time"
-            //  else              -> "$stateLabel $time"
-        }
+}
+
+internal fun formatStateInfo(info: TaskStateInfo?): String {
+    info ?: return ""
+    val time = info.dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    val stateLabel = info.state.lowercase().replace('_', ' ')
+        .replaceFirstChar { it.uppercase() }
+    return when (info.state) {
+        TaskState.RUNNING.name -> "$stateLabel • ${info.progress.toInt()}% · $time"
+        TaskState.ERROR.name -> "Error: ${info.errorMessage.take(50)} · $time"
+        else -> "$stateLabel"
     }
 }

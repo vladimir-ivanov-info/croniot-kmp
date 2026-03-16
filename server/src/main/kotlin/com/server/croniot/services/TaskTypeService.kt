@@ -15,7 +15,7 @@ class TaskTypeService @Inject constructor(
     private val deviceTokenRepository: DeviceTokenRepository,
 ) {
 
-    fun getId(deviceId: Long, taskTypeUid: Long) : Long? {
+    fun getId(deviceId: Long, taskTypeUid: Long): Long? {
         return taskTypeRepository.getId(deviceId, taskTypeUid)
     }
 
@@ -25,12 +25,12 @@ class TaskTypeService @Inject constructor(
 
     fun exists(deviceUid: String, taskTypeUid: Long): Boolean {
         val deviceId = deviceRepository.getId(deviceUid)
-            ?: return false //TODO
+            ?: return false // TODO
         return taskTypeRepository.exists(
             deviceId = deviceId,
             taskTypeUid = taskTypeUid
         )
-        //return taskTypeRepository.exists(device, taskTypeUid)
+        // return taskTypeRepository.exists(device, taskTypeUid)
     }
 
     fun registerTaskType(message: MessageRegisterTaskType): Result {
@@ -40,28 +40,25 @@ class TaskTypeService @Inject constructor(
         val deviceToken = message.deviceToken
 
         val device = deviceTokenRepository.getDevice(deviceToken)
-        //TODO change for: deviceExists and deviceTokenCorrect
-        //val device = deviceTokenRepository.getDevice(deviceToken)
+        // TODO change for: deviceExists and deviceTokenCorrect
+        // val device = deviceTokenRepository.getDevice(deviceToken)
 
         if (device != null && device.uuid == deviceUuid) {
             val taskType = message.taskType
-            //taskType.device = device
+            // taskType.device = device
 
             /*for (parameter in taskType.parameters) {
                 parameter.taskType = taskType
             }*/
 
-
             val deviceId = deviceRepository.getId(message.deviceUuid)
-            if(deviceId != null){
+            if (deviceId != null) {
                 taskTypeRepository.insert(taskType, deviceId)
                 result = Result(true, "Task ${taskType.uid} registered")
             } else {
-                //TODO
+                // TODO
                 result = Result(false, "Incorrect device or token for task register process.")
             }
-
-
         } else {
             result = Result(false, "Incorrect device or token for task register process.")
         }

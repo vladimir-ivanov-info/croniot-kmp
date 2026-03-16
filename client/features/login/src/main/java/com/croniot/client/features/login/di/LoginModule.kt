@@ -10,7 +10,9 @@ object LoginModule {
         viewModel {
             LoginViewModel(
                 loginUseCase = get(),
-                savedStateHandle = get()
+                localDataRepository = get(),
+                startDeviceListenersUseCase = get(),
+                savedStateHandle = get(),
             )
         }
     }

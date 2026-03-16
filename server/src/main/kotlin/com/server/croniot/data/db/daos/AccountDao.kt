@@ -5,7 +5,7 @@ import croniot.models.Account
 
 interface AccountDao {
 
-    fun get(email: String) : AccountEntity?
+    fun get(email: String): AccountEntity?
 
     fun insert(account: Account, password: String): Long
 
@@ -15,10 +15,9 @@ interface AccountDao {
 
     fun getAll(): List<Account>
 
+    fun isAccountExists(email: String): Boolean
 
-    fun isAccountExists(email: String) : Boolean
+    fun getPassword(email: String): String?
 
-    fun getPassword(email: String) : String?
-
-    fun getAccountId(email: String) : Long?
+    fun getAccountId(email: String): Long?
 }

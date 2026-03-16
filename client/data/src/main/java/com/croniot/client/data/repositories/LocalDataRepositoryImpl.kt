@@ -3,12 +3,9 @@ package com.croniot.client.data.repositories
 import com.croniot.client.core.models.Account
 import com.croniot.client.core.models.Device
 import com.croniot.client.core.util.DevicePropertiesController
-import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.data.source.local.LocalDatasource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.croniot.client.domain.repositories.LocalDataRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 class LocalDataRepositoryImpl(
     private val localDatasource: LocalDatasource,
@@ -74,30 +71,20 @@ class LocalDataRepositoryImpl(
         return localDatasource.getLocalDeviceToken()
     }
 
-    private val repositoryScope = CoroutineScope(Dispatchers.IO)
-
-    override fun saveCurrentAccount(account: Account?) {
-        repositoryScope.launch {
-            localDatasource.saveCurrentAccount(account)
-        }
+    override suspend fun saveCurrentAccount(account: Account?) {
+        localDatasource.saveCurrentAccount(account)
     }
 
-    override fun saveEmail(email: String) {
-        repositoryScope.launch {
-            localDatasource.saveEmail(email)
-        }
+    override suspend fun saveEmail(email: String) {
+        localDatasource.saveEmail(email)
     }
 
-    override fun savePassword(password: String) {
-        repositoryScope.launch {
-            localDatasource.savePassword(password) //TODO plain text, fix later
-        }
+    override suspend fun savePassword(password: String) {
+        localDatasource.savePassword(password) // TODO plain text, fix later
     }
 
-    override fun saveToken(token: String) {
-        repositoryScope.launch {
-            localDatasource.saveToken(token)
-        }
+    override suspend fun saveToken(token: String) {
+        localDatasource.saveToken(token)
     }
 
     override fun getDeviceProperties(): Map<String, String> {

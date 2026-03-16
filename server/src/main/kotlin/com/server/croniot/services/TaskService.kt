@@ -1,5 +1,6 @@
 package com.server.croniot.services
 
+import com.server.croniot.data.mappers.toDto
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.TaskRepository
 import com.server.croniot.data.repositories.TaskTypeRepository
@@ -11,11 +12,11 @@ import croniot.models.Task
 import croniot.models.TaskState
 import croniot.models.TaskStateInfo
 import croniot.models.dto.TaskDto
-import com.server.croniot.data.mappers.toDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -24,6 +25,8 @@ class TaskService @Inject constructor(
     private val taskTypeRepository: TaskTypeRepository,
     private val deviceRepository: DeviceRepository,
 ) {
+
+    val iotSendTimestamps = ConcurrentHashMap<String, Long>()
 
     fun createTaskState(taskStateInfo: TaskStateInfo, taskId: Long) {
         taskRepository.createTaskState(taskStateInfo, taskId)
@@ -35,6 +38,7 @@ class TaskService @Inject constructor(
 
     fun addTask(message: MessageAddTask): Result {
         try {
+            val t0 = System.currentTimeMillis()
             val deviceUuid = message.deviceUuid
             val taskTypeUid = message.taskTypeUid
             val parametersValues = message.parametersValues
@@ -59,19 +63,33 @@ class TaskService @Inject constructor(
                 )
                 parameterTask?.let { parametersValuesForDatabase[it] = value }
             }
+            val t1 = System.currentTimeMillis()
+            println("[RTT] addTask DB lookups: ${t1 - t0}ms")
 
-            val taskUid = Random.nextLong(1, 10000001) //TODO use UUID or DB sequence to avoid collisions
+            val taskUid = Random.nextLong(1, 10000001) // TODO use UUID or DB sequence to avoid collisions
             val task = Task(taskUid, parametersValuesForDatabase, taskTypeUid.toLong())
             taskRepository.create(task)
+            val t2 = System.currentTimeMillis()
+            println("[RTT] addTask create task: ${t2 - t1}ms")
 
             val taskStateInfo = TaskStateInfo(taskUid, ZonedDateTime.now(), TaskState.CREATED.name, 0.0, "")
             taskRepository.createState(task, taskStateInfo)
+            val t3 = System.currentTimeMillis()
+            println("[RTT] addTask createState: ${t3 - t2}ms")
 
             val taskWithState = task.copy(mostRecentStateInfo = taskStateInfo)
             CoroutineScope(Dispatchers.IO).launch {
+                val tMqtt0 = System.currentTimeMillis()
                 MqttController.sendNewTask(deviceUuid, taskWithState)
+                val tMqtt1 = System.currentTimeMillis()
                 MqttController.sendTaskToDevice(deviceUuid, taskWithState)
+                val tMqtt2 = System.currentTimeMillis()
+                iotSendTimestamps["$deviceUuid:$taskTypeUid"] = tMqtt2
+                println(
+                    "[RTT] addTask MQTT sendNewTask(→Android): ${tMqtt1 - tMqtt0}ms, sendTaskToDevice(→IoT): ${tMqtt2 - tMqtt1}ms"
+                )
             }
+            println("[RTT] addTask TOTAL (before MQTT): ${System.currentTimeMillis() - t0}ms")
 
             return Result(true, "")
         } catch (e: Exception) {

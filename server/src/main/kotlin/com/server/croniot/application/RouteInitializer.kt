@@ -1,10 +1,15 @@
 package com.server.croniot.application
 
 import com.server.croniot.controllers.*
+import croniot.messages.MessageFactory
+import io.ktor.http.ContentType
 import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.*
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class RouteInitializer @Inject constructor(
@@ -17,6 +22,44 @@ class RouteInitializer @Inject constructor(
 ) {
     fun setupRoutes(application: Application) {
         application.routing {
+            post("/dateTime") {
+                val currentDateTime = LocalDateTime.now()
+                val hour = currentDateTime.hour
+                val minute = currentDateTime.minute
+                val response = "$hour:$minute"
+
+                val result = croniot.models.Result(true, response)
+                val responseJson = MessageFactory.toJson(result)
+                call.respondText(responseJson, ContentType.Application.Json)
+            }
+
+            post("/hour") {
+                val currentDateTime = LocalDateTime.now()
+                val hour = currentDateTime.hour
+                val response = "$hour"
+                val result = croniot.models.Result(true, response)
+                val responseJson = MessageFactory.toJson(result)
+                call.respondText(responseJson, ContentType.Application.Json)
+            }
+
+            post("/minute") {
+                val currentDateTime = LocalDateTime.now()
+                val minute = currentDateTime.minute
+                val response = "$minute"
+                val result = croniot.models.Result(true, response)
+                val responseJson = MessageFactory.toJson(result)
+                call.respondText(responseJson, ContentType.Application.Json)
+            }
+
+            post("/second") {
+                val currentDateTime = LocalDateTime.now()
+                val second = currentDateTime.second
+                val response = "$second"
+                val result = croniot.models.Result(true, response)
+                val responseJson = MessageFactory.toJson(result)
+                call.respondText(responseJson, ContentType.Application.Json)
+            }
+
             post("/api/login") {
                 loginController.login(call)
             }

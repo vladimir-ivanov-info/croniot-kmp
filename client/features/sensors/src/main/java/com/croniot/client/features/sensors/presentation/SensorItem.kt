@@ -1,6 +1,8 @@
 package com.croniot.client.features.sensors.presentation
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,15 +29,15 @@ import com.croniot.client.core.config.Constants
 import com.croniot.client.core.models.SensorData
 import com.croniot.client.core.models.SensorType
 import com.croniot.client.core.models.isChartable
+import com.croniot.client.core.util.DateTimeUtil
 import com.croniot.client.presentation.PerformanceChart
-import com.croniot.client.presentation.constants.UtilUi
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun SensorItem(
     sensorType: SensorType,
-    initialSensorData: List<SensorData>, //TODO populate flow with initial data in the VM instead of passing initial data to composable = less arguments
-    sensorDataFlow: StateFlow<SensorData>
+    initialSensorData: List<SensorData>,
+    sensorDataFlow: StateFlow<SensorData>,
 ) {
     val sensorData by sensorDataFlow.collectAsStateWithLifecycle()
 
@@ -62,70 +64,96 @@ fun SensorItem(
     }
 
     val firstParam = remember(sensorType.parameters) { sensorType.parameters.firstOrNull() }
-    val sensorName = firstParam?.name ?: ""
     val sensorUnit = firstParam?.unit ?: ""
+    val hasData = sensorData.value != Constants.PARAMETER_VALUE_UNDEFINED
 
-    val valueText by remember(sensorData.value, sensorUnit) {
-        derivedStateOf {
-            if (sensorData.value == Constants.PARAMETER_VALUE_UNDEFINED) "-no data history-" else "${sensorData.value} $sensorUnit"
-        }
+    val valueText = remember(sensorData.value, sensorUnit) {
+        if (sensorData.value == Constants.PARAMETER_VALUE_UNDEFINED) ""
+        else "${sensorData.value} $sensorUnit"
     }
 
-    val spokenSensorItem = remember(sensorName, valueText) {
-        "$sensorName: $valueText"
+    val timestampText = remember(sensorData.timeStamp, sensorData.value) {
+        if (sensorData.value == Constants.PARAMETER_VALUE_UNDEFINED) ""
+        else DateTimeUtil.formatRelativeTime(sensorData.timeStamp)
     }
 
     val latestSensorValues by remember(chartValues) {
         derivedStateOf { chartValues.mapNotNull { it.value.toFloatOrNull() } }
     }
 
-    // 5) UI liviana: evita trabajo extra en layout/medición (altura fija, sin fillMaxSize en el Box si no hace falta)
+    val spokenSensorItem = remember(sensorType.name, valueText, hasData) {
+        "${sensorType.name}: ${if (hasData) valueText else "no data"}"
+    }
+
+    val chartable = sensorType.isChartable()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 8.dp)
-            .height(80.dp),
+            .height(if (chartable) 140.dp else 80.dp)
+            .semantics(mergeDescendants = true) { contentDescription = spokenSensorItem },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .semantics(mergeDescendants = true) {
-                    contentDescription = spokenSensorItem
-                },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = valueText,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.Bold,
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Header: sensor name (label) + current value + timestamp
+            Row(
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .align(Alignment.Center)
-                    .clearAndSetSemantics { },
-            )
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = sensorType.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.clearAndSetSemantics { },
+                    )
+                    if (hasData) {
+                        Text(
+                            text = valueText,
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.clearAndSetSemantics { },
+                        )
+                    } else {
+                        Text(
+                            text = "Waiting for data…",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                            modifier = Modifier.clearAndSetSemantics { },
+                        )
+                    }
+                }
+                //TODO for now
+                /*if (hasData) {
+                    Text(
+                        text = timestampText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        modifier = Modifier.clearAndSetSemantics { },
+                    )
+                }*/
+            }
 
-            Text(
-                text = sensorName,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = UtilUi.TEXT_SIZE_3,
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .align(Alignment.BottomCenter)
-                    .clearAndSetSemantics { },
-            )
-
-            if (sensorType.isChartable()) {
+            // Chart below the header, no overlap with text
+            if (chartable) {
                 PerformanceChart(
                     sensorType = sensorType,
-                    modifier = Modifier.clearAndSetSemantics { }, // TODO poner un tamaño fijo si puedes para ahorrar layout passes
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp)
+                        .clearAndSetSemantics { },
                     list = latestSensorValues,
                 )
             }
         }
     }
 }
-

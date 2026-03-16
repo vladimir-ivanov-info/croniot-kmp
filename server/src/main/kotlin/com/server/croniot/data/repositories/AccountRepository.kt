@@ -17,30 +17,27 @@ class AccountRepository @Inject constructor(
 
 ) {
 
-    fun getAccount(email: String) : Account? {
-        //return accountDao.get(email)
+    fun getAccount(email: String): Account? {
+        // return accountDao.get(email)
 
-        var result : Account? = null
+        var result: Account? = null
 
-        val accountEntity = accountDao.get(email) //TODO avoid getting password in future
+        val accountEntity = accountDao.get(email) // TODO avoid getting password in future
 
-        if(accountEntity != null){
-            val devicesEntity = deviceDao.getDevices(accountEntity.id)
+        if (accountEntity != null) {
+            val devicesEntity = deviceDao.getDevices(accountEntity.id).filter { !it.uuid.startsWith("android") } //TODO
 
 //
-            val deviceIds = devicesEntity.map{ it.id }
+            val deviceIds = devicesEntity.map { it.id }
             val sensorTypesMap = sensorTypeDao.getByDeviceIds(deviceIds)
             val taskTypesMap = taskTypeDao.getByDeviceIds(deviceIds)
-        //TODO taskTypesMap
+            // TODO taskTypesMap
 
-
-
-                //println(sensorTypes.size)
+            // println(sensorTypes.size)
 
             val devices = mutableListOf<Device>()
 
-            for(deviceEntity in devicesEntity){
-
+            for (deviceEntity in devicesEntity) {
                 val deviceEntityId = deviceEntity.id
                 val sensorTypes = sensorTypesMap[deviceEntityId] ?: emptyList()
                 val taskTypes = taskTypesMap[deviceEntityId] ?: emptyList()
@@ -52,8 +49,7 @@ class AccountRepository @Inject constructor(
                 devices.add(deviceDomain)
             }
 
-
-           // val devicesBootstrap = devices.map { it.toBootstrap() }
+            // val devicesBootstrap = devices.map { it.toBootstrap() }
 
             /*result = AccountBootstrap(
                 uuid = accountEntity.uuid,
@@ -61,7 +57,7 @@ class AccountRepository @Inject constructor(
                 email = accountEntity.email,
                 devices = devices
             )
-            */
+             */
             result = Account(
                 uuid = accountEntity.uuid,
                 nickname = accountEntity.nickname,
@@ -73,9 +69,7 @@ class AccountRepository @Inject constructor(
         return result
     }
 
-
-
-    fun getAccountId(email: String) : Long? {
+    fun getAccountId(email: String): Long? {
         return accountDao.getAccountId(email)
     }
 
@@ -98,11 +92,11 @@ class AccountRepository @Inject constructor(
         return accountDao.getAccountEagerSkipTasks(accountEmail, accountPassword)
     }
 
-    fun isAccountExists(accountEmail: String) : Boolean {
+    fun isAccountExists(accountEmail: String): Boolean {
         return accountDao.isAccountExists(accountEmail)
     }
 
-    fun getPassword(email: String) : String? {
+    fun getPassword(email: String): String? {
         return accountDao.getPassword(email)
     }
 

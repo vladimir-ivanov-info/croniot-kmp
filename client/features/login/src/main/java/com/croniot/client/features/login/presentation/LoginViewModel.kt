@@ -3,38 +3,37 @@ package com.croniot.client.features.login.presentation
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.croniot.client.core.config.AppConfig
 import com.croniot.client.core.config.Constants.DEMO_EMAIL
 import com.croniot.client.core.models.auth.AuthError
-//import com.croniot.client.core.models.auth.Outcome
-//import com.croniot.client.data.strategy.DataSourceStrategy
-//import com.croniot.client.data.strategy.DataSourceStrategyBus
+// import com.croniot.client.core.models.auth.Outcome
+// import com.croniot.client.data.strategy.DataSourceStrategy
+// import com.croniot.client.data.strategy.DataSourceStrategyBus
+import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.LogInUseCase
+import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
 import com.croniot.client.presentation.viewmodel.launchInVmScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.parcelize.Parcelize
 import org.koin.core.component.KoinComponent
 
 class LoginViewModel(
     private val loginUseCase: LogInUseCase,
-    private val savedStateHandle: SavedStateHandle
+    private val localDataRepository: LocalDataRepository,
+    private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), KoinComponent {
 
     companion object {
         private const val KEY_LOGIN_STATE = "login_state"
         private const val LOGIN_TIMEOUT_MILLIS = 99995_000L
-        //const val DEMO_EMAIL = "croniot_demo@email.com"
+        // const val DEMO_EMAIL = "croniot_demo@email.com"
     }
 
     private val _state = MutableStateFlow(
@@ -44,7 +43,6 @@ class LoginViewModel(
 
     private val _effects = MutableSharedFlow<LoginEffect>(replay = 0, extraBufferCapacity = 1)
     val effects = _effects.asSharedFlow()
-
 
     private inline fun updateState(transform: (LoginState) -> LoginState) {
         _state.update { current ->
@@ -87,6 +85,9 @@ class LoginViewModel(
             when (val result = loginUseCase(state.value.email, state.value.password)) {
                 is Outcome.Ok -> {
                     _state.update { it.copy(isLoading = false) }
+                    localDataRepository.getCurrentAccount()?.let { account ->
+                        startDeviceListenersUseCase(account.devices)
+                    }
                     sendEffect(LoginEffect.NavigateHome)
                 }
                 is Outcome.Err -> {
@@ -133,7 +134,7 @@ private fun AuthError.toUserMessage(): String = when (this) {
 
 @Parcelize
 data class LoginState(
-    val email: String = if(AppConfig.isDemo) DEMO_EMAIL else "email1@gmail.com",
+    val email: String = if (AppConfig.isDemo) DEMO_EMAIL else "email1@gmail.com",
     // val email: String = LoginViewModel.DEMO_EMAIL,
     val password: String = "password1",
     val isLoading: Boolean = false,

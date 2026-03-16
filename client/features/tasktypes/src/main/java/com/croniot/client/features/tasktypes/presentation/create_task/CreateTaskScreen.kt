@@ -2,8 +2,6 @@ package com.croniot.client.features.tasktypes.presentation.create_task
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -34,13 +33,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.croniot.client.features.tasktypes.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.models.TaskType
+import com.croniot.client.features.tasktypes.R
 import com.croniot.client.features.tasktypes.presentation.create_task.parameter.StatefulParameter
+import com.croniot.client.features.tasktypes.presentation.create_task.parameter.StatefulParameterViewModel
 import com.croniot.client.presentation.CroniotSlider
 import com.croniot.client.presentation.components.TimePicker
 import croniot.models.ParameterTypes
@@ -160,7 +161,7 @@ private fun TaskConfiguration(
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
-            items(parameters) { currentParameter ->
+            items(parameters, key = { it.uid }) { currentParameter ->
                 Row(modifier = Modifier.fillMaxWidth()) {
                     when (currentParameter.type) {
                         ParameterTypes.NUMBER ->
@@ -180,12 +181,17 @@ private fun TaskConfiguration(
                         ParameterTypes.STATEFUL -> {
                             val latestTaskStateInfoFlow = remember {
                                 createTaskViewModel.observeTaskTypeLatestState(deviceUuid, taskType)
+                            } // TODO filter not necessary values. for example for switch should receive only on and off, not CREATED or ERROR
+                            val statefulVm: StatefulParameterViewModel = koinViewModel(
+                                key = "stateful_${currentParameter.uid}",
+                            )
+                            LaunchedEffect(deviceUuid, taskType.uid) {
+                                statefulVm.initialize(deviceUuid, taskType.uid)
                             }
                             StatefulParameter(
-                                deviceUuid = deviceUuid,
-                                taskType = taskType,
                                 parameter = currentParameter,
                                 latestTaskStateInfoFlow = latestTaskStateInfoFlow,
+                                isSyncedFlow = statefulVm.statefulTaskInfoParameterSynced,
                                 onStateChanged = { newState ->
                                     createTaskViewModel.sendStatefulTask(
                                         deviceUuid = deviceUuid,

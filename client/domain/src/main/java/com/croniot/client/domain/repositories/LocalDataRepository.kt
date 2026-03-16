@@ -4,7 +4,7 @@ import com.croniot.client.core.models.Account
 import com.croniot.client.core.models.Device
 import kotlinx.coroutines.flow.Flow
 
-interface LocalDataRepository { //TODO god class, but will be delegated to Room in the future
+interface LocalDataRepository { // TODO god class, but will be delegated to Room in the future
 
     suspend fun getCurrentRoute(): String?
 
@@ -37,13 +37,13 @@ interface LocalDataRepository { //TODO god class, but will be delegated to Room 
 
     suspend fun getLocalDeviceToken(): String?
 
-    fun saveCurrentAccount(account: Account?)
+    suspend fun saveCurrentAccount(account: Account?)
 
-    fun saveEmail(email: String)
+    suspend fun saveEmail(email: String)
 
-    fun savePassword(password: String)
+    suspend fun savePassword(password: String)
 
-    fun saveToken(token: String)
+    suspend fun saveToken(token: String)
 
     fun getDeviceProperties(): Map<String, String>
 

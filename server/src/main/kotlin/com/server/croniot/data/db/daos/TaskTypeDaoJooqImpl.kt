@@ -1,16 +1,15 @@
 package com.server.croniot.data.db.daos
 
+import com.server.croniot.jooq.tables.Device.Companion.DEVICE
+import com.server.croniot.jooq.tables.ParameterTask.Companion.PARAMETER_TASK
+import com.server.croniot.jooq.tables.ParameterTaskConstraints.Companion.PARAMETER_TASK_CONSTRAINTS
+import com.server.croniot.jooq.tables.TaskType.Companion.TASK_TYPE
 import croniot.models.Device
+import croniot.models.ParameterTask
 import croniot.models.TaskType
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.using
 import javax.inject.Inject
-
-import com.server.croniot.jooq.tables.TaskType.Companion.TASK_TYPE
-import com.server.croniot.jooq.tables.Device.Companion.DEVICE
-import com.server.croniot.jooq.tables.ParameterTask.Companion.PARAMETER_TASK
-import com.server.croniot.jooq.tables.ParameterTaskConstraints.Companion.PARAMETER_TASK_CONSTRAINTS
-import croniot.models.ParameterTask
 
 class TaskTypeDaoJooqImpl @Inject constructor(
     private val dsl: DSLContext,
@@ -52,7 +51,6 @@ class TaskTypeDaoJooqImpl @Inject constructor(
                 }
 
             for (p in taskType.parameters) {
-
                 val existingParamId: Long? = tx
                     .select(PARAMETER_TASK.ID)
                     .from(PARAMETER_TASK)
@@ -112,7 +110,6 @@ class TaskTypeDaoJooqImpl @Inject constructor(
     override fun getByDeviceIds(
         deviceIds: List<Long>
     ): Map<Long, List<TaskType>> {
-
         if (deviceIds.isEmpty()) return emptyMap()
 
         return dsl.transactionResult { cfg ->
@@ -136,10 +133,13 @@ class TaskTypeDaoJooqImpl @Inject constructor(
             val paramIds = pRecs.mapNotNull { it.id }
 
             val cRecs =
-                if (paramIds.isEmpty()) emptyList()
-                else tx.selectFrom(PARAMETER_TASK_CONSTRAINTS)
-                    .where(PARAMETER_TASK_CONSTRAINTS.PARAMETER_ID.`in`(paramIds))
-                    .fetch()
+                if (paramIds.isEmpty()) {
+                    emptyList()
+                } else {
+                    tx.selectFrom(PARAMETER_TASK_CONSTRAINTS)
+                        .where(PARAMETER_TASK_CONSTRAINTS.PARAMETER_ID.`in`(paramIds))
+                        .fetch()
+                }
 
             val paramsByTaskTypeId =
                 pRecs
@@ -154,7 +154,6 @@ class TaskTypeDaoJooqImpl @Inject constructor(
             val result: MutableMap<Long, MutableList<TaskType>> = mutableMapOf()
 
             for (ttRec in ttRecs) {
-
                 val ttId = ttRec.id ?: continue
                 val deviceId = ttRec.device ?: continue
 
@@ -171,7 +170,6 @@ class TaskTypeDaoJooqImpl @Inject constructor(
                     paramsByTaskTypeId[ttId] ?: emptyList()
 
                 for (pRec in paramRecsForTt) {
-
                     val pId = pRec.id ?: continue
 
                     val constraintRows =
@@ -216,11 +214,11 @@ class TaskTypeDaoJooqImpl @Inject constructor(
     }
 
     override fun get(device: Device, taskTypeUid: Long): TaskType? {
-        return null //TODO implement jOOQ query
+        return null // TODO implement jOOQ query
     }
 
     override fun getLazy(device: Device, taskTypeUid: Long): TaskType? {
-        return null //TODO implement jOOQ query
+        return null // TODO implement jOOQ query
     }
 
     override fun exists(taskTypeUid: Long, deviceId: Long): Boolean {

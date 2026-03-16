@@ -32,4 +32,49 @@ subprojects {
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
     }
+
+    pluginManager.withPlugin("io.gitlab.arturbosch.detekt") {
+        extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+            buildUponDefaultConfig = true
+            allRules = false
+            autoCorrect = true
+            config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+            baseline = file("$rootDir/config/detekt/baseline.xml")
+            source.setFrom(
+                "src/commonMain/kotlin",
+                "src/androidMain/kotlin",
+                "src/jvmMain/kotlin",
+                "src/main/kotlin",
+            )
+        }
+
+        tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+            setSource(files(project.projectDir))
+            include("**/*.kt", "**/*.kts")
+            exclude(
+                "**/*.gradle.kts",
+                "**/build/**",
+                "**/.gradle/**",
+                "**/generated/**",
+                "**/resources/**",
+            )
+        }
+
+        tasks.withType<io.gitlab.arturbosch.detekt.DetektCreateBaselineTask>().configureEach {
+            setSource(files(project.projectDir))
+            include("**/*.kt", "**/*.kts")
+            exclude(
+                "**/*.gradle.kts",
+                "**/build/**",
+                "**/.gradle/**",
+                "**/generated/**",
+                "**/resources/**",
+            )
+        }
+
+        dependencies {
+            "detektPlugins"("dev.androidbroadcast.rules.koin:detekt-koin4-rules:1.0.0")
+            "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
+        }
+    }
 }

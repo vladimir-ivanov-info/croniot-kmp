@@ -1,26 +1,31 @@
 package com.croniot.client.data.source.remote.mqtt
 
-import com.croniot.client.core.models.events.TaskStateInfoEvent
+import android.util.Log
 import com.croniot.client.core.mappers.toModel
+import com.croniot.client.core.models.events.TaskStateInfoEvent
 import croniot.messages.MessageFactory
 import croniot.models.MqttDataProcessor
 import croniot.models.TaskKey
 import croniot.models.dto.TaskStateInfoDto
-import org.koin.core.component.KoinComponent
 
 class MqttDataProcessorTaskProgress(
     private val onNewData: (TaskStateInfoEvent) -> Unit,
-) : MqttDataProcessor, KoinComponent {
+) : MqttDataProcessor {
 
     override fun process(topic: String, data: Any) {
-        val dataString = data as String
+        try {
+            val dataString = data as String
 
-        val key = parseProgressTopic(topic) ?: return
+            val key = parseProgressTopic(topic) ?: return
 
-        val dto = MessageFactory.fromJsonWithZonedDateTime<TaskStateInfoDto>(dataString)
-        val info = dto.toModel()
+            val dto = MessageFactory.fromJsonWithZonedDateTime<TaskStateInfoDto>(dataString)
+            val info = dto.toModel()
 
-        onNewData(TaskStateInfoEvent(key = key, info = info))
+            Log.d("RTT", "MQTT received: ${info.state} (topic: $topic)")
+            onNewData(TaskStateInfoEvent(key = key, info = info))
+        } catch (e: Exception) {
+            Log.e("MqttTaskProgress", "Failed to process message on topic=$topic", e)
+        }
     }
 
     private fun parseProgressTopic(topic: String): TaskKey? {

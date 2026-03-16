@@ -5,28 +5,36 @@ import com.croniot.client.core.config.ServerConfig
 import com.croniot.client.core.models.SensorData
 import com.croniot.client.core.util.StringUtil.generateUniqueString
 import com.croniot.client.data.source.remote.mappers.toDomain
+import com.croniot.client.data.util.TaggingSocketFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.MqttClient
 import java.util.concurrent.ConcurrentHashMap
 
-class RemoteSensorDataSourceImpl : RemoteSensorDataSource {
+class RemoteSensorDataSourceImpl(
+    private val appScope: CoroutineScope,
+) : RemoteSensorDataSource {
 
     private val handlersByDevice = ConcurrentHashMap<String, MqttHandler>()
 
     override suspend fun listenDeviceSensors(
         deviceUuid: String,
         onNewSensorData: (sensorData: SensorData) -> Unit,
-    ) {
+    ) = withContext(Dispatchers.IO) {
         val clientId = ServerConfig.mqttClientId + generateUniqueString(8)
         val mqttClient = MqttClient(ServerConfig.mqttBrokerUrl, clientId, null)
 
         val topic = "/server_to_app/$deviceUuid/sensor_data"
         val handler = MqttHandler(
-            mqttClient,
-            MqttProcessorSensorData(onNewSensorDataDto = { newSensorDataDto ->
+            mqttClient = mqttClient,
+            mqttDataProcessor = MqttProcessorSensorData(onNewSensorDataDto = { newSensorDataDto ->
                 val sensorData = newSensorDataDto.toDomain()
                 onNewSensorData(sensorData)
             }),
-            topic
+            topic = topic,
+            scope = appScope,
+            socketFactory = TaggingSocketFactory()
         )
         handlersByDevice[deviceUuid] = handler
     }

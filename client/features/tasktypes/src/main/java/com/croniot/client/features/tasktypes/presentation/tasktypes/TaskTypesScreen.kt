@@ -8,11 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.croniot.client.core.models.Device
-import androidx.compose.runtime.LaunchedEffect
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -21,7 +21,6 @@ fun TaskTypesScreen(
     taskTypesViewModel: TaskTypesViewModel = koinViewModel(),
     onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
 ) {
-
     LaunchedEffect(Unit) {
         taskTypesViewModel.initialize(selectedDevice.uuid, selectedDevice.taskTypes)
     }
@@ -47,9 +46,8 @@ fun TaskTypesScreen(
                 key = { taskType -> "${selectedDevice.uuid}|taskType:${taskType.uid}" }, // clave única y estable
             ) { task ->
                 TaskTypeItem(
-                    deviceUuid = selectedDevice.uuid,
                     taskType = task,
-                    viewModel = taskTypesViewModel,
+                    secondaryTextFlow = taskTypesViewModel.getSecondaryText(selectedDevice.uuid, task),
                     onTaskTypeClicked = {
                         onTaskTypeClicked(selectedDevice.uuid, task.uid)
                     }

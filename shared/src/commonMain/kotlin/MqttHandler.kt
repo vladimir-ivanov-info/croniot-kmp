@@ -1,36 +1,50 @@
 import croniot.models.MqttDataProcessor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.eclipse.paho.client.mqttv3.*
+import javax.net.SocketFactory
 
-class MqttHandler(private val mqttClient: MqttClient, mqttDataProcessor: MqttDataProcessor, private val topic: String) {
+class MqttHandler(
+    private val mqttClient: MqttClient,
+    private val mqttDataProcessor: MqttDataProcessor,
+    private val topic: String,
+    private val scope: CoroutineScope,
+    private val socketFactory: SocketFactory? = null
+) {
 
     // TODO if device has no sensors, don't subscribe to topic.
     init {
         val options = MqttConnectOptions()
         options.isAutomaticReconnect = true
+        socketFactory?.let {
+            options.socketFactory = it
+        }
 
         mqttClient.connect(options)
 
-        mqttClient.setCallback(object : MqttCallback {
+        mqttClient.setCallback(object : MqttCallbackExtended {
+            override fun connectComplete(reconnect: Boolean, serverURI: String?) {
+                if (reconnect) {
+                    println("[RTT] MQTT reconnected: topic=$topic, re-subscribing...")
+                    runCatching { mqttClient.subscribe(topic, 2) }
+                }
+            }
+
             override fun connectionLost(cause: Throwable?) {
-                println("Connection lost: " + topic + " ${cause?.message}")
-                println("Reconnecting...")
-                mqttClient.connect(options)
+                println("[RTT] MQTT connectionLost: topic=$topic cause=${cause?.message}")
             }
 
             override fun messageArrived(topic: String, message: MqttMessage?) {
                 val payload = message?.payload
                 if (payload != null) {
                     val value = String(payload)
-                    // println("Received message on topic $topic: $value")
-                    mqttDataProcessor.process(topic, value)
-                } else {
-                    println("Received message on topic $topic with null payload.")
+                    scope.launch {
+                        mqttDataProcessor.process(topic, value)
+                    }
                 }
             }
 
-            override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                // Not used in this example
-            }
+            override fun deliveryComplete(token: IMqttDeliveryToken?) {}
         })
         println("MQTT Subscribed to " + topic)
         mqttClient.subscribe(topic, 2) // QoS 2 for subscribing

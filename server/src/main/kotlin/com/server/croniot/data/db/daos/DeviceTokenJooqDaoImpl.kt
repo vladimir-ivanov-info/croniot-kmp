@@ -1,17 +1,16 @@
 package com.server.croniot.data.db.daos
 
-//package com.server.croniot.data.db.daos
+// package com.server.croniot.data.db.daos
 
+import com.server.croniot.jooq.tables.Account.Companion.ACCOUNT
+import com.server.croniot.jooq.tables.Device.Companion.DEVICE
+import com.server.croniot.jooq.tables.DeviceToken.Companion.DEVICE_TOKEN
 import croniot.models.Account
 import croniot.models.Device
 import croniot.models.DeviceToken
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.using
 import javax.inject.Inject
-
-import com.server.croniot.jooq.tables.DeviceToken.Companion.DEVICE_TOKEN
-import com.server.croniot.jooq.tables.Device.Companion.DEVICE
-import com.server.croniot.jooq.tables.Account.Companion.ACCOUNT
 
 class DeviceTokenJooqDaoImpl @Inject constructor(
     private val dsl: DSLContext,
@@ -26,7 +25,7 @@ class DeviceTokenJooqDaoImpl @Inject constructor(
             val tx = using(cfg)
 
             tx.insertInto(DEVICE_TOKEN)
-                .set(DEVICE_TOKEN.DEVICE, deviceId)      // o DEVICE_ID según tu schema
+                .set(DEVICE_TOKEN.DEVICE, deviceId) // o DEVICE_ID según tu schema
                 .set(DEVICE_TOKEN.TOKEN, deviceToken.token)
                 .execute()
         }
@@ -59,25 +58,25 @@ class DeviceTokenJooqDaoImpl @Inject constructor(
             ?: return null
 
         val account = Account(
-            //id = r.get(ACCOUNT.ID)!!,
+            // id = r.get(ACCOUNT.ID)!!,
             uuid = r.get(ACCOUNT.UUID) ?: "",
             nickname = r.get(ACCOUNT.NICKNAME) ?: "",
             email = r.get(ACCOUNT.EMAIL) ?: "",
-            //password = r.get(ACCOUNT.PASSWORD) ?: "",
+            // password = r.get(ACCOUNT.PASSWORD) ?: "",
             devices = mutableListOf(),
         )
 
         return Device(
-            //id = r.get(DEVICE.ID)!!,
+            // id = r.get(DEVICE.ID)!!,
             uuid = r.get(DEVICE.UUID) ?: "",
             name = r.get(DEVICE.NAME) ?: "",
             description = r.get(DEVICE.DESCRIPTION) ?: "",
             iot = r.get(DEVICE.IOT) ?: false,
             sensorTypes = mutableListOf(), // lazy
-            taskTypes = mutableListOf(),   // lazy
-            //account = account,
-            //deviceToken = null,            // si quieres, también puedes mapearlo aquí
-            //deviceProperties = emptyMap(),
+            taskTypes = mutableListOf(), // lazy
+            // account = account,
+            // deviceToken = null,            // si quieres, también puedes mapearlo aquí
+            // deviceProperties = emptyMap(),
         )
     }
 

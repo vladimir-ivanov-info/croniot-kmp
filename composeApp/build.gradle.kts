@@ -1,20 +1,21 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
 
     id("kotlin-parcelize")
     id("androidx.baselineprofile")
+    id("io.gitlab.arturbosch.detekt")
 }
 
 apply(plugin = "shot")
 
 kotlin {
+    androidTarget()
+
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
         freeCompilerArgs.addAll("-Xexplicit-backing-fields")
     }
@@ -29,6 +30,7 @@ android {
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+    sourceSets["test"].java.srcDirs("src/test/kotlin")
 
     defaultConfig {
         applicationId = "com.croniot.android"
@@ -37,6 +39,7 @@ android {
         versionCode = 4
         versionName = "1.0"
 
+        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner = "com.karumi.shot.ShotTestRunner"
     }
 
@@ -59,6 +62,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/{LICENSE.md,LICENSE-notice.md}"
         }
     }
     buildTypes {
@@ -83,6 +87,10 @@ android {
 
     testOptions {
         animationsDisabled = true
+
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
@@ -105,7 +113,6 @@ dependencies {
     implementation(libs.coroutinesCore)
     implementation(libs.coroutinesAndroid)
     implementation(libs.retrofit)
-    implementation(libs.converterGson)
     implementation(libs.okhttp)
     implementation(libs.okhttpLoggingInterceptor)
     implementation(libs.mqtt)
@@ -113,14 +120,10 @@ dependencies {
 
     // Android-specific
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.datastore.core.android)
-    implementation("androidx.datastore:datastore-preferences:1.1.2")
-    implementation("androidx.datastore:datastore-core:1.1.2")
-    implementation(libs.compose.ui)
+    implementation(libs.datastore.preferences)
     implementation(libs.compose.ui.tooling)
-    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation(libs.compose.material3.android)
     implementation(libs.koin.androidx.compose)
-    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
 
     // Project dependencies
     implementation(projects.shared)
@@ -137,10 +140,14 @@ dependencies {
     // Test
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.9.1")
-    androidTestImplementation("com.karumi:shot-android:6.1.0")
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    androidTestImplementation(libs.androidx.ui.test.junit4.android)
+    androidTestImplementation(libs.shot.android)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.coroutines.test)
     "baselineProfile"(project(":baselineprofile"))
 
     debugImplementation("org.jetbrains.compose.ui:ui-tooling:${libs.versions.compose.plugin.get()}")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.9.1")
 }
