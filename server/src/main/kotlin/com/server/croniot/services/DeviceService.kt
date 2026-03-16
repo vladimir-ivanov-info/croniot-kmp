@@ -39,7 +39,7 @@ class DeviceService @Inject constructor(
             val deviceDescription = messageRegisterDevice.deviceDescription
 
             val accountExists = accountRepository.isAccountExists(accountEmail)
-            //TODO check password
+            // TODO check password
 
             if (!accountExists) {
                 return Result(false, "Account for $accountEmail doesn't exist.")

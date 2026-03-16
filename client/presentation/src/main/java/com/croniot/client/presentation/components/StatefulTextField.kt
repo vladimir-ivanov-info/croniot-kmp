@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -35,7 +35,7 @@ fun StatefulTextField(
     isPassword: Boolean = false,
     onValueChange: (String) -> Unit,
 ) {
-    val text by stringFlow.collectAsState() // Observe the current value
+    val text by stringFlow.collectAsStateWithLifecycle()
 
     TextField(
         value = text,
@@ -190,7 +190,7 @@ fun EmailTextField(
         value = value,
         onValueChange = onValueChange,
         enabled = enabled,
-        label = { Text("Email") },
+        label = { Text("email") },
         singleLine = true,
         isError = false, // TODO
         /*supportingText = {
@@ -231,7 +231,7 @@ fun PasswordTextField(
         value = value,
         onValueChange = onValueChange,
         enabled = enabled,
-        label = { Text("Password") },
+        label = { Text("password") },
         singleLine = true,
         isError = false, // TODO: validación real
         visualTransformation = if (passwordVisible) {

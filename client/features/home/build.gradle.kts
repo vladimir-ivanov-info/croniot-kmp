@@ -3,16 +3,17 @@ plugins {
     alias(libs.plugins.kotlin.android)
 
     id("kotlin-parcelize")
+    id("io.gitlab.arturbosch.detekt")
 }
 
 android {
     namespace = "com.croniot.client.features.home"
-    compileSdk = 35
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.croniot.client.features.home"
-        minSdk = 33
-        targetSdk = 35
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -34,12 +35,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "21"
-    }
-
-    testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
     }
 }
 

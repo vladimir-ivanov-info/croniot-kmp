@@ -1,5 +1,6 @@
 package com.server.croniot.services
 
+import com.server.croniot.data.mappers.toDto
 import com.server.croniot.data.repositories.AccountRepository
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.DeviceTokenRepository
@@ -12,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.server.croniot.data.mappers.toDto
 
 class LoginService @Inject constructor(
     private val accountRepository: AccountRepository,
@@ -42,7 +42,7 @@ class LoginService @Inject constructor(
 
         val newDevice = Device(
             uuid = deviceUuid,
-            name = deviceUuid, //TODO use actual device name
+            name = deviceUuid, // TODO use actual device name
             iot = false,
         )
 
@@ -56,7 +56,7 @@ class LoginService @Inject constructor(
         }
 
         val newToken = Global.generateUniqueString(8)
-        //TODO deviceTokenRepository.createDeviceToken(newDevice, newToken)
+        // TODO deviceTokenRepository.createDeviceToken(newDevice, newToken)
 
         val account = accountRepository.getAccount(accountEmail)
             ?: return LoginResultDto(Result(false, ""), null, null)

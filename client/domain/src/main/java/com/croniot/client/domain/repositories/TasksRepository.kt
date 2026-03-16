@@ -1,10 +1,10 @@
 package com.croniot.client.domain.repositories
 
+import Outcome
 import com.croniot.client.core.models.Task
 import com.croniot.client.core.models.TaskStateInfo
 import com.croniot.client.core.models.events.TaskStateInfoEvent
 import com.croniot.client.domain.errors.TaskError
-import Outcome
 import kotlinx.coroutines.flow.Flow
 
 interface TasksRepository {

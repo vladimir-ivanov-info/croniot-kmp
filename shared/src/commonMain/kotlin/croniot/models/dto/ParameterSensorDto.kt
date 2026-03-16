@@ -1,5 +1,8 @@
 package croniot.models.dto
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ParameterSensorDto(
     val uid: Long,
     val name: String,

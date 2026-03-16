@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,15 +24,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -49,7 +48,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.koin.androidx.compose.koinViewModel
 
 import com.croniot.client.core.models.Task
-import com.croniot.client.core.models.TaskStateInfo
 
 @Composable
 fun TasksScreen(
@@ -57,27 +55,24 @@ fun TasksScreen(
     navController: NavController,
     tasksViewModel: TasksViewModel = koinViewModel(),
 ) {
-    LaunchedEffect(Unit) {
-        tasksViewModel.initialize(selectedDeviceUuid)
-    }
-
-    // Collect tasks and sort them only once
-    val tasks by tasksViewModel.tasks.collectAsState()
-    val sortedTasks = remember(tasks) { tasks.toList().sortedByDescending { it.value.initialTaskStateInfo?.dateTime } }
-
-    // Batch size management
-    var batchSize by remember { mutableStateOf(10) } // Initial batch size
-    val scrollState = rememberScrollState()
-
-    // Increase batch size as the user scrolls closer to the end
-    LaunchedEffect(scrollState.value) {
-        val scrollRange = scrollState.maxValue - scrollState.value
-        if (scrollRange < 200 && batchSize < sortedTasks.size) {
-            batchSize += 10
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> tasksViewModel.initialize(selectedDeviceUuid)
+                Lifecycle.Event.ON_STOP -> tasksViewModel.stopObserving()
+                else -> {}
+            }
         }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    // Display a loading indicator if tasks are initially empty
+    val tasks by tasksViewModel.tasks.collectAsStateWithLifecycle()
+    val sortedTasks = remember(tasks) {
+        tasks.sortedByDescending { it.value.initialTaskStateInfo?.dateTime }
+    }
+
     if (tasks.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -93,12 +88,17 @@ fun TasksScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Display only the current batch
-            itemsIndexed(sortedTasks.take(batchSize)) { index, taskFlow ->
-
+            itemsIndexed(
+                items = sortedTasks,
+                key = { _, taskFlow -> "${taskFlow.value.deviceUuid}|${taskFlow.value.uid}" },
+            ) { _, taskFlow ->
+                val task = taskFlow.value
+                val taskTypeName = remember(task.deviceUuid, task.taskTypeUid) {
+                    tasksViewModel.getTaskType(task.deviceUuid, task.taskTypeUid)?.name
+                }
                 GenericTaskItem(
-                    tasksViewModel = tasksViewModel,
                     taskStateFlow = taskFlow,
+                    taskTypeName = taskTypeName ?: "[task_name]",
                     onTaskClicked = { taskToShow ->
                         // Handle click events for tasks
                     },
@@ -114,21 +114,16 @@ fun TasksScreen(
 
 @Composable
 fun GenericTaskItem(
-    tasksViewModel: TasksViewModel,
     taskStateFlow: StateFlow<Task>,
+    taskTypeName: String,
     onTaskClicked: (taskClicked: Task) -> Unit,
 ) {
-    val taskValue by taskStateFlow.collectAsState()
+    val taskValue by taskStateFlow.collectAsStateWithLifecycle()
 
-    val deviceUuid = taskValue.deviceUuid
-    val taskUid = taskValue.taskTypeUid
-
-    val taskType = tasksViewModel.getTaskType(deviceUuid, taskUid)
-
-    val taskName = taskType?.name ?: "[task_name]"
+    val taskName = taskTypeName
 
     val stateIconPainter: Painter
-    var stateIconColor = Color.Black
+    var stateIconColor = MaterialTheme.colorScheme.onSurface
 
     val latestStateInfo = taskValue.initialTaskStateInfo
     var latestStateInfoProgress = latestStateInfo?.progress ?: 0.0
@@ -136,31 +131,28 @@ fun GenericTaskItem(
     when (latestStateInfo?.state) {
         TaskState.CREATED.name -> {
             stateIconPainter = painterResource(id = R.drawable.baseline_schedule_24)
-            // stateIconColor = null
         }
         TaskState.RUNNING.name -> {
             stateIconPainter = painterResource(id = R.drawable.baseline_update_24)
-            // stateIconColor = null // Or set a specific color
         }
         TaskState.COMPLETED.name -> {
             stateIconPainter = painterResource(id = R.drawable.baseline_done_24)
-            stateIconColor = Color.Green
+            stateIconColor = MaterialTheme.colorScheme.primary
         }
         "on" -> {
             stateIconPainter = painterResource(id = R.drawable.ic_toggle_on_24)
-            stateIconColor = Color.Green
+            stateIconColor = MaterialTheme.colorScheme.primary
         }
         "off" -> {
             stateIconPainter = painterResource(id = R.drawable.ic_toggle_off_24)
-            stateIconColor = Color.Red
+            stateIconColor = MaterialTheme.colorScheme.error
         }
         "RECEIVED" -> {
             stateIconPainter = painterResource(id = R.drawable.ic_check_24)
-            stateIconColor = Color(0xFF03A9F4)
+            stateIconColor = MaterialTheme.colorScheme.tertiary
         }
         else -> {
             stateIconPainter = painterResource(id = R.drawable.baseline_question_mark_24)
-            // stateIconColor = null
         }
     }
     // }
@@ -210,7 +202,7 @@ fun GenericTaskItem(
                         modifier = Modifier
                             .size(32.dp)
                             .fillMaxHeight()
-                            .background(Color.White, shape = CircleShape),
+                            .background(MaterialTheme.colorScheme.surface, shape = CircleShape),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(

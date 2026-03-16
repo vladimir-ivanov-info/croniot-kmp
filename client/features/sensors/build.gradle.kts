@@ -4,6 +4,7 @@ plugins {
 
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    id("io.gitlab.arturbosch.detekt")
 }
 
 kotlin {
@@ -32,12 +33,12 @@ kotlin {
 
                 implementation(libs.androidx.datastore.core.android)
 
-                implementation("androidx.datastore:datastore-preferences:1.1.2")
-                implementation("androidx.datastore:datastore-core:1.1.2")
+                implementation(libs.datastore.preferences)
+                implementation(libs.datastore.core)
 
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling)
-                implementation("androidx.compose.material3:material3:1.3.1")
+                implementation(libs.compose.material3.android)
 
                 implementation(libs.koin.androidx.compose)
 
@@ -57,7 +58,6 @@ kotlin {
                 implementation(libs.coroutinesCore)
                 implementation(libs.coroutinesAndroid)
                 implementation(libs.retrofit)
-                implementation(libs.converterGson)
                 implementation(libs.okhttp)
                 implementation(libs.okhttpLoggingInterceptor)
 

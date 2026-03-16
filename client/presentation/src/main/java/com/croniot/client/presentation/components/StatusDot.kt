@@ -58,7 +58,11 @@ fun StatusDot(isOnline: Boolean, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .size(10.dp)
-                    .graphicsLayer { scaleX = pulseScale; scaleY = pulseScale; alpha = pulseAlpha }
+                    .graphicsLayer {
+                        scaleX = pulseScale;
+                        scaleY = pulseScale;
+                        alpha = pulseAlpha
+                    }
                     .background(color = dotColor, shape = CircleShape),
             )
         }

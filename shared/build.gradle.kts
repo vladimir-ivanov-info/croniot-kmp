@@ -4,6 +4,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKmpLibrary)
+    alias(libs.plugins.kotlin.serialization)
+    id("io.gitlab.arturbosch.detekt")
 }
 
 kotlin {
@@ -19,11 +21,15 @@ kotlin {
     }
 
     jvm()
+    iosArm64()
+    iosX64()
+    iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.gson)
+            implementation(libs.serialization.json)
             implementation(libs.mqtt)
+            implementation(libs.coroutinesCore)
         }
     }
 }

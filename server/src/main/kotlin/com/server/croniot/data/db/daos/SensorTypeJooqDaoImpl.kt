@@ -1,14 +1,13 @@
 package com.server.croniot.data.db.daos
 
+import com.server.croniot.jooq.tables.ParameterSensor.Companion.PARAMETER_SENSOR
+import com.server.croniot.jooq.tables.ParameterSensorConstraints.Companion.PARAMETER_SENSOR_CONSTRAINTS
+import com.server.croniot.jooq.tables.SensorType.Companion.SENSOR_TYPE
+import croniot.models.ParameterSensor
 import croniot.models.SensorType
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.using
 import javax.inject.Inject
-
-import com.server.croniot.jooq.tables.SensorType.Companion.SENSOR_TYPE
-import com.server.croniot.jooq.tables.ParameterSensor.Companion.PARAMETER_SENSOR
-import com.server.croniot.jooq.tables.ParameterSensorConstraints.Companion.PARAMETER_SENSOR_CONSTRAINTS
-import croniot.models.ParameterSensor
 
 class SensorTypeJooqDaoImpl @Inject constructor(
     private val dsl: DSLContext,
@@ -50,7 +49,6 @@ class SensorTypeJooqDaoImpl @Inject constructor(
                 }
 
             for (p in sensorType.parameters) {
-
                 val existingParamId: Long? = tx
                     .select(PARAMETER_SENSOR.ID)
                     .from(PARAMETER_SENSOR)
@@ -110,7 +108,6 @@ class SensorTypeJooqDaoImpl @Inject constructor(
     override fun getByDeviceIds(
         deviceIds: List<Long>
     ): Map<Long, List<SensorType>> {
-
         if (deviceIds.isEmpty()) return emptyMap()
 
         return dsl.transactionResult { cfg ->
@@ -134,10 +131,13 @@ class SensorTypeJooqDaoImpl @Inject constructor(
             val paramIds = pRecs.mapNotNull { it.id }
 
             val cRecs =
-                if (paramIds.isEmpty()) emptyList()
-                else tx.selectFrom(PARAMETER_SENSOR_CONSTRAINTS)
-                    .where(PARAMETER_SENSOR_CONSTRAINTS.PARAMETER_ID.`in`(paramIds))
-                    .fetch()
+                if (paramIds.isEmpty()) {
+                    emptyList()
+                } else {
+                    tx.selectFrom(PARAMETER_SENSOR_CONSTRAINTS)
+                        .where(PARAMETER_SENSOR_CONSTRAINTS.PARAMETER_ID.`in`(paramIds))
+                        .fetch()
+                }
 
             val paramsBySensorTypeId =
                 pRecs
@@ -152,7 +152,6 @@ class SensorTypeJooqDaoImpl @Inject constructor(
             val result: MutableMap<Long, MutableList<SensorType>> = mutableMapOf()
 
             for (stRec in stRecs) {
-
                 val stId = stRec.id ?: continue
                 val deviceId = stRec.device ?: continue
 
@@ -169,7 +168,6 @@ class SensorTypeJooqDaoImpl @Inject constructor(
                     paramsBySensorTypeId[stId] ?: emptyList()
 
                 for (pRec in paramRecsForSt) {
-
                     val pId = pRec.id ?: continue
 
                     val constraintRows =

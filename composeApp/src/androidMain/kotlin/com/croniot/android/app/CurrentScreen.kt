@@ -107,7 +107,7 @@ fun CurrentScreen(viewModel: AppViewModel = koinViewModel()) {
         composable<AppRoute.Devices> {
             DeviceListScreen(
                 onLogOut = {
-                    navController.navigate(AppRoute.Login) {
+                    navController.navigate(AppRoute.Splash) {
                         popUpTo<AppRoute.Devices> { inclusive = true }
                     }
                 },

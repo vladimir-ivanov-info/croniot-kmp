@@ -11,8 +11,7 @@ interface SensorDataRepository {
     suspend fun listenToDeviceSensors(device: Device)
 
     suspend fun stopAllListeners()
-    
+
     fun observeSensorData(deviceUuid: String, sensorTypeUid: Long): /*State*/Flow<SensorData>
     suspend fun getLatestSensorData(deviceUuid: String, sensorTypeUid: Long, elements: Int): List<SensorData>
-
 }

@@ -6,24 +6,23 @@ import com.croniot.android.features.configuration.ConfigurationScreenViewModel
 import com.croniot.android.features.device.features.tasks.TasksViewModel
 import com.croniot.android.features.device.presentation.DeviceScreenViewModel
 import com.croniot.android.features.devicelist.DeviceListViewModel
-import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.data.repositories.LocalDataRepositoryImpl
-import com.croniot.client.domain.repositories.TasksRepository
 import com.croniot.client.data.repositories.TasksRepositoryImpl
 import com.croniot.client.data.source.local.DataStoreController
 import com.croniot.client.data.source.local.LocalDatasource
+import com.croniot.client.domain.repositories.LocalDataRepository
+import com.croniot.client.domain.repositories.TasksRepository
 import com.croniot.client.domain.usecases.FetchTasksUseCase
-import com.croniot.client.domain.usecases.ObserveNewTasksUseCase
-import com.croniot.client.domain.usecases.ObserveTaskStateInfoUseCase
 import com.croniot.client.features.sensors.presentation.SensorsViewModel
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 object MainDIModule {
 
     val mainDIModule = module {
 
-        single<LocalDatasource> { DataStoreController() }
+        single<LocalDatasource> { DataStoreController(context = get()) }
 
         single<LocalDataRepository> { LocalDataRepositoryImpl(get()) }
 
@@ -45,7 +44,7 @@ object MainDIModule {
             )
         }
 
-        single {
+        viewModel {
             SensorsViewModel(
                 sensorDataRepository = get(),
             )
@@ -54,10 +53,11 @@ object MainDIModule {
         single<TasksRepository> {
             TasksRepositoryImpl(
                 tasksDataSource = get(),
+                appScope = get(named("appScope")),
             )
         }
 
-        single {
+        viewModel {
             TasksViewModel(
                 tasksRepository = get(),
                 localDataRepository = get(),
@@ -84,7 +84,7 @@ object MainDIModule {
             )
         }
 
-        single {
+        factory {
             FetchTasksUseCase(
                 tasksRepository = get(),
             )

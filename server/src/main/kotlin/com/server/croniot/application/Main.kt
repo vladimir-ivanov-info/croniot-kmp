@@ -1,26 +1,23 @@
 package com.server.croniot.application
 
 import Global
-import ZonedDateTimeAdapter
 import com.server.croniot.di.DI
 import com.server.croniot.mqtt.MqttController
-import io.ktor.serialization.gson.*
+import croniot.messages.MessageFactory
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.*
 import java.io.File
 import java.security.KeyStore
-import java.time.ZonedDateTime
 
 fun Application.module(testing: Boolean = false) {
     Global.TESTING = testing
     print("TESTING: ${Global.TESTING}")
 
     install(ContentNegotiation) {
-        gson {
-            registerTypeAdapter(ZonedDateTime::class.java, ZonedDateTimeAdapter())
-        }
+        json(MessageFactory.json)
     }
 
     val appComponent = DI.appComponent
@@ -68,7 +65,6 @@ fun ensureDockerComposeRunning() {
 }
 
 fun main() {
-
     ensureDockerComposeRunning()
 
     Runtime.getRuntime().addShutdownHook(
@@ -109,7 +105,6 @@ fun main() {
             },
             module = { module() }
         ).start(wait = true)
-
     } catch (e: Throwable) {
         e.printStackTrace()
     }

@@ -1,5 +1,8 @@
 package croniot.models.dto
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class DeviceDto(
     val uuid: String,
     val name: String,

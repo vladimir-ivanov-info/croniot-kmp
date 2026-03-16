@@ -4,7 +4,7 @@ import croniot.models.SensorType
 
 interface SensorTypeDao {
 
-    fun upsert(sensorType: SensorType, deviceId: Long) : Long?
+    fun upsert(sensorType: SensorType, deviceId: Long): Long?
 
-    fun getByDeviceIds(deviceIds: List<Long>) : Map<Long, List<SensorType>>
+    fun getByDeviceIds(deviceIds: List<Long>): Map<Long, List<SensorType>>
 }

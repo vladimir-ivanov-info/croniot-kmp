@@ -1,13 +1,10 @@
 package com.croniot.client.data.repositories
 
 import com.croniot.client.core.models.Device
-import com.croniot.client.core.models.SensorData
 import com.croniot.client.data.source.sensors.LocalSensorDataSource
 import com.croniot.client.data.source.sensors.RemoteSensorDataSource
 import com.croniot.client.domain.repositories.SensorDataRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,9 +15,8 @@ import java.time.ZonedDateTime
 class SensorDataRepositoryImpl(
     private val remoteSensorDataSource: RemoteSensorDataSource,
     private val localSensorDataSource: LocalSensorDataSource,
+    private val scope: CoroutineScope,
 ) : SensorDataRepository {
-
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val _devicesLatestSensorTimestamp = MutableStateFlow<Map<String, Long>>(emptyMap())
     override val devicesLatestSensorTimestamp: StateFlow<Map<String, Long>> = _devicesLatestSensorTimestamp
 

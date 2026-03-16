@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
 
     id("kotlin-parcelize")
+    id("croniot.android.library")
+    id("io.gitlab.arturbosch.detekt")
 }
 
 kotlin {
@@ -34,11 +36,17 @@ kotlin {
                 implementation(libs.coroutinesCore)
                 implementation(libs.coroutinesAndroid)
                 implementation(libs.retrofit)
-                implementation(libs.converterGson)
                 implementation(libs.okhttp)
                 implementation(libs.okhttpLoggingInterceptor)
                 implementation(libs.mqtt)
                 implementation(libs.accompanistPermissions)
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.mockk)
+                implementation(libs.coroutines.test)
             }
         }
         val androidMain by getting {
@@ -50,12 +58,12 @@ kotlin {
 
                 implementation(libs.androidx.datastore.core.android)
 
-                implementation("androidx.datastore:datastore-preferences:1.1.2")
-                implementation("androidx.datastore:datastore-core:1.1.2")
+                implementation(libs.datastore.preferences)
+                implementation(libs.datastore.core)
 
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling)
-                implementation("androidx.compose.material3:material3:1.3.1")
+                implementation(libs.compose.material3.android)
 
                 implementation(libs.koin.androidx.compose)
 
@@ -70,19 +78,38 @@ kotlin {
                 implementation(libs.androidx.material)
             }
         }
+        val androidUnitTest by getting {
+            kotlin.srcDirs("src/test/java", "src/test/kotlin")
+            dependencies {
+                implementation(libs.junit.jupiter)
+                runtimeOnly(libs.junit.jupiter.engine)
+                runtimeOnly(libs.junit.platform.launcher)
+            }
+        }
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.composeUiTestJunit4)
+                implementation(libs.androidx.test.junit)
+                implementation(libs.androidx.espresso.core)
+            }
+        }
     }
 }
 
 android {
     namespace = "com.croniot.client.features.login"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
+}
+
+dependencies {
+    debugImplementation(libs.compose.ui.test.manifest)
 }

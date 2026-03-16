@@ -16,7 +16,6 @@ package com.croniot.android.core.presentation.theme
 // import androidx.core.view.WindowCompat
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -46,7 +45,7 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = Color.White,
 )
 
-//private val LightColorScheme = lightColorScheme(
+// private val LightColorScheme = lightColorScheme(
 //   /* primary = Purple40,
 //    secondary = PurpleGrey40,
 //    tertiary = Pink40,*/
@@ -71,7 +70,7 @@ private val DarkColorScheme = darkColorScheme(
 //    onBackground = Color(0xFF1C1B1F),
 //    onSurface = Color(0xFF1C1B1F),
 //     */
-//)
+// )
 
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF5B5BD6),
@@ -104,8 +103,6 @@ private val LightColorScheme = lightColorScheme(
     surfaceTint = Color(0xFF5B5BD6),
     scrim = Color(0xFF000000),
 )
-
-
 
 //
 // @Composable
@@ -493,7 +490,6 @@ fun IoTClientTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-
     val base = when {
         dynamicColor && true -> {
             val ctx = LocalContext.current

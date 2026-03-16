@@ -1,13 +1,12 @@
 package com.croniot.android.features.devicelist
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,8 +42,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -134,7 +135,7 @@ fun DeviceListScreenBody(
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "Actions",
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                     DropdownMenu(
@@ -142,7 +143,10 @@ fun DeviceListScreenBody(
                         onDismissRequest = { expanded = false },
                     ) {
                         DropdownMenuItem(
-                            onClick = { expanded = false; showLogoutDialog = true },
+                            onClick = {
+                                expanded = false
+                                showLogoutDialog = true
+                            },
                             text = { Text("Log out") },
                         )
                     }
@@ -151,7 +155,7 @@ fun DeviceListScreenBody(
             )
         },
         content = { innerPadding ->
-            DeviceListScreenBody(
+            DeviceListContent(
                 state = state,
                 modifier = Modifier
                     .padding(innerPadding)
@@ -165,13 +169,16 @@ fun DeviceListScreenBody(
 }
 
 @Composable
-fun DeviceListScreenBody(
+fun DeviceListContent(
     state: DeviceListState,
     modifier: Modifier = Modifier,
     onIntent: (DeviceListIntent) -> Unit
 ) {
     val now by produceState(System.currentTimeMillis()) {
-        while (true) { delay(1_000); value = System.currentTimeMillis() }
+        while (true) {
+            delay(1_000)
+            value = System.currentTimeMillis()
+        }
     }
 
     Column(modifier = modifier) {
@@ -183,17 +190,7 @@ fun DeviceListScreenBody(
         )
 
         if (state.devices.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = "No IoT devices yet",
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(4.dp),
-                )
-            }
+            EmptyDeviceList()
         } else {
             LazyColumn(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -217,6 +214,34 @@ fun DeviceListScreenBody(
 }
 
 @Composable
+fun EmptyDeviceList() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_cockroach),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(CircleShape)
+                    .alpha(0.2f),
+                contentScale = ContentScale.Fit,
+            )
+            Text(
+                text = "No IoT devices yet",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
 fun DeviceRow(
     device: Device,
     isOnline: Boolean,
@@ -224,14 +249,16 @@ fun DeviceRow(
     now: Long,
     onClick: () -> Unit,
 ) {
-    val bg by animateColorAsState(
-        if (isOnline) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-        label = "row-bg",
-    )
-
     val statusText = if (isOnline) "Online" else "Offline"
     val relative = remember(lastSeen, now) { getRelativeTimeText(now, lastSeen) }
     val spoken = remember(statusText, device.name, relative) { "$statusText. ${device.name}. Última señal $relative" }
+
+    val infoText = remember(device.sensorTypes, device.taskTypes) {
+        buildList {
+            if (device.sensorTypes.isNotEmpty()) add("${device.sensorTypes.size} sensor${if (device.sensorTypes.size > 1) "s" else ""}")
+            if (device.taskTypes.isNotEmpty()) add("${device.taskTypes.size} task${if (device.taskTypes.size > 1) "s" else ""}")
+        }.joinToString(" · ")
+    }
 
     Card(
         onClick = onClick,
@@ -241,13 +268,17 @@ fun DeviceRow(
             .semantics(mergeDescendants = true) {
                 contentDescription = spoken
                 role = Role.Button
-                onClick(label = "Abrir ${device.name}") { onClick(); true }
+                onClick(label = "Abrir ${device.name}") {
+                    onClick()
+                    true
+                }
             },
-        colors = CardDefaults.cardColors(containerColor = bg),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(
-            Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -262,7 +293,20 @@ fun DeviceRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                 )
+                if (infoText.isNotEmpty()) {
+                    Text(
+                        text = infoText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        maxLines = 1,
+                    )
+                }
             }
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

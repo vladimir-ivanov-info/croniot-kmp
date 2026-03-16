@@ -1,8 +1,8 @@
 package com.croniot.client.data.repositories
 
 import com.croniot.client.core.models.auth.AuthSession
-import com.croniot.client.domain.repositories.SessionRepository
 import com.croniot.client.data.source.local.LocalDatasource
+import com.croniot.client.domain.repositories.SessionRepository
 
 class SessionRepositoryImpl(
     private val localDataSource: LocalDatasource,

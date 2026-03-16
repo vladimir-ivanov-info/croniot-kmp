@@ -1,62 +1,48 @@
 package com.croniot.client.data.source.remote.http
 
 import com.croniot.client.core.config.ServerConfig
-import com.croniot.client.domain.repositories.LocalDataRepository
-import com.google.gson.Gson
+import croniot.messages.MessageFactory
 import croniot.models.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class NetworkUtilImpl() : NetworkUtil {
+class NetworkUtilImpl : NetworkUtil {
 
     override suspend fun post(endPoint: String, postData: String): Result {
-        val url = "http://" + ServerConfig.SERVER_ADDRESS + ":" + ServerConfig.SERVER_PORT + endPoint
+        val url = "http://${ServerConfig.SERVER_ADDRESS}:${ServerConfig.SERVER_PORT}$endPoint"
         return withContext(Dispatchers.IO) {
             performPostRequest(url, postData)
         }
     }
 
-    fun performPostRequest(urlString: String, postData: String): Result {
-        var result: Result
+    private fun performPostRequest(urlString: String, postData: String): Result {
+        var connection: HttpURLConnection? = null
+        return try {
+            connection = (URL(urlString).openConnection() as HttpURLConnection).apply {
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json; utf-8")
+                doOutput = true
+                connectTimeout = 5_000
+                readTimeout = 10_000
+            }
 
-        try {
-            val url = URL(urlString)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "POST"
-            connection.setRequestProperty("Content-Type", "application/json; utf-8")
-            connection.doOutput = true
-            connection.connectTimeout = 5000
-            val outputStream: OutputStream = connection.outputStream
-            outputStream.write(postData.toByteArray(Charsets.UTF_8))
+            connection.outputStream.use { os ->
+                os.write(postData.toByteArray(Charsets.UTF_8))
+            }
 
             val responseCode = connection.responseCode
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                val response = StringBuilder()
-
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    response.append(line)
-                }
-
-                val responseMessage = response.toString()
-
-                result = Gson().fromJson(responseMessage, Result::class.java)
+                val responseBody = connection.inputStream.bufferedReader().use { it.readText() }
+                MessageFactory.fromJson<Result>(responseBody)
             } else {
-                result = Result(false, "$responseCode")
+                Result(false, "HTTP $responseCode")
             }
         } catch (e: Exception) {
-            "Error: ${e.message}"
-            println(e.message)
-            result = Result(false, "$e.message")
+            Result(false, e.message ?: "Unknown error")
+        } finally {
+            connection?.disconnect()
         }
-
-        return result
     }
 }

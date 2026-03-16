@@ -1,25 +1,5 @@
 package com.server.croniot.data.db.daos
 
-import croniot.models.*
-import org.jooq.DSLContext
-import org.jooq.impl.DSL.using
-import javax.inject.Inject
-
-import com.server.croniot.jooq.tables.Account.Companion.ACCOUNT
-import com.server.croniot.jooq.tables.Device.Companion.DEVICE
-import com.server.croniot.jooq.tables.SensorType.Companion.SENSOR_TYPE
-import com.server.croniot.jooq.tables.ParameterSensor.Companion.PARAMETER_SENSOR
-import com.server.croniot.jooq.tables.ParameterSensorConstraints.Companion.PARAMETER_SENSOR_CONSTRAINTS
-import com.server.croniot.jooq.tables.ParameterTask.Companion.PARAMETER_TASK
-import com.server.croniot.jooq.tables.ParameterTaskConstraints.Companion.PARAMETER_TASK_CONSTRAINTS
-import com.server.croniot.jooq.tables.TaskType.Companion.TASK_TYPE
-import com.server.croniot.jooq.tables.records.DeviceRecord
-import com.server.croniot.jooq.tables.records.ParameterSensorConstraintsRecord
-import com.server.croniot.jooq.tables.records.ParameterSensorRecord
-import com.server.croniot.jooq.tables.records.ParameterTaskConstraintsRecord
-import com.server.croniot.jooq.tables.records.ParameterTaskRecord
-import com.server.croniot.jooq.tables.records.SensorTypeRecord
-import com.server.croniot.jooq.tables.records.TaskTypeRecord
 import com.server.croniot.data.db.entities.AccountEntity
 import com.server.croniot.data.db.entities.DeviceEntity
 import com.server.croniot.data.db.entities.ParameterSensorConstraintEntity
@@ -28,8 +8,26 @@ import com.server.croniot.data.db.entities.ParameterTaskConstraintEntity
 import com.server.croniot.data.db.entities.ParameterTaskEntity
 import com.server.croniot.data.db.entities.SensorTypeEntity
 import com.server.croniot.data.db.entities.TaskTypeEntity
-
+import com.server.croniot.jooq.tables.Account.Companion.ACCOUNT
+import com.server.croniot.jooq.tables.Device.Companion.DEVICE
+import com.server.croniot.jooq.tables.ParameterSensor.Companion.PARAMETER_SENSOR
+import com.server.croniot.jooq.tables.ParameterSensorConstraints.Companion.PARAMETER_SENSOR_CONSTRAINTS
+import com.server.croniot.jooq.tables.ParameterTask.Companion.PARAMETER_TASK
+import com.server.croniot.jooq.tables.ParameterTaskConstraints.Companion.PARAMETER_TASK_CONSTRAINTS
+import com.server.croniot.jooq.tables.SensorType.Companion.SENSOR_TYPE
+import com.server.croniot.jooq.tables.TaskType.Companion.TASK_TYPE
+import com.server.croniot.jooq.tables.records.DeviceRecord
+import com.server.croniot.jooq.tables.records.ParameterSensorConstraintsRecord
+import com.server.croniot.jooq.tables.records.ParameterSensorRecord
+import com.server.croniot.jooq.tables.records.ParameterTaskConstraintsRecord
+import com.server.croniot.jooq.tables.records.ParameterTaskRecord
+import com.server.croniot.jooq.tables.records.SensorTypeRecord
+import com.server.croniot.jooq.tables.records.TaskTypeRecord
+import croniot.models.*
 import croniot.models.Device
+import org.jooq.DSLContext
+import org.jooq.impl.DSL.using
+import javax.inject.Inject
 
 class AccountJooqDaoImpl @Inject constructor(
     private val dsl: DSLContext,
@@ -204,10 +202,13 @@ class AccountJooqDaoImpl @Inject constructor(
         }
 
         val pRecs: List<ParameterSensorRecord> =
-            if (stIds.isEmpty()) emptyList()
-            else tx.selectFrom(PARAMETER_SENSOR)
-                .where(PARAMETER_SENSOR.SENSOR_TYPE.`in`(stIds))
-                .fetch()
+            if (stIds.isEmpty()) {
+                emptyList()
+            } else {
+                tx.selectFrom(PARAMETER_SENSOR)
+                    .where(PARAMETER_SENSOR.SENSOR_TYPE.`in`(stIds))
+                    .fetch()
+            }
 
         val pEntities = mutableListOf<ParameterSensorEntity>()
         val pIds = mutableSetOf<Long>()
@@ -230,10 +231,13 @@ class AccountJooqDaoImpl @Inject constructor(
         }
 
         val cRecs: List<ParameterSensorConstraintsRecord> =
-            if (pIds.isEmpty()) emptyList()
-            else tx.selectFrom(PARAMETER_SENSOR_CONSTRAINTS)
-                .where(PARAMETER_SENSOR_CONSTRAINTS.PARAMETER_ID.`in`(pIds))
-                .fetch()
+            if (pIds.isEmpty()) {
+                emptyList()
+            } else {
+                tx.selectFrom(PARAMETER_SENSOR_CONSTRAINTS)
+                    .where(PARAMETER_SENSOR_CONSTRAINTS.PARAMETER_ID.`in`(pIds))
+                    .fetch()
+            }
 
         val cEntities = mutableListOf<ParameterSensorConstraintEntity>()
         for (r in cRecs) {
@@ -292,10 +296,13 @@ class AccountJooqDaoImpl @Inject constructor(
         }
 
         val ptRecs: List<ParameterTaskRecord> =
-            if (ttIds.isEmpty()) emptyList()
-            else tx.selectFrom(PARAMETER_TASK)
-                .where(PARAMETER_TASK.TASK_TYPE.`in`(ttIds))
-                .fetch()
+            if (ttIds.isEmpty()) {
+                emptyList()
+            } else {
+                tx.selectFrom(PARAMETER_TASK)
+                    .where(PARAMETER_TASK.TASK_TYPE.`in`(ttIds))
+                    .fetch()
+            }
 
         val ptEntities = mutableListOf<ParameterTaskEntity>()
         val ptIds = mutableSetOf<Long>()
@@ -318,10 +325,13 @@ class AccountJooqDaoImpl @Inject constructor(
         }
 
         val cRecs: List<ParameterTaskConstraintsRecord> =
-            if (ptIds.isEmpty()) emptyList()
-            else tx.selectFrom(PARAMETER_TASK_CONSTRAINTS)
-                .where(PARAMETER_TASK_CONSTRAINTS.PARAMETER_ID.`in`(ptIds))
-                .fetch()
+            if (ptIds.isEmpty()) {
+                emptyList()
+            } else {
+                tx.selectFrom(PARAMETER_TASK_CONSTRAINTS)
+                    .where(PARAMETER_TASK_CONSTRAINTS.PARAMETER_ID.`in`(ptIds))
+                    .fetch()
+            }
 
         val cEntities = mutableListOf<ParameterTaskConstraintEntity>()
         for (r in cRecs) {

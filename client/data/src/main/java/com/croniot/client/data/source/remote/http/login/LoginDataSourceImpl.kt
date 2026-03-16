@@ -16,7 +16,9 @@ class LoginDataSourceImpl(
         return try {
             val resp = api.login(request)
             if (!resp.isSuccessful) throw HttpException(resp)
-            Outcome.Ok(resp.body() ?: error("Empty body"))
+            val body = resp.body()
+                ?: return Outcome.Err(AuthError.Server("Empty response body"))
+            Outcome.Ok(body)
         } catch (e: ConnectException) {
             Outcome.Err(AuthError.Network)
         } catch (e: UnknownHostException) {
