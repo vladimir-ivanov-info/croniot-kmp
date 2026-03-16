@@ -82,6 +82,8 @@ kotlin {
             kotlin.srcDirs("src/test/java", "src/test/kotlin")
             dependencies {
                 implementation(libs.junit.jupiter)
+                runtimeOnly(libs.junit.jupiter.engine)
+                runtimeOnly(libs.junit.platform.launcher)
             }
         }
         val androidInstrumentedTest by getting {

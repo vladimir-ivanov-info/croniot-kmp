@@ -1,41 +1,51 @@
 package com.croniot.client.features.login.presentation
 
+import Outcome
 import androidx.lifecycle.SavedStateHandle
+import com.croniot.client.core.models.auth.AuthError
+import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.LogInUseCase
+import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
-import Outcome
-import com.croniot.client.core.models.auth.AuthError
-import kotlinx.coroutines.launch
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
 
-    private lateinit var viewModel: LoginViewModel
-    private lateinit var loginUseCase: LogInUseCase
     private val testDispatcher = StandardTestDispatcher()
+
+    private lateinit var loginUseCase: LogInUseCase
+    private lateinit var localDataRepository: LocalDataRepository
+    private lateinit var startDeviceListenersUseCase: StartDeviceListenersUseCase
+    private lateinit var viewModel: LoginViewModel
 
     @BeforeEach
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        loginUseCase = mockk<LogInUseCase>()
+        loginUseCase = mockk()
+        localDataRepository = mockk()
+        startDeviceListenersUseCase = mockk()
+
         viewModel = LoginViewModel(
             loginUseCase = loginUseCase,
-            savedStateHandle = SavedStateHandle()
+            localDataRepository = localDataRepository,
+            startDeviceListenersUseCase = startDeviceListenersUseCase,
+            savedStateHandle = SavedStateHandle(),
         )
     }
 
@@ -46,15 +56,14 @@ class LoginViewModelTest {
 
     @Test
     fun `initial state is correct`() = runTest {
-        val state = viewModel.state.value
-        assertFalse(state.isLoading)
+        assertFalse(viewModel.state.value.isLoading)
     }
 
     @Test
     fun `on EmailChanged action, state is updated`() = runTest {
         val newEmail = "test@example.com"
         viewModel.onAction(LoginIntent.EmailChanged(newEmail))
-        
+
         assertEquals(newEmail, viewModel.state.value.email)
     }
 
@@ -62,13 +71,14 @@ class LoginViewModelTest {
     fun `on PasswordChanged action, state is updated`() = runTest {
         val newPassword = "new_password"
         viewModel.onAction(LoginIntent.PasswordChanged(newPassword))
-        
+
         assertEquals(newPassword, viewModel.state.value.password)
     }
 
     @Test
     fun `on Login success, navigates home`() = runTest {
         coEvery { loginUseCase(any(), any()) } returns Outcome.Ok(Unit)
+        coEvery { localDataRepository.getCurrentAccount() } returns null
 
         val effects = mutableListOf<LoginEffect>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -76,9 +86,8 @@ class LoginViewModelTest {
         }
 
         viewModel.onAction(LoginIntent.Login)
-        
         advanceUntilIdle()
-        
+
         assertFalse(viewModel.state.value.isLoading)
         assertEquals(1, effects.size)
         assertEquals(LoginEffect.NavigateHome, effects.first())
@@ -86,9 +95,8 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `on Login failure, shows snackbar`() = runTest {
-        val error = AuthError.InvalidCredentials
-        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(error)
+    fun `on Login failure, shows snackbar with correct message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.InvalidCredentials)
 
         val effects = mutableListOf<LoginEffect>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -96,9 +104,8 @@ class LoginViewModelTest {
         }
 
         viewModel.onAction(LoginIntent.Login)
-        
         advanceUntilIdle()
-        
+
         assertFalse(viewModel.state.value.isLoading)
         assertEquals(1, effects.size)
         val effect = effects.first()
@@ -115,7 +122,7 @@ class LoginViewModelTest {
         }
 
         viewModel.onAction(LoginIntent.GoToCreateAccountScreen)
-        
+
         assertEquals(1, effects.size)
         assertEquals(LoginEffect.NavigateToRegisterAccount, effects.first())
         job.cancel()
@@ -129,7 +136,7 @@ class LoginViewModelTest {
         }
 
         viewModel.onAction(LoginIntent.GoToConfigurationScreen)
-        
+
         assertEquals(1, effects.size)
         assertEquals(LoginEffect.NavigateToConfiguration, effects.first())
         job.cancel()
