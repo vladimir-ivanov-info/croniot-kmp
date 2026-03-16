@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAlarm
@@ -38,10 +39,11 @@ fun TaskTypeItem(
     Card(
         onClick = onTaskTypeClicked,
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -56,7 +58,7 @@ fun TaskTypeItem(
             Icon(
                 imageVector = if (taskType.isInstant()) Icons.Default.Bolt else Icons.Default.AddAlarm,
                 contentDescription = if (taskType.isInstant()) "Instant task" else "Scheduled task",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
             )
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -71,9 +73,9 @@ fun TaskTypeItem(
                     text = secondaryText.ifEmpty { "\u00A0" },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (secondaryText.isNotEmpty()) {
-                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                     } else {
-                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0f)
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0f)
                     },
                 )
             }
@@ -83,7 +85,7 @@ fun TaskTypeItem(
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.45f)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f)
             )
         }
     }
