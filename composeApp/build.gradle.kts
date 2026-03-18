@@ -43,13 +43,17 @@ android {
         testInstrumentationRunner = "com.karumi.shot.ShotTestRunner"
     }
 
-    signingConfigs {
-        create("release") {
-            storeFile = file(System.getenv("ANDROID_UPLOAD_KEYSTORE_PATH"))
-            storePassword = System.getenv("ANDROID_UPLOAD_KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("ANDROID_UPLOAD_KEY_ALIAS")
-            keyPassword = System.getenv("ANDROID_UPLOAD_KEY_PASSWORD")
-            storeType = "PKCS12"
+    val keystorePath = System.getenv("ANDROID_UPLOAD_KEYSTORE_PATH")
+
+    if (keystorePath != null) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("ANDROID_UPLOAD_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_UPLOAD_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_UPLOAD_KEY_PASSWORD")
+                storeType = "PKCS12"
+            }
         }
     }
 
@@ -81,8 +85,9 @@ android {
         }
         getByName("release") {
             isMinifyEnabled = false
-            //signingConfig = signingConfigs.getByName("debug")
-            signingConfig = signingConfigs.getByName("release")
+            if (keystorePath != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     compileOptions {
