@@ -64,5 +64,5 @@ jobs:
         with:
           name: release-aab-signed
           path: |
-            composeApp/**/*.aab
+            composeApp/release/*.aab
           retention-days: 30
