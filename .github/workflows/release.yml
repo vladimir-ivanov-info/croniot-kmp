@@ -52,6 +52,8 @@ jobs:
             -keystore "$ANDROID_UPLOAD_KEYSTORE_PATH" \
             -storetype PKCS12 \
             -storepass "$ANDROID_UPLOAD_KEYSTORE_PASSWORD"
+      - name: Clean
+        run: ./gradlew clean
 
       - name: Build signed Release AAB
         run: ./gradlew :composeApp:bundleRelease --stacktrace --info
@@ -68,6 +70,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-aab-signed
-          path: |
-            composeApp/release/*.aab
+          path: composeApp/build/outputs/bundle/release/composeApp-release.aab
+          if-no-files-found: error
           retention-days: 30
