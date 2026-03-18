@@ -45,22 +45,11 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePath = System.getenv("ANDROID_UPLOAD_KEYSTORE_PATH")
-            val keystorePassword = System.getenv("ANDROID_UPLOAD_KEYSTORE_PASSWORD")
-            val keyAliasEnv = System.getenv("ANDROID_UPLOAD_KEY_ALIAS")
-            val keyPasswordEnv = System.getenv("ANDROID_UPLOAD_KEY_PASSWORD")
-
-            if (
-                !keystorePath.isNullOrBlank() &&
-                !keystorePassword.isNullOrBlank() &&
-                !keyAliasEnv.isNullOrBlank() &&
-                !keyPasswordEnv.isNullOrBlank()
-            ) {
-                storeFile = file(keystorePath)
-                storePassword = keystorePassword
-                keyAlias = keyAliasEnv
-                keyPassword = keyPasswordEnv
-            }
+            storeFile = file(System.getenv("ANDROID_UPLOAD_KEYSTORE_PATH"))
+            storePassword = System.getenv("ANDROID_UPLOAD_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("ANDROID_UPLOAD_KEY_ALIAS")
+            keyPassword = System.getenv("ANDROID_UPLOAD_KEY_PASSWORD")
+            storeType = "PKCS12"
         }
     }
 
