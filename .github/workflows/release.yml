@@ -58,12 +58,11 @@ jobs:
 
       - name: Inspect AAB outputs
         run: |
-	    echo "AABs encontrados:"
-	    find . -name "*.aab" -type f | sort
-
-	    echo ""
-	    echo "Contenido de composeApp:"
-	    find composeApp -maxdepth 3 -type f | sort
+          echo "AABs encontrados:"
+          find . -name "*.aab" -type f | sort
+          echo ""
+          echo "Contenido de composeApp:"
+          find composeApp -maxdepth 3 -type f | sort
 
       - name: Upload signed AAB
         uses: actions/upload-artifact@v4
