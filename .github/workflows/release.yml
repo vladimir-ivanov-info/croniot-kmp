@@ -73,3 +73,27 @@ jobs:
           path: composeApp/build/outputs/bundle/release/composeApp-release.aab
           if-no-files-found: error
           retention-days: 30
+  upload-play:
+    runs-on: ubuntu-latest
+    needs: build-release
+
+    steps:
+      - name: Download signed AAB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-aab-signed
+          path: artifacts
+
+      - name: Inspect downloaded artifacts
+        run: |
+          echo "Artifacts descargados:"
+          find artifacts -type f | sort
+
+      - name: Upload to Google Play Internal
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.croniot.android
+          releaseFiles: artifacts/composeApp-release.aab
+          track: internal
+          status: completed
