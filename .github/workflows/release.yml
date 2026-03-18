@@ -4,6 +4,10 @@ on:
   push:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-release:
     runs-on: ubuntu-latest
@@ -32,20 +36,29 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Release AAB
-        run: ./gradlew :composeApp:bundleRelease
-        
-      - name: Find AAB location
-        run: find . -name "*.aab" -type f
+        run: ./gradlew :composeApp:bundleRelease --stacktrace
+
+      # 🔍 Verificación REAL de outputs (muy útil en KMP)
+      - name: Inspect AAB outputs
+        run: |
+          echo "Buscando AAB generado..."
+          find . -name "*.aab" -type f
+
+          echo ""
+          echo "Contenido de composeApp:"
+          find composeApp -type f | sort
 
       - name: Sign AAB
         uses: r0adkll/sign-android-release@v1
         id: sign_aab
         with:
-          releaseDirectory: composeApp/real/release
-          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
+          releaseDirectory: composeApp/release
+          signingKeyBase64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          alias: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Upload signed AAB
         uses: actions/upload-artifact@v4

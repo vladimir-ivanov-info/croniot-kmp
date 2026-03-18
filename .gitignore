@@ -21,18 +21,21 @@ androidApp/build/
 *.apk
 *.ap_
 
+build/
+**/build/
+
 .gradle/
 .idea/
 .kotlinc/
 .compose-cache/
-**/build/
 *.iml
 local.properties
 .cxx/
 .externalNativeBuild/
 
 
-
+# KMP output custom
+composeApp/release/
 
 
 
