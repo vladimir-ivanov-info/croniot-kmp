@@ -134,7 +134,7 @@ private fun AuthError.toUserMessage(): String = when (this) {
 
 @Parcelize
 data class LoginState(
-    val email: String = if (AppConfig.isDemo) DEMO_EMAIL else "email1@gmail.com",
+    val email: String = /*if (AppConfig.isDemo) DEMO_EMAIL else*/ "email1@gmail.com",
     // val email: String = LoginViewModel.DEMO_EMAIL,
     val password: String = "password1",
     val isLoading: Boolean = false,

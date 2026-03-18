@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.croniot.android.BuildConfig
+//import com.croniot.android.BuildConfig
 import com.croniot.android.core.presentation.theme.IoTClientTheme
 import com.croniot.client.core.config.AppConfig
 
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        AppConfig.isDemo = BuildConfig.IS_DEMO
+        //AppConfig.isDemo = BuildConfig.IS_DEMO
 
         setContent {
             IoTClientTheme(dynamicColor = false) {
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-        AppConfig.isDemo = BuildConfig.IS_DEMO
+        //AppConfig.isDemo = BuildConfig.IS_DEMO
 
         askNotificationPermissionIfNecessary()
     }

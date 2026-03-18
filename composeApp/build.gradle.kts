@@ -43,8 +43,29 @@ android {
         testInstrumentationRunner = "com.karumi.shot.ShotTestRunner"
     }
 
-    flavorDimensions += "backend"
-    productFlavors {
+    signingConfigs {
+        create("release") {
+            val keystorePath = System.getenv("ANDROID_UPLOAD_KEYSTORE_PATH")
+            val keystorePassword = System.getenv("ANDROID_UPLOAD_KEYSTORE_PASSWORD")
+            val keyAliasEnv = System.getenv("ANDROID_UPLOAD_KEY_ALIAS")
+            val keyPasswordEnv = System.getenv("ANDROID_UPLOAD_KEY_PASSWORD")
+
+            if (
+                !keystorePath.isNullOrBlank() &&
+                !keystorePassword.isNullOrBlank() &&
+                !keyAliasEnv.isNullOrBlank() &&
+                !keyPasswordEnv.isNullOrBlank()
+            ) {
+                storeFile = file(keystorePath)
+                storePassword = keystorePassword
+                keyAlias = keyAliasEnv
+                keyPassword = keyPasswordEnv
+            }
+        }
+    }
+
+    //flavorDimensions += "backend"
+    /*productFlavors {
         create("demo") {
             dimension = "backend"
             applicationIdSuffix = ".demo"
@@ -57,7 +78,7 @@ android {
             buildConfigField("boolean", "IS_DEMO", "false")
             resValue("string", "app_name", "Croniot")
         }
-    }
+    }*/
 
     packaging {
         resources {
@@ -71,7 +92,8 @@ android {
         }
         getByName("release") {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            //signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
