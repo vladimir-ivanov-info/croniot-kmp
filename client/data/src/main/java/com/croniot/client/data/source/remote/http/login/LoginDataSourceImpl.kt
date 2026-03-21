@@ -8,7 +8,7 @@ import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-
+//TODO logs
 class LoginDataSourceImpl(
     private val api: LoginApi,
 ) : LoginDataSource {
@@ -24,7 +24,7 @@ class LoginDataSourceImpl(
         } catch (e: UnknownHostException) {
             Outcome.Err(AuthError.Network)
         } catch (e: SocketTimeoutException) {
-            android.util.Log.e("LoginDataSource", "Timeout: ${e.message}", e)
+            //android.util.Log.e("LoginDataSource", "Timeout: ${e.message}", e)
             Outcome.Err(AuthError.NetworkTiemout)
         } catch (e: HttpException) {
             when (e.code()) {
@@ -32,7 +32,7 @@ class LoginDataSourceImpl(
                 else -> Outcome.Err(AuthError.Server(e.message()))
             }
         } catch (e: Exception) {
-            android.util.Log.e("LoginDataSource", "Unexpected error: ${e.javaClass.simpleName}: ${e.message}", e)
+            //android.util.Log.e("LoginDataSource", "Unexpected error: ${e.javaClass.simpleName}: ${e.message}", e)
             Outcome.Err(AuthError.Unknown)
         }
     }

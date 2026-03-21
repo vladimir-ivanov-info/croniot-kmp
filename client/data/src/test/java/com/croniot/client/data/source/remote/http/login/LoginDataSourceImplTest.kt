@@ -88,7 +88,7 @@ class LoginDataSourceImplTest {
 
         val result = dataSource.login(loginRequest)
 
-        assertEquals(Outcome.Err(AuthError.Network), result)
+        assertEquals(Outcome.Err(AuthError.NetworkTiemout), result)
     }
 
     @Test
