@@ -1,17 +1,22 @@
 package com.croniot.client.data.source.remote.http
 
 import com.croniot.client.core.config.ServerConfig
+import com.croniot.client.data.source.local.LocalDatasource
 import croniot.messages.MessageFactory
 import croniot.models.Result
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
 
-class NetworkUtilImpl : NetworkUtil {
+class NetworkUtilImpl(
+    private val localDatasource: LocalDatasource,
+) : NetworkUtil {
 
     override suspend fun post(endPoint: String, postData: String): Result {
-        val url = "http://${ServerConfig.SERVER_ADDRESS}:${ServerConfig.SERVER_PORT}$endPoint"
+        val ip = localDatasource.getServerIp().first() //?: ServerConfig.SERVER_ADDRESS
+        val url = "https://${ip}:${ServerConfig.SERVER_PORT}$endPoint"
         return withContext(Dispatchers.IO) {
             performPostRequest(url, postData)
         }

@@ -17,9 +17,9 @@ interface TasksRepository {
 
     suspend fun fetchTasks(deviceUuid: String): Outcome<List<Task>, TaskError>
 
-    fun listenTasks(deviceUuid: String)
+    suspend fun listenTasks(deviceUuid: String)
 
-    fun listenTaskStateInfos(deviceUuid: String)
+    suspend fun listenTaskStateInfos(deviceUuid: String)
 
     suspend fun stopAllListeners()
 

@@ -18,10 +18,6 @@ interface LocalDatasource {
 
     suspend fun saveIsForegroundServiceEnabled(foregroundServiceEnabled: Boolean)
 
-    suspend fun getServerAddress(): String
-
-    suspend fun saveServerAddress(serverAddress: String)
-
     suspend fun generateAndSaveDeviceUuidIfNotExists()
 
     suspend fun getCurrentScreen(): String?

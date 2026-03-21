@@ -6,6 +6,6 @@ import croniot.models.Result
 class RegisterAccountUseCase(
     private val repository: RegisterAccountRepository,
 ) {
-    suspend operator fun invoke(nickname: String, email: String, password: String): Result =
-        repository.registerAccount(nickname, email, password)
+    suspend operator fun invoke(nickname: String, email: String, password: String)
+        = repository.registerAccount(nickname, email, password)
 }

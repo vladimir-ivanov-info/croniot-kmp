@@ -10,26 +10,20 @@ import com.croniot.client.domain.repositories.TasksRepository
 import croniot.messages.MessageAddTask
 import croniot.models.TaskKey
 import croniot.models.TaskState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import onSuccess
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource,
-    private val appScope: CoroutineScope,
 ) : TasksRepository {
 
     private val tasksByDevice = ConcurrentHashMap<String, CopyOnWriteArrayList<Task>>()
 
     private val newTaskFlowByDevice = ConcurrentHashMap<String, MutableSharedFlow<Task>>()
-    private val newTaskListenerJobs = ConcurrentHashMap<String, Job>()
 
     private fun taskFlowFor(deviceUuid: String): MutableSharedFlow<Task> {
         return newTaskFlowByDevice.getOrPut(deviceUuid) {
@@ -42,7 +36,6 @@ class TasksRepositoryImpl(
     }
 
     private val taskStateInfoFlowByDevice = ConcurrentHashMap<String, MutableSharedFlow<TaskStateInfoEvent>>()
-    private val taskStateInfoListenerJobs = ConcurrentHashMap<String, Job>()
     private val latestStateByTaskKey = ConcurrentHashMap<TaskKey, TaskStateInfo>()
 
     private fun taskStateInfoFlowFor(deviceUuid: String): MutableSharedFlow<TaskStateInfoEvent> {
@@ -72,22 +65,16 @@ class TasksRepositoryImpl(
             }
     }
 
-    override fun listenTasks(deviceUuid: String) {
-        synchronized(newTaskListenerJobs) {
-            if (newTaskListenerJobs[deviceUuid]?.isActive == true) return
-            val taskFlow = taskFlowFor(deviceUuid)
+    override suspend fun listenTasks(deviceUuid: String) {
+        val taskFlow = taskFlowFor(deviceUuid)
+        tasksDataSource.listenTasks(deviceUuid) { task ->
+            tasksByDevice.getOrPut(deviceUuid) { CopyOnWriteArrayList() }.add(task)
+            taskFlow.tryEmit(task)
 
-            newTaskListenerJobs[deviceUuid] = tasksDataSource.observeTasks(deviceUuid) // cold
-                .onEach { task ->
-                    tasksByDevice.getOrPut(deviceUuid) { CopyOnWriteArrayList() }.add(task)
-                    taskFlow.tryEmit(task)
-
-                    val key = TaskKey(deviceUuid = deviceUuid, taskUid = task.uid, taskTypeUid = task.taskTypeUid)
-                    val initialState = task.initialTaskStateInfo ?: return@onEach
-                    latestStateByTaskKey[key] = initialState
-                    taskStateInfoFlowFor(deviceUuid).tryEmit(TaskStateInfoEvent(key = key, info = initialState))
-                }
-                .launchIn(appScope)
+            val key = TaskKey(deviceUuid = deviceUuid, taskUid = task.uid, taskTypeUid = task.taskTypeUid)
+            val initialState = task.initialTaskStateInfo ?: return@listenTasks
+            latestStateByTaskKey[key] = initialState
+            taskStateInfoFlowFor(deviceUuid).tryEmit(TaskStateInfoEvent(key = key, info = initialState))
         }
     }
 
@@ -96,31 +83,18 @@ class TasksRepositoryImpl(
     override fun observeTaskStateInfoUpdates(deviceUuid: String): Flow<TaskStateInfoEvent> =
         taskStateInfoFlowFor(deviceUuid)
 
-    override fun listenTaskStateInfos(deviceUuid: String) {
-        synchronized(taskStateInfoListenerJobs) {
-            if (taskStateInfoListenerJobs[deviceUuid]?.isActive == true) return
-            val shared = taskStateInfoFlowFor(deviceUuid)
-
-            taskStateInfoListenerJobs[deviceUuid] = tasksDataSource.observeTaskStateInfos(deviceUuid)
-                .onEach { event ->
-                    latestStateByTaskKey[event.key] = event.info
-                    shared.tryEmit(event)
-                }
-                .launchIn(appScope)
+    override suspend fun listenTaskStateInfos(deviceUuid: String) {
+        val shared = taskStateInfoFlowFor(deviceUuid)
+        tasksDataSource.listenTaskStateInfos(deviceUuid) { event ->
+            latestStateByTaskKey[event.key] = event.info
+            shared.tryEmit(event)
         }
     }
 
     override suspend fun stopAllListeners() {
-        synchronized(newTaskListenerJobs) {
-            newTaskListenerJobs.values.forEach { it.cancel() }
-            newTaskListenerJobs.clear()
-            newTaskFlowByDevice.clear()
-        }
-        synchronized(taskStateInfoListenerJobs) {
-            taskStateInfoListenerJobs.values.forEach { it.cancel() }
-            taskStateInfoListenerJobs.clear()
-            taskStateInfoFlowByDevice.clear()
-        }
+        tasksDataSource.stopAllListeners()
+        newTaskFlowByDevice.clear()
+        taskStateInfoFlowByDevice.clear()
         tasksByDevice.clear()
         latestStateByTaskKey.clear()
     }

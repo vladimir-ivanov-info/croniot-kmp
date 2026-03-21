@@ -26,7 +26,8 @@ object NetworkModule {
             OkHttpClient.Builder()
                 .certificatePinner(
                     CertificatePinner.Builder()
-                        .add("192.168.50.163", "sha256/Znxl+y8ZODYcvOarE+j2P9ppHbnBZVDwyrN9xQ/sjuI=")
+                        .add("192.168.50.163", "sha256/j7Mb7eZ+xUbg6tPxNcWOttDXzoAlppLSMBk8mZI0sak=")
+                        .add("57.131.29.79", "sha256/j7Mb7eZ+xUbg6tPxNcWOttDXzoAlppLSMBk8mZI0sak=")
                         .build()
                 )
                 .addInterceptor(get<HostSelectionInterceptor>())
@@ -36,13 +37,19 @@ object NetworkModule {
         single<Retrofit> {
             val contentType = "application/json".toMediaType()
             Retrofit.Builder()
-                .baseUrl("https://192.168.50.163:8443/")
+                //.baseUrl("https://192.168.50.163:8443/")
+                .baseUrl("https://57.131.29.79:8443/")
                 .client(get())
                 .addConverterFactory(json.asConverterFactory(contentType))
                 .build()
         }
 
-        single<LoginApi> { get<Retrofit>().create(LoginApi::class.java) }
-        single<TaskConfigurationApiService> { get<Retrofit>().create(TaskConfigurationApiService::class.java) }
+        single<LoginApi> {
+            get<Retrofit>().create(LoginApi::class.java)
+        }
+
+        single<TaskConfigurationApiService> {
+            get<Retrofit>().create(TaskConfigurationApiService::class.java)
+        }
     }
 }

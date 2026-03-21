@@ -65,7 +65,7 @@ class ViewModelRegisterAccount(
 
             // TODO check all fields correct (not empty, etc) before registering
             withTimeoutOrNull(CREATE_ACCOUNT_TIMEOUT_MILLIS) {
-                val result = registerAccountUseCase.invoke(
+                val result = registerAccountUseCase(
                     nickname = state.value.nickname,
                     email = state.value.email,
                     password = state.value.password,

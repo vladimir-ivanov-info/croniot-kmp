@@ -36,8 +36,8 @@ android {
         applicationId = "com.croniot.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 4
-        versionName = "1.0"
+        versionCode = 5
+        versionName = "1.0-alpha1"
 
         //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner = "com.karumi.shot.ShotTestRunner"
@@ -84,7 +84,12 @@ android {
             isDebuggable = true
         }
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             if (keystorePath != null) {
                 signingConfig = signingConfigs.getByName("release")
             }
@@ -115,6 +120,7 @@ dependencies {
     implementation(libs.compose.runtime)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material)
+    implementation(libs.material.icons.extended)
     implementation(libs.compose.ui)
     implementation(libs.compose.resources)
     implementation(libs.compose.ui.tooling.preview)

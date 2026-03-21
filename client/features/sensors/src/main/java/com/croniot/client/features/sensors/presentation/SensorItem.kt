@@ -2,7 +2,6 @@ package com.croniot.client.features.sensors.presentation
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -83,8 +81,10 @@ fun SensorItem(
         else DateTimeUtil.formatRelativeTime(sensorData.timeStamp)
     }
 
-    val latestSensorValues by remember(chartValues) {
-        derivedStateOf { chartValues.mapNotNull { it.value.toFloatOrNull() } }
+    val latestSensorValues by remember {
+        derivedStateOf {
+            chartValues.mapNotNull { it.value.toFloatOrNull() }.toList()
+        }
     }
 
     val spokenSensorItem = remember(sensorType.name, valueText, hasData) {
@@ -101,18 +101,13 @@ fun SensorItem(
         label = "sensor-fade-in",
     )
 
-    Card(
+    OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .height(if (chartable) 140.dp else 80.dp)
             .graphicsLayer { this.alpha = alpha }
             .semantics(mergeDescendants = true) { contentDescription = spokenSensorItem },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             // Header: sensor name (label) + current value + timestamp

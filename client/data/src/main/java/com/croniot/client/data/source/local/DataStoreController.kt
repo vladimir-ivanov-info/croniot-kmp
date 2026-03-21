@@ -20,7 +20,7 @@ class DataStoreController(
 
     private val dataStore: DataStore<Preferences> = context.dataStore
 
-    val KEY_SERVER_ADDRESS = stringPreferencesKey("server_address")
+    val KEY_SERVER_IP = stringPreferencesKey("server_ip")
     val KEY_CONFIGURATION_FOREGROUND_SERVICE = stringPreferencesKey("configuration_foreground_service")
     private val KEY_ACCOUNT = stringPreferencesKey("account")
     private val KEY_SELECTED_DEVICE = stringPreferencesKey("selected_device")
@@ -33,8 +33,6 @@ class DataStoreController(
     val KEY_CURRENT_SCREEN = stringPreferencesKey("current_screen")
 
     val KEY_CURRENT_ROUTE = stringPreferencesKey("current_route")
-
-    val KEY_SERVER_IP = stringPreferencesKey("server_ip")
 
     override suspend fun getCurrentRoute(): String? {
         return loadData(KEY_CURRENT_ROUTE).firstOrNull()
@@ -76,12 +74,12 @@ class DataStoreController(
         saveData(KEY_CONFIGURATION_FOREGROUND_SERVICE, stringValue)
     }
 
-    override suspend fun getServerAddress(): String {
-        return loadData(KEY_SERVER_ADDRESS).first() ?: "192.168.50.163" // TODO
+    override suspend fun getServerIp(): Flow<String?> {
+        return loadData(KEY_SERVER_IP)
     }
 
-    override suspend fun saveServerAddress(serverAddress: String) {
-        saveData(KEY_SERVER_ADDRESS, serverAddress)
+    override suspend fun saveServerIp(serverIp: String) {
+        saveData(KEY_SERVER_IP, serverIp)
     }
 
     override suspend fun generateAndSaveDeviceUuidIfNotExists() {
@@ -173,15 +171,17 @@ class DataStoreController(
         return loadData(KEY_SERVER_MODE)
     }
 
-    override suspend fun clearAllCacheExceptDeviceUuid() { // TODO and serverMode
+    override suspend fun clearAllCacheExceptDeviceUuid() {
         dataStore.edit { preferences ->
             val deviceUuid = preferences[KEY_DEVICE_UUID]
             val serverMode = preferences[KEY_SERVER_MODE]
+            val serverIp = preferences[KEY_SERVER_IP]
 
             preferences.clear()
 
             deviceUuid?.let { preferences[KEY_DEVICE_UUID] = it }
             serverMode?.let { preferences[KEY_SERVER_MODE] = it }
+            serverIp?.let { preferences[KEY_SERVER_IP] = it }
         }
     }
 
@@ -191,13 +191,5 @@ class DataStoreController(
 
     override suspend fun saveServerMode(serverMode: String) {
         saveData(KEY_SERVER_MODE, serverMode)
-    }
-
-    override suspend fun getServerIp(): Flow<String?> {
-        return loadData(KEY_SERVER_IP)
-    }
-
-    override suspend fun saveServerIp(serverIp: String) {
-        saveData(KEY_SERVER_IP, serverIp)
     }
 }

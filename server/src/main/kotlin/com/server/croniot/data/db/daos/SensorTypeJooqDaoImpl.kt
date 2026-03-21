@@ -184,7 +184,6 @@ class SensorTypeJooqDaoImpl @Inject constructor(
 
                     domainParams.add(
                         ParameterSensor(
-                            id = pId,
                             uid = pRec.uid ?: 0L,
                             name = pRec.name ?: "",
                             type = pRec.type ?: "",

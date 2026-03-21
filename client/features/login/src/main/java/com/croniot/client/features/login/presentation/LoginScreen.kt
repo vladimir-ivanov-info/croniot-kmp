@@ -185,6 +185,7 @@ fun LoginContent(
                 modifier = Modifier
                    // .shadow(elevation = 1.dp, shape = CircleShape)
                     .clip(CircleShape)
+                    .background(Color.White, CircleShape)
                     .border(
                         width = 1.dp,
                         brush = Brush.verticalGradient(
