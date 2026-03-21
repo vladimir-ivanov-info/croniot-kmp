@@ -29,7 +29,7 @@ build/
 .kotlinc/
 .compose-cache/
 *.iml
-local.properties
+*local.properties
 .cxx/
 .externalNativeBuild/
 
@@ -56,7 +56,7 @@ config/passwords.txt
 .vscode/
 
 # Kotlin metadata cache
-.kotlin/
+.kotlin/*
 
 #Ignore folder content
 /croniot-server*/
