@@ -1,107 +1,109 @@
 # Croniot
 
-## What is Croniot?
+**An IoT framework that connects devices to your smartphone — monitor sensors and trigger tasks — instantly or on a schedule, without rebuilding the stack for every project. Built with Kotlin Multiplatform (server + Android) and C++ (ESP32).**
 
-Croniot is a framework that connects IoT devices to your smartphone via a local or remote server, allowing you to monitor sensors and run tasks seamlessly.
+Croniot eliminates the repetitive infrastructure of IoT projects. You define your sensors and tasks on the device; the server and the Android app adapt automatically.
 
-This way you can easily monitor your IoT devices' sensors and run different tasks. All this data (sensors and tasks) is defined by you!
+---
 
-The system is composed by 3 parts: an IoT device, a server and a mobile app.
+## Architecture
 
-## Advantages
+```
+┌──────────────┐       MQTT / HTTP       ┌──────────────┐     HTTP / MQTT   ┌──────────────┐
+│   IoT Device │ ◄─────────────────────► │    Server    │ ◄───────────────► │  Android App │
+│   (ESP32)    │                         │   (Ktor)     │                   │  (Compose)   │
+└──────────────┘                         └──────┬───────┘                   └──────────────┘
+                                                │
+                                         ┌──────┴────────┐
+                                         │  PostgreSQL   │
+                                         │  + MQTT Broker│
+                                         └───────────────┘
+```
 
-The next time you want to make a new IoT project, forget about the repetitive code: 95% of the job is already done!
+| Component | Tech |
+|-----------|------|
+| **Android app** | Kotlin · Jetpack Compose · MVI · Coroutines & Flow · Koin · Room |
+| **Server** | Ktor · Coroutines · jOOQ · PostgreSQL · MQTT |
+| **Shared (KMP)** | Domain models · DTOs · Validation logic — single source of truth across client & server |
+| **IoT device** | C++ · ESP32 · MQTT · HTTP · [croniot-iot repo →](https://github.com/vladimir-ivanov-info/croniot-iot) |
+| **Infrastructure** | Docker Compose · GitHub Actions CI/CD (automated AAB signing & Play Store release) |
 
-❌ No need to:
+## Key technical decisions
 
-• Build a new server: Croniot provides a pre-configured server that runs locally or in Docker, handling data storage, transactions, and communication.
+- **Kotlin Multiplatform (KMP):** Domain models and DTOs live in `shared/commonMain`, ensuring end-to-end type consistency between client and server. A change to a DTO breaks at compile time, not at runtime.
+- **Self-describing devices:** Each IoT device registers its own sensors and tasks (with metadata: min/max, data type, units). The app renders UI dynamically — no hardcoded screens per device.
+- **Clean Architecture + MVI:** Layered separation (data → domain → presentation) with unidirectional data flow.
+- **Docker Compose orchestration:** One command (`docker compose up`) starts PostgreSQL.
 
-• Develop a mobile app: Croniot includes a ready-made app to monitor and control your IoT devices.
+## What Croniot gives you out of the box
 
-• Write repetitive IoT code: WiFi management, credential storage, and MQTT/HTTP communication are already built-in.
+The next time you start an IoT project, **99 % of the work is already done:**
 
-✅ Focus on your project-specific code:
+| You skip | You focus on | Or just reuse |
+|----------|-------------|---------------|
+| Building a server (data storage, auth, MQTT routing) | Sensor logic: extract and format your hardware data | Built-in sensors like `WiFiSensor` — a few lines of code |
+| Developing a mobile app (UI, networking, state) | Task logic: define what happens when you trigger a task remotely | Built-in tasks like `Water plants` — configure and go |
+| Writing WiFi/MQTT/HTTP boilerplate on the device | Your project-specific business logic | Pre-made device templates for common setups |
 
-• For each sensor, implement code to extract and format data.
+## App walkthrough
 
-• For each task, define the execution code, which you will trigger remotely from your smartphone.
+<!-- Recommended: 4–5 screenshots max. Show the core flow. -->
 
-<br>
+| Login | Your devices | Device's sensors
+|-------|-------------|---------------|
+| <img src="https://github.com/user-attachments/assets/ea270666-e5f2-4916-bacb-aed2ad865535" width="320"> | <img src="https://github.com/user-attachments/assets/cd27be2e-1d4f-46ed-a95f-bbec3fe6605d" width="320"> | <img src="https://github.com/user-attachments/assets/d358e151-9356-4e53-bb6c-8f6e5ca79828" width="320"> |
 
-Croniot saves time both in development and for end-users through the projects created with it.
+| Device's task types | Scheduled task | Stateful task
+|-------|-------------|---------------|
+| <img src="https://github.com/user-attachments/assets/c3ffa9cd-32e9-45f0-9d6f-8a593c10ac07" width="320"> | <img src="https://github.com/user-attachments/assets/84161598-574b-4171-a8ba-ec5840636a6f" width="320"> | <img src="https://github.com/user-attachments/assets/44c3d697-619d-4d16-856c-4f63870e46c7" width="320"> |
 
-What you see on the images is just a basic version of what Croniot can do right now. The functionalities are constantly being expanded with the aim of covering more use cases and making the framework even easier to use.
+1. **Register / Log in** — standard auth flow.
+2. **Device list** — shows all IoT devices linked to your account.
+3. **Sensors tab** — live graphs rendered from device-reported metadata (type, range, units).
+4. **Task types tab** — select a task the device supports, configure parameters, and send it.
 
-## This git repository
+## Quick start
 
-This is a Kotlin Multiplatform repository that contains the code of the Android app and the server. The IoT project is here: https://github.com/vladimir-ivanov-info/croniot-iot
+### Prerequisites
 
-## Quick start (beginner friendly)
+- Docker & Docker Compose
+- Android Studio (Panda)
+- An ESP32 board, PlatformIO and ESP IDF (for the IoT side)
 
-### Server (Linux tested, also works on Windows)
+### Run the server
 
-Install docker-compose.<br><br>
-Navigate to /server/ in your terminal.<br><br>
-run `docker-compose up` to start the PostgreSQL database and server.<br><br>
-Now you have a PostgreSQL database the server can use to store the data.<br><br>
-Run the server.<br><br>
+Install, configure and run mosquitto.
 
-//TODO
+```bash
+cd server/
+docker compose up        # starts PostgreSQL
+```
 
-### Android
 
-The following images show how the app works.
 
-First, you register your account.
 
-After that, your IoT uses your credentials to register itself, telling the server about the sensors that it has and tasks that it can perform (not shown on the images).
+### Run the Android app
 
-Then you log in and see a list with all your devices. In this case there is only one IoT device, which is my watering system.
+Open the project in Android Studio, select the `composeApp` run configuration, and deploy to a device or emulator.
 
-When you click on the device, you can see a screen with 3 tabs that show this device's information..
+### Set up an IoT device
 
-The 1st tab "Sensors" shows all the sensors' information in a graph. The app knows how to graphically represent the values (minimum, maximum, whether it's a number or a string, etc.) because the IoT device told all the necesary information.
+See the [croniot-iot repository](https://github.com/vladimir-ivanov-info/croniot-iot) for wiring, flashing, and configuration instructions.
 
-The 2nd tab "Task types" shows all the tasks that the IoT device can perform. When you click on a task, it lets you configure all the necessary values that the device expects in order to run the task. In this case, I choose that I want to water my plants for 374 seconds. After we press on the Add task button, the IoT device will run the task with the given parameters.
+## Project structure
 
-The 3rd tab "Tasks" shows the history of the tasks and the state in which they are (created, running, completed, error, etc.).
+```
+croniot-kmp/
+├── composeApp/          # Android app (Jetpack Compose)
+│   ├── commonMain/      # Shared Compose UI logic
+│   └── androidMain/     # Android-specific code
+├── server/              # Ktor server application
+│   └── docker-compose.yml
+├── shared/              # KMP shared module
+│   └── commonMain/      # Domain models, DTOs, validation
+└── .github/workflows/   # CI/CD pipeline
+```
 
-<img src="https://github.com/user-attachments/assets/0c0e8ac6-49d4-42e5-ac8a-05496354d38b" alt="Login screen" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/c3e16069-1856-4eff-8514-6d06949631f7" alt="Account register screen" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/ea69cf7f-9a79-46cc-9316-1b1cd8b978cb" alt="Account registered successfully" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/68d51fd7-8251-4c8e-b3a4-5b4c144a2f9c" alt="Devices screen" width="270" height="600">
-<img src="https://github.com/user-attachments/assets/01653b76-c344-498c-9291-4cda0fed03d8" alt="Sensors screen" width="270" height="600">
+## Real-world usage
 
-<img src="https://github.com/user-attachments/assets/64010582-73c5-4911-84ec-f284d4c5251f" alt="Tasks' history" width="270" height="600">
-
-<img src="https://github.com/user-attachments/assets/d3af0540-8f41-430c-bba6-07a03a7f9f7d" alt="Tasks' history" width="270" height="600">
-
-<img src="https://github.com/user-attachments/assets/ccb5e7b1-d831-42dc-91e1-93ed50b5dd0c" alt="Tasks' history" width="270" height="600">
-
-<img src="https://github.com/user-attachments/assets/f395cf9b-ccf4-433f-8e5d-610cf1cbc0dc" alt="Tasks' history" width="270" height="600">
-
-### IoT
-
-Go to https://github.com/vladimir-ivanov-info/croniot-iot and read the corresponding section.
-
-## Usage
-
-croniot is used in different projects: watering system, anti-theft systems for e-scooters and bikes. Github links will be attached in this section after being uploaded.
-
-## Contributing
-
-- Croniot
-
-- `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
-
-- `/server` is for the Ktor server application.
-
-- `/shared` is for the code that will be shared between all targets in the project.
-  The most important subfolder is `commonMain`. If preferred, you can add code to the platform-specific folders here too.
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+Croniot is already used in personal projects including an automated watering system and anti-theft 4G+GNSS tracking for e-scooters and bikes.

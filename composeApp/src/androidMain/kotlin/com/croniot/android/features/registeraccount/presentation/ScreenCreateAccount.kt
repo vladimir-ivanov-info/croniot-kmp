@@ -1,7 +1,9 @@
 package com.croniot.android.features.registeraccount.presentation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -27,9 +29,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import com.croniot.android.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.presentation.components.EmailTextField
 import com.croniot.client.presentation.components.PasswordTextField
@@ -123,8 +135,14 @@ fun ScreenRegisterAccountBody(
             .padding(innerPadding)
             .fillMaxSize()
             .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Spacer(modifier = Modifier.weight(1f))
+
+        RegisterHeroText()
+
+        Spacer(modifier = Modifier.weight(1f))
+
         NicknameTextField(
             value = state.value.nickname,
             enabled = !state.value.isLoading,
@@ -168,5 +186,107 @@ fun ScreenRegisterAccountBody(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.weight(0.5f))
     }
+}
+
+@Composable
+private fun RegisterHeroText() {
+    val headlineAlpha = remember { Animatable(0f) }
+    val headlineOffsetY = remember { Animatable(8f) }
+    val subheadlineAlpha = remember { Animatable(0f) }
+    val subheadlineOffsetY = remember { Animatable(8f) }
+    val bridgeAlpha = remember { Animatable(0f) }
+    val bridgeOffsetY = remember { Animatable(8f) }
+
+    LaunchedEffect(Unit) {
+        delay(600)
+        launch {
+            headlineAlpha.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 4000, easing = LinearOutSlowInEasing),
+            )
+        }
+        launch {
+            headlineOffsetY.animateTo(
+                targetValue = 0f,
+                animationSpec = tween(durationMillis = 4000, easing = LinearOutSlowInEasing),
+            )
+        }
+        delay(1000)
+        launch {
+            subheadlineAlpha.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 4000, easing = LinearOutSlowInEasing),
+            )
+        }
+        launch {
+            subheadlineOffsetY.animateTo(
+                targetValue = 0f,
+                animationSpec = tween(durationMillis = 4000, easing = LinearOutSlowInEasing),
+            )
+        }
+        delay(1200)
+        launch {
+            bridgeAlpha.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 4000, easing = LinearOutSlowInEasing),
+            )
+        }
+        launch {
+            bridgeOffsetY.animateTo(
+                targetValue = 0f,
+                animationSpec = tween(durationMillis = 4000, easing = LinearOutSlowInEasing),
+            )
+        }
+    }
+
+    Text(
+        text = stringResource(R.string.register_headline),
+        style = MaterialTheme.typography.headlineSmall.copy(
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 1.sp,
+            lineHeight = 32.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+        ),
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer { translationY = headlineOffsetY.value }
+            .alpha(headlineAlpha.value),
+    )
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    Text(
+        text = stringResource(R.string.register_subheadline),
+        style = MaterialTheme.typography.bodyMedium.copy(
+            fontWeight = FontWeight.Light,
+            letterSpacing = 0.5.sp,
+            lineHeight = 22.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .graphicsLayer { translationY = subheadlineOffsetY.value }
+            .alpha(subheadlineAlpha.value),
+    )
+
+    Spacer(modifier = Modifier.height(20.dp))
+
+    Text(
+        text = stringResource(R.string.register_bridge),
+        style = MaterialTheme.typography.labelMedium.copy(
+            fontWeight = FontWeight.Normal,
+            letterSpacing = 0.8.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+        ),
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .graphicsLayer { translationY = bridgeOffsetY.value }
+            .alpha(bridgeAlpha.value),
+    )
 }

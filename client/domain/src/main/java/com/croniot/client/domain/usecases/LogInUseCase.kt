@@ -1,6 +1,7 @@
 package com.croniot.client.domain.usecases
 
 import Outcome
+import com.croniot.client.core.models.Device
 import com.croniot.client.core.models.auth.AuthError
 import com.croniot.client.core.models.auth.AuthSession
 import com.croniot.client.core.util.DevicePropertiesController
@@ -36,7 +37,38 @@ class LogInUseCase(
                     sessionRepository.save(
                         session = AuthSession(email = email, token = token),
                     )
-                    accountRepository.save(account = loginResult.value.account)
+                   // accountRepository.save(account = loginResult.value.account)
+                    accountRepository.save(
+                        account = loginResult.value.account.copy(
+                            devices = loginResult.value.account.devices + listOf(
+                                Device(
+                                    uuid = "mock-1",
+                                    name = "Coffee Maker",
+                                    description = ""
+                                ),
+                                Device(
+                                    uuid = "mock-2",
+                                    name = "E-Scooter",
+                                    description = ""
+                                ),
+                                Device(
+                                    uuid = "mock-3",
+                                    name = "Solar Panel",
+                                    description = ""
+                                ),
+                                Device(
+                                    uuid = "mock-4",
+                                    name = "Fish Tank",
+                                    description = ""
+                                ),
+                                Device(
+                                    uuid = "mock-5",
+                                    name = "Pet Feeder",
+                                    description = ""
+                                )
+                            )
+                        )
+                    )
                     localDataRepository.savePassword(password = password)
                     Outcome.Ok(Unit)
                 }
