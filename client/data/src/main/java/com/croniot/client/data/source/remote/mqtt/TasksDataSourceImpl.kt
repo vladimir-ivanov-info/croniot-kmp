@@ -9,6 +9,7 @@ import com.croniot.client.core.mappers.toModel
 import com.croniot.client.core.models.Task
 import com.croniot.client.core.models.events.TaskStateInfoEvent
 import com.croniot.client.core.util.StringUtil.generateUniqueString
+import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.data.source.remote.http.NetworkUtil
 import com.croniot.client.data.source.remote.http.TaskConfigurationApiService
 import com.croniot.client.data.util.TaggingSocketFactory
@@ -17,73 +18,80 @@ import com.croniot.client.domain.errors.TaskError
 import croniot.messages.MessageAddTask
 import croniot.messages.MessageFactory
 import croniot.messages.MessageRequestTaskStateInfoSync
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.MqttClient
 import java.io.IOException
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.cancellation.CancellationException
 
 class TasksDataSourceImpl(
     private val networkUtil: NetworkUtil,
     private val taskConfigurationApiService: TaskConfigurationApiService,
+    private val localDatasource: LocalDatasource,
+    private val appScope: CoroutineScope,
 ) : TasksDataSource {
 
-    override fun observeTasks(_deviceUuid: String): Flow<Task> = callbackFlow {
-        val topic = "/$_deviceUuid/newTasks"
-        val mqttClient = MqttClient(
-            ServerConfig.mqttBrokerUrl,
-            ServerConfig.mqttClientId + generateUniqueString(8),
-            null,
-        )
+    private val newTaskHandlers = ConcurrentHashMap<String, MqttHandler>()
+    private val progressHandlers = ConcurrentHashMap<String, MqttHandler>()
+
+    private suspend fun mqttBrokerUrl(): String {
+        val ip = localDatasource.getServerIp().first() ?: "localhost"
+        return "tcp://${ip}:${ServerConfig.MQTT_PORT}"
+    }
+
+    override suspend fun listenTasks(
+        deviceUuid: String,
+        onNewTask: (Task) -> Unit,
+    ) = withContext(Dispatchers.IO) {
+        newTaskHandlers.remove(deviceUuid)?.disconnect()
+
+        val clientId = ServerConfig.mqttClientId + generateUniqueString(8)
+        val mqttClient = MqttClient(mqttBrokerUrl(), clientId, null)
+        val topic = "/$deviceUuid/newTasks"
 
         val handler = MqttHandler(
             mqttClient = mqttClient,
             mqttDataProcessor = MqttDataProcessorNewTask(
-                deviceUuid = _deviceUuid,
-                onNewTask = { task ->
-
-                    val finalTask = task.copy(
-                        deviceUuid = _deviceUuid,
-                    )
-
-                    val ok = trySend(finalTask).isSuccess
-                    if (!ok) {
-                        android.util.Log.e("RTT", "trySend FAILED for state=${finalTask.initialTaskStateInfo?.state}")
-                    }
-                },
+                deviceUuid = deviceUuid,
+                onNewTask = { task -> onNewTask(task.copy(deviceUuid = deviceUuid)) },
             ),
             topic = topic,
-            scope = this,
-            socketFactory = TaggingSocketFactory()
+            scope = appScope,
+            socketFactory = TaggingSocketFactory(),
         )
+        newTaskHandlers[deviceUuid] = handler
+    }
 
-        awaitClose {
-            runCatching { mqttClient.unsubscribe(topic) }
-            runCatching { mqttClient.disconnect() }
-            runCatching { mqttClient.close() }
-            // runCatching { handler.stop() }
-        }
+    override suspend fun listenTaskStateInfos(
+        deviceUuid: String,
+        onNewEvent: (TaskStateInfoEvent) -> Unit,
+    ) = withContext(Dispatchers.IO) {
+        progressHandlers.remove(deviceUuid)?.disconnect()
+
+        val clientId = ServerConfig.mqttClientId + generateUniqueString(8)
+        val mqttClient = MqttClient(mqttBrokerUrl(), clientId, null)
+        val topic = "/server_to_devices/$deviceUuid/task_types/+/tasks/+/progress"
+
+        android.util.Log.d("RTT", "Subscribing progress: topic=$topic clientId=$clientId")
+
+        val handler = MqttHandler(
+            mqttClient = mqttClient,
+            mqttDataProcessor = MqttDataProcessorTaskProgress(onNewEvent),
+            topic = topic,
+            scope = appScope,
+            socketFactory = TaggingSocketFactory(),
+        )
+        progressHandlers[deviceUuid] = handler
     }
-    .buffer(Channel.BUFFERED)
-    .flowOn(Dispatchers.IO)
-    .retry(retries = Long.MAX_VALUE) { cause ->
-        (cause !is CancellationException).also { willRetry ->
-            if (willRetry) {
-                android.util.Log.w("TasksDS", "observeTasks lost connection, retrying in 3s", cause)
-                delay(3_000)
-            }
-        }
-    }
-    .catch { e ->
-        android.util.Log.e("TasksDS", "observeTasks failed permanently", e)
+
+    override suspend fun stopAllListeners() {
+        newTaskHandlers.values.forEach { it.disconnect() }
+        newTaskHandlers.clear()
+        progressHandlers.values.forEach { it.disconnect() }
+        progressHandlers.clear()
     }
 
     override suspend fun fetchTasks(deviceUuid: String): Outcome<List<Task>, TaskError> = try {
@@ -100,44 +108,6 @@ class TasksDataSourceImpl(
         Outcome.Err(TaskError.Remote(RemoteError.Unreachable))
     } catch (e: Exception) {
         Outcome.Err(TaskError.Remote(RemoteError.Unknown))
-    }
-
-    override fun observeTaskStateInfos(deviceUuid: String): Flow<TaskStateInfoEvent> = callbackFlow {
-        val clientId = ServerConfig.mqttClientId + generateUniqueString(8)
-        val mqttClient = MqttClient(ServerConfig.mqttBrokerUrl, clientId, null)
-
-        val topic = "/server_to_devices/$deviceUuid/task_types/+/tasks/+/progress"
-        android.util.Log.d("RTT", "Subscribing progress: topic=$topic clientId=$clientId")
-
-        val handler = MqttHandler(
-            mqttClient = mqttClient,
-            mqttDataProcessor = MqttDataProcessorTaskProgress { event ->
-                trySend(event).isSuccess
-            },
-            topic = topic,
-            scope = this,
-            socketFactory = TaggingSocketFactory()
-        )
-
-        awaitClose {
-            runCatching { mqttClient.unsubscribe(topic) }
-            runCatching { mqttClient.disconnect() }
-            runCatching { mqttClient.close() }
-            // runCatching { handler.stop() } si existe
-        }
-    }
-    .buffer(Channel.BUFFERED)
-    .flowOn(Dispatchers.IO)
-    .retry(retries = Long.MAX_VALUE) { cause ->
-        (cause !is CancellationException).also { willRetry ->
-            if (willRetry) {
-                android.util.Log.w("TasksDS", "observeTaskStateInfos lost connection, retrying in 3s", cause)
-                delay(3_000)
-            }
-        }
-    }
-    .catch { e ->
-        android.util.Log.e("TasksDS", "observeTaskStateInfos failed permanently", e)
     }
 
     override suspend fun sendNewTask(messageAddTask: MessageAddTask): Outcome<Unit, TaskError> = try {

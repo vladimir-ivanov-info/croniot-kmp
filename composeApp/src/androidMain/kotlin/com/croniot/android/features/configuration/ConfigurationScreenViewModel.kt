@@ -28,6 +28,7 @@ class ConfigurationScreenViewModel(
         when (intent) {
             is ConfigurationIntent.ToggleServerMode -> toggleServerMode()
             is ConfigurationIntent.SetForegroundService -> setForegroundService(intent.enabled)
+            is ConfigurationIntent.SetServerIp -> setServerIp(intent.ip)
         }
     }
 
@@ -43,7 +44,7 @@ class ConfigurationScreenViewModel(
     }
 
     private fun observeServerMode() = viewModelScope.launch {
-        localDatasource.getCurrentServerMode().collect { mode ->
+        /*localDatasource.getCurrentServerMode().collect { mode ->
             mode ?: return@collect
             state.update { it.copy(serverMode = mode) }
             hostInterceptor.host = if (mode == "remote") {
@@ -51,17 +52,25 @@ class ConfigurationScreenViewModel(
             } else {
                 ServerConfig.SERVER_ADDRESS_LOCAL
             }
-        }
+        }*/
     }
 
     private fun toggleServerMode() = viewModelScope.launch {
-        val newMode = if (state.value.serverMode == "remote") "local" else "remote"
+        //TODO
+        /*val newMode = if (state.value.serverMode == "remote") "local" else "remote"
         ServerConfig.SERVER_ADDRESS = if (newMode == "remote") {
             ServerConfig.SERVER_ADDRESS_REMOTE
         } else {
             ServerConfig.SERVER_ADDRESS_LOCAL
         }
-        localDatasource.saveServerMode(newMode)
+        localDatasource.saveServerMode(newMode)*/
+    }
+
+    private fun setServerIp(ip: String) = viewModelScope.launch {
+        state.update { it.copy(serverIp = ip) }
+        localDatasource.saveServerIp(ip)
+
+        hostInterceptor.host = ip
     }
 
     private fun setForegroundService(enabled: Boolean) = viewModelScope.launch {
@@ -79,4 +88,5 @@ data class ConfigurationState(
 sealed interface ConfigurationIntent {
     data object ToggleServerMode : ConfigurationIntent
     data class SetForegroundService(val enabled: Boolean) : ConfigurationIntent
+    data class SetServerIp(val ip: String) : ConfigurationIntent
 }

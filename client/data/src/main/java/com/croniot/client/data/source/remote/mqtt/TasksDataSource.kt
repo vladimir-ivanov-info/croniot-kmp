@@ -5,15 +5,22 @@ import com.croniot.client.core.models.Task
 import com.croniot.client.core.models.events.TaskStateInfoEvent
 import com.croniot.client.domain.errors.TaskError
 import croniot.messages.MessageAddTask
-import kotlinx.coroutines.flow.Flow
 
 interface TasksDataSource {
 
-    fun observeTasks(deviceUuid: String): Flow<Task>
+    suspend fun listenTasks(
+        deviceUuid: String,
+        onNewTask: (Task) -> Unit,
+    )
+
+    suspend fun listenTaskStateInfos(
+        deviceUuid: String,
+        onNewEvent: (TaskStateInfoEvent) -> Unit,
+    )
+
+    suspend fun stopAllListeners()
 
     suspend fun fetchTasks(deviceUuid: String): Outcome<List<Task>, TaskError>
-
-    fun observeTaskStateInfos(_deviceUuid: String): Flow<TaskStateInfoEvent>
 
     suspend fun sendNewTask(messageAddTask: MessageAddTask): Outcome<Unit, TaskError>
 

@@ -431,7 +431,6 @@ class AccountJooqDaoImpl @Inject constructor(
 
                 params.add(
                     ParameterSensor(
-                        id = p.id,
                         uid = p.uid,
                         name = p.name,
                         type = p.type,

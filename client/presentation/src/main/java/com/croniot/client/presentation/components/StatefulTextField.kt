@@ -9,7 +9,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -144,7 +143,7 @@ fun PasswordField(
 }
 
 @Composable
-fun UsernameTextField(
+fun NicknameTextField(
     value: String,
     onValueChange: (String) -> Unit,
     enabled: Boolean = true,
@@ -153,7 +152,7 @@ fun UsernameTextField(
         value = value,
         onValueChange = onValueChange,
         enabled = enabled,
-        label = { Text("Nombre de usuario") },
+        label = { Text("n i c k n a m e") },
         singleLine = true,
         isError = false, // TODO: validación si lo necesitas
         /*supportingText = {
@@ -190,7 +189,7 @@ fun EmailTextField(
         value = value,
         onValueChange = onValueChange,
         enabled = enabled,
-        label = { Text("email") },
+        label = { Text("e m a i l") },
         singleLine = true,
         isError = false, // TODO
         /*supportingText = {
@@ -231,7 +230,7 @@ fun PasswordTextField(
         value = value,
         onValueChange = onValueChange,
         enabled = enabled,
-        label = { Text("password") },
+        label = { Text("p a s s w o r d") },
         singleLine = true,
         isError = false, // TODO: validación real
         visualTransformation = if (passwordVisible) {

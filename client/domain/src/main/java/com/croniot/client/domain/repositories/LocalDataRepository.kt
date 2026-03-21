@@ -18,10 +18,6 @@ interface LocalDataRepository { // TODO god class, but will be delegated to Room
 
     suspend fun saveIsForegroundServiceEnabled(foregroundServiceEnabled: Boolean)
 
-    suspend fun getServerAddress(): String
-
-    suspend fun saveServerAddress(serverAddress: String)
-
     suspend fun generateAndSaveDeviceUuidIfNotExists()
 
     suspend fun getCurrentScreen(): String?
@@ -50,4 +46,8 @@ interface LocalDataRepository { // TODO god class, but will be delegated to Room
     suspend fun clearAllCacheExceptDeviceUuid()
 
     fun getServerMode(): Flow<String?>
+
+    //suspend fun getServerIp(): Flow<String?>
+
+    suspend fun getServerIp(): String?
 }

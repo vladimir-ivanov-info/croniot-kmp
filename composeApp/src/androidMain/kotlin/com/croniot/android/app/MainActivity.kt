@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
 
         //AppConfig.isDemo = BuildConfig.IS_DEMO
 
-        askNotificationPermissionIfNecessary()
+        //TODO commented for now. Better to ask it after login. askNotificationPermissionIfNecessary()
     }
 
     private fun askNotificationPermissionIfNecessary() {

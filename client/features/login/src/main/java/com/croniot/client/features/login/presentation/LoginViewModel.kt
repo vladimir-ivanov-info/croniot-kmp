@@ -124,6 +124,7 @@ class LoginViewModel(
 
 private fun AuthError.toUserMessage(): String = when (this) {
     AuthError.Network -> "No hay conexión con el servidor."
+    AuthError.NetworkTiemout -> "Timeout con el servidor."
     AuthError.InvalidCredentials -> "Credenciales inválidas."
     AuthError.DeviceMissing -> "No se encontró el identificador del dispositivo."
     is AuthError.Server -> message ?: "Error de servidor."

@@ -45,7 +45,7 @@ val dataModule = module {
 
     single { get<AppDatabase>().sensorDataDao() }
 
-    single<NetworkUtil> { NetworkUtilImpl() }
+    single<NetworkUtil> { NetworkUtilImpl(localDatasource = get()) }
 
     single<AuthRepository> { AuthRepositoryImpl(loginDataSource = get()) }
 
@@ -61,6 +61,8 @@ val dataModule = module {
         TasksDataSourceImpl(
             networkUtil = get(),
             taskConfigurationApiService = get(),
+            localDatasource = get(),
+            appScope = get(named("appScope")),
         )
     }
 
@@ -76,7 +78,10 @@ val dataModule = module {
     }
 
     single<RemoteSensorDataSource> {
-        RemoteSensorDataSourceImpl(appScope = get(named("appScope")))
+        RemoteSensorDataSourceImpl(
+            appScope = get(named("appScope")),
+            localDatasource = get(),
+        )
     }
 
     single<SensorDataRepository> {

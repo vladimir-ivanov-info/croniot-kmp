@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ParameterSensor(
-    val id: Long,
     val uid: Long,
     val name: String,
     val type: String,

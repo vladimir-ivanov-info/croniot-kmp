@@ -3,11 +3,10 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">com</domain>
     </domain-config>
-    <base-config cleartextTrafficPermitted="true" />
-    <!-- Solo para debug, confiar en tu certificado -->
-    <debug-overrides>
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
+            <certificates src="system" />
             <certificates src="@raw/croniot_cert" />
         </trust-anchors>
-    </debug-overrides>
+    </base-config>
 </network-security-config>

@@ -24,13 +24,15 @@ class LoginDataSourceImpl(
         } catch (e: UnknownHostException) {
             Outcome.Err(AuthError.Network)
         } catch (e: SocketTimeoutException) {
-            Outcome.Err(AuthError.Network)
+            android.util.Log.e("LoginDataSource", "Timeout: ${e.message}", e)
+            Outcome.Err(AuthError.NetworkTiemout)
         } catch (e: HttpException) {
             when (e.code()) {
                 401 -> Outcome.Err(AuthError.InvalidCredentials)
                 else -> Outcome.Err(AuthError.Server(e.message()))
             }
         } catch (e: Exception) {
+            android.util.Log.e("LoginDataSource", "Unexpected error: ${e.javaClass.simpleName}: ${e.message}", e)
             Outcome.Err(AuthError.Unknown)
         }
     }

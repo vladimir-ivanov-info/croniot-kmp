@@ -31,8 +31,8 @@ class SplashScreenViewModel(
 
         when (logInUseCase(email = account.email, password = password)) {
             is Outcome.Ok -> {
-                navigateOnLogin()
                 startDeviceListenersUseCase(account.devices)
+                navigateOnLogin()
             }
             else -> logOut()
         }

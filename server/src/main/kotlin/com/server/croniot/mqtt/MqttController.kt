@@ -123,9 +123,9 @@ object MqttController {
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            measure("### sendTaskToDevice publish") {
+            //measure("### sendTaskToDevice publish") {
                 deviceMqttClient.publish(topic, message)
-            }
+            //}
             println("### sendTaskToDevice lockWait=${waitMs}ms")
         }
     }
@@ -141,9 +141,9 @@ object MqttController {
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            measure("### sendNewTask publish") {
+            //measure("### sendNewTask publish") {
                 deviceMqttClient.publish(topic, message)
-            }
+            //}
             println("### sendNewTask lockWait=${waitMs}ms")
         }
     }
@@ -158,9 +158,9 @@ object MqttController {
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            measure("### sendSensorData publish") {
+            //measure("### sendSensorData publish") {
                 deviceMqttClient.publish(topic, message)
-            }
+            //}
             //println("### sendSensorData lockWait=${waitMs}ms")
         }
     }
@@ -183,9 +183,9 @@ object MqttController {
                 isRetained = false
             }
 
-            measure("### sendNewTaskStateInfo publish") {
+            //measure("### sendNewTaskStateInfo publish") {
                 deviceMqttClient.publish(topic, message)
-            }
+            //}
             //println("### sendNewTaskStateInfo lockWait=${waitMs}ms")
             //println("[RTT] sendNewTaskStateInfo published to: $topic (${json.length} bytes)")
         }

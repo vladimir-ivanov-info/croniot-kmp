@@ -53,7 +53,6 @@ object MainDIModule {
         single<TasksRepository> {
             TasksRepositoryImpl(
                 tasksDataSource = get(),
-                appScope = get(named("appScope")),
             )
         }
 

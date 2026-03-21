@@ -3,6 +3,8 @@ package com.server.croniot.application
 import Global
 import com.server.croniot.di.DI
 import com.server.croniot.mqtt.MqttController
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import croniot.messages.MessageFactory
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -11,6 +13,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.*
 import java.io.File
 import java.security.KeyStore
+import javax.sql.DataSource
 
 fun Application.module(testing: Boolean = false) {
     Global.TESTING = testing
@@ -64,6 +67,29 @@ fun ensureDockerComposeRunning() {
     }
 }
 
+fun initDatabase(dataSource: DataSource) {
+    DatabaseSchemaInitializer.createSchemaIfNeeded(dataSource)
+}
+
+fun provideDataSource(): DataSource { //TODO duplicate for now
+    val secrets = Global.secrets
+    val config = HikariConfig().apply {
+        jdbcUrl = secrets.databaseUrl
+        username = secrets.databaseUser
+        password = secrets.databasePassword
+
+        maximumPoolSize = 8
+        minimumIdle = 2
+        idleTimeout = 30_000
+        maxLifetime = 30 * 60_000
+        connectionTimeout = 10_000
+
+        poolName = "croniot-hikari"
+    }
+
+    return HikariDataSource(config)
+}
+
 fun main() {
     ensureDockerComposeRunning()
 
@@ -72,6 +98,8 @@ fun main() {
             println("Gracefully shutting down...")
         },
     )
+
+    initDatabase(provideDataSource())
 
     try {
         MqttController
@@ -100,6 +128,7 @@ fun main() {
                     privateKeyPassword = { keystorePassword.toCharArray() }
                 ) {
                     host = "0.0.0.0"
+                    //port = 8090 //port = 8443
                     port = 8443
                 }
             },

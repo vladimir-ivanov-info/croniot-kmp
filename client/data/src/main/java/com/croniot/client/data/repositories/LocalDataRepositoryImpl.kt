@@ -6,6 +6,7 @@ import com.croniot.client.core.util.DevicePropertiesController
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.domain.repositories.LocalDataRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class LocalDataRepositoryImpl(
     private val localDatasource: LocalDatasource,
@@ -33,14 +34,6 @@ class LocalDataRepositoryImpl(
 
     override suspend fun saveIsForegroundServiceEnabled(foregroundServiceEnabled: Boolean) {
         return localDatasource.saveIsForegroundServiceEnabled(foregroundServiceEnabled)
-    }
-
-    override suspend fun getServerAddress(): String {
-        return localDatasource.getServerAddress()
-    }
-
-    override suspend fun saveServerAddress(serverAddress: String) {
-        localDatasource.saveServerAddress(serverAddress)
     }
 
     override suspend fun generateAndSaveDeviceUuidIfNotExists() {
@@ -104,5 +97,13 @@ class LocalDataRepositoryImpl(
 
     override fun getServerMode(): Flow<String?> {
         return localDatasource.getServerMode()
+    }
+
+    /*override suspend fun getServerIp(): Flow<String?> {
+        return localDatasource.getServerIp()
+    }*/
+
+    override suspend fun getServerIp(): String? {
+        return localDatasource.getServerIp().first()
     }
 }

@@ -31,6 +31,7 @@ class TaskTypesViewModel(
             fetchTasksUseCase(deviceUuid)
             taskTypes.forEach { taskType ->
                 requestTaskStateInfoSyncUseCase(deviceUuid, taskType.uid)
+                //observeTaskTypeUpdates(deviceUuid, taskType)
             }
         }
     }
