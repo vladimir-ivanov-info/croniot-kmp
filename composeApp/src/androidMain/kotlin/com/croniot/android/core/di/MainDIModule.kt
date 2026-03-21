@@ -3,7 +3,7 @@ package com.croniot.android.core.di
 import com.croniot.android.app.AppViewModel
 import com.croniot.android.core.presentation.splash.SplashScreenViewModel
 import com.croniot.android.features.configuration.ConfigurationScreenViewModel
-import com.croniot.android.features.device.features.tasks.TasksViewModel
+//import com.croniot.android.features.device.features.tasks.TasksViewModel
 import com.croniot.android.features.device.presentation.DeviceScreenViewModel
 import com.croniot.android.features.devicelist.DeviceListViewModel
 import com.croniot.client.data.repositories.LocalDataRepositoryImpl
@@ -56,16 +56,16 @@ object MainDIModule {
             )
         }
 
-        viewModel {
-            TasksViewModel(
-                tasksRepository = get(),
-                localDataRepository = get(),
-                fetchTasksUseCase = get(),
-                observeNewTasksUseCase = get(),
-                observeTaskStateInfoUseCase = get(),
-                taskTypesRepository = get(),
-            )
-        }
+//        viewModel {
+//            TasksViewModel(
+//                tasksRepository = get(),
+//                localDataRepository = get(),
+//                fetchTasksUseCase = get(),
+//                observeNewTasksUseCase = get(),
+//                observeTaskStateInfoUseCase = get(),
+//                taskTypesRepository = get(),
+//            )
+//        }
 
         viewModel {
             DeviceScreenViewModel(
