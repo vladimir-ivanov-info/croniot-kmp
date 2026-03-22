@@ -188,7 +188,7 @@ croniot-kmp/
     ├── android-ci.yml       # Build & test on push/PR
     ├── baseline-profile.yml # Baseline profile generation
     ├── code-format.yml      # Code formatting checks
-    └── release.yml          # AAB signing & Play Store release
+    └── play-store-upload.yml # AAB signing & Play Store release
 ```
 
 ## Real-world usage
