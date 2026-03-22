@@ -195,4 +195,5 @@ croniot-kmp/
 
 Croniot is already used in personal projects including an [automated watering system](https://github.com/vladimir-ivanov-info/croniot-watering-system) and anti-theft 4G+GNSS tracking for e-scooters and bikes.
 
+[![Demo video](https://img.youtube.com/vi/sxZ00cP9hIw/maxresdefault.jpg)](https://www.youtube.com/watch?v=sxZ00cP9hIw)
 
