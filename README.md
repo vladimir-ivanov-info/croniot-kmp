@@ -11,7 +11,7 @@ Croniot eliminates the repetitive infrastructure of IoT projects. You define you
 ```
 ┌──────────────┐       MQTT / HTTP       ┌──────────────┐     HTTP / MQTT   ┌──────────────┐
 │   IoT Device │ ◄─────────────────────► │    Server    │ ◄───────────────► │  Android App │
-│   (ESP32)    │                         │   (Ktor)     │                   │  (Compose)   │
+│   (ESP32)    │       WiFi / LTE        │    (Ktor)    │                   │  (Compose)   │
 └──────────────┘                         └──────┬───────┘                   └──────────────┘
                                                 │
                                          ┌──────┴────────┐
@@ -23,10 +23,10 @@ Croniot eliminates the repetitive infrastructure of IoT projects. You define you
 | Component | Tech |
 |-----------|------|
 | **Android app** | Kotlin · Jetpack Compose · MVI · Coroutines & Flow · Koin · Room |
-| **Server** | Ktor · Coroutines · Dagger · jOOQ · Docker Compose · PostgreSQL · MQTT |
+| **Server** | Kotlin · Ktor · Coroutines · Dagger · jOOQ  · PostgreSQL · MQTT |
 | **Shared (KMP)** | Domain models · DTOs · Validation logic — single source of truth across client & server |
-| **IoT device** | C++ · ESP32 · MQTT · HTTP · [croniot-iot repo →](https://github.com/vladimir-ivanov-info/croniot-iot) |
-| **Infrastructure** | Docker Compose · GitHub Actions CI/CD (automated AAB signing & Play Store release) |
+| **IoT device** | C++ · ESP32 · PlatformIO + ESP IDF · FreeRTOS · WiFi · LTE · MQTT · HTTP · littlefs · [croniot-iot repo →](https://github.com/vladimir-ivanov-info/croniot-iot) |
+| **Infrastructure** | VPS · Docker Compose · GitHub Actions CI/CD (automated AAB signing & Play Store release) |
 
 ## Key technical decisions
 
@@ -194,4 +194,5 @@ croniot-kmp/
 ## Real-world usage
 
 Croniot is already used in personal projects including an [automated watering system](https://github.com/vladimir-ivanov-info/croniot-watering-system) and anti-theft 4G+GNSS tracking for e-scooters and bikes.
+
 
