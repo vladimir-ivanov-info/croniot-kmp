@@ -2,7 +2,7 @@ package com.server.croniot.application
 
 import javax.sql.DataSource
 
-object DatabaseSchemaInitializer {
+object DatabaseSchemaInitializer { //TODO implement Flyway later
 
     fun createSchemaIfNeeded(dataSource: DataSource) {
         val statements = listOf(
