@@ -181,7 +181,14 @@ croniot-kmp/
 │       └── serialization/   # Serialization utilities
 ├── build-logic/             # Gradle convention plugins
 ├── baselineprofile/         # Baseline profile generation (Macrobenchmark)
+├── .claude/                 # Claude Code configuration
+│   ├── rules/               # Project instructions (CLAUDE.md)
+│   └── skills/              # Custom agent skills
 └── .github/workflows/       # CI/CD pipeline
+    ├── android-ci.yml       # Build & test on push/PR
+    ├── baseline-profile.yml # Baseline profile generation
+    ├── code-format.yml      # Code formatting checks
+    └── release.yml          # AAB signing & Play Store release
 ```
 
 ## Real-world usage

@@ -1,4 +1,4 @@
-name: Build Signed Release AAB
+name: Build Signed Release AAB & Play Store Upload
 
 on:
   push:
