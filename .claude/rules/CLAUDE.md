@@ -7,7 +7,9 @@ Este proyecto prioriza mantenibilidad, claridad y arquitectura limpia sobre velo
 - Kotlin
 - Jetpack Compose
 - Coroutines / Flow
-- MVVM / MVI según módulo
+- MVI
+- Room
+- Koin
 - Gradle Kotlin DSL
 
 ## Reglas generales
