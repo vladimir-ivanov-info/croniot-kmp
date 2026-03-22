@@ -23,7 +23,7 @@ Croniot eliminates the repetitive infrastructure of IoT projects. You define you
 | Component | Tech |
 |-----------|------|
 | **Android app** | Kotlin · Jetpack Compose · MVI · Coroutines & Flow · Koin · Room |
-| **Server** | Ktor · Coroutines · jOOQ · PostgreSQL · MQTT |
+| **Server** | Ktor · Coroutines · Dagger · jOOQ · Docker Compose · PostgreSQL · MQTT |
 | **Shared (KMP)** | Domain models · DTOs · Validation logic — single source of truth across client & server |
 | **IoT device** | C++ · ESP32 · MQTT · HTTP · [croniot-iot repo →](https://github.com/vladimir-ivanov-info/croniot-iot) |
 | **Infrastructure** | Docker Compose · GitHub Actions CI/CD (automated AAB signing & Play Store release) |
@@ -145,14 +145,43 @@ See the [croniot-watering-system repository](https://github.com/vladimir-ivanov-
 
 ```
 croniot-kmp/
-├── composeApp/          # Android app (Jetpack Compose)
-│   ├── commonMain/      # Shared Compose UI logic
-│   └── androidMain/     # Android-specific code
-├── server/              # Ktor server application
+├── composeApp/              # Android app entry point (Jetpack Compose)
+│   └── src/
+│       ├── commonMain/      # Shared Compose UI logic
+│       └── androidMain/     # Android-specific code
+├── client/                  # Client-side modules (Clean Architecture)
+│   ├── core/                # Core utilities and shared UI components
+│   ├── data/                # Data layer (repositories, network, local)
+│   ├── domain/              # Domain layer (use cases, models)
+│   ├── presentation/        # Presentation layer (ViewModels, state)
+│   └── features/            # Feature modules
+│       ├── home/
+│       ├── login/
+│       ├── sensors/
+│       └── tasktypes/
+├── server/                  # Ktor server application
+│   ├── src/main/kotlin/
+│   │   ├── application/     # App entry point, Dagger modules
+│   │   ├── config/          # Server configuration
+│   │   ├── controllers/     # Request handlers
+│   │   ├── data/
+│   │   │   ├── db/          # jOOQ entities, DAOs, utilities
+│   │   │   ├── mappers/     # Entity ↔ domain mappers
+│   │   │   └── repositories/
+│   │   ├── di/              # Dagger components
+│   │   ├── http/            # HTTP route definitions
+│   │   ├── mqtt/            # MQTT client and handlers
+│   │   ├── services/        # Business logic services
+│   │   └── usecases/        # Use cases
 │   └── docker-compose.yml
-├── shared/              # KMP shared module
-│   └── commonMain/      # Domain models, DTOs, validation
-└── .github/workflows/   # CI/CD pipeline
+├── shared/                  # KMP shared module
+│   └── src/commonMain/kotlin/
+│       ├── messages/        # Message definitions
+│       ├── models/          # Domain models and DTOs
+│       └── serialization/   # Serialization utilities
+├── build-logic/             # Gradle convention plugins
+├── baselineprofile/         # Baseline profile generation (Macrobenchmark)
+└── .github/workflows/       # CI/CD pipeline
 ```
 
 ## Real-world usage
