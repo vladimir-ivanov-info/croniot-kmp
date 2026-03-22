@@ -65,22 +65,73 @@ The next time you start an IoT project, **99 % of the work is already done:**
 ## Quick start
 
 ### Prerequisites
-
-- Docker & Docker Compose
+- Ubuntu (or you can adapt the commands to your OS)
 - Android Studio (Panda)
 - An ESP32 board, PlatformIO and ESP IDF (for the IoT side)
 
 ### Run the server
 
-Install, configure and run mosquitto.
+#### 1. Configure global variables
+##### Warning: these passwords are for testing. Generate your own keystore and use a different database password and name.
+```bash
+nano ~/.basrc
 
+Add this to the end of the file:
+
+export CRONIOT_MQTT_BROKER_URL="tcp://localhost:1883"<br>
+export CRONIOT_MQTT_CLIENT_ID="croniot-server"<br>  
+export CRONIOT_DB_URL="jdbc:postgresql://localhost:5433/iot_testdb"<br>
+export CRONIOT_DB_USER="testuser"<br>
+export CRONIOT_DB_PASSWORD="testpass"<br>
+export CRONIOT_KEYSTORE_PASSWORD="croslslp1Nng"
+
+source ~/.bashrc
+```
+
+#### 2. Install, configure and run Mosquitto.
+
+```bash
+sudo apt update
+sudo apt install -y mosquitto mosquitto-clients
+sudo systemctl enable mosquitto
+sudo systemctl start mosquitto
+sudo nano /etc/mosquitto/mosquitto.conf
+
+Add these 2 lines to the end:
+  listener 1883
+  allow_anonymous true
+
+sudo systemctl restart mosquitto
+
+sudo ufw allow 1883
+sudo ufw reload
+```
+
+#### 3. Run PostgreSQL via Docker Compose
 ```bash
 cd server/
 docker compose up        # starts PostgreSQL
 ```
+#### 4. Run the server
 
+Install JDK<br>
+```bash
+sudo apt update && sudo apt install openjdk-21-jdk
+```
 
+Open firewall ports
+```bash
+sudo ufw allow 8090
+sudo ufw allow 8443
+sudo ufw reload
+```
 
+Open the `croniot-kmp` project in Android Studio or IntelliJ Idea.<br>
+Go to the server's `build.gradle` and run the `shadorJar` task.<br>
+Go to `croniot-kmp/server/build/libs` and you should see the server: `server-1.0.0-all.jar`<br>
+Move this jar to the `croniot-kmp/server` folder.
+
+Run `java -jar server-1.0.0-all.jar`
 
 ### Run the Android app
 
@@ -88,7 +139,7 @@ Open the project in Android Studio, select the `composeApp` run configuration, a
 
 ### Set up an IoT device
 
-See the [croniot-iot repository](https://github.com/vladimir-ivanov-info/croniot-iot) for wiring, flashing, and configuration instructions.
+See the [croniot-watering-system repository](https://github.com/vladimir-ivanov-info/croniot-iot) as an example for wiring, flashing, and configuration instructions.
 
 ## Project structure
 
@@ -106,4 +157,5 @@ croniot-kmp/
 
 ## Real-world usage
 
-Croniot is already used in personal projects including an automated watering system and anti-theft 4G+GNSS tracking for e-scooters and bikes.
+Croniot is already used in personal projects including an [automated watering system](https://github.com/vladimir-ivanov-info/croniot-watering-system) and anti-theft 4G+GNSS tracking for e-scooters and bikes.
+
