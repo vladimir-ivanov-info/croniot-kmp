@@ -1,5 +1,7 @@
 package com.croniot.client.data.repositories
 
+import Outcome
+import com.croniot.client.core.models.ConnectionError
 import com.croniot.client.core.models.Device
 import com.croniot.client.data.source.sensors.LocalSensorDataSource
 import com.croniot.client.data.source.sensors.RemoteSensorDataSource
@@ -26,8 +28,8 @@ class SensorDataRepositoryImpl(
         scope.coroutineContext.cancelChildren()
     }
 
-    override suspend fun listenToDeviceSensors(device: Device) {
-        remoteSensorDataSource.listenDeviceSensors(
+    override suspend fun listenToDeviceSensors(device: Device): Outcome<Unit, ConnectionError> {
+        return remoteSensorDataSource.listenDeviceSensors(
             deviceUuid = device.uuid,
             onNewSensorData = { sensorData ->
                 scope.launch {

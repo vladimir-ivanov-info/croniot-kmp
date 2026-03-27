@@ -16,6 +16,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -23,11 +26,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.croniot.android.app.AppError
 import com.croniot.client.core.models.Device
 import com.croniot.client.features.sensors.presentation.SensorsScreen
 import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesScreen
@@ -41,17 +46,30 @@ fun DeviceScreen(
     selectedDeviceUuid: String,
     onNavigateBack: () -> Unit,
     onTaskTypeClicked: (deviceUuid: String, taskTypeUid: Long) -> Unit,
+    appError: AppError? = null,
     viewModel: DeviceScreenViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(selectedDeviceUuid) {
         viewModel.onIntent(DeviceIntent.Initialize(selectedDeviceUuid))
     }
 
+    LaunchedEffect(appError) {
+        if (appError != null) {
+            snackbarHostState.showSnackbar(
+                message = "${appError.title}: ${appError.message}",
+                withDismissAction = true,
+                duration = SnackbarDuration.Indefinite,
+            )
+        }
+    }
+
     BackHandler { onNavigateBack() }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {

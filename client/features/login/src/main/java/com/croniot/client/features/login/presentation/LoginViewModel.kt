@@ -86,7 +86,10 @@ class LoginViewModel(
                 is Outcome.Ok -> {
                     _state.update { it.copy(isLoading = false) }
                     localDataRepository.getCurrentAccount()?.let { account ->
-                        startDeviceListenersUseCase(account.devices)
+                        val listenersResult = startDeviceListenersUseCase(account.devices)
+                        if (listenersResult is Outcome.Err) {
+                            sendEffect(LoginEffect.ConnectionErrors(listenersResult.error))
+                        }
                     }
                     sendEffect(LoginEffect.NavigateHome)
                 }
@@ -146,6 +149,7 @@ sealed interface LoginEffect {
     data object NavigateToRegisterAccount : LoginEffect
     data object NavigateToConfiguration : LoginEffect
     data class ShowSnackbar(val title: String, val content: String) : LoginEffect
+    data class ConnectionErrors(val errors: List<com.croniot.client.core.models.ConnectionError>) : LoginEffect
 }
 
 sealed interface LoginIntent {

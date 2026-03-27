@@ -44,11 +44,11 @@ fun CurrentScreen(viewModel: AppViewModel = koinViewModel()) {
                 onNavigateToLogin = {
                     navController.navigate(AppRoute.Login) { popUpTo(0) { inclusive = true } }
                 },
-                onNavigateToDeviceList = {
-                    navController.navigate(AppRoute.Devices) { popUpTo(0) { inclusive = true } }
+                onNavigateToDeviceList = { error ->
+                    navController.navigate(AppRoute.Devices(errorJson = error?.encode())) { popUpTo(0) { inclusive = true } }
                 },
-                onNavigateToDevice = { deviceUuid ->
-                    navController.navigate(AppRoute.Device(deviceUuid)) { popUpTo(0) { inclusive = true } }
+                onNavigateToDevice = { deviceUuid, error ->
+                    navController.navigate(AppRoute.Device(deviceUuid, errorJson = error?.encode())) { popUpTo(0) { inclusive = true } }
                 },
             )
         }
@@ -66,7 +66,7 @@ fun CurrentScreen(viewModel: AppViewModel = koinViewModel()) {
         composable<AppRoute.Login> {
             LoginScreen(
                 onNavigateToDeviceList = {
-                    navController.navigate(AppRoute.Devices) {
+                    navController.navigate(AppRoute.Devices()) {
                         popUpTo<AppRoute.Login> { inclusive = true }
                     }
                 },
@@ -97,15 +97,18 @@ fun CurrentScreen(viewModel: AppViewModel = koinViewModel()) {
             val route = backStackEntry.toRoute<AppRoute.Device>()
             DeviceScreen(
                 selectedDeviceUuid = route.deviceUuid,
-                onNavigateBack = { navController.navigate(AppRoute.Devices) },
+                appError = AppError.decode(route.errorJson),
+                onNavigateBack = { navController.navigate(AppRoute.Devices()) },
                 onTaskTypeClicked = { deviceUuid, taskUid ->
                     navController.navigate(AppRoute.CreateTask(deviceUuid, taskUid))
                 },
             )
         }
 
-        composable<AppRoute.Devices> {
+        composable<AppRoute.Devices> { backStackEntry ->
+            val route = backStackEntry.toRoute<AppRoute.Devices>()
             DeviceListScreen(
+                appError = AppError.decode(route.errorJson),
                 onLogOut = {
                     navController.navigate(AppRoute.Splash) {
                         popUpTo<AppRoute.Devices> { inclusive = true }

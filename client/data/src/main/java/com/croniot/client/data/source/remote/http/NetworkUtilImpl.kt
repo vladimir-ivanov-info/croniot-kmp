@@ -15,7 +15,7 @@ class NetworkUtilImpl(
 ) : NetworkUtil {
 
     override suspend fun post(endPoint: String, postData: String): Result {
-        val ip = localDatasource.getServerIp().first() //?: ServerConfig.SERVER_ADDRESS
+        val ip = localDatasource.getServerIp().first() ?: ServerConfig.SERVER_IP_REMOTE
         val url = "https://${ip}:${ServerConfig.SERVER_PORT}$endPoint"
         return withContext(Dispatchers.IO) {
             performPostRequest(url, postData)
