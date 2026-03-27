@@ -1,7 +1,9 @@
 package com.croniot.client.data.source.sensors
 
 import MqttHandler
+import Outcome
 import com.croniot.client.core.config.ServerConfig
+import com.croniot.client.core.models.ConnectionError
 import com.croniot.client.core.models.SensorData
 import com.croniot.client.core.util.StringUtil.generateUniqueString
 import com.croniot.client.data.source.local.LocalDatasource
@@ -13,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.eclipse.paho.client.mqttv3.MqttClient
+import org.eclipse.paho.client.mqttv3.MqttException
 import java.util.concurrent.ConcurrentHashMap
 
 class RemoteSensorDataSourceImpl(
@@ -25,23 +28,31 @@ class RemoteSensorDataSourceImpl(
     override suspend fun listenDeviceSensors(
         deviceUuid: String,
         onNewSensorData: (sensorData: SensorData) -> Unit,
-    ) = withContext(Dispatchers.IO) {
+    ): Outcome<Unit, ConnectionError> = withContext(Dispatchers.IO) {
         val clientId = ServerConfig.mqttClientId + generateUniqueString(8)
         val ip = localDatasource.getServerIp().first() ?: ServerConfig.DEFAULT_MQTT_HOST
-        val mqttClient = MqttClient("tcp://${ip}:${ServerConfig.MQTT_PORT}", clientId, null)
+        val brokerUrl = "tcp://${ip}:${ServerConfig.MQTT_PORT}"
 
-        val topic = MqttTopics.sensorData(deviceUuid)
-        val handler = MqttHandler(
-            mqttClient = mqttClient,
-            mqttDataProcessor = MqttProcessorSensorData(onNewSensorDataDto = { newSensorDataDto ->
-                val sensorData = newSensorDataDto.toDomain()
-                onNewSensorData(sensorData)
-            }),
-            topic = topic,
-            scope = appScope,
-            socketFactory = TaggingSocketFactory()
-        )
-        handlersByDevice[deviceUuid] = handler
+        try {
+            val mqttClient = MqttClient(brokerUrl, clientId, null)
+            val topic = MqttTopics.sensorData(deviceUuid)
+            val handler = MqttHandler(
+                mqttClient = mqttClient,
+                mqttDataProcessor = MqttProcessorSensorData(onNewSensorDataDto = { newSensorDataDto ->
+                    val sensorData = newSensorDataDto.toDomain()
+                    onNewSensorData(sensorData)
+                }),
+                topic = topic,
+                scope = appScope,
+                socketFactory = TaggingSocketFactory()
+            )
+            handlersByDevice[deviceUuid] = handler
+            Outcome.Ok(Unit)
+        } catch (e: MqttException) {
+            Outcome.Err(ConnectionError.MqttBrokerUnreachable(host = brokerUrl, cause = e.message))
+        } catch (e: Exception) {
+            Outcome.Err(ConnectionError.Unknown)
+        }
     }
 
     override suspend fun stopListening(deviceUuid: String?) {

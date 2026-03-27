@@ -1,5 +1,6 @@
 package com.croniot.client.features.login.presentation
 
+import com.croniot.client.core.models.toUserMessage
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -79,6 +80,13 @@ fun LoginScreen(
                 LoginEffect.NavigateHome -> onNavigateToDeviceList()
                 LoginEffect.NavigateToRegisterAccount -> onNavigateToRegisterAccount()
                 LoginEffect.NavigateToConfiguration -> onNavigateToConfiguration()
+                is LoginEffect.ConnectionErrors -> {
+                    val message = effect.errors.joinToString("\n") { it.toUserMessage() }
+                    snackbarHostState.showSnackbar(
+                        message = message,
+                        withDismissAction = true,
+                    )
+                }
             }
         }
     }

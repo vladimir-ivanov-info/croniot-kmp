@@ -1,5 +1,6 @@
 package com.croniot.android.features.configuration
 
+import com.croniot.client.core.config.ServerConfig.SERVER_IP_REMOTE
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.data.source.remote.http.HostSelectionInterceptor
 import io.mockk.coEvery
@@ -70,12 +71,12 @@ class ConfigurationScreenViewModelTest {
     }
 
     @Test
-    fun init_usesFallbackIpWhenDatasourceReturnsNull() = runTest {
+    fun `init usesDefaultRemoteServerIpWhenDatasourceReturnsNull`() = runTest {
         stubDatasource(serverIp = null)
 
         val viewModel = createViewModel()
 
-        assertEquals("192.168.50.163", viewModel.state.value.serverIp)
+        assertEquals(SERVER_IP_REMOTE, viewModel.state.value.serverIp)
     }
 
     // --- SetForegroundService ---
