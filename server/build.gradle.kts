@@ -54,9 +54,9 @@ application {
 
 dependencies {
     implementation(projects.shared)
-    implementation(libs.logback)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.call.logging)
 
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter.api)
@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.ktor.content.negotiation)
     implementation(libs.ktor.cors)
     implementation(libs.logback.classic)
+    implementation(libs.kotlin.logging)
     implementation(libs.postgresql)
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)

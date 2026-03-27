@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 data class DbConfig(
     val jdbcUrl: String,
@@ -26,6 +27,8 @@ fun createDataSource(cfg: DbConfig): HikariDataSource {
 fun createDsl(dataSource: HikariDataSource): DSLContext =
     DSL.using(dataSource, SQLDialect.POSTGRES)
 
+private val logger = KotlinLogging.logger {}
+
 fun main() {
     val ds = createDataSource(
         DbConfig(
@@ -40,8 +43,8 @@ fun main() {
     val dsl = createDsl(ds)
 
     val one = dsl.fetchValue("select 1", Int::class.java)
-    println("DB OK, select 1 => $one")
+    logger.info { "DB OK, select 1 => $one" }
 
     val count = dsl.fetchCount(DSL.table("task"))
-    println("Tasks in DB = $count")
+    logger.info { "Tasks in DB = $count" }
 }

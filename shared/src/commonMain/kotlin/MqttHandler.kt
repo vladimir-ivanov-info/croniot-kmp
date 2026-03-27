@@ -12,6 +12,10 @@ class MqttHandler(
     private val socketFactory: SocketFactory? = null
 ) {
 
+    companion object {
+        const val DEFAULT_QOS = 2
+    }
+
     // TODO if device has no sensors, don't subscribe to topic.
     init {
         val options = MqttConnectOptions()
@@ -26,7 +30,7 @@ class MqttHandler(
             override fun connectComplete(reconnect: Boolean, serverURI: String?) {
                 if (reconnect) {
                     println("[RTT] MQTT reconnected: topic=$topic, re-subscribing...")
-                    runCatching { mqttClient.subscribe(topic, 2) }
+                    runCatching { mqttClient.subscribe(topic, DEFAULT_QOS) }
                 }
             }
 
@@ -47,7 +51,7 @@ class MqttHandler(
             override fun deliveryComplete(token: IMqttDeliveryToken?) {}
         })
         println("MQTT Subscribed to " + topic)
-        mqttClient.subscribe(topic, 2) // QoS 2 for subscribing
+        mqttClient.subscribe(topic, DEFAULT_QOS)
     }
 
     fun disconnect() {

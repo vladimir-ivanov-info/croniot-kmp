@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javax.inject.Inject
 
 class TaskController @Inject constructor(
@@ -29,9 +30,11 @@ class TaskController @Inject constructor(
     private val tasksRepository: TaskRepository
 ) {
 
+    private val logger = KotlinLogging.logger {}
+
     fun addTaskProgress(deviceUuid: String, taskProgressUpdate: TaskProgressUpdate) {
         try {
-            measure("###SERVER MQTT messageArrived processing") {
+            measure("messageArrived processing", log = { logger.debug { it } }) {
                 val t0 = System.currentTimeMillis()
 
                 // println("TIME: $t0.")
@@ -56,7 +59,7 @@ class TaskController @Inject constructor(
                 val existingTask = tasksRepository.get(deviceUuid, taskTypeUid, taskUid)
 
                 if (existingTask != null) {
-                    measure("###SERVER MQTT existingTask messageArrived processing") {
+                    measure("existingTask processing", log = { logger.debug { it } }) {
                         handleExistingTask(
                             deviceUuid,
                             taskTypeUid,
@@ -68,7 +71,7 @@ class TaskController @Inject constructor(
                         )
                     }
                 } else {
-                    measure("###SERVER MQTT newTask messageArrived processing") {
+                    measure("newTask processing", log = { logger.debug { it } }) {
                         handleNewTask(
                             deviceUuid,
                             taskTypeId,
@@ -82,7 +85,7 @@ class TaskController @Inject constructor(
                 // println("[RTT] addTaskProgress TOTAL: ${System.currentTimeMillis() - t0}ms (state=$taskState)")
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error(e) { "Error processing task progress for device $deviceUuid" }
         }
     }
 
@@ -109,7 +112,7 @@ class TaskController @Inject constructor(
         // println("[RTT] handleNewTask createState: ${System.currentTimeMillis() - t0}ms")
 
         val taskWithState = task.copy(mostRecentStateInfo = stateInfo)
-        measure("###SERVER MQTT newTask MQTT sneding messageArrived processing") {
+        measure("newTask MQTT sending", log = { logger.debug { it } }) {
             CoroutineScope(Dispatchers.IO).launch {
                 MqttController.sendNewTask(deviceUuid, taskWithState)
                 //println("[RTT] handleNewTask MQTT sent: ${System.currentTimeMillis() - t0}ms (state=$taskState)")
@@ -128,7 +131,7 @@ class TaskController @Inject constructor(
     ) {
         val t0 = System.currentTimeMillis()
         val task = tasksRepository.get(deviceUuid, taskTypeUid, taskUid) ?: return
-        println("[RTT] handleExistingTask get: ${System.currentTimeMillis() - t0}ms")
+        logger.debug { "handleExistingTask get: ${System.currentTimeMillis() - t0}ms" }
 
         val stateInfo = TaskStateInfo(
             task.uid,
@@ -138,12 +141,12 @@ class TaskController @Inject constructor(
             errorMessage,
         )
         taskService.createTaskState(stateInfo, taskTypeId)
-        println("[RTT] handleExistingTask createState: ${System.currentTimeMillis() - t0}ms")
+        logger.debug { "handleExistingTask createState: ${System.currentTimeMillis() - t0}ms" }
 
         val stateInfoDto = stateInfo.toDto()
         CoroutineScope(Dispatchers.IO).launch {
             MqttController.sendNewTaskStateInfo(deviceUuid, taskTypeUid, taskUid, stateInfoDto)
-            println("[RTT] handleExistingTask MQTT sent: ${System.currentTimeMillis() - t0}ms (state=$taskState)")
+            logger.debug { "handleExistingTask MQTT sent: ${System.currentTimeMillis() - t0}ms (state=$taskState)" }
         }
     }
 

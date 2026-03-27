@@ -1,5 +1,6 @@
 package com.croniot.client.data.di
 
+import com.croniot.client.core.config.ServerConfig
 import com.croniot.client.data.source.remote.http.HostSelectionInterceptor
 import com.croniot.client.data.source.remote.http.TaskConfigurationApiService
 import com.croniot.client.data.source.remote.http.login.LoginApi
@@ -26,8 +27,8 @@ object NetworkModule {
             OkHttpClient.Builder()
                 .certificatePinner(
                     CertificatePinner.Builder()
-                        .add("192.168.50.163", "sha256/j7Mb7eZ+xUbg6tPxNcWOttDXzoAlppLSMBk8mZI0sak=")
-                        .add("57.131.29.79", "sha256/j7Mb7eZ+xUbg6tPxNcWOttDXzoAlppLSMBk8mZI0sak=")
+                        .add(ServerConfig.SERVER_IP_LOCAL, ServerConfig.CERT_PIN_SHA256)
+                        .add(ServerConfig.SERVER_IP_REMOTE, ServerConfig.CERT_PIN_SHA256)
                         .build()
                 )
                 .addInterceptor(get<HostSelectionInterceptor>())
@@ -37,8 +38,8 @@ object NetworkModule {
         single<Retrofit> {
             val contentType = "application/json".toMediaType()
             Retrofit.Builder()
-                //.baseUrl("https://192.168.50.163:8443/")
-                .baseUrl("https://57.131.29.79:8443/")
+                //.baseUrl("https://${ServerConfig.SERVER_IP_LOCAL}:${ServerConfig.SERVER_PORT}/")
+                .baseUrl("https://${ServerConfig.SERVER_IP_REMOTE}:${ServerConfig.SERVER_PORT}/")
                 .client(get())
                 .addConverterFactory(json.asConverterFactory(contentType))
                 .build()

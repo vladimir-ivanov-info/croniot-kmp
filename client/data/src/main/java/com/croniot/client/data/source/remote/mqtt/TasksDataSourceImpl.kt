@@ -12,6 +12,7 @@ import com.croniot.client.core.util.StringUtil.generateUniqueString
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.data.source.remote.http.NetworkUtil
 import com.croniot.client.data.source.remote.http.TaskConfigurationApiService
+import croniot.models.MqttTopics
 import com.croniot.client.data.util.TaggingSocketFactory
 import com.croniot.client.domain.errors.RemoteError
 import com.croniot.client.domain.errors.TaskError
@@ -38,7 +39,7 @@ class TasksDataSourceImpl(
     private val progressHandlers = ConcurrentHashMap<String, MqttHandler>()
 
     private suspend fun mqttBrokerUrl(): String {
-        val ip = localDatasource.getServerIp().first() ?: "localhost"
+        val ip = localDatasource.getServerIp().first() ?: ServerConfig.DEFAULT_MQTT_HOST
         return "tcp://${ip}:${ServerConfig.MQTT_PORT}"
     }
 
@@ -50,7 +51,7 @@ class TasksDataSourceImpl(
 
         val clientId = ServerConfig.mqttClientId + generateUniqueString(8)
         val mqttClient = MqttClient(mqttBrokerUrl(), clientId, null)
-        val topic = "/$deviceUuid/newTasks"
+        val topic = MqttTopics.newTasks(deviceUuid)
 
         val handler = MqttHandler(
             mqttClient = mqttClient,
@@ -73,7 +74,7 @@ class TasksDataSourceImpl(
 
         val clientId = ServerConfig.mqttClientId + generateUniqueString(8)
         val mqttClient = MqttClient(mqttBrokerUrl(), clientId, null)
-        val topic = "/server_to_devices/$deviceUuid/task_types/+/tasks/+/progress"
+        val topic = MqttTopics.taskProgressWildcard(deviceUuid)
 
         android.util.Log.d("RTT", "Subscribing progress: topic=$topic clientId=$clientId")
 

@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -25,6 +26,8 @@ class TaskService @Inject constructor(
     private val taskTypeRepository: TaskTypeRepository,
     private val deviceRepository: DeviceRepository,
 ) {
+
+    private val logger = KotlinLogging.logger {}
 
     val iotSendTimestamps = ConcurrentHashMap<String, Long>()
 
@@ -64,18 +67,18 @@ class TaskService @Inject constructor(
                 parameterTask?.let { parametersValuesForDatabase[it] = value }
             }
             val t1 = System.currentTimeMillis()
-            println("[RTT] addTask DB lookups: ${t1 - t0}ms")
+            logger.debug { "addTask DB lookups: ${t1 - t0}ms" }
 
             val taskUid = Random.nextLong(1, 10000001) // TODO use UUID or DB sequence to avoid collisions
             val task = Task(taskUid, parametersValuesForDatabase, taskTypeUid.toLong())
             taskRepository.create(task)
             val t2 = System.currentTimeMillis()
-            println("[RTT] addTask create task: ${t2 - t1}ms")
+            logger.debug { "addTask create task: ${t2 - t1}ms" }
 
             val taskStateInfo = TaskStateInfo(taskUid, ZonedDateTime.now(), TaskState.CREATED.name, 0.0, "")
             taskRepository.createState(task, taskStateInfo)
             val t3 = System.currentTimeMillis()
-            println("[RTT] addTask createState: ${t3 - t2}ms")
+            logger.debug { "addTask createState: ${t3 - t2}ms" }
 
             val taskWithState = task.copy(mostRecentStateInfo = taskStateInfo)
             CoroutineScope(Dispatchers.IO).launch {
@@ -85,15 +88,15 @@ class TaskService @Inject constructor(
                 MqttController.sendTaskToDevice(deviceUuid, taskWithState)
                 val tMqtt2 = System.currentTimeMillis()
                 iotSendTimestamps["$deviceUuid:$taskTypeUid"] = tMqtt2
-                println(
-                    "[RTT] addTask MQTT sendNewTask(→Android): ${tMqtt1 - tMqtt0}ms, sendTaskToDevice(→IoT): ${tMqtt2 - tMqtt1}ms"
-                )
+                logger.debug {
+                    "addTask MQTT sendNewTask(→Android): ${tMqtt1 - tMqtt0}ms, sendTaskToDevice(→IoT): ${tMqtt2 - tMqtt1}ms"
+                }
             }
-            println("[RTT] addTask TOTAL (before MQTT): ${System.currentTimeMillis() - t0}ms")
+            logger.debug { "addTask TOTAL (before MQTT): ${System.currentTimeMillis() - t0}ms" }
 
             return Result(true, "")
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error(e) { "Error in addTask" }
             return Result(false, "")
         }
     }

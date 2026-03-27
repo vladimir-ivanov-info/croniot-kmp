@@ -4,11 +4,14 @@ import com.server.croniot.http.SensorsDataController
 import croniot.messages.MessageFactory
 import croniot.messages.MessageSensorData
 import croniot.models.MqttDataProcessor
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 class MqttDataProcessorSensor(
     private val deviceUuid: String,
     private val sensorsDataController: SensorsDataController,
 ) : MqttDataProcessor {
+
+    private val logger = KotlinLogging.logger {}
 
     override fun process(topic: String, data: Any) {
         try {
@@ -16,8 +19,7 @@ class MqttDataProcessorSensor(
             val messageSensorData = MessageFactory.fromJson<MessageSensorData>(messageString)
             sensorsDataController.processSensorData(deviceUuid, messageSensorData)
         } catch (e: Exception) {
-            println("Error processing sensor data for device $deviceUuid: ${e.message}")
-            e.printStackTrace()
+            logger.error(e) { "Error processing sensor data for device $deviceUuid" }
         }
     }
 }
