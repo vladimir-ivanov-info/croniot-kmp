@@ -12,6 +12,7 @@ import com.croniot.client.data.source.local.DataStoreController
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.TasksRepository
+import com.croniot.android.core.notifications.NotificationHelper
 import com.croniot.client.domain.usecases.FetchTasksUseCase
 import com.croniot.client.features.sensors.presentation.SensorsViewModel
 import org.koin.core.module.dsl.viewModel
@@ -21,6 +22,8 @@ import org.koin.dsl.module
 object MainDIModule {
 
     val mainDIModule = module {
+
+        single { NotificationHelper(context = get()) }
 
         single<LocalDatasource> { DataStoreController(context = get()) }
 

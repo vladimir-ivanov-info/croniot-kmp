@@ -9,4 +9,6 @@ object Constants {
     const val ENDPOINT_REGISTER_ACCOUNT: String = "/api/register_account"
 
     const val ENDPOINT_REQUEST_TASK_STATE_INFO_SYNC: String = "/api/request_task_state_info_sync"
+    const val ENDPOINT_LOGIN: String = "/api/login"
+    const val ENDPOINT_TASK_CONFIGURATION: String = "/taskConfiguration/{deviceUuid}"
 }

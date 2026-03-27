@@ -13,53 +13,54 @@ import com.croniot.client.presentation.constants.UiConstants
 
 class ForegroundService : Service() { // TODO refactor later
 
+    private companion object {
+        const val TAG = "ForegroundService"
+        const val CHANNEL_ID = "croniot_service_channel"
+        const val EXTRA_START_DESTINATION = "START_DESTINATION"
+        const val PREFS_NAME = "AppPrefs"
+        const val KEY_LAST_SCREEN = "LAST_SCREEN"
+        const val NOTIFICATION_ID = 1
+    }
+
     override fun onCreate() {
         super.onCreate()
-        Log.d("ForegroundService", "Service onCreate called")
+        Log.d(TAG, "Service onCreate called")
         startForegroundService()
     }
 
     private fun startForegroundService() {
-        val channelId = "croniot_service_channel"
-
         val lastScreen = getLastScreen()
         val notificationIntent = Intent(this, MainActivity::class.java).apply {
-            putExtra("START_DESTINATION", lastScreen)
+            putExtra(EXTRA_START_DESTINATION, lastScreen)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
-        // val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
             notificationIntent,
-            PendingIntent.FLAG_IMMUTABLE, // Add FLAG_IMMUTABLE here
+            PendingIntent.FLAG_IMMUTABLE,
         )
 
-        val notification: Notification = Notification.Builder(this, channelId)
+        val notification: Notification = Notification.Builder(this, CHANNEL_ID)
             .setContentTitle("Croniot running")
             .setContentText("Croniot app is running in the background")
-            // .setSmallIcon(R.drawable.ic_notification)
             .setSmallIcon(R.drawable.logo_cockroach_test_mode)
             .setContentIntent(pendingIntent)
             .build()
 
-        startForeground(1, notification)
+        startForeground(NOTIFICATION_ID, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Handle your background task here
-        // Log.d("ForegroundService", "Service onStartCommand called")
-
-        // startMQTTConnection()
         return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun getLastScreen(): String {
-        val sharedPref = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return sharedPref.getString(
-            "LAST_SCREEN",
+            KEY_LAST_SCREEN,
             UiConstants.ROUTE_LOGIN,
         ) ?: UiConstants.ROUTE_LOGIN
     }

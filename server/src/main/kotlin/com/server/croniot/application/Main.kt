@@ -10,17 +10,26 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.slf4j.event.Level
 import java.io.File
 import java.security.KeyStore
 import javax.sql.DataSource
 
+private val logger = KotlinLogging.logger {}
+
 fun Application.module(testing: Boolean = false) {
     Global.TESTING = testing
-    print("TESTING: ${Global.TESTING}")
+    logger.info { "Testing mode: ${Global.TESTING}" }
 
     install(ContentNegotiation) {
         json(MessageFactory.json)
+    }
+
+    install(CallLogging) {
+        level = Level.INFO
     }
 
     val appComponent = DI.appComponent
@@ -47,7 +56,7 @@ fun ensureDockerComposeRunning() {
     checkProcess.waitFor()
 
     if (running.isEmpty()) {
-        println("Docker Compose no esta activo. Levantando servicios...")
+        logger.info { "Docker Compose not running, starting services..." }
 
         val upProcess = ProcessBuilder("docker", "compose", "up", "-d")
             .directory(composeDir)
@@ -59,11 +68,11 @@ fun ensureDockerComposeRunning() {
             error("Error al levantar Docker Compose (exit code: $exitCode)")
         }
 
-        println("Esperando 5 segundos a que los servicios esten listos...")
+        logger.info { "Waiting 5s for services to be ready..." }
         Thread.sleep(5000)
-        println("Servicios levantados")
+        logger.info { "Docker Compose services started" }
     } else {
-        println("Docker Compose ya esta activo")
+        logger.info { "Docker Compose already running" }
     }
 }
 
@@ -95,7 +104,7 @@ fun main() {
 
     Runtime.getRuntime().addShutdownHook(
         Thread {
-            println("Gracefully shutting down...")
+            logger.info { "Gracefully shutting down..." }
         },
     )
 
@@ -135,6 +144,6 @@ fun main() {
             module = { module() }
         ).start(wait = true)
     } catch (e: Throwable) {
-        e.printStackTrace()
+        logger.error(e) { "Fatal error during server startup" }
     }
 }

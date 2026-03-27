@@ -20,19 +20,19 @@ class DataStoreController(
 
     private val dataStore: DataStore<Preferences> = context.dataStore
 
-    val KEY_SERVER_IP = stringPreferencesKey("server_ip")
-    val KEY_CONFIGURATION_FOREGROUND_SERVICE = stringPreferencesKey("configuration_foreground_service")
-    private val KEY_ACCOUNT = stringPreferencesKey("account")
-    private val KEY_SELECTED_DEVICE = stringPreferencesKey("selected_device")
-    val KEY_ACCOUNT_EMAIL = stringPreferencesKey("account_email")
-    val KEY_ACCOUNT_PASSWORD = stringPreferencesKey("account_password")
-    val KEY_DEVICE_TOKEN = stringPreferencesKey("device_token")
-    val KEY_DEVICE_UUID = stringPreferencesKey("device_uuid")
-
-    val KEY_SERVER_MODE = stringPreferencesKey("server_mode")
-    val KEY_CURRENT_SCREEN = stringPreferencesKey("current_screen")
-
-    val KEY_CURRENT_ROUTE = stringPreferencesKey("current_route")
+    private companion object {
+        val KEY_SERVER_IP = stringPreferencesKey("server_ip")
+        val KEY_CONFIGURATION_FOREGROUND_SERVICE = stringPreferencesKey("configuration_foreground_service")
+        val KEY_ACCOUNT = stringPreferencesKey("account")
+        val KEY_SELECTED_DEVICE = stringPreferencesKey("selected_device")
+        val KEY_ACCOUNT_EMAIL = stringPreferencesKey("account_email")
+        val KEY_ACCOUNT_PASSWORD = stringPreferencesKey("account_password")
+        val KEY_DEVICE_TOKEN = stringPreferencesKey("device_token")
+        val KEY_DEVICE_UUID = stringPreferencesKey("device_uuid")
+        val KEY_SERVER_MODE = stringPreferencesKey("server_mode")
+        val KEY_CURRENT_SCREEN = stringPreferencesKey("current_screen")
+        val KEY_CURRENT_ROUTE = stringPreferencesKey("current_route")
+    }
 
     override suspend fun getCurrentRoute(): String? {
         return loadData(KEY_CURRENT_ROUTE).firstOrNull()

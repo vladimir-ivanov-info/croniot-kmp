@@ -6,6 +6,7 @@ import com.croniot.client.core.models.SensorData
 import com.croniot.client.core.util.StringUtil.generateUniqueString
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.data.source.remote.mappers.toDomain
+import croniot.models.MqttTopics
 import com.croniot.client.data.util.TaggingSocketFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,10 +27,10 @@ class RemoteSensorDataSourceImpl(
         onNewSensorData: (sensorData: SensorData) -> Unit,
     ) = withContext(Dispatchers.IO) {
         val clientId = ServerConfig.mqttClientId + generateUniqueString(8)
-        val ip = localDatasource.getServerIp().first() ?: "localhost"
+        val ip = localDatasource.getServerIp().first() ?: ServerConfig.DEFAULT_MQTT_HOST
         val mqttClient = MqttClient("tcp://${ip}:${ServerConfig.MQTT_PORT}", clientId, null)
 
-        val topic = "/server_to_app/$deviceUuid/sensor_data"
+        val topic = MqttTopics.sensorData(deviceUuid)
         val handler = MqttHandler(
             mqttClient = mqttClient,
             mqttDataProcessor = MqttProcessorSensorData(onNewSensorDataDto = { newSensorDataDto ->

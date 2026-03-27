@@ -39,7 +39,7 @@ class ConfigurationScreenViewModel(
 
     private fun loadServerIp() = viewModelScope.launch {
         localDatasource.getServerIp().collect { ip ->
-            state.update { it.copy(serverIp = ip ?: "192.168.50.163") }
+            state.update { it.copy(serverIp = ip ?: ServerConfig.SERVER_IP_LOCAL) }
         }
     }
 

@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.croniot.android.core.notifications.NotificationHelper
 import com.croniot.client.core.models.Device
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.SensorDataRepository
@@ -31,6 +32,7 @@ class DeviceListViewModel(
     private val sensorDataRepository: SensorDataRepository,
     private val logOutUseCase: LogoutUseCase,
     private val savedStateHandle: SavedStateHandle,
+   // private val notificationHelper: NotificationHelper //TODO later
 ) : ViewModel() {
 
     companion object {
@@ -48,6 +50,7 @@ class DeviceListViewModel(
         field = MutableSharedFlow(replay = 0, extraBufferCapacity = 1)
 
     init {
+       //TODO notificationHelper.show("notification title")
         state
             .map { it.devices.map { d -> d.uuid } }
             .distinctUntilChanged()

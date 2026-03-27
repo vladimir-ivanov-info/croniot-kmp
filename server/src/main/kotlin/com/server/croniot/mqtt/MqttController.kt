@@ -8,6 +8,7 @@ import com.server.croniot.di.DI
 import croniot.messages.MessageFactory
 import croniot.messages.MessageTask
 import croniot.models.Device
+import croniot.models.MqttTopics
 import croniot.models.Task
 import croniot.models.dto.SensorDataDto
 import croniot.models.dto.TaskStateInfoDto
@@ -23,8 +24,11 @@ import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 object MqttController {
+
+    private val logger = KotlinLogging.logger {}
 
     private val deviceMqttClient: MqttClient = MqttClient(
         Global.secrets.mqttBrokerUrl,
@@ -38,15 +42,15 @@ object MqttController {
     init {
         deviceMqttClient.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable?) {
-                println("Connection lost: ${cause?.message}. Attempting to reconnect...")
+                logger.warn { "MQTT connection lost: ${cause?.message}" }
                 CoroutineScope(Dispatchers.IO).launch {
                     while (!deviceMqttClient.isConnected) {
                         try {
-                            println("Attempting to reconnect to the broker...")
+                            logger.info { "Attempting MQTT reconnection..." }
                             deviceMqttClient.connect()
-                            println("Reconnected to broker.")
+                            logger.info { "MQTT reconnected to broker" }
                         } catch (e: MqttException) {
-                            println("Reconnection failed: ${e.message}. Retrying in 5 seconds...")
+                            logger.warn { "MQTT reconnection failed: ${e.message}. Retrying in 5s..." }
                             delay(5000)
                         }
                     }
@@ -126,7 +130,7 @@ object MqttController {
             //measure("### sendTaskToDevice publish") {
                 deviceMqttClient.publish(topic, message)
             //}
-            println("### sendTaskToDevice lockWait=${waitMs}ms")
+            logger.debug { "sendTaskToDevice lockWait=${waitMs}ms" }
         }
     }
 
@@ -134,7 +138,7 @@ object MqttController {
         val t0 = System.nanoTime()
         clientLock.withLock {
             val waitMs = (System.nanoTime() - t0) / 1_000_000
-            val topic = "/$deviceUuid/newTasks"
+            val topic = MqttTopics.newTasks(deviceUuid)
             val taskDto = task.toDto()
             val json = MessageFactory.toJson(taskDto)
 
@@ -144,7 +148,7 @@ object MqttController {
             //measure("### sendNewTask publish") {
                 deviceMqttClient.publish(topic, message)
             //}
-            println("### sendNewTask lockWait=${waitMs}ms")
+            logger.debug { "sendNewTask lockWait=${waitMs}ms" }
         }
     }
 
@@ -152,7 +156,7 @@ object MqttController {
         val t0 = System.nanoTime()
         clientLock.withLock {
             val waitMs = (System.nanoTime() - t0) / 1_000_000
-            val topic = "/server_to_app/${sensorDataDto.deviceUuid}/sensor_data"
+            val topic = MqttTopics.sensorData(sensorDataDto.deviceUuid)
             val json = MessageFactory.toJson(sensorDataDto)
 
             val message = MqttMessage(json.toByteArray())
@@ -174,8 +178,7 @@ object MqttController {
         val t0 = System.nanoTime()
         clientLock.withLock {
             val waitMs = (System.nanoTime() - t0) / 1_000_000
-            val topic =
-                "/server_to_devices/$deviceUuid/task_types/$taskTypeUid/tasks/$taskUid/progress"
+            val topic = MqttTopics.taskProgress(deviceUuid, taskTypeUid, taskUid)
 
             val json = MessageFactory.toJson(payload)
             val message = MqttMessage(json.toByteArray()).apply {
