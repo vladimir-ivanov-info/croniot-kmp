@@ -25,7 +25,7 @@ class AccountRepository @Inject constructor(
         val accountEntity = accountDao.get(email) // TODO avoid getting password in future
 
         if (accountEntity != null) {
-            val devicesEntity = deviceDao.getDevices(accountEntity.id).filter { !it.uuid.startsWith("android") } //TODO
+            val devicesEntity = deviceDao.getDevices(accountEntity.id).filter { !it.uuid.startsWith("android") } // TODO
 
 //
             val deviceIds = devicesEntity.map { it.id }

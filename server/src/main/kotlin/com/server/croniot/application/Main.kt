@@ -6,13 +6,13 @@ import com.server.croniot.mqtt.MqttController
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import croniot.messages.MessageFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.slf4j.event.Level
 import java.io.File
 import java.security.KeyStore
@@ -80,7 +80,7 @@ fun initDatabase(dataSource: DataSource) {
     DatabaseSchemaInitializer.createSchemaIfNeeded(dataSource)
 }
 
-fun provideDataSource(): DataSource { //TODO duplicate for now
+fun provideDataSource(): DataSource { // TODO duplicate for now
     val secrets = Global.secrets
     val config = HikariConfig().apply {
         jdbcUrl = secrets.databaseUrl
@@ -137,7 +137,7 @@ fun main() {
                     privateKeyPassword = { keystorePassword.toCharArray() }
                 ) {
                     host = "0.0.0.0"
-                    //port = 8090 //port = 8443
+                    // port = 8090 //port = 8443
                     port = 8443
                 }
             },

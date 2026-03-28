@@ -35,10 +35,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.android.app.AppError
 import com.croniot.client.core.models.Device
 import com.croniot.client.features.sensors.presentation.SensorsScreen
+import com.croniot.client.features.taskhistory.presentation.TaskHistoryScreen
 import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesScreen
 import org.koin.androidx.compose.koinViewModel
 
-val deviceScreenTabsNames = listOf("Sensors", "Task types")
+val deviceScreenTabsNames = listOf("Sensors", "Task types", "Task History")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,6 +152,7 @@ private fun DeviceScreenContent(
                 selectedDevice = device,
                 onTaskTypeClicked = onTaskTypeClicked,
             )
+            2 -> TaskHistoryScreen(selectedDevice = device)
         }
     }
 }

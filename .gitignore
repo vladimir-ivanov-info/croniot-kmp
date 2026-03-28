@@ -64,6 +64,7 @@ server/croniot-server*/
 server/KotlinMQTTServer*/
 /.fleet/*
 /secrets/*
+**/logs/*
 
 /app/*
 

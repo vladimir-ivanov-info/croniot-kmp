@@ -9,6 +9,7 @@ import com.server.croniot.jooq.tables.TaskType.Companion.TASK_TYPE
 import croniot.models.ParameterTask
 import croniot.models.Task
 import croniot.models.TaskStateInfo
+import croniot.models.dto.TaskStateInfoHistoryEntryDto
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.*
 import java.time.ZoneId
@@ -211,6 +212,39 @@ class TaskDaoJooqImpl @Inject constructor(
                     mostRecentStateInfo = mostRecentStateInfo,
                 )
             }
+        }
+    }
+
+    override fun getAllStateInfoHistory(deviceUuid: String): List<TaskStateInfoHistoryEntryDto> {
+        return dsl.transactionResult { cfg ->
+            val tx = using(cfg)
+
+            tx.select(
+                TASK.UID,
+                TASK_TYPE.UID,
+                TASK_STATE_INFO.DATE_TIME,
+                TASK_STATE_INFO.STATE,
+                TASK_STATE_INFO.PROGRESS,
+                TASK_STATE_INFO.ERROR_MESSAGE,
+            )
+                .from(TASK_STATE_INFO)
+                .join(TASK).on(TASK_STATE_INFO.TASK.eq(TASK.ID))
+                .join(TASK_TYPE).on(TASK.TASK_TYPE.eq(TASK_TYPE.ID))
+                .join(DEVICE).on(TASK_TYPE.DEVICE.eq(DEVICE.ID))
+                .where(DEVICE.UUID.eq(deviceUuid))
+                .orderBy(TASK_STATE_INFO.DATE_TIME.desc())
+                .fetch()
+                .mapNotNull { rec ->
+                    val dateTime = rec.get(TASK_STATE_INFO.DATE_TIME) ?: return@mapNotNull null
+                    TaskStateInfoHistoryEntryDto(
+                        taskUid = rec.get(TASK.UID) ?: 0L,
+                        taskTypeUid = rec.get(TASK_TYPE.UID) ?: 0L,
+                        dateTime = dateTime.toZonedDateTime(),
+                        state = rec.get(TASK_STATE_INFO.STATE) ?: "",
+                        progress = rec.get(TASK_STATE_INFO.PROGRESS) ?: 0.0,
+                        errorMessage = rec.get(TASK_STATE_INFO.ERROR_MESSAGE) ?: "",
+                    )
+                }
         }
     }
 }

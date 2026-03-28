@@ -3,7 +3,6 @@ package com.server.croniot.mqtt
 import Global
 import MqttHandler
 import com.server.croniot.data.mappers.toDto
-import croniot.measure
 import com.server.croniot.di.DI
 import croniot.messages.MessageFactory
 import croniot.messages.MessageTask
@@ -12,6 +11,7 @@ import croniot.models.MqttTopics
 import croniot.models.Task
 import croniot.models.dto.SensorDataDto
 import croniot.models.dto.TaskStateInfoDto
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -24,7 +24,6 @@ import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
-import io.github.oshai.kotlinlogging.KotlinLogging
 
 object MqttController {
 
@@ -127,9 +126,9 @@ object MqttController {
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            //measure("### sendTaskToDevice publish") {
-                deviceMqttClient.publish(topic, message)
-            //}
+            // measure("### sendTaskToDevice publish") {
+            deviceMqttClient.publish(topic, message)
+            // }
             logger.debug { "sendTaskToDevice lockWait=${waitMs}ms" }
         }
     }
@@ -145,9 +144,9 @@ object MqttController {
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            //measure("### sendNewTask publish") {
-                deviceMqttClient.publish(topic, message)
-            //}
+            // measure("### sendNewTask publish") {
+            deviceMqttClient.publish(topic, message)
+            // }
             logger.debug { "sendNewTask lockWait=${waitMs}ms" }
         }
     }
@@ -162,10 +161,10 @@ object MqttController {
             val message = MqttMessage(json.toByteArray())
             message.qos = 2
             message.isRetained = false
-            //measure("### sendSensorData publish") {
-                deviceMqttClient.publish(topic, message)
-            //}
-            //println("### sendSensorData lockWait=${waitMs}ms")
+            // measure("### sendSensorData publish") {
+            deviceMqttClient.publish(topic, message)
+            // }
+            // println("### sendSensorData lockWait=${waitMs}ms")
         }
     }
 
@@ -186,11 +185,11 @@ object MqttController {
                 isRetained = false
             }
 
-            //measure("### sendNewTaskStateInfo publish") {
-                deviceMqttClient.publish(topic, message)
-            //}
-            //println("### sendNewTaskStateInfo lockWait=${waitMs}ms")
-            //println("[RTT] sendNewTaskStateInfo published to: $topic (${json.length} bytes)")
+            // measure("### sendNewTaskStateInfo publish") {
+            deviceMqttClient.publish(topic, message)
+            // }
+            // println("### sendNewTaskStateInfo lockWait=${waitMs}ms")
+            // println("[RTT] sendNewTaskStateInfo published to: $topic (${json.length} bytes)")
         }
     }
 

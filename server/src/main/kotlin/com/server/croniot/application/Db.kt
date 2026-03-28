@@ -2,10 +2,10 @@ package com.server.croniot.application
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
-import io.github.oshai.kotlinlogging.KotlinLogging
 
 data class DbConfig(
     val jdbcUrl: String,

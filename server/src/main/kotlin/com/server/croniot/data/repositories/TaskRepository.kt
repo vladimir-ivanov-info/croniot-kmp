@@ -4,6 +4,7 @@ import com.server.croniot.data.db.daos.TaskDao
 import com.server.croniot.data.db.daos.TaskStateInfoDao
 import croniot.models.Task
 import croniot.models.TaskStateInfo
+import croniot.models.dto.TaskStateInfoHistoryEntryDto
 import javax.inject.Inject
 
 class TaskRepository @Inject constructor(
@@ -33,5 +34,9 @@ class TaskRepository @Inject constructor(
 
     fun getAll(deviceUuid: String): List<Task> {
         return taskDao.getAll(deviceUuid)
+    }
+
+    fun getAllStateInfoHistory(deviceUuid: String): List<TaskStateInfoHistoryEntryDto> {
+        return taskDao.getAllStateInfoHistory(deviceUuid)
     }
 }
