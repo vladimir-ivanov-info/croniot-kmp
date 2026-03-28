@@ -215,9 +215,14 @@ class TaskDaoJooqImpl @Inject constructor(
         }
     }
 
-    override fun getAllStateInfoHistory(deviceUuid: String, limit: Int, offset: Int): List<TaskStateInfoHistoryEntryDto> {
+    override fun getAllStateInfoHistory(deviceUuid: String, limit: Int, offset: Int, before: java.time.OffsetDateTime?): List<TaskStateInfoHistoryEntryDto> {
         return dsl.transactionResult { cfg ->
             val tx = using(cfg)
+
+            var condition = DEVICE.UUID.eq(deviceUuid)
+            if (before != null) {
+                condition = condition.and(TASK_STATE_INFO.DATE_TIME.lt(before))
+            }
 
             tx.select(
                 TASK.UID,
@@ -231,7 +236,7 @@ class TaskDaoJooqImpl @Inject constructor(
                 .join(TASK).on(TASK_STATE_INFO.TASK.eq(TASK.ID))
                 .join(TASK_TYPE).on(TASK.TASK_TYPE.eq(TASK_TYPE.ID))
                 .join(DEVICE).on(TASK_TYPE.DEVICE.eq(DEVICE.ID))
-                .where(DEVICE.UUID.eq(deviceUuid))
+                .where(condition)
                 .orderBy(TASK_STATE_INFO.DATE_TIME.desc())
                 .limit(limit)
                 .offset(offset)

@@ -20,5 +20,6 @@ interface TaskConfigurationApiService {
         @Path("deviceUuid") deviceUuid: String,
         @Query("limit") limit: Int,
         @Query("offset") offset: Int,
+        @Query("before") before: String? = null,
     ): Response<List<TaskStateInfoHistoryEntryDto>>
 }

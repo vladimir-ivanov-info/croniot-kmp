@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.CircularProgressIndicator
@@ -17,9 +18,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.croniot.client.core.models.Device
@@ -34,14 +37,17 @@ fun TaskHistoryScreen(
         viewModel.initialize(selectedDevice.uuid)
     }
 
+    val newItems by viewModel.newItems.collectAsStateWithLifecycle()
     val pagingItems = viewModel.pagingFlow.collectAsLazyPagingItems()
+
+    val totalCount = newItems.size + pagingItems.itemCount
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
-            pagingItems.loadState.refresh is LoadState.Loading -> {
+            pagingItems.loadState.refresh is LoadState.Loading && newItems.isEmpty() -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            pagingItems.loadState.refresh is LoadState.Error -> {
+            pagingItems.loadState.refresh is LoadState.Error && newItems.isEmpty() -> {
                 val error = (pagingItems.loadState.refresh as LoadState.Error).error
                 Column(
                     modifier = Modifier.align(Alignment.Center),
@@ -60,7 +66,7 @@ fun TaskHistoryScreen(
                     )
                 }
             }
-            pagingItems.itemCount == 0 && pagingItems.loadState.refresh is LoadState.NotLoading -> {
+            totalCount == 0 && pagingItems.loadState.refresh is LoadState.NotLoading -> {
                 Column(
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -82,7 +88,7 @@ fun TaskHistoryScreen(
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = "${pagingItems.itemCount} entries",
+                        text = "$totalCount entries",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -93,6 +99,13 @@ fun TaskHistoryScreen(
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
+                        items(
+                            items = newItems,
+                            key = { "new_${it.taskTypeUid}_${it.taskUid}_${it.dateTime}" },
+                        ) { item ->
+                            TaskHistoryItemCard(item = item)
+                        }
+
                         items(pagingItems.itemCount) { index ->
                             pagingItems[index]?.let { item ->
                                 TaskHistoryItemCard(item = item)
