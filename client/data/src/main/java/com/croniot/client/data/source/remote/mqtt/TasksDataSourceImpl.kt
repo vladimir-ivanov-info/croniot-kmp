@@ -143,8 +143,8 @@ class TasksDataSourceImpl(
         Outcome.Err(TaskError.Remote(RemoteError.Unknown))
     }
 
-    override suspend fun fetchTaskStateInfoHistory(deviceUuid: String, limit: Int, offset: Int): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> = try {
-        val response = taskConfigurationApiService.requestTaskStateInfoHistory(deviceUuid, limit, offset)
+    override suspend fun fetchTaskStateInfoHistory(deviceUuid: String, limit: Int, offset: Int, before: String?): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> = try {
+        val response = taskConfigurationApiService.requestTaskStateInfoHistory(deviceUuid, limit, offset, before)
         val body = response.body()
         if (response.isSuccessful && body != null) {
             Outcome.Ok(body.map { it.toModel() })

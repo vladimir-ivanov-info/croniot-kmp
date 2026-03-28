@@ -8,6 +8,6 @@ import com.croniot.client.domain.repositories.TasksRepository
 class FetchTaskStateInfoHistoryUseCase(
     private val tasksRepository: TasksRepository,
 ) {
-    suspend operator fun invoke(deviceUuid: String, limit: Int, offset: Int): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> =
-        tasksRepository.fetchTaskStateInfoHistory(deviceUuid, limit, offset)
+    suspend operator fun invoke(deviceUuid: String, limit: Int, offset: Int, before: String? = null): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> =
+        tasksRepository.fetchTaskStateInfoHistory(deviceUuid, limit, offset, before)
 }
