@@ -36,8 +36,8 @@ android {
         applicationId = "com.croniot.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 7
-        versionName = "1.0-alpha3"
+        versionCode = 8
+        versionName = "1.0-alpha4"
 
         //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner = "com.karumi.shot.ShotTestRunner"
@@ -156,6 +156,7 @@ dependencies {
     implementation(projects.client.domain)
     implementation(projects.client.features.sensors)
     implementation(projects.client.features.tasktypes)
+    implementation(projects.client.features.taskhistory)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.common)
 

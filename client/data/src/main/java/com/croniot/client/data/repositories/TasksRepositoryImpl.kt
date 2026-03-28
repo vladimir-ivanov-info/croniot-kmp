@@ -3,6 +3,7 @@ package com.croniot.client.data.repositories
 import Outcome
 import com.croniot.client.core.models.Task
 import com.croniot.client.core.models.TaskStateInfo
+import com.croniot.client.core.models.TaskStateInfoHistoryEntry
 import com.croniot.client.core.models.events.TaskStateInfoEvent
 import com.croniot.client.data.source.remote.mqtt.TasksDataSource
 import com.croniot.client.domain.errors.TaskError
@@ -20,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource,
 ) : TasksRepository {
-
+    //TODO Pager3
     private val tasksByDevice = ConcurrentHashMap<String, CopyOnWriteArrayList<Task>>()
 
     private val newTaskFlowByDevice = ConcurrentHashMap<String, MutableSharedFlow<Task>>()
@@ -144,4 +145,7 @@ class TasksRepositoryImpl(
 
     override suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Outcome<Unit, TaskError> =
         tasksDataSource.requestTaskStateInfoSync(deviceUuid, taskTypeUid)
+
+    override suspend fun fetchTaskStateInfoHistory(deviceUuid: String): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> =
+        tasksDataSource.fetchTaskStateInfoHistory(deviceUuid)
 }

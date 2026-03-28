@@ -2,6 +2,7 @@ package com.croniot.client.data.source.remote.mqtt
 
 import Outcome
 import com.croniot.client.core.models.Task
+import com.croniot.client.core.models.TaskStateInfoHistoryEntry
 import com.croniot.client.core.models.events.TaskStateInfoEvent
 import com.croniot.client.domain.errors.TaskError
 import croniot.messages.MessageAddTask
@@ -25,4 +26,6 @@ interface TasksDataSource {
     suspend fun sendNewTask(messageAddTask: MessageAddTask): Outcome<Unit, TaskError>
 
     suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Outcome<Unit, TaskError>
+
+    suspend fun fetchTaskStateInfoHistory(deviceUuid: String): Outcome<List<TaskStateInfoHistoryEntry>, TaskError>
 }

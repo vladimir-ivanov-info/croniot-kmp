@@ -7,6 +7,7 @@ import com.croniot.client.core.config.Constants.ENDPOINT_REQUEST_TASK_STATE_INFO
 import com.croniot.client.core.config.ServerConfig
 import com.croniot.client.core.mappers.toModel
 import com.croniot.client.core.models.Task
+import com.croniot.client.core.models.TaskStateInfoHistoryEntry
 import com.croniot.client.core.models.events.TaskStateInfoEvent
 import com.croniot.client.core.util.StringUtil.generateUniqueString
 import com.croniot.client.data.source.local.LocalDatasource
@@ -133,6 +134,22 @@ class TasksDataSourceImpl(
             Outcome.Ok(Unit)
         } else {
             Outcome.Err(TaskError.Remote(RemoteError.ServerError(result.message)))
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: IOException) {
+        Outcome.Err(TaskError.Remote(RemoteError.Unreachable))
+    } catch (e: Exception) {
+        Outcome.Err(TaskError.Remote(RemoteError.Unknown))
+    }
+
+    override suspend fun fetchTaskStateInfoHistory(deviceUuid: String): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> = try {
+        val response = taskConfigurationApiService.requestTaskStateInfoHistory(deviceUuid)
+        val body = response.body()
+        if (response.isSuccessful && body != null) {
+            Outcome.Ok(body.map { it.toModel() })
+        } else {
+            Outcome.Err(TaskError.Remote(RemoteError.Http(response.code())))
         }
     } catch (e: CancellationException) {
         throw e

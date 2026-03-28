@@ -12,12 +12,13 @@ import croniot.models.Task
 import croniot.models.TaskState
 import croniot.models.TaskStateInfo
 import croniot.models.dto.TaskDto
+import croniot.models.dto.TaskStateInfoHistoryEntryDto
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
-import io.github.oshai.kotlinlogging.KotlinLogging
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -104,6 +105,10 @@ class TaskService @Inject constructor(
     fun getTasksByDeviceUuid(deviceUuid: String): List<TaskDto> {
         val tasks = taskRepository.getAll(deviceUuid)
         return tasks.map { it.toDto() }
+    }
+
+    fun getTaskStateInfoHistory(deviceUuid: String): List<TaskStateInfoHistoryEntryDto> {
+        return taskRepository.getAllStateInfoHistory(deviceUuid)
     }
 
     fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Result {

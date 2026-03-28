@@ -10,6 +10,7 @@ import com.croniot.client.data.di.dataModule
 import com.croniot.client.domain.di.domainDiModule
 import com.croniot.client.features.login.di.LoginModule
 import com.croniot.client.features.sensors.di.SensorsModule
+import com.croniot.client.features.taskhistory.di.TaskHistoryModule
 import com.croniot.client.features.tasktypes.di.TaskTypesModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -37,6 +38,7 @@ class MyApp : Application() {
                 dataModule,
                 domainDiModule,
                 TaskTypesModule.taskTypesModule,
+                TaskHistoryModule.taskHistoryModule,
             )
         }
     }

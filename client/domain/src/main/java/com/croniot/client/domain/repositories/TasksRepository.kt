@@ -3,6 +3,7 @@ package com.croniot.client.domain.repositories
 import Outcome
 import com.croniot.client.core.models.Task
 import com.croniot.client.core.models.TaskStateInfo
+import com.croniot.client.core.models.TaskStateInfoHistoryEntry
 import com.croniot.client.core.models.events.TaskStateInfoEvent
 import com.croniot.client.domain.errors.TaskError
 import kotlinx.coroutines.flow.Flow
@@ -32,4 +33,6 @@ interface TasksRepository {
     suspend fun addTask(task: Task)
 
     suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Outcome<Unit, TaskError>
+
+    suspend fun fetchTaskStateInfoHistory(deviceUuid: String): Outcome<List<TaskStateInfoHistoryEntry>, TaskError>
 }

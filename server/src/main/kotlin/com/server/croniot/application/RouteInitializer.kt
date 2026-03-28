@@ -72,6 +72,10 @@ class RouteInitializer @Inject constructor(
                 taskController.getTaskConfigurations(call)
             }
 
+            get("/taskStateInfoHistory/{deviceUuid}") {
+                taskController.getTaskStateInfoHistory(call)
+            }
+
             post("/api/register_account") {
                 accountController.registerAccount(call)
             }

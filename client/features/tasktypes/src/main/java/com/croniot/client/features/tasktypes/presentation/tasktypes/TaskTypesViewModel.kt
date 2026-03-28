@@ -8,13 +8,12 @@ import com.croniot.client.domain.usecases.FetchTasksUseCase
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.ObserveTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.RequestTaskStateInfoSyncUseCase
-import croniot.models.TaskState
+import com.croniot.client.presentation.util.formatStateInfo
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.format.DateTimeFormatter
 
 class TaskTypesViewModel(
     private val fetchTasksUseCase: FetchTasksUseCase,
@@ -58,16 +57,4 @@ class TaskTypesViewModel(
         }
     }
 
-}
-
-internal fun formatStateInfo(info: TaskStateInfo?): String {
-    info ?: return ""
-    val time = info.dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-    val stateLabel = info.state.lowercase().replace('_', ' ')
-        .replaceFirstChar { it.uppercase() }
-    return when (info.state) {
-        TaskState.RUNNING.name -> "$stateLabel • ${info.progress.toInt()}% · $time"
-        TaskState.ERROR.name -> "Error: ${info.errorMessage.take(50)} · $time"
-        else -> "$stateLabel"
-    }
 }

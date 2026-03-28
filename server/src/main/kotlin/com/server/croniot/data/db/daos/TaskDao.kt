@@ -1,6 +1,7 @@
 package com.server.croniot.data.db.daos
 
 import croniot.models.Task
+import croniot.models.dto.TaskStateInfoHistoryEntryDto
 
 interface TaskDao {
 
@@ -11,4 +12,6 @@ interface TaskDao {
     fun get(deviceUuid: String, taskTypeUid: Long, taskUid: Long): Task?
 
     fun getAll(deviceUuid: String): List<Task>
+
+    fun getAllStateInfoHistory(deviceUuid: String): List<TaskStateInfoHistoryEntryDto>
 }

@@ -12,6 +12,7 @@ import croniot.messages.MessageFactory
 import croniot.messages.MessageRequestTaskStateInfoSync
 import croniot.models.TaskProgressUpdate
 import croniot.models.TaskStateInfo
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receiveText
@@ -20,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
-import io.github.oshai.kotlinlogging.KotlinLogging
 import javax.inject.Inject
 
 class TaskController @Inject constructor(
@@ -46,14 +46,14 @@ class TaskController @Inject constructor(
                 val errorMessage = taskProgressUpdate.errorMessage
 
                 val device = deviceService.getByUuid(deviceUuid) ?: return
-               // if (!taskTypeService.exists(device.uuid, taskTypeUid)) return
+                // if (!taskTypeService.exists(device.uuid, taskTypeUid)) return
 
                 val deviceId = deviceService.getId(deviceUuid) ?: return
                 val taskTypeId = taskTypeService.getId(deviceId, taskTypeUid) ?: return
                 val sentAt = taskService.iotSendTimestamps.remove("$deviceUuid:$taskTypeUid")
-               // if (sentAt != null) {
-                    // println("[RTT] IoT round-trip (server→IoT→server): ${t0 - sentAt}ms (state=$taskState)")
-               // }
+                // if (sentAt != null) {
+                // println("[RTT] IoT round-trip (server→IoT→server): ${t0 - sentAt}ms (state=$taskState)")
+                // }
                 // println("[RTT] addTaskProgress DB lookups: ${System.currentTimeMillis() - t0}ms (state=$taskState, taskUid=$taskUid)")
 
                 val existingTask = tasksRepository.get(deviceUuid, taskTypeUid, taskUid)
@@ -115,7 +115,7 @@ class TaskController @Inject constructor(
         measure("newTask MQTT sending", log = { logger.debug { it } }) {
             CoroutineScope(Dispatchers.IO).launch {
                 MqttController.sendNewTask(deviceUuid, taskWithState)
-                //println("[RTT] handleNewTask MQTT sent: ${System.currentTimeMillis() - t0}ms (state=$taskState)")
+                // println("[RTT] handleNewTask MQTT sent: ${System.currentTimeMillis() - t0}ms (state=$taskState)")
             }
         }
     }
@@ -171,6 +171,17 @@ class TaskController @Inject constructor(
         } else {
             call.respond(HttpStatusCode.NotFound, "No configurations found for UUID: $deviceUuid")
         }
+    }
+
+    suspend fun getTaskStateInfoHistory(call: ApplicationCall) {
+        val deviceUuid = call.parameters["deviceUuid"]
+        if (deviceUuid == null) {
+            call.respond(HttpStatusCode.BadRequest, "Missing deviceUuid")
+            return
+        }
+
+        val history = taskService.getTaskStateInfoHistory(deviceUuid)
+        call.respond(history)
     }
 
     suspend fun requestTaskStateInfoSync(call: ApplicationCall) {
