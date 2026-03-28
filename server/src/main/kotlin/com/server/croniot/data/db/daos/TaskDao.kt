@@ -13,5 +13,5 @@ interface TaskDao {
 
     fun getAll(deviceUuid: String): List<Task>
 
-    fun getAllStateInfoHistory(deviceUuid: String): List<TaskStateInfoHistoryEntryDto>
+    fun getAllStateInfoHistory(deviceUuid: String, limit: Int, offset: Int): List<TaskStateInfoHistoryEntryDto>
 }

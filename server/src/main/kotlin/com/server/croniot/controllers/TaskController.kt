@@ -180,7 +180,10 @@ class TaskController @Inject constructor(
             return
         }
 
-        val history = taskService.getTaskStateInfoHistory(deviceUuid)
+        val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 50
+        val offset = call.request.queryParameters["offset"]?.toIntOrNull() ?: 0
+
+        val history = taskService.getTaskStateInfoHistory(deviceUuid, limit, offset)
         call.respond(history)
     }
 

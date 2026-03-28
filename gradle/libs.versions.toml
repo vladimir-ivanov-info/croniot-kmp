@@ -26,6 +26,7 @@ navigation = "2.9.7"
 compose = "1.10.5"
 
 lifecycle = "2.10.0"
+paging = "3.4.2"
 
 coroutines = "1.10.2"
 kotlinBom = "1.9.0"
@@ -155,6 +156,9 @@ datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "
 
 room-runtime      = { module = "androidx.room:room-runtime",      version.ref = "room" }
 room-compiler     = { module = "androidx.room:room-compiler",     version.ref = "room" }
+
+paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
 
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 
