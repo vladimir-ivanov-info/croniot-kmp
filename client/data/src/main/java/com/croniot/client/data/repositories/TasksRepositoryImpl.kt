@@ -146,6 +146,6 @@ class TasksRepositoryImpl(
     override suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Outcome<Unit, TaskError> =
         tasksDataSource.requestTaskStateInfoSync(deviceUuid, taskTypeUid)
 
-    override suspend fun fetchTaskStateInfoHistory(deviceUuid: String): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> =
-        tasksDataSource.fetchTaskStateInfoHistory(deviceUuid)
+    override suspend fun fetchTaskStateInfoHistory(deviceUuid: String, limit: Int, offset: Int): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> =
+        tasksDataSource.fetchTaskStateInfoHistory(deviceUuid, limit, offset)
 }

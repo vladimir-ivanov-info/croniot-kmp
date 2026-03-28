@@ -36,7 +36,7 @@ class TaskRepository @Inject constructor(
         return taskDao.getAll(deviceUuid)
     }
 
-    fun getAllStateInfoHistory(deviceUuid: String): List<TaskStateInfoHistoryEntryDto> {
-        return taskDao.getAllStateInfoHistory(deviceUuid)
+    fun getAllStateInfoHistory(deviceUuid: String, limit: Int, offset: Int): List<TaskStateInfoHistoryEntryDto> {
+        return taskDao.getAllStateInfoHistory(deviceUuid, limit, offset)
     }
 }

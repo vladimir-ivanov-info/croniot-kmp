@@ -38,6 +38,9 @@ kotlin {
 
                 implementation(libs.material.icons.extended)
 
+                implementation(libs.paging.runtime)
+                implementation(libs.paging.compose)
+
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.ui)

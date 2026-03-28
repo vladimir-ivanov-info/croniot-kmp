@@ -34,5 +34,5 @@ interface TasksRepository {
 
     suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Outcome<Unit, TaskError>
 
-    suspend fun fetchTaskStateInfoHistory(deviceUuid: String): Outcome<List<TaskStateInfoHistoryEntry>, TaskError>
+    suspend fun fetchTaskStateInfoHistory(deviceUuid: String, limit: Int, offset: Int): Outcome<List<TaskStateInfoHistoryEntry>, TaskError>
 }
