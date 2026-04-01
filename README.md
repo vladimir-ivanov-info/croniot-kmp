@@ -51,7 +51,8 @@ The next time you start an IoT project, **99 % of the work is already done:**
 
 | Login | Your devices | Device's sensors
 |-------|-------------|---------------|
-| <img src="https://github.com/user-attachments/assets/ea270666-e5f2-4916-bacb-aed2ad865535" width="320"> | <img src="https://github.com/user-attachments/assets/cd27be2e-1d4f-46ed-a95f-bbec3fe6605d" width="320"> | <img src="https://github.com/user-attachments/assets/d358e151-9356-4e53-bb6c-8f6e5ca79828" width="320"> |
+| <img src="https://github.com/user-attachments/assets/956321f0-b7de-4302-9af6-565acbccfb8e" width="320"> | <img src="https://github.com/user-attachments/assets/cd27be2e-1d4f-46ed-a95f-bbec3fe6605d" width="320"> | <img src="https://github.com/user-attachments/assets/d358e151-9356-4e53-bb6c-8f6e5ca79828" width="320"> |
+
 
 | Device's task types | Scheduled task | Stateful task
 |-------|-------------|---------------|
