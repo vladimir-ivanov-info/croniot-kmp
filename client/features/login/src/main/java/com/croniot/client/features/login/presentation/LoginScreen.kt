@@ -5,7 +5,6 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -17,15 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -33,8 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -94,7 +90,6 @@ fun LoginScreen(
     LoginScreenBody(
         state = state,
         onAction = viewModel::onAction,
-        serverMode = "local", // TODO,
         snackbarHostState = snackbarHostState,
     )
 }
@@ -103,7 +98,6 @@ fun LoginScreen(
 fun LoginScreenBody(
     state: State<LoginState>,
     onAction: (LoginIntent) -> Unit,
-    serverMode: String,
     snackbarHostState: SnackbarHostState,
 ) {
     Box(
@@ -112,11 +106,11 @@ fun LoginScreenBody(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.95f),
+                        Color(0xFFF5F3F0),
+                        Color(0xFFECEFED),
                     ),
-                ),
-            ),
+                )
+            )
     ) {
         Scaffold(
             containerColor = Color.Transparent,
@@ -125,7 +119,6 @@ fun LoginScreenBody(
                 LoginScreenContent(
                     state = state,
                     innerPadding = innerPadding,
-                    serverMode = serverMode,
                     onAction = onAction,
                 )
             },
@@ -137,7 +130,6 @@ fun LoginScreenBody(
 fun LoginScreenContent(
     state: State<LoginState>,
     innerPadding: PaddingValues,
-    serverMode: String,
     onAction: (LoginIntent) -> Unit,
 ) {
     Box(
@@ -147,7 +139,6 @@ fun LoginScreenContent(
     ) {
         LoginContent(
             state = state,
-            serverMode = serverMode,
             modifier = Modifier
                 .align(Alignment.Center),
             onAction = onAction,
@@ -158,7 +149,6 @@ fun LoginScreenContent(
 @Composable
 fun LoginContent(
     state: State<LoginState>,
-    serverMode: String,
     modifier: Modifier,
     onAction: (LoginIntent) -> Unit,
 ) {
@@ -181,31 +171,12 @@ fun LoginContent(
                 },
             contentAlignment = Alignment.Center,
         ) {
-            val logoResourceId = if (serverMode == "local") {
-                R.drawable.logo_cockroach_test_mode
-            } else {
-                R.drawable.logo_cockroach
-            }
-
             Image(
-                painter = painterResource(id = logoResourceId),
+                painter = painterResource(id = R.drawable.logo_croniot_1),
                 contentDescription = null,
                 modifier = Modifier
-                   // .shadow(elevation = 1.dp, shape = CircleShape)
-                    .clip(CircleShape)
-                    .background(Color.White, CircleShape)
-                    .border(
-                        width = 1.dp,
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                MaterialTheme.colorScheme.tertiary,
-                                MaterialTheme.colorScheme.primary,
-                                Color.Transparent
-                            ),
-                        ),
-                        shape = CircleShape,
-                    ),
+                    .size(200.dp)
+                    .padding(24.dp),
                 contentScale = ContentScale.Fit,
             )
         }
@@ -275,9 +246,9 @@ fun LoginButton(
         if (state.value.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier
-                    .size(20.dp), // tamaño reducido para que encaje bien en el botón
+                    .size(20.dp),
                 strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onPrimary, // color visible sobre el fondo
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         } else {
             Text(text = "Log in")
@@ -290,7 +261,7 @@ fun RegisterButton(
     state: State<LoginState>,
     onAction: (LoginIntent) -> Unit,
 ) {
-    OutlinedButton(
+    TextButton(
         enabled = !state.value.isLoading,
         onClick = {
             onAction(LoginIntent.GoToCreateAccountScreen)
@@ -300,7 +271,8 @@ fun RegisterButton(
     ) {
         Text(
             text = UiConstants.SCREEN_LOGIN_BUTTON_CREATE_ACCOUNT_TEXT,
-            color = MaterialTheme.colorScheme.tertiary/*.copy(alpha = 0.7f)*/,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+
         )
     }
 }
@@ -311,7 +283,7 @@ fun SlowHeroSlogan() {
     val offsetY = remember { androidx.compose.animation.core.Animatable(16f) }
 
     LaunchedEffect(Unit) {
-        delay(800) // pausa para crear expectativa, pero el Text ya ocupa sitio
+        delay(800)
         // animaciones en paralelo, lentas y suaves
         launch {
             alpha.animateTo(
@@ -333,10 +305,7 @@ fun SlowHeroSlogan() {
             fontWeight = FontWeight.Light,
             letterSpacing = 0.8.sp,
             lineHeight = 28.sp,
-            // color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            // color = MaterialTheme.colorScheme.onSurface,
-            //  color = MaterialTheme.colorScheme.primary,
         ),
         textAlign = TextAlign.Center,
         modifier = Modifier
