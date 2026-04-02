@@ -16,12 +16,7 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     env:
-      GRADLE_OPTS: >-
-        -Dorg.gradle.daemon=false
-        -Dorg.gradle.parallel=true
-        -Dorg.gradle.caching=true
-        -Xmx3g
-        -XX:+UseG1GC
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
     steps:
       - name: Checkout
