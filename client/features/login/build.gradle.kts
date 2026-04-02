@@ -4,6 +4,7 @@ plugins {
 
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.roborazzi)
 
     id("kotlin-parcelize")
     id("croniot.android.library")
@@ -84,6 +85,13 @@ kotlin {
                 implementation(libs.junit.jupiter)
                 runtimeOnly(libs.junit.jupiter.engine)
                 runtimeOnly(libs.junit.platform.launcher)
+
+                implementation(libs.roborazzi)
+                implementation(libs.roborazzi.compose)
+                implementation(libs.roborazzi.junit.rule)
+                implementation(libs.robolectric)
+                implementation(libs.androidx.test.junit)
+                implementation(libs.composeUiTestJunit4)
             }
         }
         val androidInstrumentedTest by getting {

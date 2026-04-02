@@ -4,13 +4,12 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.roborazzi)
 
     id("kotlin-parcelize")
     id("androidx.baselineprofile")
     id("io.gitlab.arturbosch.detekt")
 }
-
-apply(plugin = "shot")
 
 kotlin {
     androidTarget()
@@ -39,8 +38,7 @@ android {
         versionCode = 11
         versionName = "1.0-alpha7"
 
-        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunner = "com.karumi.shot.ShotTestRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     val keystorePath = System.getenv("ANDROID_UPLOAD_KEYSTORE_PATH")
@@ -56,22 +54,6 @@ android {
             }
         }
     }
-
-    //flavorDimensions += "backend"
-    /*productFlavors {
-        create("demo") {
-            dimension = "backend"
-            applicationIdSuffix = ".demo"
-            versionNameSuffix = "-demo"
-            buildConfigField("boolean", "IS_DEMO", "true")
-            resValue("string", "app_name", "Croniot Demo")
-        }
-        create("real") {
-            dimension = "backend"
-            buildConfigField("boolean", "IS_DEMO", "false")
-            resValue("string", "app_name", "Croniot")
-        }
-    }*/
 
     packaging {
         resources {
@@ -111,6 +93,9 @@ android {
 
         unitTests {
             isIncludeAndroidResources = true
+            all {
+                it.systemProperty("robolectric.pixelCopyRenderMode", "hardware")
+            }
         }
     }
 }
@@ -166,8 +151,16 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
+    
+    // Roborazzi
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.junit.rule)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.junit)
+    testImplementation(libs.composeUiTestJunit4)
+
     androidTestImplementation(libs.androidx.ui.test.junit4.android)
-    androidTestImplementation(libs.shot.android)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.coroutines.test)
     "baselineProfile"(project(":baselineprofile"))
