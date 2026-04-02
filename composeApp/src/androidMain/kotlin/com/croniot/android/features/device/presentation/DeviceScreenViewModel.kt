@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.croniot.client.core.models.Device
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.FetchTasksUseCase
+import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
 import com.croniot.client.presentation.viewmodel.launchInVmScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.update
 class DeviceScreenViewModel(
     private val localDataRepository: LocalDataRepository,
     private val fetchTasksUseCase: FetchTasksUseCase,
+    private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
 ) : ViewModel() {
 
     val state: StateFlow<DeviceState>
@@ -31,6 +33,11 @@ class DeviceScreenViewModel(
                 }
             }
         }
+    }
+
+    fun reconnectIfNeeded() = launchInVmScope {
+        val account = localDataRepository.getCurrentAccount() ?: return@launchInVmScope
+        startDeviceListenersUseCase(account.devices)
     }
 
     private fun loadDevice(deviceUuid: String) = launchInVmScope {

@@ -9,6 +9,7 @@ import com.croniot.client.core.models.Device
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.SensorDataRepository
 import com.croniot.client.domain.usecases.LogoutUseCase
+import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
 import com.croniot.client.presentation.viewmodel.launchInVmScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,6 +33,7 @@ class DeviceListViewModel(
     private val sensorDataRepository: SensorDataRepository,
     private val logOutUseCase: LogoutUseCase,
     private val savedStateHandle: SavedStateHandle,
+    private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
    // private val notificationHelper: NotificationHelper //TODO later
 ) : ViewModel() {
 
@@ -109,6 +111,11 @@ class DeviceListViewModel(
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = 1L,
             )
+    }
+
+    fun reconnectIfNeeded() = launchInVmScope {
+        val account = localDataRepository.getCurrentAccount() ?: return@launchInVmScope
+        startDeviceListenersUseCase(account.devices)
     }
 
     private fun logOut() = launchInVmScope {

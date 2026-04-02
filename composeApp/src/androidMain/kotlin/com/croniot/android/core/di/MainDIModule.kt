@@ -43,6 +43,7 @@ object MainDIModule {
                 sensorDataRepository = get(),
                 logOutUseCase = get(),
                 savedStateHandle = get(),
+                startDeviceListenersUseCase = get(),
             )
         }
 
@@ -62,6 +63,7 @@ object MainDIModule {
             DeviceScreenViewModel(
                 localDataRepository = get(),
                 fetchTasksUseCase = get(),
+                startDeviceListenersUseCase = get(),
             )
         }
 
