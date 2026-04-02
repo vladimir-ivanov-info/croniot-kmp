@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.android.app.AppError
 import com.croniot.client.core.models.Device
@@ -52,6 +54,10 @@ fun DeviceScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.reconnectIfNeeded()
+    }
 
     LaunchedEffect(selectedDeviceUuid) {
         viewModel.onIntent(DeviceIntent.Initialize(selectedDeviceUuid))
