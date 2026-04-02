@@ -15,6 +15,13 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      GRADLE_OPTS: >-
+        -Dorg.gradle.daemon=false
+        -Dorg.gradle.parallel=true
+        -Dorg.gradle.caching=true
+        -Xmx3g
+        -XX:+UseG1GC
 
     steps:
       - name: Checkout
@@ -26,17 +33,11 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Setup Gradle (with cache)
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build Debug
-        run: ./gradlew assembleDebug --stacktrace
-
-      - name: Unit tests
-        run: ./gradlew testDebugUnitTest
+      - name: Build + Unit Tests + Lint
+        run: ./gradlew assembleDebug testDebugUnitTest lintDebug --stacktrace
 
       - name: Screenshot tests (Roborazzi)
         id: screenshot_tests
@@ -81,9 +82,6 @@ jobs:
       - name: Fail build if screenshots changed
         if: steps.screenshot_tests.outcome == 'failure'
         run: exit 1
-
-      - name: Lint (Android)
-        run: ./gradlew lintDebug
 
       #- name: Detekt
       #  run: ./gradlew detekt
