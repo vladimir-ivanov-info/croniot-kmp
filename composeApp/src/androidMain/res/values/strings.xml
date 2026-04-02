@@ -3,4 +3,6 @@
     <string name="register_headline">Every great system starts with a single connection.</string>
     <string name="register_subheadline">Join Croniot and bring your IoT ideas to life — design, monitor, and automate the system you envision.</string>
     <string name="register_bridge">It only takes a minute.</string>
+    <string name="create_account">Create account</string>
+    <string name="register_sign_up">Sign up</string>
 </resources>

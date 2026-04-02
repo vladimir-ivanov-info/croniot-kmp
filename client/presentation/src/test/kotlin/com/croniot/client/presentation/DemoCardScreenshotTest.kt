@@ -2,12 +2,20 @@ package com.croniot.client.presentation
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onRoot
 import com.croniot.client.presentation.components.DemoCard
-import com.karumi.shot.ScreenshotTest
+import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
-class DemoCardScreenshotTest : ScreenshotTest {
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [33], qualifiers = "w480dp-h854dp-xhdpi")
+class DemoCardScreenshotTest {
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -17,11 +25,9 @@ class DemoCardScreenshotTest : ScreenshotTest {
         composeRule.setContent {
             MaterialTheme {
                 DemoCard()
-                // LoginScreen()
             }
         }
-        // Guarda/Compara la captura de la raíz de Compose
-        compareScreenshot(composeRule, name = "demo_card_default")
+        composeRule.onRoot().captureRoboImage("screenshots/demo_card_default.png")
     }
 
     @Test
@@ -31,6 +37,6 @@ class DemoCardScreenshotTest : ScreenshotTest {
                 DemoCard(subtitle = "Status: Connected")
             }
         }
-        compareScreenshot(composeRule, name = "demo_card_connected")
+        composeRule.onRoot().captureRoboImage("screenshots/demo_card_connected.png")
     }
 }

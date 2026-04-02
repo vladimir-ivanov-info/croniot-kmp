@@ -25,6 +25,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -43,9 +45,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.croniot.android.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.croniot.client.presentation.components.AppBackground
 import com.croniot.client.presentation.components.EmailTextField
-import com.croniot.client.presentation.components.PasswordTextField
 import com.croniot.client.presentation.components.NicknameTextField
+import com.croniot.client.presentation.components.PasswordTextField
 import com.croniot.client.presentation.constants.UiConstants
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
@@ -99,29 +102,33 @@ fun ScreenRegisterAccountBody(
     snackbarHostState: SnackbarHostState,
     onAction: (RegisterAccountIntent) -> Unit,
 ) {
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = { Text(UiConstants.SCREEN_LOGIN_BUTTON_CREATE_ACCOUNT_TEXT) },
-                navigationIcon = {
-                    IconButton(onClick = { onAction(RegisterAccountIntent.NavigateBack) }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                        )
-                    }
-                },
-            )
-        },
-        content = { innerPadding ->
-            ScreenRegisterAccountBody(
-                state = state,
-                innerPadding = innerPadding,
-                onAction = onAction,
-            )
-        },
-    )
+    AppBackground {
+        Scaffold(
+            containerColor = Color.Transparent,
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.create_account)) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                    navigationIcon = {
+                        IconButton(onClick = { onAction(RegisterAccountIntent.NavigateBack) }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                            )
+                        }
+                    },
+                )
+            },
+            content = { innerPadding ->
+                ScreenRegisterAccountBody(
+                    state = state,
+                    innerPadding = innerPadding,
+                    onAction = onAction,
+                )
+            },
+        )
+    }
 }
 
 @Composable
@@ -137,11 +144,11 @@ fun ScreenRegisterAccountBody(
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(0.4f))
 
         RegisterHeroText()
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(0.8f))
 
         NicknameTextField(
             value = state.value.nickname,
@@ -181,13 +188,13 @@ fun ScreenRegisterAccountBody(
                 )
             } else {
                 Text(
-                    text = UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP,
-                    modifier = Modifier.testTag(UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP),
+                    text = stringResource(R.string.register_sign_up),
+                    modifier = Modifier.testTag(UiConstants.SCREEN_REGISTER_BUTTON_SIGN_UP_TAG),
                 )
             }
         }
 
-        Spacer(modifier = Modifier.weight(0.5f))
+        Spacer(modifier = Modifier.weight(1.5f))
     }
 }
 

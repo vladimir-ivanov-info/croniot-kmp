@@ -56,30 +56,23 @@ datastoreCoreAndroid = "1.2.1"
 
 #maps = "18.1.0"
 
-
-
-
 composeMultiplatform = "1.10.2"
 ksp = "2.3.6"
 room = "2.8.4"
 uiTestJunit4Android = "1.10.5"
 
-
-
 baselineprofile = "1.5.0-alpha04"
-
-
 
 #Server
 jooq = "3.20.11"
 hikari = "7.0.2"
-shot = "6.1.0"
 uiautomator = "2.3.0"
 benchmarkMacroJunit4 = "1.4.1"
 profileinstaller = "1.4.1"
 common = "0.10.0"
 
-
+roborazzi = "1.59.0"
+robolectric = "4.14.1"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -105,7 +98,6 @@ lifecycleRuntime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", versio
 lifecycleViewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-
 
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttpLoggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
@@ -147,12 +139,10 @@ material-icons-extended = { module = "androidx.compose.material:material-icons-e
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-shot-android = { module = "com.karumi:shot-android", version.ref = "shot" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestJunit4Android" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastoreCoreAndroid" }
 datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "datastoreCoreAndroid" }
-
 
 room-runtime      = { module = "androidx.room:room-runtime",      version.ref = "room" }
 room-compiler     = { module = "androidx.room:room-compiler",     version.ref = "room" }
@@ -178,6 +168,10 @@ androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchm
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 common = { group = "com.google.ai.client.generativeai", name = "common", version.ref = "common" }
 
+roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
+roborazzi-junit-rule = { group = "io.github.takahirom.roborazzi", name = "roborazzi-junit-rule", version.ref = "roborazzi" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -193,7 +187,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 android-test = { id = "com.android.test", version.ref = "agp" }
 androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
-
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 
 [bundles]
 

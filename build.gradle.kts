@@ -1,14 +1,3 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven("https://plugins.gradle.org/m2/")
-    }
-    dependencies {
-        classpath("com.karumi:shot:6.1.0")
-    }
-}
-
 plugins {
     // Declaring plugins with versions here to be shared across all subprojects
     alias(libs.plugins.kotlin.android) apply false
@@ -23,6 +12,7 @@ plugins {
     alias(libs.plugins.androidKmpLibrary) apply false
     alias(libs.plugins.androidx.baselineprofile) apply false
     alias(libs.plugins.android.test) apply false
+    alias(libs.plugins.roborazzi) apply false
 
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.8" apply false

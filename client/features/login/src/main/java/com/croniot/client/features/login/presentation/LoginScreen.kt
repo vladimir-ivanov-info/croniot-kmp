@@ -4,7 +4,6 @@ import com.croniot.client.core.models.toUserMessage
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -45,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.config.AppConfig
 import com.croniot.client.features.login.R
+import com.croniot.client.presentation.components.AppBackground
 import com.croniot.client.presentation.components.EmailTextField
 import com.croniot.client.presentation.components.PasswordTextField
 import com.croniot.client.presentation.constants.UiConstants
@@ -100,18 +99,7 @@ fun LoginScreenBody(
     onAction: (LoginIntent) -> Unit,
     snackbarHostState: SnackbarHostState,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFF5F3F0),
-                        Color(0xFFECEFED),
-                    ),
-                )
-            )
-    ) {
+    AppBackground {
         Scaffold(
             containerColor = Color.Transparent,
             snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -270,7 +258,7 @@ fun RegisterButton(
             .testTag(UiConstants.SCREEN_LOGIN_BUTTON_REGISTER_TAG),
     ) {
         Text(
-            text = UiConstants.SCREEN_LOGIN_BUTTON_CREATE_ACCOUNT_TEXT,
+            text = stringResource(R.string.create_account),
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
 
         )
