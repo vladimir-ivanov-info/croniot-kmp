@@ -28,40 +28,14 @@ kotlin {
             kotlin.srcDirs("src/main/java", "src/main/kotlin")
 
             dependencies {
-                implementation(libs.androidx.activity.compose)
-
                 implementation(libs.androidx.datastore.core.android)
-
-                implementation(libs.datastore.preferences)
-                implementation(libs.datastore.core)
-
-                implementation(libs.compose.ui)
-                implementation(libs.compose.ui.tooling)
-                implementation(libs.compose.material3.android)
-
-                implementation(libs.koin.androidx.compose)
-
                 implementation(libs.koin.android)
-                implementation(libs.koin.compose)
-                implementation(libs.navigationCompose)
                 implementation(libs.coreKtx)
-                implementation(libs.lifecycleRuntime)
-                implementation(libs.lifecycleViewModelCompose)
                 implementation(libs.coroutinesCore)
-                implementation(libs.coroutinesAndroid)
-                implementation(libs.retrofit)
-                implementation(libs.okhttp)
-                implementation(libs.okhttpLoggingInterceptor)
-
-                implementation(libs.mqtt)
-                implementation(libs.accompanistPermissions)
 
                 // Project dependencies
                 implementation(projects.client.core)
                 implementation(projects.shared)
-                implementation(libs.androidx.core.ktx)
-                implementation(libs.androidx.appcompat)
-                implementation(libs.androidx.material)
             }
         }
     }

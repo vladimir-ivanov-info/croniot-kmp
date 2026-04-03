@@ -36,10 +36,6 @@ kotlin {
                 implementation(libs.lifecycleViewModelCompose)
                 implementation(libs.coroutinesCore)
                 implementation(libs.coroutinesAndroid)
-                implementation(libs.retrofit)
-                implementation(libs.okhttp)
-                implementation(libs.okhttpLoggingInterceptor)
-                implementation(libs.mqtt)
                 implementation(libs.accompanistPermissions)
             }
         }
