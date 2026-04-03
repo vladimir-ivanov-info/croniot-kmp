@@ -27,5 +27,16 @@ interface TasksDataSource {
 
     suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Outcome<Unit, TaskError>
 
-    suspend fun fetchTaskStateInfoHistory(deviceUuid: String, limit: Int, offset: Int, before: String? = null): Outcome<List<TaskStateInfoHistoryEntry>, TaskError>
+    suspend fun fetchTaskStateInfoHistory(
+        deviceUuid: String,
+        limit: Int,
+        before: String? = null,
+        beforeId: Long? = null,
+    ): Outcome<List<TaskStateInfoHistoryEntry>, TaskError>
+
+    suspend fun fetchTaskStateInfoHistoryCount(
+        deviceUuid: String,
+        before: String? = null,
+        beforeId: Long? = null,
+    ): Outcome<Int, TaskError>
 }

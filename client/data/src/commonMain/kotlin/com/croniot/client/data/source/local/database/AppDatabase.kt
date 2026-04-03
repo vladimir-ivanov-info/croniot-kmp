@@ -9,6 +9,7 @@ import com.croniot.client.data.source.local.database.daos.ParameterTaskDao
 import com.croniot.client.data.source.local.database.daos.SensorDataDao
 import com.croniot.client.data.source.local.database.daos.SensorTypeDao
 import com.croniot.client.data.source.local.database.daos.TaskDao
+import com.croniot.client.data.source.local.database.daos.TaskHistoryCacheDao
 import com.croniot.client.data.source.local.database.daos.TaskStateInfoDao
 import com.croniot.client.data.source.local.database.daos.TaskTypeDao
 import com.croniot.client.data.source.local.database.entities.AccountEntity
@@ -18,6 +19,7 @@ import com.croniot.client.data.source.local.database.entities.ParameterTaskEntit
 import com.croniot.client.data.source.local.database.entities.SensorDataEntity
 import com.croniot.client.data.source.local.database.entities.SensorTypeEntity
 import com.croniot.client.data.source.local.database.entities.TaskEntity
+import com.croniot.client.data.source.local.database.entities.TaskHistoryCacheEntity
 import com.croniot.client.data.source.local.database.entities.TaskStateInfoEntity
 import com.croniot.client.data.source.local.database.entities.TaskTypeEntity
 
@@ -31,9 +33,10 @@ import com.croniot.client.data.source.local.database.entities.TaskTypeEntity
         ParameterTaskEntity::class,
         TaskEntity::class,
         TaskStateInfoEntity::class,
+        TaskHistoryCacheEntity::class,
         SensorDataEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -45,5 +48,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun parameterTaskDao(): ParameterTaskDao
     abstract fun taskDao(): TaskDao
     abstract fun taskStateInfoDao(): TaskStateInfoDao
+    abstract fun taskHistoryCacheDao(): TaskHistoryCacheDao
     abstract fun sensorDataDao(): SensorDataDao
 }

@@ -9,6 +9,7 @@ object TaskHistoryModule {
         viewModel {
             TaskHistoryViewModel(
                 fetchTaskStateInfoHistoryUseCase = get(),
+                fetchTaskStateInfoHistoryCountUseCase = get(),
                 tasksRepository = get(),
                 taskTypesRepository = get(),
             )

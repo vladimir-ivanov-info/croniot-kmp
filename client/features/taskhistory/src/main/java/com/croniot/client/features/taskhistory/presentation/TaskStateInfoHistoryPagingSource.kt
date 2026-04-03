@@ -7,25 +7,36 @@ import androidx.paging.PagingState
 import com.croniot.client.domain.repositories.TaskTypesRepository
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
 
+data class TaskHistoryCursor(
+    val before: String,
+    val beforeId: Long,
+)
+
 class TaskStateInfoHistoryPagingSource(
     private val fetchTaskStateInfoHistoryUseCase: FetchTaskStateInfoHistoryUseCase,
     private val taskTypesRepository: TaskTypesRepository,
     private val deviceUuid: String,
+    private val snapshotBefore: String,
     private val pageSize: Int,
-) : PagingSource<Int, TaskHistoryItem>() {
+) : PagingSource<TaskHistoryCursor, TaskHistoryItem>() {
 
-    private val snapshotBefore: String = System.currentTimeMillis().toString()
+    override suspend fun load(params: LoadParams<TaskHistoryCursor>): LoadResult<TaskHistoryCursor, TaskHistoryItem> {
+        val cursor = params.key ?: TaskHistoryCursor(
+            before = snapshotBefore,
+            beforeId = Long.MAX_VALUE,
+        )
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TaskHistoryItem> {
-        val offset = params.key ?: 0
+        Log.d(
+            "Paging",
+            "load() before=${cursor.before} beforeId=${cursor.beforeId} pageSize=$pageSize type=${params::class.simpleName}",
+        )
 
-        Log.d("Paging", "load() offset=$offset pageSize=$pageSize before=$snapshotBefore type=${params::class.simpleName}")
-
-        return when (val outcome = fetchTaskStateInfoHistoryUseCase(deviceUuid, pageSize, offset, snapshotBefore)) {
+        return when (val outcome = fetchTaskStateInfoHistoryUseCase(deviceUuid, pageSize, cursor.before, cursor.beforeId)) {
             is Outcome.Ok -> {
                 val items = outcome.value.map { entry ->
                     val typeName = taskTypesRepository.get(deviceUuid, entry.taskTypeUid)?.name ?: "Unknown"
-                    TaskHistoryItem(
+                    buildTaskHistoryItem(
+                        stateInfoId = entry.stateInfoId,
                         taskUid = entry.taskUid,
                         taskTypeUid = entry.taskTypeUid,
                         taskTypeName = typeName,
@@ -35,26 +46,34 @@ class TaskStateInfoHistoryPagingSource(
                         errorMessage = entry.errorMessage,
                     )
                 }
-                val nextKey = if (items.size < pageSize) null else offset + pageSize
-                Log.d("Paging", "load() offset=$offset → received=${items.size} nextKey=$nextKey")
+                val nextKey = if (items.size < pageSize || items.isEmpty()) {
+                    null
+                } else {
+                    val last = items.last()
+                    val candidate = TaskHistoryCursor(
+                        before = last.dateTime.toInstant().toEpochMilli().toString(),
+                        beforeId = if (last.stateInfoId > 0L) last.stateInfoId else Long.MAX_VALUE,
+                    )
+                    if (candidate == cursor) null else candidate
+                }
+                Log.d(
+                    "Paging",
+                    "load() before=${cursor.before} beforeId=${cursor.beforeId} -> received=${items.size} nextKey=$nextKey",
+                )
                 LoadResult.Page(
                     data = items,
-                    prevKey = if (offset == 0) null else (offset - pageSize).coerceAtLeast(0),
+                    prevKey = null,
                     nextKey = nextKey,
                 )
             }
             is Outcome.Err -> {
-                Log.e("Paging", "load() offset=$offset → ERROR: ${outcome.error}")
+                Log.e("Paging", "load() before=${cursor.before} beforeId=${cursor.beforeId} -> ERROR: ${outcome.error}")
                 LoadResult.Error(RuntimeException(outcome.error.toString()))
             }
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, TaskHistoryItem>): Int? {
-        return state.anchorPosition?.let { anchor ->
-            val closestPage = state.closestPageToPosition(anchor)
-            closestPage?.prevKey?.plus(closestPage.data.size)
-                ?: closestPage?.nextKey?.minus(closestPage.data.size)
-        }
+    override fun getRefreshKey(state: PagingState<TaskHistoryCursor, TaskHistoryItem>): TaskHistoryCursor? {
+        return null
     }
 }

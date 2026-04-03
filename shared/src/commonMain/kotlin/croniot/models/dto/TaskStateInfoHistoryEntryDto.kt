@@ -6,6 +6,7 @@ import java.time.ZonedDateTime
 
 @Serializable
 data class TaskStateInfoHistoryEntryDto(
+    val stateInfoId: Long = -1,
     val taskUid: Long,
     val taskTypeUid: Long,
     @Serializable(with = ZonedDateTimeSerializer::class)

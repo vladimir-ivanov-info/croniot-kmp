@@ -143,11 +143,36 @@ class TasksDataSourceImpl(
         Outcome.Err(TaskError.Remote(RemoteError.Unknown))
     }
 
-    override suspend fun fetchTaskStateInfoHistory(deviceUuid: String, limit: Int, offset: Int, before: String?): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> = try {
-        val response = taskConfigurationApiService.requestTaskStateInfoHistory(deviceUuid, limit, offset, before)
+    override suspend fun fetchTaskStateInfoHistory(
+        deviceUuid: String,
+        limit: Int,
+        before: String?,
+        beforeId: Long?,
+    ): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> = try {
+        val response = taskConfigurationApiService.requestTaskStateInfoHistory(deviceUuid, limit, before, beforeId)
         val body = response.body()
         if (response.isSuccessful && body != null) {
             Outcome.Ok(body.map { it.toModel() })
+        } else {
+            Outcome.Err(TaskError.Remote(RemoteError.Http(response.code())))
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: IOException) {
+        Outcome.Err(TaskError.Remote(RemoteError.Unreachable))
+    } catch (e: Exception) {
+        Outcome.Err(TaskError.Remote(RemoteError.Unknown))
+    }
+
+    override suspend fun fetchTaskStateInfoHistoryCount(
+        deviceUuid: String,
+        before: String?,
+        beforeId: Long?,
+    ): Outcome<Int, TaskError> = try {
+        val response = taskConfigurationApiService.requestTaskStateInfoHistoryCount(deviceUuid, before, beforeId)
+        val body = response.body()
+        if (response.isSuccessful && body != null) {
+            Outcome.Ok(body)
         } else {
             Outcome.Err(TaskError.Remote(RemoteError.Http(response.code())))
         }
