@@ -181,13 +181,24 @@ class TaskController @Inject constructor(
         }
 
         val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 50
-        val offset = call.request.queryParameters["offset"]?.toIntOrNull() ?: 0
-        val before = call.request.queryParameters["before"]?.toLongOrNull()?.let {
-            java.time.Instant.ofEpochMilli(it).atOffset(java.time.ZoneOffset.UTC)
+        val before = parseBefore(call.request.queryParameters["before"])
+        val beforeId = call.request.queryParameters["beforeId"]?.toLongOrNull()
+
+        val history = taskService.getTaskStateInfoHistory(deviceUuid, limit, before, beforeId)
+        call.respond(history)
+    }
+
+    suspend fun getTaskStateInfoHistoryCount(call: ApplicationCall) {
+        val deviceUuid = call.parameters["deviceUuid"]
+        if (deviceUuid == null) {
+            call.respond(HttpStatusCode.BadRequest, "Missing deviceUuid")
+            return
         }
 
-        val history = taskService.getTaskStateInfoHistory(deviceUuid, limit, offset, before)
-        call.respond(history)
+        val before = parseBefore(call.request.queryParameters["before"])
+        val beforeId = call.request.queryParameters["beforeId"]?.toLongOrNull()
+        val total = taskService.getTaskStateInfoHistoryCount(deviceUuid, before, beforeId)
+        call.respond(total)
     }
 
     suspend fun requestTaskStateInfoSync(call: ApplicationCall) {
@@ -199,5 +210,14 @@ class TaskController @Inject constructor(
             messageAddTask.taskTypeUid.toLong(),
         )
         call.respond(result)
+    }
+
+    private fun parseBefore(raw: String?): java.time.OffsetDateTime? {
+        if (raw == null) return null
+        return raw.toLongOrNull()?.let {
+            java.time.Instant.ofEpochMilli(it).atOffset(java.time.ZoneOffset.UTC)
+        } ?: runCatching {
+            java.time.OffsetDateTime.parse(raw)
+        }.getOrNull()
     }
 }

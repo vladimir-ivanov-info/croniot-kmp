@@ -27,6 +27,7 @@ fun TaskStateInfoDto.toModel(): TaskStateInfo {
 
 fun TaskStateInfoHistoryEntryDto.toModel(): TaskStateInfoHistoryEntry {
     return TaskStateInfoHistoryEntry(
+        stateInfoId = this.stateInfoId,
         taskUid = this.taskUid,
         taskTypeUid = this.taskTypeUid,
         dateTime = this.dateTime,

@@ -107,8 +107,21 @@ class TaskService @Inject constructor(
         return tasks.map { it.toDto() }
     }
 
-    fun getTaskStateInfoHistory(deviceUuid: String, limit: Int, offset: Int, before: java.time.OffsetDateTime?): List<TaskStateInfoHistoryEntryDto> {
-        return taskRepository.getAllStateInfoHistory(deviceUuid, limit, offset, before)
+    fun getTaskStateInfoHistory(
+        deviceUuid: String,
+        limit: Int,
+        before: java.time.OffsetDateTime?,
+        beforeId: Long?,
+    ): List<TaskStateInfoHistoryEntryDto> {
+        return taskRepository.getAllStateInfoHistory(deviceUuid, limit, before, beforeId)
+    }
+
+    fun getTaskStateInfoHistoryCount(
+        deviceUuid: String,
+        before: java.time.OffsetDateTime?,
+        beforeId: Long?,
+    ): Int {
+        return taskRepository.getAllStateInfoHistoryCount(deviceUuid, before, beforeId)
     }
 
     fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Result {

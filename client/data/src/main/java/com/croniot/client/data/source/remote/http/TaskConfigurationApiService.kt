@@ -19,7 +19,15 @@ interface TaskConfigurationApiService {
     suspend fun requestTaskStateInfoHistory(
         @Path("deviceUuid") deviceUuid: String,
         @Query("limit") limit: Int,
-        @Query("offset") offset: Int,
         @Query("before") before: String? = null,
+        @Query("beforeId") beforeId: Long? = null,
     ): Response<List<TaskStateInfoHistoryEntryDto>>
+
+    @Headers("Accept: application/json")
+    @GET(Constants.ENDPOINT_TASK_STATE_INFO_HISTORY_COUNT)
+    suspend fun requestTaskStateInfoHistoryCount(
+        @Path("deviceUuid") deviceUuid: String,
+        @Query("before") before: String? = null,
+        @Query("beforeId") beforeId: Long? = null,
+    ): Response<Int>
 }

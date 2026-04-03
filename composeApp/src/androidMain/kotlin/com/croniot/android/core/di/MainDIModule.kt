@@ -56,6 +56,7 @@ object MainDIModule {
         single<TasksRepository> {
             TasksRepositoryImpl(
                 tasksDataSource = get(),
+                localTaskHistoryDataSource = get(),
             )
         }
 
