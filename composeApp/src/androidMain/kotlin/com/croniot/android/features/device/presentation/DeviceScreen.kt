@@ -35,7 +35,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.android.app.AppError
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Device
 import com.croniot.client.features.sensors.presentation.SensorsScreen
 import com.croniot.client.features.taskhistory.presentation.TaskHistoryScreen
 import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesScreen

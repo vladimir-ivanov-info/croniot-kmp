@@ -1,12 +1,9 @@
-package com.croniot.client.core.models
+package com.croniot.client.domain.models
 
-import android.os.Parcelable
 import croniot.models.ParameterTypes
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
-@Parcelize
 @Serializable
 data class ParameterTask(
     var uid: Long,
@@ -15,7 +12,7 @@ data class ParameterTask(
     var unit: String,
     var description: String,
     var constraints: Map<String, String>,
-) : Parcelable
+)
 
 fun ParameterTask.isStateful(): Boolean {
     return this.type == ParameterTypes.STATEFUL

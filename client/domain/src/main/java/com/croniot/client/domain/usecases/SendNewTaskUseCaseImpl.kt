@@ -1,7 +1,7 @@
 package com.croniot.client.domain.usecases
 
 import Outcome
-import com.croniot.client.core.models.Task
+import com.croniot.client.domain.models.Task
 import com.croniot.client.domain.errors.TaskError
 import com.croniot.client.domain.repositories.TasksRepository
 

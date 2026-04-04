@@ -1,4 +1,4 @@
-package com.croniot.client.core.models.auth
+package com.croniot.client.domain.models.auth
 
 data class AuthSession(
     val email: String,

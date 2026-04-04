@@ -1,4 +1,4 @@
-package com.croniot.client.core.models
+package com.croniot.client.domain.models
 
 sealed interface ConnectionError {
     data class MqttBrokerUnreachable(val host: String, val cause: String?) : ConnectionError

@@ -1,10 +1,7 @@
-package com.croniot.client.core.models
+package com.croniot.client.domain.models
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class ParameterSensor(
     var uid: Long,
@@ -13,4 +10,4 @@ data class ParameterSensor(
     var unit: String,
     var description: String,
     var constraints: Map<String, String>,
-) : Parcelable
+)

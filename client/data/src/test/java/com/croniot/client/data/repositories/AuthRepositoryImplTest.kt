@@ -1,7 +1,7 @@
 package com.croniot.client.data.repositories
 
 import Outcome
-import com.croniot.client.core.models.auth.AuthError
+import com.croniot.client.domain.models.auth.AuthError
 import com.croniot.client.data.source.remote.http.login.LoginDataSource
 import croniot.models.LoginResultDto
 import croniot.models.Result

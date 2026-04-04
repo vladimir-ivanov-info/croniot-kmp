@@ -1,7 +1,7 @@
 package com.croniot.android.features.device.presentation
 
 import androidx.lifecycle.ViewModel
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.FetchTasksUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase

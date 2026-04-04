@@ -32,9 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.config.Constants
-import com.croniot.client.core.models.SensorData
-import com.croniot.client.core.models.SensorType
-import com.croniot.client.core.models.isChartable
+import com.croniot.client.domain.models.SensorData
+import com.croniot.client.domain.models.SensorType
+import com.croniot.client.domain.models.isChartable
 import com.croniot.client.core.util.DateTimeUtil
 import com.croniot.client.presentation.PerformanceChart
 import kotlinx.coroutines.flow.StateFlow

@@ -1,7 +1,7 @@
 package com.croniot.client.domain.repositories
 
-import com.croniot.client.core.models.Account
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Account
+import com.croniot.client.domain.models.Device
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDataRepository { // TODO god class, but will be delegated to Room in the future

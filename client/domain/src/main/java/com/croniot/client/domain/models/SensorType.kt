@@ -1,17 +1,14 @@
-package com.croniot.client.core.models
+package com.croniot.client.domain.models
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class SensorType(
     var uid: Long,
     var name: String,
     var description: String,
     var parameters: Set<ParameterSensor>,
-) : Parcelable
+)
 
 fun SensorType.isChartable(): Boolean {
     val firstParam = parameters.firstOrNull() ?: return false

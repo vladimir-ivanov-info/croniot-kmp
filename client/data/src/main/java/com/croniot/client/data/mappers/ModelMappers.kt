@@ -1,8 +1,8 @@
-package com.croniot.client.core.mappers
+package com.croniot.client.data.mappers
 
-import com.croniot.client.core.models.Task
-import com.croniot.client.core.models.TaskStateInfo
-import com.croniot.client.core.models.TaskStateInfoHistoryEntry
+import com.croniot.client.domain.models.Task
+import com.croniot.client.domain.models.TaskStateInfo
+import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
 import croniot.models.dto.TaskStateInfoHistoryEntryDto

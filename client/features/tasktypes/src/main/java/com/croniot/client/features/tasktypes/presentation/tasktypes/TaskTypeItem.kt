@@ -24,8 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.croniot.client.core.models.TaskType
-import com.croniot.client.core.models.isInstant
+import com.croniot.client.domain.models.TaskType
+import com.croniot.client.domain.models.isInstant
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable

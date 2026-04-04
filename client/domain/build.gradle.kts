@@ -1,25 +1,12 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlin.serialization)
     id("io.gitlab.arturbosch.detekt")
 }
 
-kotlin {
-    jvmToolchain(21)
-    jvm()
-
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.coroutinesCore)
-                implementation(libs.koin.core)
-                implementation(projects.shared)
-            }
-        }
-
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-    }
+dependencies {
+    implementation(libs.coroutinesCore)
+    implementation(libs.koin.core)
+    implementation(libs.serialization.json)
+    implementation(projects.shared)
 }

@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import com.croniot.client.core.models.SensorType
+import com.croniot.client.domain.models.SensorType
 
 private const val ANIM_DURATION_MS = 1000
 

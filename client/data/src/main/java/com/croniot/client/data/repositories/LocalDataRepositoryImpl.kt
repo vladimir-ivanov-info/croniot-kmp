@@ -1,7 +1,7 @@
 package com.croniot.client.data.repositories
 
-import com.croniot.client.core.models.Account
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Account
+import com.croniot.client.domain.models.Device
 import com.croniot.client.core.util.DevicePropertiesController
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.domain.repositories.LocalDataRepository

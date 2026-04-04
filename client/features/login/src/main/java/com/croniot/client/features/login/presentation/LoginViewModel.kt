@@ -5,8 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.croniot.client.core.config.AppConfig
 import com.croniot.client.core.config.Constants.DEMO_EMAIL
-import com.croniot.client.core.models.auth.AuthError
-// import com.croniot.client.core.models.auth.Outcome
+import com.croniot.client.domain.models.auth.AuthError
+// import com.croniot.client.domain.models.auth.Outcome
 // import com.croniot.client.data.strategy.DataSourceStrategy
 // import com.croniot.client.data.strategy.DataSourceStrategyBus
 import com.croniot.client.domain.repositories.LocalDataRepository
@@ -149,7 +149,7 @@ sealed interface LoginEffect {
     data object NavigateToRegisterAccount : LoginEffect
     data object NavigateToConfiguration : LoginEffect
     data class ShowSnackbar(val title: String, val content: String) : LoginEffect
-    data class ConnectionErrors(val errors: List<com.croniot.client.core.models.ConnectionError>) : LoginEffect
+    data class ConnectionErrors(val errors: List<com.croniot.client.domain.models.ConnectionError>) : LoginEffect
 }
 
 sealed interface LoginIntent {

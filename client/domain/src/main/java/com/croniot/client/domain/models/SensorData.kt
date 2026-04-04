@@ -1,4 +1,4 @@
-package com.croniot.client.core.models
+package com.croniot.client.domain.models
 
 import java.time.ZonedDateTime
 

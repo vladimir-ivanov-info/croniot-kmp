@@ -1,6 +1,6 @@
 package com.croniot.client.domain.repositories
 
-import com.croniot.client.core.models.Account
+import com.croniot.client.domain.models.Account
 
 interface AccountRepository {
     suspend fun save(account: Account)

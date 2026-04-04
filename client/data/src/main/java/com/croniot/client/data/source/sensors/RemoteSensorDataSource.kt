@@ -1,8 +1,8 @@
 package com.croniot.client.data.source.sensors
 
 import Outcome
-import com.croniot.client.core.models.ConnectionError
-import com.croniot.client.core.models.SensorData
+import com.croniot.client.domain.models.ConnectionError
+import com.croniot.client.domain.models.SensorData
 
 interface RemoteSensorDataSource {
 

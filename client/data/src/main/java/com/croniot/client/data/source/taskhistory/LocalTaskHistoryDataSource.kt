@@ -1,6 +1,6 @@
 package com.croniot.client.data.source.taskhistory
 
-import com.croniot.client.core.models.TaskStateInfoHistoryEntry
+import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 
 interface LocalTaskHistoryDataSource {
 

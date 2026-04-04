@@ -37,8 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.croniot.client.core.models.ParameterTask
-import com.croniot.client.core.models.TaskStateInfo
+import com.croniot.client.domain.models.ParameterTask
+import com.croniot.client.domain.models.TaskStateInfo
 import kotlin.math.roundToInt
 
 @Composable

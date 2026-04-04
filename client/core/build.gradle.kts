@@ -35,6 +35,7 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(projects.shared)
+                implementation(projects.client.domain)
             }
         }
     }

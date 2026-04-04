@@ -3,7 +3,7 @@ package com.croniot.android.core.presentation.splash
 import Outcome
 import androidx.lifecycle.ViewModel
 import com.croniot.android.app.AppError
-import com.croniot.client.core.models.toUserMessage
+import com.croniot.client.domain.models.toUserMessage
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.LogoutUseCase

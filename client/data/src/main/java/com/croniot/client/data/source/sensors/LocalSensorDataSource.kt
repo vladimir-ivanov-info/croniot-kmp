@@ -1,6 +1,6 @@
 package com.croniot.client.data.source.sensors
 
-import com.croniot.client.core.models.SensorData
+import com.croniot.client.domain.models.SensorData
 import kotlinx.coroutines.flow.Flow
 
 interface LocalSensorDataSource {

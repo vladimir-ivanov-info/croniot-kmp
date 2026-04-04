@@ -1,8 +1,8 @@
 package com.croniot.client.data.repositories
 
 import Outcome
-import com.croniot.client.core.models.ConnectionError
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.ConnectionError
+import com.croniot.client.domain.models.Device
 import com.croniot.client.data.source.sensors.LocalSensorDataSource
 import com.croniot.client.data.source.sensors.RemoteSensorDataSource
 import com.croniot.client.domain.repositories.SensorDataRepository

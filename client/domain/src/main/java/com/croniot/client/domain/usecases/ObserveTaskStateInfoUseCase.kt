@@ -1,6 +1,6 @@
 package com.croniot.client.domain.usecases
 
-import com.croniot.client.core.models.TaskStateInfo
+import com.croniot.client.domain.models.TaskStateInfo
 import com.croniot.client.domain.repositories.TasksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
