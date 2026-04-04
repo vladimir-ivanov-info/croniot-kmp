@@ -37,6 +37,7 @@ val domainDiModule = module {
             localDataRepository = get(),
             sessionRepository = get(),
             accountRepository = get(),
+            devicePropertiesProvider = get(),
         )
     }
 

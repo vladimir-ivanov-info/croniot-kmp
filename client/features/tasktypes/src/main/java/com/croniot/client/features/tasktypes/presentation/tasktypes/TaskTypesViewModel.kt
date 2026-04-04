@@ -2,8 +2,8 @@ package com.croniot.client.features.tasktypes.presentation.tasktypes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.client.core.models.TaskStateInfo
-import com.croniot.client.core.models.TaskType
+import com.croniot.client.domain.models.TaskStateInfo
+import com.croniot.client.domain.models.TaskType
 import com.croniot.client.domain.usecases.FetchTasksUseCase
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.ObserveTaskStateInfoUseCase

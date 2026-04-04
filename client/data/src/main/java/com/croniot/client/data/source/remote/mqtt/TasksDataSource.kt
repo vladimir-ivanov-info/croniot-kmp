@@ -1,9 +1,9 @@
 package com.croniot.client.data.source.remote.mqtt
 
 import Outcome
-import com.croniot.client.core.models.Task
-import com.croniot.client.core.models.TaskStateInfoHistoryEntry
-import com.croniot.client.core.models.events.TaskStateInfoEvent
+import com.croniot.client.domain.models.Task
+import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
+import com.croniot.client.domain.models.events.TaskStateInfoEvent
 import com.croniot.client.domain.errors.TaskError
 import croniot.messages.MessageAddTask
 

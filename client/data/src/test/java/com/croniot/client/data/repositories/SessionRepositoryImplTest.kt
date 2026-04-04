@@ -1,6 +1,6 @@
 package com.croniot.client.data.repositories
 
-import com.croniot.client.core.models.auth.AuthSession
+import com.croniot.client.domain.models.auth.AuthSession
 import com.croniot.client.data.source.local.LocalDatasource
 import io.mockk.coJustRun
 import io.mockk.coVerify

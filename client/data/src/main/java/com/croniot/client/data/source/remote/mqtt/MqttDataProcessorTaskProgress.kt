@@ -1,8 +1,8 @@
 package com.croniot.client.data.source.remote.mqtt
 
 import android.util.Log
-import com.croniot.client.core.mappers.toModel
-import com.croniot.client.core.models.events.TaskStateInfoEvent
+import com.croniot.client.data.mappers.toModel
+import com.croniot.client.domain.models.events.TaskStateInfoEvent
 import croniot.messages.MessageFactory
 import croniot.models.MqttDataProcessor
 import croniot.models.TaskKey

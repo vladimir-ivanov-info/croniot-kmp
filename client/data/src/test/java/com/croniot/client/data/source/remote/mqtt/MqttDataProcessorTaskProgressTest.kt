@@ -1,6 +1,6 @@
 package com.croniot.client.data.source.remote.mqtt
 
-import com.croniot.client.core.models.events.TaskStateInfoEvent
+import com.croniot.client.domain.models.events.TaskStateInfoEvent
 import croniot.models.TaskKey
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

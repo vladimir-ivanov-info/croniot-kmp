@@ -29,10 +29,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.croniot.client.core.models.ParameterTask
-import com.croniot.client.core.models.TaskStateInfo
-import com.croniot.client.core.models.isRepresentsSlider
-import com.croniot.client.core.models.isRepresentsSwitch
+import com.croniot.client.domain.models.ParameterTask
+import com.croniot.client.domain.models.TaskStateInfo
+import com.croniot.client.domain.models.isRepresentsSlider
+import com.croniot.client.domain.models.isRepresentsSwitch
 import com.croniot.client.presentation.constants.UtilUi
 import kotlinx.coroutines.flow.StateFlow
 

@@ -63,7 +63,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.config.AppConfig
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Device
 import com.croniot.client.core.util.getRelativeTimeText
 import com.croniot.client.features.login.R
 import com.croniot.client.presentation.components.GenericAlertDialog

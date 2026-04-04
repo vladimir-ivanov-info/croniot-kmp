@@ -12,6 +12,8 @@ import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.TasksRepository
 import com.croniot.android.core.notifications.NotificationHelper
+import com.croniot.client.core.util.DevicePropertiesController
+import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.usecases.FetchTasksUseCase
 import com.croniot.client.features.sensors.presentation.SensorsViewModel
 import org.koin.core.module.dsl.viewModel
@@ -21,6 +23,8 @@ import org.koin.dsl.module
 object MainDIModule {
 
     val mainDIModule = module {
+
+        single<DevicePropertiesProvider> { DevicePropertiesController }
 
         single { NotificationHelper(context = get()) }
 
@@ -42,7 +46,6 @@ object MainDIModule {
                 localDataRepository = get(),
                 sensorDataRepository = get(),
                 logOutUseCase = get(),
-                savedStateHandle = get(),
                 startDeviceListenersUseCase = get(),
             )
         }

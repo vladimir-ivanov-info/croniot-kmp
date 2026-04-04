@@ -1,10 +1,10 @@
 package com.croniot.client.domain.usecases
 
 import Outcome
-import com.croniot.client.core.models.Device
-import com.croniot.client.core.models.auth.AuthError
-import com.croniot.client.core.models.auth.AuthSession
-import com.croniot.client.core.util.DevicePropertiesController
+import com.croniot.client.domain.models.Device
+import com.croniot.client.domain.models.auth.AuthError
+import com.croniot.client.domain.models.auth.AuthSession
+import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.repositories.AccountRepository
 import com.croniot.client.domain.repositories.AuthRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
@@ -15,6 +15,7 @@ class LogInUseCase(
     private val localDataRepository: LocalDataRepository,
     private val sessionRepository: SessionRepository,
     private val accountRepository: AccountRepository,
+    private val devicePropertiesProvider: DevicePropertiesProvider,
 ) {
 
     suspend operator fun invoke(email: String, password: String): Outcome<Unit, AuthError> {
@@ -25,7 +26,7 @@ class LogInUseCase(
         } else {
             val deviceUuid = localDataRepository.getLocalDeviceUuid()
             val deviceToken = localDataRepository.getLocalDeviceToken()
-            val deviceProperties = DevicePropertiesController.getDeviceDetails()
+            val deviceProperties = devicePropertiesProvider.getDeviceDetails()
 
             // TODO los !!
             val loginResult = authRepository.login(email, password, deviceUuid!!, deviceToken, deviceProperties)

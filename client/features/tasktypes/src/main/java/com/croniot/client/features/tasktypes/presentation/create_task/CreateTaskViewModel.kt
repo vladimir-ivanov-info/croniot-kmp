@@ -4,8 +4,8 @@ import Outcome
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.client.core.models.TaskStateInfo
-import com.croniot.client.core.models.TaskType
+import com.croniot.client.domain.models.TaskStateInfo
+import com.croniot.client.domain.models.TaskType
 import com.croniot.client.domain.errors.TaskError
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase

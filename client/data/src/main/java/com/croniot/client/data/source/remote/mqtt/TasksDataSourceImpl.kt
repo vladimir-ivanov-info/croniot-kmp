@@ -5,10 +5,10 @@ import Outcome
 import com.croniot.client.core.config.Constants.ENDPOINT_ADD_TASK
 import com.croniot.client.core.config.Constants.ENDPOINT_REQUEST_TASK_STATE_INFO_SYNC
 import com.croniot.client.core.config.ServerConfig
-import com.croniot.client.core.mappers.toModel
-import com.croniot.client.core.models.Task
-import com.croniot.client.core.models.TaskStateInfoHistoryEntry
-import com.croniot.client.core.models.events.TaskStateInfoEvent
+import com.croniot.client.data.mappers.toModel
+import com.croniot.client.domain.models.Task
+import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
+import com.croniot.client.domain.models.events.TaskStateInfoEvent
 import com.croniot.client.core.util.StringUtil.generateUniqueString
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.data.source.remote.http.NetworkUtil

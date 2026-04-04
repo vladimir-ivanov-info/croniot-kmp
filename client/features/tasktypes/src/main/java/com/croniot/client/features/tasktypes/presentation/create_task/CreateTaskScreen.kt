@@ -38,7 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.croniot.client.core.models.TaskType
+import com.croniot.client.domain.models.TaskType
 import com.croniot.client.features.tasktypes.R
 import com.croniot.client.features.tasktypes.presentation.create_task.parameter.StatefulParameter
 import com.croniot.client.features.tasktypes.presentation.create_task.parameter.StatefulParameterViewModel

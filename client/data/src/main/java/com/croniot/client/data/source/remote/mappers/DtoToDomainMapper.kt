@@ -1,12 +1,12 @@
 package com.croniot.client.data.source.remote.mappers
 
-import com.croniot.client.core.models.Account
-import com.croniot.client.core.models.Device
-import com.croniot.client.core.models.ParameterSensor
-import com.croniot.client.core.models.ParameterTask
-import com.croniot.client.core.models.SensorData
-import com.croniot.client.core.models.SensorType
-import com.croniot.client.core.models.TaskType
+import com.croniot.client.domain.models.Account
+import com.croniot.client.domain.models.Device
+import com.croniot.client.domain.models.ParameterSensor
+import com.croniot.client.domain.models.ParameterTask
+import com.croniot.client.domain.models.SensorData
+import com.croniot.client.domain.models.SensorType
+import com.croniot.client.domain.models.TaskType
 import croniot.models.dto.AccountDto
 import croniot.models.dto.DeviceDto
 import croniot.models.dto.ParameterSensorDto

@@ -3,8 +3,8 @@ package com.croniot.client.features.sensors.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.croniot.client.core.config.Constants
-import com.croniot.client.core.models.SensorData
-import com.croniot.client.core.models.SensorType
+import com.croniot.client.domain.models.SensorData
+import com.croniot.client.domain.models.SensorType
 import com.croniot.client.domain.repositories.SensorDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

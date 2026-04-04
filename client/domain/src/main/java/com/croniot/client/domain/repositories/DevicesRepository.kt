@@ -1,6 +1,6 @@
 package com.croniot.client.domain.repositories
 
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Device
 
 interface DevicesRepository {
 

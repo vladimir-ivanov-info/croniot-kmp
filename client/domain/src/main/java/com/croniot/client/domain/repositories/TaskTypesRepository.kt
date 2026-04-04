@@ -1,6 +1,6 @@
 package com.croniot.client.domain.repositories
 
-import com.croniot.client.core.models.TaskType
+import com.croniot.client.domain.models.TaskType
 
 interface TaskTypesRepository {
 

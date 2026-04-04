@@ -1,6 +1,6 @@
 package com.croniot.client.features.login.presentation
 
-import com.croniot.client.core.models.toUserMessage
+import com.croniot.client.domain.models.toUserMessage
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image

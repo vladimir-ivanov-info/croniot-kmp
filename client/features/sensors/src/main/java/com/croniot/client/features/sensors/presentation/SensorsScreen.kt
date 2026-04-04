@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Device
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

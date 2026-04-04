@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Device
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

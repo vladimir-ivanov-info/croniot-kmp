@@ -18,7 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Device
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

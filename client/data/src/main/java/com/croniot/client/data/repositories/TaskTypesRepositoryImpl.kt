@@ -1,6 +1,6 @@
 package com.croniot.client.data.repositories
 
-import com.croniot.client.core.models.TaskType
+import com.croniot.client.domain.models.TaskType
 import com.croniot.client.domain.repositories.TaskTypesRepository
 import java.util.concurrent.ConcurrentHashMap
 

@@ -1,10 +1,7 @@
-package com.croniot.client.core.models
+package com.croniot.client.domain.models
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class Device(
     val uuid: String,
@@ -12,4 +9,4 @@ data class Device(
     val description: String,
     val sensorTypes: List<SensorType> = emptyList(),
     val taskTypes: List<TaskType> = emptyList(),
-) : Parcelable
+)

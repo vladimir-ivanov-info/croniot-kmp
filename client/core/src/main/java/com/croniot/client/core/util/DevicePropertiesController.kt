@@ -4,8 +4,9 @@ import android.content.Context
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import com.croniot.client.domain.DevicePropertiesProvider
 
-object DevicePropertiesController {
+object DevicePropertiesController : DevicePropertiesProvider {
 
     fun getScreenDetails(context: Context): Map<String, String> {
         val displayMetrics: DisplayMetrics = context.resources.displayMetrics
@@ -32,7 +33,7 @@ object DevicePropertiesController {
         }
     }
 
-    fun getDeviceDetails(): Map<String, String> {
+    override fun getDeviceDetails(): Map<String, String> {
         return mapOf(
             "Android Version" to Build.VERSION.RELEASE.orEmpty(),
             "SDK Version" to Build.VERSION.SDK_INT.toString(),

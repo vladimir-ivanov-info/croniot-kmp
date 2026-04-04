@@ -1,6 +1,6 @@
 package com.croniot.client.domain
 
-import com.croniot.client.core.models.Account
+import com.croniot.client.domain.models.Account
 
 data class LoginResult(
     val account: Account,

@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
-import com.croniot.client.core.models.Account
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Account
+import com.croniot.client.domain.models.Device
 import com.croniot.client.core.util.StringUtil
 import croniot.messages.MessageFactory
 import kotlinx.coroutines.flow.Flow

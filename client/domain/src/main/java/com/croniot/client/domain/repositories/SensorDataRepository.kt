@@ -1,9 +1,9 @@
 package com.croniot.client.domain.repositories
 
 import Outcome
-import com.croniot.client.core.models.ConnectionError
-import com.croniot.client.core.models.Device
-import com.croniot.client.core.models.SensorData
+import com.croniot.client.domain.models.ConnectionError
+import com.croniot.client.domain.models.Device
+import com.croniot.client.domain.models.SensorData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 

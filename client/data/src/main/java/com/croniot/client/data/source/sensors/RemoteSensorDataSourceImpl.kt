@@ -3,8 +3,8 @@ package com.croniot.client.data.source.sensors
 import MqttHandler
 import Outcome
 import com.croniot.client.core.config.ServerConfig
-import com.croniot.client.core.models.ConnectionError
-import com.croniot.client.core.models.SensorData
+import com.croniot.client.domain.models.ConnectionError
+import com.croniot.client.domain.models.SensorData
 import com.croniot.client.core.util.StringUtil.generateUniqueString
 import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.data.source.remote.mappers.toDomain

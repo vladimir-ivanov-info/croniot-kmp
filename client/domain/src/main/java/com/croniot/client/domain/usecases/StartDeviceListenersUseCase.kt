@@ -1,9 +1,8 @@
 package com.croniot.client.domain.usecases
 
 import Outcome
-import android.util.Log
-import com.croniot.client.core.models.ConnectionError
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.ConnectionError
+import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.repositories.SensorDataRepository
 import com.croniot.client.domain.repositories.TaskTypesRepository
 import com.croniot.client.domain.repositories.TasksRepository
@@ -35,7 +34,7 @@ class StartDeviceListenersUseCase(
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    Log.e("Listeners", "Failed for device ${device.uuid}", e)
+                    println("Listeners: Failed for device ${device.uuid}: ${e.message}")
                     Outcome.Err(ConnectionError.Unknown)
                 }
             }

@@ -2,7 +2,7 @@ package com.croniot.client.features.login.presentation
 
 import Outcome
 import androidx.lifecycle.SavedStateHandle
-import com.croniot.client.core.models.auth.AuthError
+import com.croniot.client.domain.models.auth.AuthError
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase

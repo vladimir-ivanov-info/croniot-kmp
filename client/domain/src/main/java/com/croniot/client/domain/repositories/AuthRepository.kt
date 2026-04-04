@@ -1,7 +1,7 @@
 package com.croniot.client.domain.repositories
 
 import Outcome
-import com.croniot.client.core.models.auth.AuthError
+import com.croniot.client.domain.models.auth.AuthError
 import com.croniot.client.domain.LoginResult
 
 interface AuthRepository {

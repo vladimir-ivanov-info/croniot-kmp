@@ -1,11 +1,8 @@
 package com.croniot.android.features.devicelist
 
-import android.os.Parcelable
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.croniot.android.core.notifications.NotificationHelper
-import com.croniot.client.core.models.Device
+import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.SensorDataRepository
 import com.croniot.client.domain.usecases.LogoutUseCase
@@ -25,28 +22,17 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
-
 class DeviceListViewModel(
     private val localDataRepository: LocalDataRepository,
     private val sensorDataRepository: SensorDataRepository,
     private val logOutUseCase: LogoutUseCase,
-    private val savedStateHandle: SavedStateHandle,
     private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
-   // private val notificationHelper: NotificationHelper //TODO later
 ) : ViewModel() {
-
-    companion object {
-        private const val KEY_DEVICE_LIST_STATE = "device_list_state"
-    }
 
     private var devicesCollectors: MutableMap<String, Job> = mutableMapOf()
 
     val state: StateFlow<DeviceListState>
-        field = MutableStateFlow(
-            savedStateHandle.get<DeviceListState>(KEY_DEVICE_LIST_STATE) ?: DeviceListState()
-        )
+        field = MutableStateFlow(DeviceListState())
 
     val effects: SharedFlow<DeviceListEffect>
         field = MutableSharedFlow(replay = 0, extraBufferCapacity = 1)
@@ -79,11 +65,7 @@ class DeviceListViewModel(
     }
 
     private fun updateState(transform: (DeviceListState) -> DeviceListState) {
-        state.update { current ->
-            val newState = transform(current)
-            savedStateHandle[KEY_DEVICE_LIST_STATE] = newState
-            newState
-        }
+        state.update(transform)
     }
 
     private fun resubscribeToDevices(uuids: List<String>) {
@@ -134,10 +116,8 @@ sealed interface DeviceListIntent {
     data class DeviceClicked(val deviceUuid: String) : DeviceListIntent
 }
 
-@Parcelize
 data class DeviceListState(
     val devices: List<Device> = emptyList(),
     val isLoading: Boolean = false,
-    @IgnoredOnParcel
     val lastSeenMillis: Map<String, Long?> = emptyMap(),
-) : Parcelable
+)

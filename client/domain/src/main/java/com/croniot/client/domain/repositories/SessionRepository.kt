@@ -1,6 +1,6 @@
 package com.croniot.client.domain.repositories
 
-import com.croniot.client.core.models.auth.AuthSession
+import com.croniot.client.domain.models.auth.AuthSession
 
 interface SessionRepository {
 

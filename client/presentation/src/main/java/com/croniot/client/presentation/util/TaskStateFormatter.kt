@@ -1,6 +1,6 @@
 package com.croniot.client.presentation.util
 
-import com.croniot.client.core.models.TaskStateInfo
+import com.croniot.client.domain.models.TaskStateInfo
 import croniot.models.TaskState
 import java.time.format.DateTimeFormatter
 
