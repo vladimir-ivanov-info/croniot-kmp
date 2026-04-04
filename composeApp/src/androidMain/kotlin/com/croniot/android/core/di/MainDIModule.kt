@@ -12,6 +12,7 @@ import com.croniot.client.data.source.local.LocalDatasource
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.TasksRepository
 import com.croniot.android.core.notifications.NotificationHelper
+import com.croniot.android.core.notifications.TaskNotificationManager
 import com.croniot.client.core.util.DevicePropertiesController
 import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.usecases.FetchTasksUseCase
@@ -27,6 +28,14 @@ object MainDIModule {
         single<DevicePropertiesProvider> { DevicePropertiesController }
 
         single { NotificationHelper(context = get()) }
+
+        single {
+            TaskNotificationManager(
+                notificationHelper = get(),
+                tasksRepository = get(),
+                taskTypesRepository = get(),
+            )
+        }
 
         single<LocalDatasource> { DataStoreController(context = get()) }
 
@@ -47,6 +56,7 @@ object MainDIModule {
                 sensorDataRepository = get(),
                 logOutUseCase = get(),
                 startDeviceListenersUseCase = get(),
+                taskNotificationManager = get(),
             )
         }
 
