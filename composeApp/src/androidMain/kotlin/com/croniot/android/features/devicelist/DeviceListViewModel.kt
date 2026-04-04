@@ -7,6 +7,7 @@ import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.SensorDataRepository
 import com.croniot.client.domain.usecases.LogoutUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
+import com.croniot.android.core.notifications.TaskNotificationManager
 import com.croniot.client.presentation.viewmodel.launchInVmScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,6 +28,7 @@ class DeviceListViewModel(
     private val sensorDataRepository: SensorDataRepository,
     private val logOutUseCase: LogoutUseCase,
     private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
+    private val taskNotificationManager: TaskNotificationManager,
 ) : ViewModel() {
 
     private var devicesCollectors: MutableMap<String, Job> = mutableMapOf()
@@ -38,7 +40,6 @@ class DeviceListViewModel(
         field = MutableSharedFlow(replay = 0, extraBufferCapacity = 1)
 
     init {
-       //TODO notificationHelper.show("notification title")
         state
             .map { it.devices.map { d -> d.uuid } }
             .distinctUntilChanged()
@@ -51,6 +52,9 @@ class DeviceListViewModel(
                     account?.let {
                         val devices = account.devices.filter { it.name.isNotEmpty() }
                         updateState { it.copy(devices = devices) }
+                        devices.forEach { device ->
+                            taskNotificationManager.startObserving(device.uuid)
+                        }
                     }
                 }
                 .onFailure { logOut() }
@@ -101,6 +105,7 @@ class DeviceListViewModel(
     }
 
     private fun logOut() = launchInVmScope {
+        taskNotificationManager.stopAll()
         logOutUseCase()
         effects.tryEmit(DeviceListEffect.LogOut)
     }
