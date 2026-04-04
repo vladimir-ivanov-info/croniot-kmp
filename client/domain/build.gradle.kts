@@ -1,41 +1,24 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKmpLibrary)
-
-    alias(libs.plugins.compose.compiler)
     id("io.gitlab.arturbosch.detekt")
 }
 
 kotlin {
-    androidLibrary {
-        namespace = "com.croniot.client.domain"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
     jvmToolchain(21)
-    applyDefaultHierarchyTemplate()
-
-    iosArm64()
-    iosSimulatorArm64()
+    jvm()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(libs.coroutinesCore)
+                implementation(libs.koin.core)
+                implementation(projects.shared)
             }
         }
-        val androidMain by getting {
-            kotlin.srcDirs("src/main/java", "src/main/kotlin")
 
+        val commonTest by getting {
             dependencies {
-                implementation(libs.androidx.datastore.core.android)
-                implementation(libs.koin.android)
-                implementation(libs.coreKtx)
-                implementation(libs.coroutinesCore)
-
-                // Project dependencies
-                implementation(projects.client.core)
-                implementation(projects.shared)
+                implementation(kotlin("test"))
             }
         }
     }
