@@ -2,13 +2,13 @@
 echo "$(pwd)"
 
 # Variables
-JAR_FILE="./server/build/libs/server-all.jar"  # Ensure this matches the actual JAR file name
-REMOTE_JAR_PATH="/home/ubuntu/croniot/server-all.jar"
+JAR_FILE="./server/build/libs/server-1.0.0-all.jar"  # Ensure this matches the actual JAR file name
+REMOTE_JAR_PATH="/home/ubuntu/croniot/server-1.0.0-all.jar"
 VPS_USER="ubuntu"
-VPS_HOST="vps-52e8a9fb.vps.ovh.net"
-JAVA_OPTIONS="-Xms256m -Xmx512m"  # Adjust Java options as needed
+VPS_HOST="vps-b761f77b.vps.ovh.net"
+#JAVA_OPTIONS="-Xms256m -Xmx512m"  # Adjust Java options as needed
 
-PROCESS_NAME="server-all.jar"
+PROCESS_NAME="server-1.0.0-all.jar"
 
 # Build the JAR file
 echo "Building the JAR file..."
@@ -42,11 +42,11 @@ ssh -t $VPS_USER@$VPS_HOST << 'EOF'
 echo "Running server"
 
 # Find the process ID of the running server
-PID=$(ps aux | grep 'server-all.jar' | grep -v grep | awk '{print $2}')
+PID=$(ps aux | grep 'server-1.0.0-all.jar' | grep -v grep | awk '{print $2}')
 if [ -z "$PID" ]; then
     echo "No matching process found, starting server..."
     cd "/home/ubuntu/croniot"
-    java -jar server-all.jar
+    java -jar server-1.0.0-all.jar
 else
     echo "Server is already running, PID: $PID"
     sudo kill $PID

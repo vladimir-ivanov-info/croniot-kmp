@@ -21,6 +21,9 @@ interface TaskConfigurationApiService {
         @Query("limit") limit: Int,
         @Query("before") before: String? = null,
         @Query("beforeId") beforeId: Long? = null,
+        @Query("taskTypeUids") taskTypeUids: String? = null,
+        @Query("dateFrom") dateFrom: String? = null,
+        @Query("dateTo") dateTo: String? = null,
     ): Response<List<TaskStateInfoHistoryEntryDto>>
 
     @Headers("Accept: application/json")
@@ -29,5 +32,8 @@ interface TaskConfigurationApiService {
         @Path("deviceUuid") deviceUuid: String,
         @Query("before") before: String? = null,
         @Query("beforeId") beforeId: Long? = null,
+        @Query("taskTypeUids") taskTypeUids: String? = null,
+        @Query("dateFrom") dateFrom: String? = null,
+        @Query("dateTo") dateTo: String? = null,
     ): Response<Int>
 }

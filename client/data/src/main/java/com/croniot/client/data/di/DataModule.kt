@@ -33,6 +33,15 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
+private val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_task_history_cache_deviceUuid_taskTypeUid_timeStampMillis` " +
+                "ON `task_history_cache` (`deviceUuid`, `taskTypeUid`, `timeStampMillis`)"
+        )
+    }
+}
+
 private val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
@@ -67,7 +76,7 @@ val dataModule = module {
             context = androidContext(),
             klass = AppDatabase::class.java,
             name = "croniot.db",
-        ).addMigrations(MIGRATION_1_2).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
     }
 
     single { get<AppDatabase>().sensorDataDao() }

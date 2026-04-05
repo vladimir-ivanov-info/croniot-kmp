@@ -1,5 +1,6 @@
 package com.croniot.client.data.source.taskhistory
 
+import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 
 interface LocalTaskHistoryDataSource {
@@ -9,6 +10,7 @@ interface LocalTaskHistoryDataSource {
         limit: Int,
         before: String? = null,
         beforeId: Long? = null,
+        filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
     ): List<TaskStateInfoHistoryEntry>
 
     suspend fun savePage(
@@ -20,5 +22,6 @@ interface LocalTaskHistoryDataSource {
         deviceUuid: String,
         before: String? = null,
         beforeId: Long? = null,
+        filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
     ): Int
 }

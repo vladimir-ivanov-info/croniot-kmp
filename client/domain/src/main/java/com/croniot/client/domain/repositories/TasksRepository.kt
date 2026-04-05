@@ -2,6 +2,7 @@ package com.croniot.client.domain.repositories
 
 import Outcome
 import com.croniot.client.domain.models.Task
+import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.models.TaskStateInfo
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 import com.croniot.client.domain.models.events.TaskStateInfoEvent
@@ -39,11 +40,13 @@ interface TasksRepository {
         limit: Int,
         before: String? = null,
         beforeId: Long? = null,
+        filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
     ): Outcome<List<TaskStateInfoHistoryEntry>, TaskError>
 
     suspend fun fetchTaskStateInfoHistoryCount(
         deviceUuid: String,
         before: String? = null,
         beforeId: Long? = null,
+        filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
     ): Outcome<Int, TaskError>
 }

@@ -2,6 +2,7 @@ package com.croniot.client.data.repositories
 
 import Outcome
 import com.croniot.client.domain.models.Task
+import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.models.TaskStateInfo
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 import com.croniot.client.domain.models.events.TaskStateInfoEvent
@@ -153,17 +154,19 @@ class TasksRepositoryImpl(
         limit: Int,
         before: String?,
         beforeId: Long?,
+        filter: TaskHistoryFilter,
     ): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> {
         val localPage = localTaskHistoryDataSource.getPage(
             deviceUuid = deviceUuid,
             limit = limit,
             before = before,
             beforeId = beforeId,
+            filter = filter,
         )
         if (localPage.size >= limit) return Outcome.Ok(localPage)
 
         val remoteBeforeId = beforeId?.takeIf { it > 0L }
-        return when (val remoteResult = tasksDataSource.fetchTaskStateInfoHistory(deviceUuid, limit, before, remoteBeforeId)) {
+        return when (val remoteResult = tasksDataSource.fetchTaskStateInfoHistory(deviceUuid, limit, before, remoteBeforeId, filter)) {
             is Outcome.Ok -> {
                 if (remoteResult.value.isNotEmpty()) {
                     localTaskHistoryDataSource.savePage(deviceUuid, remoteResult.value)
@@ -173,6 +176,7 @@ class TasksRepositoryImpl(
                     limit = limit,
                     before = before,
                     beforeId = beforeId,
+                    filter = filter,
                 )
                 if (mergedLocal.isNotEmpty()) Outcome.Ok(mergedLocal) else Outcome.Ok(remoteResult.value)
             }
@@ -187,15 +191,17 @@ class TasksRepositoryImpl(
         deviceUuid: String,
         before: String?,
         beforeId: Long?,
+        filter: TaskHistoryFilter,
     ): Outcome<Int, TaskError> {
         val localCount = localTaskHistoryDataSource.count(
             deviceUuid = deviceUuid,
             before = before,
             beforeId = beforeId,
+            filter = filter,
         )
 
         val remoteBeforeId = beforeId?.takeIf { it > 0L }
-        return when (val remoteResult = tasksDataSource.fetchTaskStateInfoHistoryCount(deviceUuid, before, remoteBeforeId)) {
+        return when (val remoteResult = tasksDataSource.fetchTaskStateInfoHistoryCount(deviceUuid, before, remoteBeforeId, filter)) {
             is Outcome.Ok -> Outcome.Ok(maxOf(localCount, remoteResult.value))
             is Outcome.Err -> if (localCount > 0) Outcome.Ok(localCount) else Outcome.Err(remoteResult.error)
         }
