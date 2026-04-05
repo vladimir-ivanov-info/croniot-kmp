@@ -112,16 +112,30 @@ class TaskService @Inject constructor(
         limit: Int,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
+        taskTypeUids: List<Long>? = null,
+        dateFrom: java.time.OffsetDateTime? = null,
+        dateTo: java.time.OffsetDateTime? = null,
     ): List<TaskStateInfoHistoryEntryDto> {
-        return taskRepository.getAllStateInfoHistory(deviceUuid, limit, before, beforeId)
+        return taskRepository.getAllStateInfoHistory(
+            deviceUuid,
+            limit,
+            before,
+            beforeId,
+            taskTypeUids,
+            dateFrom,
+            dateTo
+        )
     }
 
     fun getTaskStateInfoHistoryCount(
         deviceUuid: String,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
+        taskTypeUids: List<Long>? = null,
+        dateFrom: java.time.OffsetDateTime? = null,
+        dateTo: java.time.OffsetDateTime? = null,
     ): Int {
-        return taskRepository.getAllStateInfoHistoryCount(deviceUuid, before, beforeId)
+        return taskRepository.getAllStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUids, dateFrom, dateTo)
     }
 
     fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Result {

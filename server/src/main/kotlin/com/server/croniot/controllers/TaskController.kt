@@ -183,8 +183,22 @@ class TaskController @Inject constructor(
         val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 50
         val before = parseBefore(call.request.queryParameters["before"])
         val beforeId = call.request.queryParameters["beforeId"]?.toLongOrNull()
+        val taskTypeUids = call.request.queryParameters["taskTypeUids"]
+            ?.split(",")
+            ?.mapNotNull { it.trim().toLongOrNull() }
+            ?.takeIf { it.isNotEmpty() }
+        val dateFrom = parseBefore(call.request.queryParameters["dateFrom"])
+        val dateTo = parseBefore(call.request.queryParameters["dateTo"])
 
-        val history = taskService.getTaskStateInfoHistory(deviceUuid, limit, before, beforeId)
+        val history = taskService.getTaskStateInfoHistory(
+            deviceUuid,
+            limit,
+            before,
+            beforeId,
+            taskTypeUids,
+            dateFrom,
+            dateTo
+        )
         call.respond(history)
     }
 
@@ -197,7 +211,20 @@ class TaskController @Inject constructor(
 
         val before = parseBefore(call.request.queryParameters["before"])
         val beforeId = call.request.queryParameters["beforeId"]?.toLongOrNull()
-        val total = taskService.getTaskStateInfoHistoryCount(deviceUuid, before, beforeId)
+        val taskTypeUids = call.request.queryParameters["taskTypeUids"]
+            ?.split(",")
+            ?.mapNotNull { it.trim().toLongOrNull() }
+            ?.takeIf { it.isNotEmpty() }
+        val dateFrom = parseBefore(call.request.queryParameters["dateFrom"])
+        val dateTo = parseBefore(call.request.queryParameters["dateTo"])
+        val total = taskService.getTaskStateInfoHistoryCount(
+            deviceUuid,
+            before,
+            beforeId,
+            taskTypeUids,
+            dateFrom,
+            dateTo
+        )
         call.respond(total)
     }
 

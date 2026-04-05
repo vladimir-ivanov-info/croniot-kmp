@@ -7,6 +7,7 @@ import com.croniot.client.core.config.Constants.ENDPOINT_REQUEST_TASK_STATE_INFO
 import com.croniot.client.core.config.ServerConfig
 import com.croniot.client.data.mappers.toModel
 import com.croniot.client.domain.models.Task
+import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 import com.croniot.client.domain.models.events.TaskStateInfoEvent
 import com.croniot.client.core.util.StringUtil.generateUniqueString
@@ -148,8 +149,14 @@ class TasksDataSourceImpl(
         limit: Int,
         before: String?,
         beforeId: Long?,
+        filter: TaskHistoryFilter,
     ): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> = try {
-        val response = taskConfigurationApiService.requestTaskStateInfoHistory(deviceUuid, limit, before, beforeId)
+        val taskTypeUidsParam = filter.taskTypeUids.takeIf { it.isNotEmpty() }?.joinToString(",")
+        val dateFromParam = filter.dateFromMillis?.toString()
+        val dateToParam = filter.dateToMillis?.toString()
+        val response = taskConfigurationApiService.requestTaskStateInfoHistory(
+            deviceUuid, limit, before, beforeId, taskTypeUidsParam, dateFromParam, dateToParam,
+        )
         val body = response.body()
         if (response.isSuccessful && body != null) {
             Outcome.Ok(body.map { it.toModel() })
@@ -168,8 +175,14 @@ class TasksDataSourceImpl(
         deviceUuid: String,
         before: String?,
         beforeId: Long?,
+        filter: TaskHistoryFilter,
     ): Outcome<Int, TaskError> = try {
-        val response = taskConfigurationApiService.requestTaskStateInfoHistoryCount(deviceUuid, before, beforeId)
+        val taskTypeUidsParam = filter.taskTypeUids.takeIf { it.isNotEmpty() }?.joinToString(",")
+        val dateFromParam = filter.dateFromMillis?.toString()
+        val dateToParam = filter.dateToMillis?.toString()
+        val response = taskConfigurationApiService.requestTaskStateInfoHistoryCount(
+            deviceUuid, before, beforeId, taskTypeUidsParam, dateFromParam, dateToParam,
+        )
         val body = response.body()
         if (response.isSuccessful && body != null) {
             Outcome.Ok(body)
