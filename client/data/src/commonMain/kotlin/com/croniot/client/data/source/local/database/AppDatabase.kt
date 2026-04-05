@@ -36,7 +36,7 @@ import com.croniot.client.data.source.local.database.entities.TaskTypeEntity
         TaskHistoryCacheEntity::class,
         SensorDataEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {

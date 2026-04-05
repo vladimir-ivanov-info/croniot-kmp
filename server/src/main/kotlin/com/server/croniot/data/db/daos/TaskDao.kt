@@ -18,11 +18,17 @@ interface TaskDao {
         limit: Int,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
+        taskTypeUids: List<Long>? = null,
+        dateFrom: java.time.OffsetDateTime? = null,
+        dateTo: java.time.OffsetDateTime? = null,
     ): List<TaskStateInfoHistoryEntryDto>
 
     fun getAllStateInfoHistoryCount(
         deviceUuid: String,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
+        taskTypeUids: List<Long>? = null,
+        dateFrom: java.time.OffsetDateTime? = null,
+        dateTo: java.time.OffsetDateTime? = null,
     ): Int
 }

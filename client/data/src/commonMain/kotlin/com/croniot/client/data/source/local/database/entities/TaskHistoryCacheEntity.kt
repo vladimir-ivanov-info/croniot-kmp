@@ -10,6 +10,7 @@ import androidx.room.PrimaryKey
         Index("deviceUuid"),
         Index(value = ["deviceUuid", "timeStampMillis"]),
         Index(value = ["deviceUuid", "stateInfoId"], unique = true),
+        Index(value = ["deviceUuid", "taskTypeUid", "timeStampMillis"]),
     ],
 )
 data class TaskHistoryCacheEntity(

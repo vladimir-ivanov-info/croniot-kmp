@@ -1,5 +1,6 @@
 package com.croniot.client.data.source.taskhistory
 
+import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 import com.croniot.client.data.source.local.database.daos.TaskHistoryCacheDao
 import com.croniot.client.data.source.local.database.entities.TaskHistoryCacheEntity
@@ -17,17 +18,37 @@ class LocalTaskHistoryDataSourceRoomImpl(
         limit: Int,
         before: String?,
         beforeId: Long?,
+        filter: TaskHistoryFilter,
     ): List<TaskStateInfoHistoryEntry> {
         val beforeMillis = parseBeforeMillis(before)
         val effectiveBeforeId = beforeId ?: Long.MAX_VALUE
-        return taskHistoryCacheDao
-            .getPage(
+
+        val entities = when {
+            filter.taskTypeUids.isNotEmpty() -> taskHistoryCacheDao.getPageFilteredByTaskTypes(
+                deviceUuid = deviceUuid,
+                limit = limit,
+                beforeMillis = beforeMillis,
+                beforeId = effectiveBeforeId,
+                taskTypeUids = filter.taskTypeUids.toList(),
+                dateFromMillis = filter.dateFromMillis,
+                dateToMillis = filter.dateToMillis,
+            )
+            filter.dateFromMillis != null || filter.dateToMillis != null -> taskHistoryCacheDao.getPageFilteredByDates(
+                deviceUuid = deviceUuid,
+                limit = limit,
+                beforeMillis = beforeMillis,
+                beforeId = effectiveBeforeId,
+                dateFromMillis = filter.dateFromMillis,
+                dateToMillis = filter.dateToMillis,
+            )
+            else -> taskHistoryCacheDao.getPage(
                 deviceUuid = deviceUuid,
                 limit = limit,
                 beforeMillis = beforeMillis,
                 beforeId = effectiveBeforeId,
             )
-            .map { it.toModel() }
+        }
+        return entities.map { it.toModel() }
     }
 
     override suspend fun savePage(deviceUuid: String, entries: List<TaskStateInfoHistoryEntry>) {
@@ -35,14 +56,37 @@ class LocalTaskHistoryDataSourceRoomImpl(
         taskHistoryCacheDao.insertAll(entries.map { it.toEntity(deviceUuid) })
     }
 
-    override suspend fun count(deviceUuid: String, before: String?, beforeId: Long?): Int {
+    override suspend fun count(
+        deviceUuid: String,
+        before: String?,
+        beforeId: Long?,
+        filter: TaskHistoryFilter,
+    ): Int {
         val beforeMillis = parseBeforeMillis(before)
         val effectiveBeforeId = beforeId ?: Long.MAX_VALUE
-        return taskHistoryCacheDao.count(
-            deviceUuid = deviceUuid,
-            beforeMillis = beforeMillis,
-            beforeId = effectiveBeforeId,
-        )
+
+        return when {
+            filter.taskTypeUids.isNotEmpty() -> taskHistoryCacheDao.countFilteredByTaskTypes(
+                deviceUuid = deviceUuid,
+                beforeMillis = beforeMillis,
+                beforeId = effectiveBeforeId,
+                taskTypeUids = filter.taskTypeUids.toList(),
+                dateFromMillis = filter.dateFromMillis,
+                dateToMillis = filter.dateToMillis,
+            )
+            filter.dateFromMillis != null || filter.dateToMillis != null -> taskHistoryCacheDao.countFilteredByDates(
+                deviceUuid = deviceUuid,
+                beforeMillis = beforeMillis,
+                beforeId = effectiveBeforeId,
+                dateFromMillis = filter.dateFromMillis,
+                dateToMillis = filter.dateToMillis,
+            )
+            else -> taskHistoryCacheDao.count(
+                deviceUuid = deviceUuid,
+                beforeMillis = beforeMillis,
+                beforeId = effectiveBeforeId,
+            )
+        }
     }
 }
 
