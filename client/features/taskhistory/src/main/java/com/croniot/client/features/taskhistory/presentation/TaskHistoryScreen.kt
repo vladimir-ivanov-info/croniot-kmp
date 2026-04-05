@@ -47,6 +47,8 @@ fun TaskHistoryScreen(
     val newItems by viewModel.newItems.collectAsStateWithLifecycle()
     val newEntriesSinceSnapshot by viewModel.newEntriesSinceSnapshot.collectAsStateWithLifecycle()
     val totalEntriesBySnapshot by viewModel.totalEntries.collectAsStateWithLifecycle()
+    val filter by viewModel.filterState.collectAsStateWithLifecycle()
+    val isFilterSheetVisible by viewModel.isFilterSheetVisible.collectAsStateWithLifecycle()
     val pagingItems = viewModel.pagingFlow.collectAsLazyPagingItems()
     val listState = rememberLazyListState()
 
@@ -94,20 +96,34 @@ fun TaskHistoryScreen(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f),
                     )
                     Text(
-                        text = "No tasks yet",
+                        text = if (filter.isActive) "No matching tasks" else "No tasks yet",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+                // Show filter bar even on empty state so user can change/clear filters
+                TaskHistoryFilterBar(
+                    filter = filter,
+                    availableTaskTypes = selectedDevice.taskTypes,
+                    onAction = viewModel::onFilterAction,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
+                    TaskHistoryFilterBar(
+                        filter = filter,
+                        availableTaskTypes = selectedDevice.taskTypes,
+                        onAction = viewModel::onFilterAction,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
                         state = listState,
-                        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 8.dp),
+                        contentPadding = PaddingValues(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(
@@ -161,6 +177,15 @@ fun TaskHistoryScreen(
                 }
             }
         }
+    }
+
+    if (isFilterSheetVisible) {
+        TaskHistoryFilterSheet(
+            filter = filter,
+            availableTaskTypes = selectedDevice.taskTypes,
+            onAction = viewModel::onFilterAction,
+            onDismiss = { viewModel.onFilterAction(TaskHistoryFilterAction.ToggleFilterSheet) },
+        )
     }
 }
 

@@ -4,6 +4,7 @@ import Outcome
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.repositories.TaskTypesRepository
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
 
@@ -18,7 +19,11 @@ class TaskStateInfoHistoryPagingSource(
     private val deviceUuid: String,
     private val snapshotBefore: String,
     private val pageSize: Int,
+    private val filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
+    private val onFirstPageLoaded: () -> Unit = {},
 ) : PagingSource<TaskHistoryCursor, TaskHistoryItem>() {
+
+    private var firstPageNotified = false
 
     override suspend fun load(params: LoadParams<TaskHistoryCursor>): LoadResult<TaskHistoryCursor, TaskHistoryItem> {
         val cursor = params.key ?: TaskHistoryCursor(
@@ -31,7 +36,7 @@ class TaskStateInfoHistoryPagingSource(
             "load() before=${cursor.before} beforeId=${cursor.beforeId} pageSize=$pageSize type=${params::class.simpleName}",
         )
 
-        return when (val outcome = fetchTaskStateInfoHistoryUseCase(deviceUuid, pageSize, cursor.before, cursor.beforeId)) {
+        return when (val outcome = fetchTaskStateInfoHistoryUseCase(deviceUuid, pageSize, cursor.before, cursor.beforeId, filter)) {
             is Outcome.Ok -> {
                 val items = outcome.value.map { entry ->
                     val typeName = taskTypesRepository.get(deviceUuid, entry.taskTypeUid)?.name ?: "Unknown"
@@ -60,6 +65,10 @@ class TaskStateInfoHistoryPagingSource(
                     "Paging",
                     "load() before=${cursor.before} beforeId=${cursor.beforeId} -> received=${items.size} nextKey=$nextKey",
                 )
+                if (!firstPageNotified) {
+                    firstPageNotified = true
+                    onFirstPageLoaded()
+                }
                 LoadResult.Page(
                     data = items,
                     prevKey = null,
