@@ -8,7 +8,7 @@ import croniot.models.MqttDataProcessor
 import croniot.models.TaskKey
 import croniot.models.dto.TaskStateInfoDto
 
-class MqttDataProcessorTaskProgress(
+class MqttDataProcessorTaskStateInfo(
     private val onNewData: (TaskStateInfoEvent) -> Unit,
 ) : MqttDataProcessor {
 
