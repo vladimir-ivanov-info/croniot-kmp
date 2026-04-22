@@ -12,8 +12,11 @@ import croniot.models.Task
 import croniot.models.dto.SensorDataDto
 import croniot.models.dto.TaskStateInfoDto
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -29,6 +32,13 @@ object MqttController {
 
     private val logger = KotlinLogging.logger {}
 
+    private val exceptionHandler = CoroutineExceptionHandler { context, throwable ->
+        logger.error(throwable) { "Uncaught exception in MqttController scope (context=$context)" }
+    }
+
+    private val scope: CoroutineScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.IO + exceptionHandler)
+
     private val deviceMqttClient: MqttClient = MqttClient(
         Global.secrets.mqttBrokerUrl,
         Global.secrets.mqttClientId + Global.generateUniqueString(8),
@@ -38,11 +48,15 @@ object MqttController {
     private val clientLock = Mutex()
     private val deviceClients = mutableListOf<MqttClient>()
 
+    fun shutdown() {
+        scope.cancel()
+    }
+
     init {
         deviceMqttClient.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable?) {
                 logger.warn { "MQTT connection lost: ${cause?.message}" }
-                CoroutineScope(Dispatchers.IO).launch {
+                scope.launch {
                     while (!deviceMqttClient.isConnected) {
                         try {
                             logger.info { "Attempting MQTT reconnection..." }
@@ -71,7 +85,7 @@ object MqttController {
         val iotDevices = devices.filter { it.iot }
 
         for (device in iotDevices) {
-            CoroutineScope(Dispatchers.IO).launch {
+            scope.launch {
                 val topic = "/iot_to_server/task_progress_update/${device.uuid}"
                 val mqttClient = MqttClient(
                     Global.secrets.mqttBrokerUrl,
@@ -85,7 +99,7 @@ object MqttController {
                     mqttClient,
                     MqttDataProcessorTaskProgress(device.uuid, taskController),
                     topic,
-                    CoroutineScope(Dispatchers.IO)
+                    scope
                 )
             }
         }
@@ -105,7 +119,7 @@ object MqttController {
             mqttClient,
             MqttDataProcessorTaskProgress(device.uuid, taskController),
             topic,
-            CoroutineScope(Dispatchers.IO)
+            scope
         )
     }
 

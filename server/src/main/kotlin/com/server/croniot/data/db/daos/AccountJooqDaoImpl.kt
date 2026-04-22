@@ -27,6 +27,7 @@ import croniot.models.*
 import croniot.models.Device
 import org.jooq.DSLContext
 import org.jooq.impl.DSL.using
+import org.mindrot.jbcrypt.BCrypt
 import javax.inject.Inject
 
 class AccountJooqDaoImpl @Inject constructor(
@@ -50,6 +51,7 @@ class AccountJooqDaoImpl @Inject constructor(
     }
 
     override fun insert(account: Account, password: String): Long {
+        val hashed = BCrypt.hashpw(password, BCrypt.gensalt(BCRYPT_COST))
         return dsl.transactionResult { cfg ->
             val tx = using(cfg)
 
@@ -57,11 +59,40 @@ class AccountJooqDaoImpl @Inject constructor(
                 .set(ACCOUNT.UUID, account.uuid)
                 .set(ACCOUNT.NICKNAME, account.nickname)
                 .set(ACCOUNT.EMAIL, account.email)
-                .set(ACCOUNT.PASSWORD, password)
+                .set(ACCOUNT.PASSWORD, hashed)
                 .returning(ACCOUNT.ID)
                 .fetchOne()!!
                 .get(ACCOUNT.ID)!!
         }
+    }
+
+    override fun verifyPassword(email: String, plaintext: String): VerifyPasswordResult {
+        val storedHash = dsl
+            .select(ACCOUNT.PASSWORD)
+            .from(ACCOUNT)
+            .where(ACCOUNT.EMAIL.eq(email))
+            .fetchOne(ACCOUNT.PASSWORD)
+            ?: return VerifyPasswordResult.UserNotFound
+
+        val isBcryptHash = storedHash.startsWith("\$2a\$") ||
+            storedHash.startsWith("\$2b\$") ||
+            storedHash.startsWith("\$2y\$")
+
+        if (isBcryptHash) {
+            val ok = runCatching { BCrypt.checkpw(plaintext, storedHash) }.getOrDefault(false)
+            return if (ok) VerifyPasswordResult.Valid(rehashed = false) else VerifyPasswordResult.Invalid
+        }
+
+        if (storedHash != plaintext) {
+            return VerifyPasswordResult.Invalid
+        }
+
+        val newHash = BCrypt.hashpw(plaintext, BCrypt.gensalt(BCRYPT_COST))
+        dsl.update(ACCOUNT)
+            .set(ACCOUNT.PASSWORD, newHash)
+            .where(ACCOUNT.EMAIL.eq(email))
+            .execute()
+        return VerifyPasswordResult.Valid(rehashed = true)
     }
 
     override fun isExistsAccountWithEmail(email: String): Boolean {
@@ -72,11 +103,11 @@ class AccountJooqDaoImpl @Inject constructor(
         )
     }
 
-    override fun getAccountEagerSkipTasks(email: String, password: String): Account? {
+    override fun getAccountEagerSkipTasks(email: String): Account? {
         return dsl.transactionResult { cfg ->
             val tx = using(cfg)
 
-            val accountEntity = fetchAccountEntity(tx, email, password) ?: return@transactionResult null
+            val accountEntity = fetchAccountEntityByEmail(tx, email) ?: return@transactionResult null
 
             val deviceBundle = fetchDevices(tx, accountEntity.id)
             if (deviceBundle.entities.isEmpty()) {
@@ -116,14 +147,12 @@ class AccountJooqDaoImpl @Inject constructor(
         val constraintsByParamId: Map<Long, List<ParameterTaskConstraintEntity>>,
     )
 
-    private fun fetchAccountEntity(
+    private fun fetchAccountEntityByEmail(
         tx: org.jooq.DSLContext,
         email: String,
-        password: String,
     ): AccountEntity? {
         val accRec = tx.selectFrom(ACCOUNT)
             .where(ACCOUNT.EMAIL.eq(email))
-            .and(ACCOUNT.PASSWORD.eq(password))
             .fetchOne()
             ?: return null
 
@@ -518,19 +547,23 @@ class AccountJooqDaoImpl @Inject constructor(
         )
     }
 
-    override fun getPassword(email: String): String? {
-        return dsl
-            .select(ACCOUNT.PASSWORD)
-            .from(ACCOUNT)
-            .where(ACCOUNT.EMAIL.eq(email))
-            .fetchOne(ACCOUNT.PASSWORD)
-    }
-
     override fun getAccountId(email: String): Long? {
         return dsl
             .select(ACCOUNT.ID)
             .from(ACCOUNT)
             .where(ACCOUNT.EMAIL.eq(email))
             .fetchOne(ACCOUNT.ID)
+    }
+
+    override fun getEmailById(accountId: Long): String? {
+        return dsl
+            .select(ACCOUNT.EMAIL)
+            .from(ACCOUNT)
+            .where(ACCOUNT.ID.eq(accountId))
+            .fetchOne(ACCOUNT.EMAIL)
+    }
+
+    private companion object {
+        const val BCRYPT_COST = 12
     }
 }
