@@ -41,21 +41,33 @@ class TaskRepository @Inject constructor(
         limit: Int,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
+<<<<<<< HEAD
         taskTypeUids: List<Long>? = null,
         dateFrom: java.time.OffsetDateTime? = null,
         dateTo: java.time.OffsetDateTime? = null,
     ): List<TaskStateInfoHistoryEntryDto> {
         return taskDao.getAllStateInfoHistory(deviceUuid, limit, before, beforeId, taskTypeUids, dateFrom, dateTo)
+=======
+        taskTypeUid: Long? = null,
+    ): List<TaskStateInfoHistoryEntryDto> {
+        return taskDao.getAllStateInfoHistory(deviceUuid, limit, before, beforeId, taskTypeUid)
+>>>>>>> 67a5a19 (Major migration april)
     }
 
     fun getAllStateInfoHistoryCount(
         deviceUuid: String,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
+<<<<<<< HEAD
         taskTypeUids: List<Long>? = null,
         dateFrom: java.time.OffsetDateTime? = null,
         dateTo: java.time.OffsetDateTime? = null,
     ): Int {
         return taskDao.getAllStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUids, dateFrom, dateTo)
+=======
+        taskTypeUid: Long? = null,
+    ): Int {
+        return taskDao.getAllStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUid)
+>>>>>>> 67a5a19 (Major migration april)
     }
 }
