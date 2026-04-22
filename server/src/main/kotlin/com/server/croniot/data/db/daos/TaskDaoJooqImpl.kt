@@ -220,11 +220,15 @@ class TaskDaoJooqImpl @Inject constructor(
         limit: Int,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
+        taskTypeUid: Long?,
     ): List<TaskStateInfoHistoryEntryDto> {
         return dsl.transactionResult { cfg ->
             val tx = using(cfg)
 
             var condition = DEVICE.UUID.eq(deviceUuid)
+            if (taskTypeUid != null) {
+                condition = condition.and(TASK_TYPE.UID.eq(taskTypeUid))
+            }
             if (before != null) {
                 val effectiveBeforeId = beforeId ?: Long.MAX_VALUE
                 condition = condition.and(
@@ -273,11 +277,15 @@ class TaskDaoJooqImpl @Inject constructor(
         deviceUuid: String,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
+        taskTypeUid: Long?,
     ): Int {
         return dsl.transactionResult { cfg ->
             val tx = using(cfg)
 
             var condition = DEVICE.UUID.eq(deviceUuid)
+            if (taskTypeUid != null) {
+                condition = condition.and(TASK_TYPE.UID.eq(taskTypeUid))
+            }
             if (before != null) {
                 val effectiveBeforeId = beforeId ?: Long.MAX_VALUE
                 condition = condition.and(
