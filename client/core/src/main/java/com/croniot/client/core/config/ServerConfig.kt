@@ -7,8 +7,8 @@ object ServerConfig {
     const val mqttClientId = "AndroidMQTTClient"
 
     const val SERVER_IP_LOCAL = "192.168.50.163"
-    // const val SERVER_IP_REMOTE = "57.131.29.79"
-    const val SERVER_IP_REMOTE = "192.168.50.163"
+    const val SERVER_IP_REMOTE = "57.131.29.79"
+    //const val SERVER_IP_REMOTE = "192.168.50.163"
 
     const val DEFAULT_MQTT_HOST = SERVER_IP_REMOTE
 

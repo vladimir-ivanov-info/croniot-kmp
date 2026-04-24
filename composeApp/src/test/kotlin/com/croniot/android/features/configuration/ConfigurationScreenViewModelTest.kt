@@ -1,6 +1,7 @@
 package com.croniot.android.features.configuration
 
-import com.croniot.client.data.source.remote.http.HostSelectionInterceptor
+import com.croniot.client.core.config.ServerConfig
+import com.croniot.client.data.source.remote.http.HostHolder
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +24,7 @@ class ConfigurationScreenViewModelTest {
         Dispatchers.setMain(testDispatcher)
         viewModel = ConfigurationScreenViewModel(
             serverConfigLocalDatasource = mockk(relaxed = true),
-            hostInterceptor = HostSelectionInterceptor()
+            hostHolder = HostHolder(initial = ServerConfig.SERVER_IP_REMOTE)
         )
     }
 
