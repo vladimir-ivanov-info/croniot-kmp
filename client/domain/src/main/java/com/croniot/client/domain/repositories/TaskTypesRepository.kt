@@ -7,4 +7,6 @@ interface TaskTypesRepository {
     fun add(deviceUuid: String, taskType: TaskType)
 
     fun get(deviceUuid: String, taskTypeUid: Long): TaskType?
+
+    fun getAll(deviceUuid: String): List<TaskType>
 }

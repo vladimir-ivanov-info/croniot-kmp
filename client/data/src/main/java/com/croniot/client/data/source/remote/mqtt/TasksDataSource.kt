@@ -2,7 +2,6 @@ package com.croniot.client.data.source.remote.mqtt
 
 import Outcome
 import com.croniot.client.domain.models.Task
-import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 import com.croniot.client.domain.models.events.TaskStateInfoEvent
 import com.croniot.client.domain.errors.TaskError
@@ -20,6 +19,8 @@ interface TasksDataSource {
         onNewEvent: (TaskStateInfoEvent) -> Unit,
     )
 
+    suspend fun stopListening(deviceUuid: String)
+
     suspend fun stopAllListeners()
 
     suspend fun fetchTasks(deviceUuid: String): Outcome<List<Task>, TaskError>
@@ -33,13 +34,13 @@ interface TasksDataSource {
         limit: Int,
         before: String? = null,
         beforeId: Long? = null,
-        filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
+        taskTypeUid: Long? = null,
     ): Outcome<List<TaskStateInfoHistoryEntry>, TaskError>
 
     suspend fun fetchTaskStateInfoHistoryCount(
         deviceUuid: String,
         before: String? = null,
         beforeId: Long? = null,
-        filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
+        taskTypeUid: Long? = null,
     ): Outcome<Int, TaskError>
 }

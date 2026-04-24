@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.SensorDataRepository
+import com.croniot.client.domain.repositories.TasksRepository
 import com.croniot.client.domain.usecases.LogoutUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
 import com.croniot.android.core.notifications.TaskNotificationManager
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 class DeviceListViewModel(
     private val localDataRepository: LocalDataRepository,
     private val sensorDataRepository: SensorDataRepository,
+    private val tasksRepository: TasksRepository,
     private val logOutUseCase: LogoutUseCase,
     private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
     private val taskNotificationManager: TaskNotificationManager,
@@ -77,6 +79,10 @@ class DeviceListViewModel(
         toCancel.forEach { uuid ->
             devicesCollectors.remove(uuid)?.cancel()
             updateState { it.copy(lastSeenMillis = it.lastSeenMillis - uuid) }
+            launchInVmScope {
+                sensorDataRepository.stopListeningFor(uuid)
+                tasksRepository.stopListeningFor(uuid)
+            }
         }
 
         val toAdd = uuids - devicesCollectors.keys

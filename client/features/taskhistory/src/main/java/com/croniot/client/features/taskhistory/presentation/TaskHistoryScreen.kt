@@ -1,5 +1,6 @@
 package com.croniot.client.features.taskhistory.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,17 +15,28 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+//import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -47,8 +59,8 @@ fun TaskHistoryScreen(
     val newItems by viewModel.newItems.collectAsStateWithLifecycle()
     val newEntriesSinceSnapshot by viewModel.newEntriesSinceSnapshot.collectAsStateWithLifecycle()
     val totalEntriesBySnapshot by viewModel.totalEntries.collectAsStateWithLifecycle()
-    val filter by viewModel.filterState.collectAsStateWithLifecycle()
-    val isFilterSheetVisible by viewModel.isFilterSheetVisible.collectAsStateWithLifecycle()
+    val activeFilter by viewModel.taskTypeFilter.collectAsStateWithLifecycle()
+    val availableTaskTypes by viewModel.availableTaskTypes.collectAsStateWithLifecycle()
     val pagingItems = viewModel.pagingFlow.collectAsLazyPagingItems()
     val listState = rememberLazyListState()
 
@@ -59,7 +71,14 @@ fun TaskHistoryScreen(
     val totalLabel = totalEntries?.toString() ?: "..."
     val currentPosition = if (loadedCount == 0) 0 else (listState.firstVisibleItemIndex + 1)
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        FilterBar(
+            activeFilter = activeFilter,
+            availableTaskTypes = availableTaskTypes,
+            onFilterSelected = { viewModel.setFilter(it) },
+        )
+
+        Box(modifier = Modifier.fillMaxSize()) {
         when {
             pagingItems.loadState.refresh is LoadState.Loading && newItems.isEmpty() -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -96,34 +115,20 @@ fun TaskHistoryScreen(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f),
                     )
                     Text(
-                        text = if (filter.isActive) "No matching tasks" else "No tasks yet",
+                        text = "No tasks yet",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                // Show filter bar even on empty state so user can change/clear filters
-                TaskHistoryFilterBar(
-                    filter = filter,
-                    availableTaskTypes = selectedDevice.taskTypes,
-                    onAction = viewModel::onFilterAction,
-                    modifier = Modifier.fillMaxWidth(),
-                )
             }
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    TaskHistoryFilterBar(
-                        filter = filter,
-                        availableTaskTypes = selectedDevice.taskTypes,
-                        onAction = viewModel::onFilterAction,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
                         state = listState,
-                        contentPadding = PaddingValues(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 8.dp),
+                        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(
@@ -177,15 +182,7 @@ fun TaskHistoryScreen(
                 }
             }
         }
-    }
-
-    if (isFilterSheetVisible) {
-        TaskHistoryFilterSheet(
-            filter = filter,
-            availableTaskTypes = selectedDevice.taskTypes,
-            onAction = viewModel::onFilterAction,
-            onDismiss = { viewModel.onFilterAction(TaskHistoryFilterAction.ToggleFilterSheet) },
-        )
+        }
     }
 }
 
@@ -246,5 +243,70 @@ private fun CountChip(value: String) {
                 .widthIn(min = 72.dp)
                 .padding(horizontal = 10.dp, vertical = 4.dp),
         )
+    }
+}
+
+@Composable
+private fun FilterBar(
+    activeFilter: com.croniot.client.domain.models.TaskType?,
+    availableTaskTypes: List<com.croniot.client.domain.models.TaskType>,
+    onFilterSelected: (com.croniot.client.domain.models.TaskType?) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+        ,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box {
+            IconButton(onClick = { expanded = true }) {
+                Icon(
+                    imageVector = Icons.Default.FilterList,
+                    contentDescription = "Filter by task type",
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                if (activeFilter != null) {
+                    DropdownMenuItem(
+                        text = { Text("All types") },
+                        onClick = {
+                            onFilterSelected(null)
+                            expanded = false
+                        },
+                    )
+                }
+                availableTaskTypes.forEach { taskType ->
+                    DropdownMenuItem(
+                        text = { Text(taskType.name) },
+                        onClick = {
+                            onFilterSelected(taskType)
+                            expanded = false
+                        },
+                    )
+                }
+            }
+        }
+
+        if (activeFilter != null) {
+            InputChip(
+                selected = true,
+                onClick = { onFilterSelected(null) },
+                label = { Text(activeFilter.name) },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Clear filter",
+                        modifier = Modifier.size(16.dp),
+                    )
+                },
+            )
+        }
     }
 }

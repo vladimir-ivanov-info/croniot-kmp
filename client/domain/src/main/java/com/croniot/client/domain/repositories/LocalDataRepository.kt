@@ -10,8 +10,6 @@ interface LocalDataRepository { // TODO god class, but will be delegated to Room
 
     suspend fun saveCurrentRoute(route: String)
 
-    suspend fun getCurrentPassword(): String?
-
     suspend fun getLocalDeviceUuid(): String?
 
     suspend fun getIsForegroundServiceEnabled(): Boolean
@@ -36,10 +34,6 @@ interface LocalDataRepository { // TODO god class, but will be delegated to Room
     suspend fun saveCurrentAccount(account: Account?)
 
     suspend fun saveEmail(email: String)
-
-    suspend fun savePassword(password: String)
-
-    suspend fun saveToken(token: String)
 
     fun getDeviceProperties(): Map<String, String>
 

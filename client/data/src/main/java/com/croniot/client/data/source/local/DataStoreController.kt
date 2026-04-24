@@ -16,7 +16,11 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 class DataStoreController(
     context: Context,
-) : LocalDatasource {
+) : ServerConfigLocalDatasource,
+    AuthLocalDatasource,
+    DeviceLocalDatasource,
+    NavigationLocalDatasource,
+    AppPreferencesLocalDatasource {
 
     private val dataStore: DataStore<Preferences> = context.dataStore
 
@@ -26,7 +30,6 @@ class DataStoreController(
         val KEY_ACCOUNT = stringPreferencesKey("account")
         val KEY_SELECTED_DEVICE = stringPreferencesKey("selected_device")
         val KEY_ACCOUNT_EMAIL = stringPreferencesKey("account_email")
-        val KEY_ACCOUNT_PASSWORD = stringPreferencesKey("account_password")
         val KEY_DEVICE_TOKEN = stringPreferencesKey("device_token")
         val KEY_DEVICE_UUID = stringPreferencesKey("device_uuid")
         val KEY_SERVER_MODE = stringPreferencesKey("server_mode")
@@ -40,10 +43,6 @@ class DataStoreController(
 
     override suspend fun saveCurrentRoute(route: String) {
         saveData(KEY_CURRENT_ROUTE, route)
-    }
-
-    override suspend fun getCurrentPassword(): String? {
-        return loadData(KEY_ACCOUNT_PASSWORD).firstOrNull()
     }
 
     override suspend fun getLocalDeviceUuid(): String? {
@@ -108,14 +107,6 @@ class DataStoreController(
 
     override suspend fun saveEmail(email: String) {
         saveData(KEY_ACCOUNT_EMAIL, email)
-    }
-
-    override suspend fun savePassword(password: String) {
-        saveData(KEY_ACCOUNT_PASSWORD, password)
-    }
-
-    override suspend fun saveToken(token: String) {
-        saveData(KEY_DEVICE_TOKEN, token)
     }
 
     override suspend fun getCurrentScreen(): String? {

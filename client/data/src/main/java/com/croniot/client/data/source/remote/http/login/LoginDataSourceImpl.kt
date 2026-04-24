@@ -4,35 +4,38 @@ import Outcome
 import com.croniot.client.domain.models.auth.AuthError
 import croniot.messages.LoginDto
 import croniot.models.LoginResultDto
-import retrofit2.HttpException
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
-//TODO logs
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.client.plugins.ServerResponseException
+import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
+
 class LoginDataSourceImpl(
     private val api: LoginApi,
 ) : LoginDataSource {
     override suspend fun login(request: LoginDto): Outcome<LoginResultDto, AuthError> {
         return try {
-            val resp = api.login(request)
-            if (!resp.isSuccessful) throw HttpException(resp)
-            val body = resp.body()
-                ?: return Outcome.Err(AuthError.Server("Empty response body"))
-            Outcome.Ok(body)
-        } catch (e: ConnectException) {
-            Outcome.Err(AuthError.Network)
-        } catch (e: UnknownHostException) {
-            Outcome.Err(AuthError.Network)
-        } catch (e: SocketTimeoutException) {
-            //android.util.Log.e("LoginDataSource", "Timeout: ${e.message}", e)
-            Outcome.Err(AuthError.NetworkTiemout)
-        } catch (e: HttpException) {
-            when (e.code()) {
+            Outcome.Ok(api.login(request))
+        } catch (e: ClientRequestException) {
+            when (e.response.status.value) {
                 401 -> Outcome.Err(AuthError.InvalidCredentials)
-                else -> Outcome.Err(AuthError.Server(e.message()))
+                else -> Outcome.Err(AuthError.Server(e.message))
             }
+        } catch (e: ServerResponseException) {
+            Outcome.Err(AuthError.Server(e.message))
+        } catch (e: HttpRequestTimeoutException) {
+            Outcome.Err(AuthError.NetworkTiemout)
+        } catch (e: ConnectTimeoutException) {
+            Outcome.Err(AuthError.NetworkTiemout)
+        } catch (e: SocketTimeoutException) {
+            Outcome.Err(AuthError.NetworkTiemout)
+        } catch (e: IOException) {
+            Outcome.Err(AuthError.Network)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            //android.util.Log.e("LoginDataSource", "Unexpected error: ${e.javaClass.simpleName}: ${e.message}", e)
             Outcome.Err(AuthError.Unknown)
         }
     }

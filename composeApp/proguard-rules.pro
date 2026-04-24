@@ -29,18 +29,14 @@
 }
 
 # ----------------------------------------------------------
-# Retrofit
-# Solo mantener los métodos anotados con @GET, @POST, etc.
-# en interfaces. El resto (clases internas) R8 lo maneja bien.
+# Ktor Client — engine service loader + internal reflection
 # ----------------------------------------------------------
 -keepattributes Signature, Exceptions
--keep,allowshrinking,allowobfuscation interface * {
-    @retrofit2.http.* <methods>;
-}
--dontwarn retrofit2.**
+-dontwarn io.ktor.**
+-keep class io.ktor.client.engine.okhttp.** { *; }
 
 # ----------------------------------------------------------
-# OkHttp — platform adapters opcionales
+# OkHttp — platform adapters opcionales (usado por Ktor OkHttp engine)
 # ----------------------------------------------------------
 -dontwarn okhttp3.internal.platform.**
 -dontwarn org.conscrypt.**

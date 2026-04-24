@@ -1,0 +1,21 @@
+model_list:
+  - model_name: claude-sonnet-4-5
+    litellm_params:
+      model: ollama/devstral-small-2
+      api_base: http://127.0.0.1:11434
+
+  - model_name: claude-opus-4-6
+    litellm_params:
+      model: ollama/devstral-small-2
+      api_base: http://127.0.0.1:11434
+
+  - model_name: claude-haiku-4-5
+    litellm_params:
+      model: ollama/devstral-small-2
+      api_base: http://127.0.0.1:11434
+
+general_settings:
+  master_key: sk-local-gateway
+
+litellm_settings:
+  drop_params: true

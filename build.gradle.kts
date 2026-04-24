@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.androidx.baselineprofile) apply false
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.roborazzi) apply false
+    alias(libs.plugins.kover) apply false
 
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.8" apply false

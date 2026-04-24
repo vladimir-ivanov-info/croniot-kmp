@@ -19,6 +19,9 @@ kotlin = "2.3.10"
 ktor = "3.4.1"
 logback = "1.5.32"
 kotlin-logging = "7.0.7"
+jbcrypt = "0.4"
+micrometer = "1.15.2"
+androidxSecurityCrypto = "1.1.0-alpha06"
 
 #koin = "3.6.0-wasm-alpha2"
 koin = "4.1.1"
@@ -30,8 +33,6 @@ paging = "3.4.2"
 
 coroutines = "1.10.2"
 kotlinBom = "1.9.0"
-retrofit = "2.11.0"
-okhttp = "4.12.0"
 mockk = "1.14.9"
 activityKtx = "1.13.0"
 
@@ -74,6 +75,10 @@ common = "0.10.0"
 roborazzi = "1.59.0"
 robolectric = "4.14.1"
 
+turbine = "1.2.1"
+assertk = "0.28.1"
+kover = "0.9.1"
+
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
@@ -85,7 +90,15 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor" }
+ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
+ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
+ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
+ktor-server-rate-limit = { module = "io.ktor:ktor-server-rate-limit", version.ref = "ktor" }
+ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer", version.ref = "ktor" }
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+jooq-meta-extensions = { module = "org.jooq:jooq-meta-extensions", version.ref = "jooq" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "jbcrypt" }
 
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
@@ -99,11 +112,6 @@ lifecycleViewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-c
 coroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-okhttpLoggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-converter-kotlinx-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version = "1.0.0" }
-
 mqtt = { group = "org.eclipse.paho", name = "org.eclipse.paho.client.mqttv3", version.ref = "mqtt" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitJupiter" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
@@ -116,6 +124,13 @@ paho-mqtt = { module = "org.eclipse.paho:org.eclipse.paho.client.mqttv3", versio
 ktor-serialization-kotlinx = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
@@ -143,6 +158,7 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", ve
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastoreCoreAndroid" }
 datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "datastoreCoreAndroid" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "androidxSecurityCrypto" }
 
 room-runtime      = { module = "androidx.room:room-runtime",      version.ref = "room" }
 room-compiler     = { module = "androidx.room:room-compiler",     version.ref = "room" }
@@ -173,6 +189,9 @@ roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi
 roborazzi-junit-rule = { group = "io.github.takahirom.roborazzi", name = "roborazzi-junit-rule", version.ref = "roborazzi" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+assertk = { module = "com.willowtreeapps.assertk:assertk", version.ref = "assertk" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -188,6 +207,7 @@ androidx-baselineprofile = { id = "androidx.baselineprofile", version.ref = "bas
 android-test = { id = "com.android.test", version.ref = "agp" }
 androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 
 [bundles]
 

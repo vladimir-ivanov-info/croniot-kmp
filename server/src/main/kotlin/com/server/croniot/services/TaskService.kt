@@ -1,5 +1,6 @@
 package com.server.croniot.services
 
+import com.server.croniot.application.ApplicationScope
 import com.server.croniot.data.mappers.toDto
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.TaskRepository
@@ -14,8 +15,6 @@ import croniot.models.TaskStateInfo
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoHistoryEntryDto
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
@@ -26,6 +25,7 @@ class TaskService @Inject constructor(
     private val taskRepository: TaskRepository,
     private val taskTypeRepository: TaskTypeRepository,
     private val deviceRepository: DeviceRepository,
+    private val applicationScope: ApplicationScope,
 ) {
 
     private val logger = KotlinLogging.logger {}
@@ -82,7 +82,7 @@ class TaskService @Inject constructor(
             logger.debug { "addTask createState: ${t3 - t2}ms" }
 
             val taskWithState = task.copy(mostRecentStateInfo = taskStateInfo)
-            CoroutineScope(Dispatchers.IO).launch {
+            applicationScope.launch {
                 val tMqtt0 = System.currentTimeMillis()
                 MqttController.sendNewTask(deviceUuid, taskWithState)
                 val tMqtt1 = System.currentTimeMillis()
@@ -112,35 +112,23 @@ class TaskService @Inject constructor(
         limit: Int,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
-        taskTypeUids: List<Long>? = null,
-        dateFrom: java.time.OffsetDateTime? = null,
-        dateTo: java.time.OffsetDateTime? = null,
+        taskTypeUid: Long? = null,
     ): List<TaskStateInfoHistoryEntryDto> {
-        return taskRepository.getAllStateInfoHistory(
-            deviceUuid,
-            limit,
-            before,
-            beforeId,
-            taskTypeUids,
-            dateFrom,
-            dateTo
-        )
+        return taskRepository.getAllStateInfoHistory(deviceUuid, limit, before, beforeId, taskTypeUid)
     }
 
     fun getTaskStateInfoHistoryCount(
         deviceUuid: String,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
-        taskTypeUids: List<Long>? = null,
-        dateFrom: java.time.OffsetDateTime? = null,
-        dateTo: java.time.OffsetDateTime? = null,
+        taskTypeUid: Long? = null,
     ): Int {
-        return taskRepository.getAllStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUids, dateFrom, dateTo)
+        return taskRepository.getAllStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUid)
     }
 
     fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Result {
         // TODO validate device/task type existence
-        CoroutineScope(Dispatchers.IO).launch {
+        applicationScope.launch {
             MqttController.requestTaskStateInfoSync(deviceUuid, taskTypeUid)
         }
         return Result(true, "")

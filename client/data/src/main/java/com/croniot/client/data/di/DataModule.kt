@@ -9,8 +9,14 @@ import com.croniot.client.data.repositories.SensorDataRepositoryImpl
 import com.croniot.client.data.repositories.SessionRepositoryImpl
 import com.croniot.client.data.repositories.TaskTypesRepositoryImpl
 import com.croniot.client.data.source.local.database.AppDatabase
-import com.croniot.client.data.source.remote.http.NetworkUtil
-import com.croniot.client.data.source.remote.http.NetworkUtilImpl
+import com.croniot.client.data.source.local.AppPreferencesLocalDatasource
+import com.croniot.client.data.source.local.AuthLocalDatasource
+import com.croniot.client.data.source.local.DataStoreController
+import com.croniot.client.data.source.local.DeviceLocalDatasource
+import com.croniot.client.data.source.local.EncryptedTokenStore
+import com.croniot.client.data.source.local.NavigationLocalDatasource
+import com.croniot.client.data.source.local.ServerConfigLocalDatasource
+import com.croniot.client.data.source.local.TokenStore
 import com.croniot.client.data.source.remote.http.login.LoginDataSource
 import com.croniot.client.data.source.remote.http.login.LoginDataSourceImpl
 import com.croniot.client.data.source.remote.mqtt.TasksDataSource
@@ -82,7 +88,14 @@ val dataModule = module {
     single { get<AppDatabase>().sensorDataDao() }
     single { get<AppDatabase>().taskHistoryCacheDao() }
 
-    single<NetworkUtil> { NetworkUtilImpl(localDatasource = get()) }
+    single { DataStoreController(context = get()) }
+    single<ServerConfigLocalDatasource> { get<DataStoreController>() }
+    single<AuthLocalDatasource> { get<DataStoreController>() }
+    single<DeviceLocalDatasource> { get<DataStoreController>() }
+    single<NavigationLocalDatasource> { get<DataStoreController>() }
+    single<AppPreferencesLocalDatasource> { get<DataStoreController>() }
+
+    single<TokenStore> { EncryptedTokenStore(context = androidContext()) }
 
     single<AuthRepository> { AuthRepositoryImpl(loginDataSource = get()) }
 
@@ -90,14 +103,15 @@ val dataModule = module {
 
     single<SessionRepository> {
         SessionRepositoryImpl(
-            localDataSource = get(),
+            authLocalDatasource = get(),
+            appPreferencesLocalDatasource = get(),
+            tokenStore = get(),
         )
     }
 
     single<TasksDataSource> {
         TasksDataSourceImpl(
-            networkUtil = get(),
-            taskConfigurationApiService = get(),
+            taskApi = get(),
             localDatasource = get(),
             appScope = get(named("appScope")),
         )
@@ -106,7 +120,6 @@ val dataModule = module {
     single<LoginDataSource> {
         LoginDataSourceImpl(api = get())
     }
-    single<AuthRepository> { AuthRepositoryImpl(get()) }
 
     single<TaskTypesRepository> { TaskTypesRepositoryImpl() }
 
