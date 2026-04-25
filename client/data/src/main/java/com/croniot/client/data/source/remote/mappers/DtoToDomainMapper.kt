@@ -14,7 +14,7 @@ import croniot.models.dto.ParameterTaskDto
 import croniot.models.dto.SensorDataDto
 import croniot.models.dto.SensorTypeDto
 import croniot.models.dto.TaskTypeDto
-// TODO maybe change toAndroidModel to toDomain
+
 fun AccountDto.toDomain(): Account {
     return Account(
         uuid = this.uuid,
@@ -38,8 +38,7 @@ fun TaskTypeDto.toDomain(): TaskType {
         uid = this.uid,
         name = this.name,
         description = this.description,
-        parameters = this.parameters.map { it.toDomain() } // .toMutableSet(),
-        // TODO realTime = this.realTime,
+        parameters = this.parameters.map { it.toDomain() },
     )
 }
 
@@ -59,7 +58,7 @@ fun ParameterTaskDto.toDomain(): ParameterTask {
         type = this.type,
         unit = this.unit,
         description = this.description,
-        constraints = this.constraints.toMutableMap(), // TODO not actually mutable map, convert to map
+        constraints = this.constraints,
     )
 }
 
@@ -70,7 +69,7 @@ fun ParameterSensorDto.toDomain(): ParameterSensor {
         type = this.type,
         unit = this.unit,
         description = this.description,
-        constraints = this.constraints.toMutableMap(), // TODO not actually mutable map, convert to map
+        constraints = this.constraints,
     )
 }
 

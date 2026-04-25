@@ -1,6 +1,5 @@
 package com.croniot.client.data.source.remote.mqtt
 
-import com.croniot.client.domain.models.events.TaskStateInfoEvent
 import croniot.models.TaskKey
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -8,21 +7,16 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.lang.reflect.Method
 
-/**
- * Tests for the MQTT topic parsing logic in MqttDataProcessorTaskProgress.
- * `parseProgressTopic` is private, accessed via reflection since it contains
- * pure parsing logic with no Android dependencies.
- */
-class MqttDataProcessorTaskProgressTest {
+class MqttDataProcessorTaskStateInfoTest {
 
-    private lateinit var processor: MqttDataProcessorTaskProgress
+    private lateinit var processor: MqttDataProcessorTaskStateInfo
     private lateinit var parseMethod: Method
 
     @BeforeEach
     fun setUp() {
-        processor = MqttDataProcessorTaskProgress(onNewData = {})
-        parseMethod = MqttDataProcessorTaskProgress::class.java
-            .getDeclaredMethod("parseProgressTopic", String::class.java)
+        processor = MqttDataProcessorTaskStateInfo(onNewData = {})
+        parseMethod = MqttDataProcessorTaskStateInfo::class.java
+            .getDeclaredMethod("parseTaskStateInfoTopic", String::class.java)
             .also { it.isAccessible = true }
     }
 

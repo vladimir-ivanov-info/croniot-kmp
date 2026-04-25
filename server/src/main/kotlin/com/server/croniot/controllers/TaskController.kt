@@ -1,5 +1,7 @@
 package com.server.croniot.controllers
 
+import com.server.croniot.application.ApplicationScope
+import com.server.croniot.application.DomainException
 import com.server.croniot.data.mappers.toDto
 import com.server.croniot.data.repositories.TaskRepository
 import com.server.croniot.mqtt.MqttController
@@ -12,13 +14,11 @@ import croniot.messages.MessageFactory
 import croniot.messages.MessageRequestTaskStateInfoSync
 import croniot.models.TaskProgressUpdate
 import croniot.models.TaskStateInfo
+import croniot.models.errors.DomainError
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -27,7 +27,8 @@ class TaskController @Inject constructor(
     private val taskService: TaskService,
     private val taskTypeService: TaskTypeService,
     private val deviceService: DeviceService,
-    private val tasksRepository: TaskRepository
+    private val tasksRepository: TaskRepository,
+    private val applicationScope: ApplicationScope,
 ) {
 
     private val logger = KotlinLogging.logger {}
@@ -113,7 +114,7 @@ class TaskController @Inject constructor(
 
         val taskWithState = task.copy(mostRecentStateInfo = stateInfo)
         measure("newTask MQTT sending", log = { logger.debug { it } }) {
-            CoroutineScope(Dispatchers.IO).launch {
+            applicationScope.launch {
                 MqttController.sendNewTask(deviceUuid, taskWithState)
                 // println("[RTT] handleNewTask MQTT sent: ${System.currentTimeMillis() - t0}ms (state=$taskState)")
             }
@@ -144,7 +145,7 @@ class TaskController @Inject constructor(
         logger.debug { "handleExistingTask createState: ${System.currentTimeMillis() - t0}ms" }
 
         val stateInfoDto = stateInfo.toDto()
-        CoroutineScope(Dispatchers.IO).launch {
+        applicationScope.launch {
             MqttController.sendNewTaskStateInfo(deviceUuid, taskTypeUid, taskUid, stateInfoDto)
             logger.debug { "handleExistingTask MQTT sent: ${System.currentTimeMillis() - t0}ms (state=$taskState)" }
         }
@@ -159,72 +160,38 @@ class TaskController @Inject constructor(
 
     suspend fun getTaskConfigurations(call: ApplicationCall) {
         val deviceUuid = call.parameters["deviceUuid"]
-        if (deviceUuid == null) {
-            call.respond(HttpStatusCode.BadRequest, "Missing deviceUuid")
-            return
-        }
+            ?: throw DomainException(DomainError.Validation("deviceUuid", "Missing deviceUuid"))
 
         val taskConfigurations = taskService.getTasksByDeviceUuid(deviceUuid)
 
         if (taskConfigurations.isNotEmpty()) {
             call.respond(taskConfigurations)
         } else {
-            call.respond(HttpStatusCode.NotFound, "No configurations found for UUID: $deviceUuid")
+            throw DomainException(DomainError.NotFound("task configurations for $deviceUuid"))
         }
     }
 
     suspend fun getTaskStateInfoHistory(call: ApplicationCall) {
         val deviceUuid = call.parameters["deviceUuid"]
-        if (deviceUuid == null) {
-            call.respond(HttpStatusCode.BadRequest, "Missing deviceUuid")
-            return
-        }
+            ?: throw DomainException(DomainError.Validation("deviceUuid", "Missing deviceUuid"))
 
         val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 50
         val before = parseBefore(call.request.queryParameters["before"])
         val beforeId = call.request.queryParameters["beforeId"]?.toLongOrNull()
-        val taskTypeUids = call.request.queryParameters["taskTypeUids"]
-            ?.split(",")
-            ?.mapNotNull { it.trim().toLongOrNull() }
-            ?.takeIf { it.isNotEmpty() }
-        val dateFrom = parseBefore(call.request.queryParameters["dateFrom"])
-        val dateTo = parseBefore(call.request.queryParameters["dateTo"])
+        val taskTypeUid = call.request.queryParameters["taskTypeUid"]?.toLongOrNull()
 
-        val history = taskService.getTaskStateInfoHistory(
-            deviceUuid,
-            limit,
-            before,
-            beforeId,
-            taskTypeUids,
-            dateFrom,
-            dateTo
-        )
+        val history = taskService.getTaskStateInfoHistory(deviceUuid, limit, before, beforeId, taskTypeUid)
         call.respond(history)
     }
 
     suspend fun getTaskStateInfoHistoryCount(call: ApplicationCall) {
         val deviceUuid = call.parameters["deviceUuid"]
-        if (deviceUuid == null) {
-            call.respond(HttpStatusCode.BadRequest, "Missing deviceUuid")
-            return
-        }
+            ?: throw DomainException(DomainError.Validation("deviceUuid", "Missing deviceUuid"))
 
         val before = parseBefore(call.request.queryParameters["before"])
         val beforeId = call.request.queryParameters["beforeId"]?.toLongOrNull()
-        val taskTypeUids = call.request.queryParameters["taskTypeUids"]
-            ?.split(",")
-            ?.mapNotNull { it.trim().toLongOrNull() }
-            ?.takeIf { it.isNotEmpty() }
-        val dateFrom = parseBefore(call.request.queryParameters["dateFrom"])
-        val dateTo = parseBefore(call.request.queryParameters["dateTo"])
-        val total = taskService.getTaskStateInfoHistoryCount(
-            deviceUuid,
-            before,
-            beforeId,
-            taskTypeUids,
-            dateFrom,
-            dateTo
-        )
+        val taskTypeUid = call.request.queryParameters["taskTypeUid"]?.toLongOrNull()
+        val total = taskService.getTaskStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUid)
         call.respond(total)
     }
 

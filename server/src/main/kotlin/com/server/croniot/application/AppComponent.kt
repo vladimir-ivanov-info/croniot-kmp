@@ -10,6 +10,7 @@ import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.http.SensorsDataController
 import dagger.Component
 import javax.inject.Singleton
+import javax.sql.DataSource
 
 @Singleton
 @Component(
@@ -26,6 +27,9 @@ interface AppComponent {
     fun sensorTypeController(): SensorTypeController
     fun taskTypeController(): TaskTypeController
     fun sensorDataController(): SensorsDataController
+    fun jwtConfig(): JwtConfig
+    fun applicationScope(): ApplicationScope
 
     fun deviceRepository(): DeviceRepository
+    fun dataSource(): DataSource
 }

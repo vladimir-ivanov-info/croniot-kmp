@@ -1,7 +1,10 @@
 package com.croniot.client.data.repositories
 
 import com.croniot.client.domain.models.auth.AuthSession
-import com.croniot.client.data.source.local.LocalDatasource
+import com.croniot.client.domain.models.auth.AuthTokens
+import com.croniot.client.data.source.local.AppPreferencesLocalDatasource
+import com.croniot.client.data.source.local.AuthLocalDatasource
+import com.croniot.client.data.source.local.TokenStore
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -11,32 +14,52 @@ import org.junit.jupiter.api.Test
 
 class SessionRepositoryImplTest {
 
-    private val localDatasource: LocalDatasource = mockk()
+    private val authLocalDatasource: AuthLocalDatasource = mockk()
+    private val appPreferencesLocalDatasource: AppPreferencesLocalDatasource = mockk()
+    private val tokenStore: TokenStore = mockk()
     private lateinit var repository: SessionRepositoryImpl
 
     @BeforeEach
     fun setUp() {
-        repository = SessionRepositoryImpl(localDatasource)
+        repository = SessionRepositoryImpl(
+            authLocalDatasource = authLocalDatasource,
+            appPreferencesLocalDatasource = appPreferencesLocalDatasource,
+            tokenStore = tokenStore,
+        )
     }
 
     @Test
-    fun `save delegates email and token to local datasource`() = runTest {
+    fun `save delegates email to auth datasource`() = runTest {
         val session = AuthSession(email = "user@example.com", token = "token-123")
-        coJustRun { localDatasource.saveEmail(any()) }
-        coJustRun { localDatasource.saveToken(any()) }
+        coJustRun { authLocalDatasource.saveEmail(any()) }
 
         repository.save(session)
 
-        coVerify(exactly = 1) { localDatasource.saveEmail("user@example.com") }
-        coVerify(exactly = 1) { localDatasource.saveToken("token-123") }
+        coVerify(exactly = 1) { authLocalDatasource.saveEmail("user@example.com") }
     }
 
     @Test
-    fun `clearAllExceptDeviceUuid delegates to local datasource`() = runTest {
-        coJustRun { localDatasource.clearAllCacheExceptDeviceUuid() }
+    fun `saveTokens delegates to token store`() = runTest {
+        val tokens = AuthTokens(
+            accessToken = "access-123",
+            refreshToken = "refresh-123",
+            expiresAtEpochSeconds = 1_700_000_000L,
+        )
+        coJustRun { tokenStore.saveTokens(any()) }
+
+        repository.saveTokens(tokens)
+
+        coVerify(exactly = 1) { tokenStore.saveTokens(tokens) }
+    }
+
+    @Test
+    fun `clearAllExceptDeviceUuid clears tokens and app preferences`() = runTest {
+        coJustRun { tokenStore.clearTokens() }
+        coJustRun { appPreferencesLocalDatasource.clearAllCacheExceptDeviceUuid() }
 
         repository.clearAllExceptDeviceUuid()
 
-        coVerify(exactly = 1) { localDatasource.clearAllCacheExceptDeviceUuid() }
+        coVerify(exactly = 1) { tokenStore.clearTokens() }
+        coVerify(exactly = 1) { appPreferencesLocalDatasource.clearAllCacheExceptDeviceUuid() }
     }
 }

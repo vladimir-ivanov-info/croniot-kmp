@@ -4,7 +4,6 @@ import Outcome
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.repositories.TaskTypesRepository
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
 
@@ -19,11 +18,8 @@ class TaskStateInfoHistoryPagingSource(
     private val deviceUuid: String,
     private val snapshotBefore: String,
     private val pageSize: Int,
-    private val filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
-    private val onFirstPageLoaded: () -> Unit = {},
+    private val taskTypeUidFilter: Long? = null,
 ) : PagingSource<TaskHistoryCursor, TaskHistoryItem>() {
-
-    private var firstPageNotified = false
 
     override suspend fun load(params: LoadParams<TaskHistoryCursor>): LoadResult<TaskHistoryCursor, TaskHistoryItem> {
         val cursor = params.key ?: TaskHistoryCursor(
@@ -36,19 +32,19 @@ class TaskStateInfoHistoryPagingSource(
             "load() before=${cursor.before} beforeId=${cursor.beforeId} pageSize=$pageSize type=${params::class.simpleName}",
         )
 
-        return when (val outcome = fetchTaskStateInfoHistoryUseCase(deviceUuid, pageSize, cursor.before, cursor.beforeId, filter)) {
+        return when (val outcome = fetchTaskStateInfoHistoryUseCase(deviceUuid, pageSize, cursor.before, cursor.beforeId, taskTypeUidFilter)) {
             is Outcome.Ok -> {
                 val items = outcome.value.map { entry ->
-                    val typeName = taskTypesRepository.get(deviceUuid, entry.taskTypeUid)?.name ?: "Unknown"
+                    val typeName = taskTypesRepository.get(deviceUuid, entry.taskKey.taskTypeUid)?.name ?: "Unknown"
                     buildTaskHistoryItem(
                         stateInfoId = entry.stateInfoId,
-                        taskUid = entry.taskUid,
-                        taskTypeUid = entry.taskTypeUid,
+                        taskUid = entry.taskKey.taskUid,
+                        taskTypeUid = entry.taskKey.taskTypeUid,
                         taskTypeName = typeName,
-                        dateTime = entry.dateTime,
-                        state = entry.state,
-                        progress = entry.progress,
-                        errorMessage = entry.errorMessage,
+                        dateTime = entry.stateInfo.dateTime,
+                        state = entry.stateInfo.state,
+                        progress = entry.stateInfo.progress,
+                        errorMessage = entry.stateInfo.errorMessage,
                     )
                 }
                 val nextKey = if (items.size < pageSize || items.isEmpty()) {
@@ -65,10 +61,6 @@ class TaskStateInfoHistoryPagingSource(
                     "Paging",
                     "load() before=${cursor.before} beforeId=${cursor.beforeId} -> received=${items.size} nextKey=$nextKey",
                 )
-                if (!firstPageNotified) {
-                    firstPageNotified = true
-                    onFirstPageLoaded()
-                }
                 LoadResult.Page(
                     data = items,
                     prevKey = null,

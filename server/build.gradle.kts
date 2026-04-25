@@ -6,11 +6,11 @@ import kotlin.system.exitProcess
 import nu.studer.gradle.jooq.JooqEdition
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jooq.meta.jaxb.*
-import org.jooq.meta.jaxb.Jdbc
-import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Database
 import org.jooq.meta.jaxb.Generate
+import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Logging
+import org.jooq.meta.jaxb.Property
 import org.jooq.meta.jaxb.Target as JooqTarget
 
 val localPropertiesText = providers.fileContents(
@@ -57,6 +57,13 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.call.logging)
+    implementation(libs.ktor.server.status.pages)
+    implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.auth.jwt)
+    implementation(libs.ktor.server.rate.limit)
+    implementation(libs.ktor.server.metrics.micrometer)
+    implementation(libs.micrometer.registry.prometheus)
+    implementation(libs.jbcrypt)
 
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter.api)
@@ -90,7 +97,7 @@ dependencies {
 
     implementation(libs.jooq.core)
     implementation(libs.hikari)
-    jooqGenerator(libs.postgresql)
+    jooqGenerator(libs.jooq.meta.extensions)
 }
 
 tasks.test {
@@ -142,17 +149,18 @@ jooq {
         create("main") {
             jooqConfiguration.apply {
                 logging = Logging.WARN
-                jdbc = Jdbc().apply {
-                    driver = "org.postgresql.Driver"
-                    url = System.getenv("CRONIOT_DB_URL") ?: localProperties.getProperty("CRONIOT_DB_URL") ?: project.findProperty("CRONIOT_DB_URL")?.toString()
-                    user = System.getenv("CRONIOT_DB_USER") ?: localProperties.getProperty("CRONIOT_DB_USER") ?: project.findProperty("CRONIOT_DB_USER")?.toString()
-                    password = System.getenv("CRONIOT_DB_PASSWORD") ?: localProperties.getProperty("CRONIOT_DB_PASSWORD") ?: project.findProperty("CRONIOT_DB_PASSWORD")?.toString()
-                }
                 generator = Generator().apply {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database = Database().apply {
-                        name = "org.jooq.meta.postgres.PostgresDatabase"
-                        inputSchema = "public"
+                        name = "org.jooq.meta.extensions.ddl.DDLDatabase"
+                        properties = listOf(
+                            Property().withKey("scripts").withValue("src/main/resources/schema.sql"),
+                            Property().withKey("sort").withValue("semantic"),
+                            Property().withKey("unqualifiedSchema").withValue("none"),
+                            Property().withKey("defaultNameCase").withValue("lower"),
+                            Property().withKey("parseDialect").withValue("POSTGRES"),
+                        )
+                        inputSchema = "PUBLIC"
                         includes = ".*"
                         excludes = "flyway_schema_history"
                     }

@@ -10,8 +10,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
 class SensorDataRepositoryImpl(
@@ -22,6 +23,11 @@ class SensorDataRepositoryImpl(
     private val _devicesLatestSensorTimestamp = MutableStateFlow<Map<String, Long>>(emptyMap())
     override val devicesLatestSensorTimestamp: StateFlow<Map<String, Long>> = _devicesLatestSensorTimestamp
 
+    override suspend fun stopListeningFor(deviceUuid: String) {
+        remoteSensorDataSource.stopListening(deviceUuid)
+        _devicesLatestSensorTimestamp.update { it - deviceUuid }
+    }
+
     override suspend fun stopAllListeners() {
         remoteSensorDataSource.stopListening(deviceUuid = null)
         _devicesLatestSensorTimestamp.value = emptyMap()
@@ -29,18 +35,20 @@ class SensorDataRepositoryImpl(
     }
 
     override suspend fun listenToDeviceSensors(device: Device): Outcome<Unit, ConnectionError> {
-        return remoteSensorDataSource.listenDeviceSensors(
-            deviceUuid = device.uuid,
-            onNewSensorData = { sensorData ->
-                scope.launch {
-                    localSensorDataSource.save(sensorData)
-
-                    _devicesLatestSensorTimestamp.update { oldMap ->
-                        oldMap + (device.uuid to ZonedDateTime.now().toInstant().toEpochMilli())
+        return when (val outcome = remoteSensorDataSource.listenDeviceSensors(device.uuid)) {
+            is Outcome.Ok -> {
+                outcome.value
+                    .onEach { sensorData ->
+                        localSensorDataSource.save(sensorData)
+                        _devicesLatestSensorTimestamp.update { oldMap ->
+                            oldMap + (device.uuid to ZonedDateTime.now().toInstant().toEpochMilli())
+                        }
                     }
-                }
-            },
-        )
+                    .launchIn(scope)
+                Outcome.Ok(Unit)
+            }
+            is Outcome.Err -> outcome
+        }
     }
 
     override suspend fun getLatestSensorData(deviceUuid: String, sensorTypeUid: Long, elements: Int) =

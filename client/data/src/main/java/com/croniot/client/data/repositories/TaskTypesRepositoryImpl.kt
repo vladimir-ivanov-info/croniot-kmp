@@ -17,4 +17,11 @@ class TaskTypesRepositoryImpl : TaskTypesRepository {
         val key = deviceUuid + "_" + taskTypeUid.toString()
         return cache[key]
     }
+
+    override fun getAll(deviceUuid: String): List<TaskType> {
+        val prefix = deviceUuid + "_"
+        return cache.entries
+            .filter { it.key.startsWith(prefix) }
+            .map { it.value }
+    }
 }

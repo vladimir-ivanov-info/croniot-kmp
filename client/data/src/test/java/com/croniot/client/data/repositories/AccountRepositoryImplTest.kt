@@ -1,7 +1,7 @@
 package com.croniot.client.data.repositories
 
 import com.croniot.client.domain.models.Account
-import com.croniot.client.data.source.local.LocalDatasource
+import com.croniot.client.data.source.local.AuthLocalDatasource
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 
 class AccountRepositoryImplTest {
 
-    private val localDatasource: LocalDatasource = mockk()
+    private val authLocalDatasource: AuthLocalDatasource = mockk()
     private lateinit var repository: AccountRepositoryImpl
 
     private val account = Account(
@@ -26,21 +26,21 @@ class AccountRepositoryImplTest {
 
     @BeforeEach
     fun setUp() {
-        repository = AccountRepositoryImpl(localDatasource)
+        repository = AccountRepositoryImpl(authLocalDatasource)
     }
 
     @Test
     fun `save delegates account to local datasource`() = runTest {
-        coJustRun { localDatasource.saveCurrentAccount(any()) }
+        coJustRun { authLocalDatasource.saveCurrentAccount(any()) }
 
         repository.save(account)
 
-        coVerify(exactly = 1) { localDatasource.saveCurrentAccount(account) }
+        coVerify(exactly = 1) { authLocalDatasource.saveCurrentAccount(account) }
     }
 
     @Test
     fun `get returns account from local datasource`() = runTest {
-        coEvery { localDatasource.getCurrentAccount() } returns account
+        coEvery { authLocalDatasource.getCurrentAccount() } returns account
 
         val result = repository.get("user@example.com")
 
@@ -49,7 +49,7 @@ class AccountRepositoryImplTest {
 
     @Test
     fun `get returns null when no account stored`() = runTest {
-        coEvery { localDatasource.getCurrentAccount() } returns null
+        coEvery { authLocalDatasource.getCurrentAccount() } returns null
 
         val result = repository.get("user@example.com")
 
@@ -58,10 +58,10 @@ class AccountRepositoryImplTest {
 
     @Test
     fun `get ignores email parameter and delegates directly to datasource`() = runTest {
-        coEvery { localDatasource.getCurrentAccount() } returns account
+        coEvery { authLocalDatasource.getCurrentAccount() } returns account
 
         repository.get("some-other-email@example.com")
 
-        coVerify(exactly = 1) { localDatasource.getCurrentAccount() }
+        coVerify(exactly = 1) { authLocalDatasource.getCurrentAccount() }
     }
 }

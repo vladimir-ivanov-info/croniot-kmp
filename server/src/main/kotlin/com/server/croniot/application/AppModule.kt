@@ -1,6 +1,7 @@
 package com.server.croniot.application
 
 import Global
+import com.server.croniot.config.Secrets
 import com.server.croniot.controllers.AccountController
 import com.server.croniot.controllers.DeviceController
 import com.server.croniot.controllers.SensorTypeController
@@ -14,6 +15,8 @@ import com.server.croniot.data.db.daos.DeviceTokenDao
 import com.server.croniot.data.db.daos.DeviceTokenJooqDaoImpl
 import com.server.croniot.data.db.daos.ParameterTaskDao
 import com.server.croniot.data.db.daos.ParameterTaskDaoJooqImpl
+import com.server.croniot.data.db.daos.RefreshTokenDao
+import com.server.croniot.data.db.daos.RefreshTokenDaoImpl
 import com.server.croniot.data.db.daos.SensorTypeDao
 import com.server.croniot.data.db.daos.SensorTypeJooqDaoImpl
 import com.server.croniot.data.db.daos.TaskDao
@@ -49,6 +52,10 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideSecrets(): Secrets = Global.secrets
+
+    @Provides
+    @Singleton
     fun provideDataSource(): DataSource {
         val secrets = Global.secrets
         val config = HikariConfig().apply {
@@ -56,8 +63,8 @@ class AppModule {
             username = secrets.databaseUser
             password = secrets.databasePassword
 
-            maximumPoolSize = 8
-            minimumIdle = 2
+            maximumPoolSize = secrets.dbPoolMaxSize
+            minimumIdle = secrets.dbPoolMinIdle
             idleTimeout = 30_000
             maxLifetime = 30 * 60_000
             connectionTimeout = 10_000
@@ -106,15 +113,19 @@ class AppModule {
         taskService: TaskService,
         taskTypeService: TaskTypeService,
         deviceService: DeviceService,
-        taskRepository: TaskRepository
+        taskRepository: TaskRepository,
+        applicationScope: ApplicationScope,
     ): TaskController {
-        return TaskController(taskService, taskTypeService, deviceService, taskRepository)
+        return TaskController(taskService, taskTypeService, deviceService, taskRepository, applicationScope)
     }
 
     @Provides
     @Singleton
-    fun provideSensorsDataController(deviceService: DeviceService): SensorsDataController {
-        return SensorsDataController(deviceService)
+    fun provideSensorsDataController(
+        deviceService: DeviceService,
+        applicationScope: ApplicationScope,
+    ): SensorsDataController {
+        return SensorsDataController(deviceService, applicationScope)
     }
 
     // --- DAOs ---
@@ -150,6 +161,10 @@ class AppModule {
     @Provides @Singleton
     fun provideTaskStateInfoDao(dsl: DSLContext): TaskStateInfoDao =
         TaskStateInfoDaoJooqImpl(dsl)
+
+    @Provides @Singleton
+    fun provideRefreshTokenDao(dsl: DSLContext): RefreshTokenDao =
+        RefreshTokenDaoImpl(dsl)
 
     // --- Repositories ---
 

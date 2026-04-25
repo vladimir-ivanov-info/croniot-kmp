@@ -5,8 +5,10 @@ import croniot.messages.MessageFactory
 import io.ktor.http.ContentType
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.*
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import java.time.LocalDateTime
@@ -21,7 +23,14 @@ class RouteInitializer @Inject constructor(
     private val taskTypeController: TaskTypeController,
 ) {
     fun setupRoutes(application: Application) {
+        val prometheusRegistry = application.attributes.getOrNull(PROMETHEUS_REGISTRY_KEY)
         application.routing {
+            if (prometheusRegistry != null) {
+                get("/metrics") {
+                    call.respondText(prometheusRegistry.scrape(), ContentType.parse("text/plain; version=0.0.4"))
+                }
+            }
+
             post("/dateTime") {
                 val currentDateTime = LocalDateTime.now()
                 val hour = currentDateTime.hour
@@ -60,12 +69,26 @@ class RouteInitializer @Inject constructor(
                 call.respondText(responseJson, ContentType.Application.Json)
             }
 
-            post("/api/login") {
-                loginController.login(call)
+            rateLimit(RATE_LIMIT_AUTH) {
+                post("/api/login") {
+                    loginController.login(call)
+                }
+
+                post("/api/iot/login") {
+                    loginController.loginIot(call)
+                }
+
+                post("/api/token/refresh") {
+                    loginController.refreshToken(call)
+                }
+
+                post("/api/register_account") {
+                    accountController.registerAccount(call)
+                }
             }
 
-            post("/api/iot/login") {
-                loginController.loginIot(call)
+            post("/api/logout") {
+                loginController.logout(call)
             }
 
             get("/taskConfiguration/{deviceUuid}") {
@@ -78,10 +101,6 @@ class RouteInitializer @Inject constructor(
 
             get("/taskStateInfoHistoryCount/{deviceUuid}") {
                 taskController.getTaskStateInfoHistoryCount(call)
-            }
-
-            post("/api/register_account") {
-                accountController.registerAccount(call)
             }
 
             post("/api/register_client") {

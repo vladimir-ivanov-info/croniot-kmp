@@ -11,13 +11,15 @@ interface AccountDao {
 
     fun isExistsAccountWithEmail(email: String): Boolean
 
-    fun getAccountEagerSkipTasks(email: String, password: String): Account?
+    fun getAccountEagerSkipTasks(email: String): Account?
+
+    fun verifyPassword(email: String, plaintext: String): VerifyPasswordResult
 
     fun getAll(): List<Account>
 
     fun isAccountExists(email: String): Boolean
 
-    fun getPassword(email: String): String?
-
     fun getAccountId(email: String): Long?
+
+    fun getEmailById(accountId: Long): String?
 }

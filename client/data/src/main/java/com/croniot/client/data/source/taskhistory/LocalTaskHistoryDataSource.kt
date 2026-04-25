@@ -9,8 +9,7 @@ interface LocalTaskHistoryDataSource {
         deviceUuid: String,
         limit: Int,
         before: String? = null,
-        beforeId: Long? = null,
-        filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
+        beforeId: Long? = null
     ): List<TaskStateInfoHistoryEntry>
 
     suspend fun savePage(
@@ -21,7 +20,6 @@ interface LocalTaskHistoryDataSource {
     suspend fun count(
         deviceUuid: String,
         before: String? = null,
-        beforeId: Long? = null,
-        filter: TaskHistoryFilter = TaskHistoryFilter.NONE,
+        beforeId: Long? = null
     ): Int
 }

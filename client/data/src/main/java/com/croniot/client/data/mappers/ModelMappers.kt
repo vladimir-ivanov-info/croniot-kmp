@@ -5,6 +5,7 @@ import com.croniot.client.domain.models.TaskStateInfo
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoDto
+import croniot.models.TaskKey
 import croniot.models.dto.TaskStateInfoHistoryEntryDto
 
 fun TaskDto.toModel(): Task {
@@ -25,14 +26,19 @@ fun TaskStateInfoDto.toModel(): TaskStateInfo {
     )
 }
 
-fun TaskStateInfoHistoryEntryDto.toModel(): TaskStateInfoHistoryEntry {
+fun TaskStateInfoHistoryEntryDto.toModel(deviceUuid: String): TaskStateInfoHistoryEntry {
     return TaskStateInfoHistoryEntry(
         stateInfoId = this.stateInfoId,
-        taskUid = this.taskUid,
-        taskTypeUid = this.taskTypeUid,
-        dateTime = this.dateTime,
-        state = this.state,
-        progress = this.progress,
-        errorMessage = this.errorMessage,
+        taskKey = TaskKey(
+            deviceUuid = deviceUuid,
+            taskTypeUid = this.taskTypeUid,
+            taskUid = this.taskUid,
+        ),
+        stateInfo = TaskStateInfo(
+            dateTime = this.dateTime,
+            state = this.state,
+            progress = this.progress,
+            errorMessage = this.errorMessage,
+        ),
     )
 }

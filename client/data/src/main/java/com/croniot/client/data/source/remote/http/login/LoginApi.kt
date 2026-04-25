@@ -3,11 +3,18 @@ package com.croniot.client.data.source.remote.http.login
 import com.croniot.client.core.config.Constants
 import croniot.messages.LoginDto
 import croniot.models.LoginResultDto
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.POST
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
-interface LoginApi {
-    @POST(Constants.ENDPOINT_LOGIN)
-    suspend fun login(@Body request: LoginDto): Response<LoginResultDto>
+class LoginApi(private val http: HttpClient) {
+
+    suspend fun login(request: LoginDto): LoginResultDto =
+        http.post(Constants.ENDPOINT_LOGIN) {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }.body()
 }

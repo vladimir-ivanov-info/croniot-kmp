@@ -14,14 +14,10 @@ class DeviceJooqDaoImpl @Inject constructor(
 ) : DeviceDao {
 
     override fun getDevices(accountId: Long): List<DeviceEntity> {
-        /*return dsl
-            .selectFrom(DEVICE)
-            .where(DEVICE.ACCOUNT.eq(accountId))
-            .fetchInto(DeviceEntity::class.java)*/
-
         return dsl
             .selectFrom(DEVICE)
             .where(DEVICE.ACCOUNT.eq(accountId))
+            .and(DEVICE.UUID.notLike("android%"))
             .fetch { rec ->
                 DeviceEntity(
                     id = rec.id!!,
@@ -30,7 +26,6 @@ class DeviceJooqDaoImpl @Inject constructor(
                     description = rec.description ?: "",
                     iot = rec.iot ?: false,
                     accountId = rec.account!!,
-                    // deviceProperties = emptyMap() // o mapear si lo tienes en DB
                 )
             }
     }

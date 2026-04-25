@@ -33,11 +33,12 @@ class LogInUseCase(
 
             result = when (loginResult) {
                 is Outcome.Ok -> {
-                    val token = loginResult.value.token
+                    val accessToken = loginResult.value.tokens.accessToken
 
                     sessionRepository.save(
-                        session = AuthSession(email = email, token = token),
+                        session = AuthSession(email = email, token = accessToken),
                     )
+                    sessionRepository.saveTokens(loginResult.value.tokens)
                    // accountRepository.save(account = loginResult.value.account)
                     accountRepository.save(
                         account = loginResult.value.account.copy(
@@ -70,7 +71,6 @@ class LogInUseCase(
                             )
                         )
                     )
-                    localDataRepository.savePassword(password = password)
                     Outcome.Ok(Unit)
                 }
                 is Outcome.Err -> loginResult
