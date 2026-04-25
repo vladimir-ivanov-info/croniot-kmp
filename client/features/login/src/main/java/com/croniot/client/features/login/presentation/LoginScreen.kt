@@ -208,6 +208,13 @@ fun LoginContent(
             onAction = onAction,
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        GuestLoginButton(
+            state = state,
+            onAction = onAction,
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         RegisterButton(
@@ -241,6 +248,22 @@ fun LoginButton(
         } else {
             Text(text = "Log in")
         }
+    }
+}
+
+@Composable
+fun GuestLoginButton(
+    state: State<LoginState>,
+    onAction: (LoginIntent) -> Unit,
+) {
+    TextButton(
+        enabled = !state.value.isLoading,
+        onClick = {
+            onAction(LoginIntent.LoginAsGuest)
+        },
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(text = "Continue as Guest")
     }
 }
 

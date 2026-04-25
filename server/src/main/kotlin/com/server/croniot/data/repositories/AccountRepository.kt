@@ -4,6 +4,7 @@ import com.server.croniot.data.db.daos.AccountDao
 import com.server.croniot.data.db.daos.DeviceDao
 import com.server.croniot.data.db.daos.SensorTypeDao
 import com.server.croniot.data.db.daos.TaskTypeDao
+import com.server.croniot.data.db.daos.VerifyPasswordResult
 import com.server.croniot.data.mappers.toDomain
 import croniot.models.Account
 import croniot.models.Device
@@ -25,7 +26,7 @@ class AccountRepository @Inject constructor(
         val accountEntity = accountDao.get(email) // TODO avoid getting password in future
 
         if (accountEntity != null) {
-            val devicesEntity = deviceDao.getDevices(accountEntity.id).filter { !it.uuid.startsWith("android") } // TODO
+            val devicesEntity = deviceDao.getDevices(accountEntity.id)
 
 //
             val deviceIds = devicesEntity.map { it.id }
@@ -73,6 +74,10 @@ class AccountRepository @Inject constructor(
         return accountDao.getAccountId(email)
     }
 
+    fun getEmailById(accountId: Long): String? {
+        return accountDao.getEmailById(accountId)
+    }
+
     fun isEmailAvailable(email: String): Boolean {
         val exists = accountDao.isExistsAccountWithEmail(email)
 
@@ -88,16 +93,16 @@ class AccountRepository @Inject constructor(
         return accountDao.insert(account, password)
     }
 
-    fun getAccountEagerSkipTasks(accountEmail: String, accountPassword: String): Account? {
-        return accountDao.getAccountEagerSkipTasks(accountEmail, accountPassword)
+    fun getAccountEagerSkipTasks(accountEmail: String): Account? {
+        return accountDao.getAccountEagerSkipTasks(accountEmail)
     }
 
     fun isAccountExists(accountEmail: String): Boolean {
         return accountDao.isAccountExists(accountEmail)
     }
 
-    fun getPassword(email: String): String? {
-        return accountDao.getPassword(email)
+    fun verifyPassword(email: String, plaintext: String): VerifyPasswordResult {
+        return accountDao.verifyPassword(email, plaintext)
     }
 
     // TODO see if this function should be here or in DeviceRepository

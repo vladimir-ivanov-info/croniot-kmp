@@ -1,13 +1,9 @@
 package com.croniot.client.domain.models
 
-import java.time.ZonedDateTime
+import croniot.models.TaskKey
 
 data class TaskStateInfoHistoryEntry(
     val stateInfoId: Long,
-    val taskUid: Long,
-    val taskTypeUid: Long,
-    val dateTime: ZonedDateTime,
-    val state: String,
-    val progress: Double,
-    val errorMessage: String,
+    val taskKey: TaskKey,
+    val stateInfo: TaskStateInfo,
 )

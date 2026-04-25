@@ -120,7 +120,6 @@ dependencies {
     implementation(libs.coroutinesCore)
     implementation(libs.coroutinesAndroid)
 
-    implementation(libs.okhttpLoggingInterceptor)
     implementation(libs.accompanistPermissions)
 
     // Android-specific

@@ -38,4 +38,6 @@ include(":client:presentation")
 include(":client:features:tasktypes")
 include(":client:features:taskhistory")
 
+include(":testing:fakes")
+
 include(":baselineprofile")
