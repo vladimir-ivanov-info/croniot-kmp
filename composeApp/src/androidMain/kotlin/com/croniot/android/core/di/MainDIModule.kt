@@ -9,6 +9,7 @@ import com.croniot.client.data.repositories.LocalDataRepositoryImpl
 import com.croniot.client.data.repositories.TasksRepositoryImpl
 import com.croniot.client.data.source.local.DataStoreController
 import com.croniot.client.data.source.local.LocalDatasource
+import com.croniot.client.domain.repositories.AppSessionRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.TasksRepository
 import com.croniot.android.core.notifications.NotificationHelper
@@ -57,6 +58,9 @@ object MainDIModule {
                 logOutUseCase = get(),
                 startDeviceListenersUseCase = get(),
                 taskNotificationManager = get(),
+                appSessionRepository = get(),
+                observeKnownBleDevicesUseCase = get(),
+                forgetBleDeviceUseCase = get(),
             )
         }
 
@@ -68,7 +72,9 @@ object MainDIModule {
 
         single<TasksRepository> {
             TasksRepositoryImpl(
-                tasksDataSource = get(),
+                cloudTasksDataSource = get(),
+                bleTasksDataSource = get(named("ble")),
+                transportRouter = get(),
                 localTaskHistoryDataSource = get(),
             )
         }
@@ -87,6 +93,7 @@ object MainDIModule {
                 logInUseCase = get(),
                 logOutUseCase = get(),
                 startDeviceListenersUseCase = get(),
+                appSessionRepository = get(),
             )
         }
 

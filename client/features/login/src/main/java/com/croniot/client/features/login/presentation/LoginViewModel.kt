@@ -9,6 +9,7 @@ import com.croniot.client.domain.models.auth.AuthError
 // import com.croniot.client.domain.models.auth.Outcome
 // import com.croniot.client.data.strategy.DataSourceStrategy
 // import com.croniot.client.data.strategy.DataSourceStrategyBus
+import com.croniot.client.domain.repositories.AppSessionRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
@@ -27,6 +28,7 @@ class LoginViewModel(
     private val loginUseCase: LogInUseCase,
     private val localDataRepository: LocalDataRepository,
     private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
+    private val appSessionRepository: AppSessionRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel(), KoinComponent {
 
@@ -61,6 +63,7 @@ class LoginViewModel(
             LoginIntent.LoginAsGuest -> loginAsGuest()
             LoginIntent.GoToCreateAccountScreen -> sendEffect(LoginEffect.NavigateToRegisterAccount)
             LoginIntent.GoToConfigurationScreen -> sendEffect(LoginEffect.NavigateToConfiguration)
+            LoginIntent.GoToBleDiscovery -> sendEffect(LoginEffect.NavigateToBleDiscovery)
         }
     }
 
@@ -86,6 +89,7 @@ class LoginViewModel(
                 is Outcome.Ok -> {
                     _state.update { it.copy(isLoading = false) }
                     localDataRepository.getCurrentAccount()?.let { account ->
+                        appSessionRepository.activateServerSession(account)
                         val listenersResult = startDeviceListenersUseCase(account.devices)
                         if (listenersResult is Outcome.Err) {
                             sendEffect(LoginEffect.ConnectionErrors(listenersResult.error))
@@ -148,6 +152,7 @@ sealed interface LoginEffect {
     data object NavigateHome : LoginEffect
     data object NavigateToRegisterAccount : LoginEffect
     data object NavigateToConfiguration : LoginEffect
+    data object NavigateToBleDiscovery : LoginEffect
     data class ShowSnackbar(val title: String, val content: String) : LoginEffect
     data class ConnectionErrors(val errors: List<com.croniot.client.domain.models.ConnectionError>) : LoginEffect
 }
@@ -159,4 +164,5 @@ sealed interface LoginIntent {
     data object LoginAsGuest : LoginIntent
     data object GoToCreateAccountScreen : LoginIntent
     data object GoToConfigurationScreen : LoginIntent
+    data object GoToBleDiscovery : LoginIntent
 }

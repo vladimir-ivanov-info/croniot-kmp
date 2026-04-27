@@ -18,4 +18,6 @@ sealed interface AppRoute {
     @Serializable data class Device(val deviceUuid: String, val errorJson: String? = null) : AppRoute
 
     @Serializable data class CreateTask(val deviceUuid: String, val taskUid: Long) : AppRoute
+
+    @Serializable data object BleDiscovery : AppRoute
 }

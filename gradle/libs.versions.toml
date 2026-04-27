@@ -52,6 +52,7 @@ dagger = "2.59.2"
 h2 = "2.4.240"
 testcontainers = "1.21.4"
 datastoreCoreAndroid = "1.2.1"
+androidxSecurityCrypto = "1.1.0-alpha06"
 #junitJupiter = "5.9.0"
 
 #maps = "18.1.0"
@@ -143,6 +144,7 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", ve
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastoreCoreAndroid" }
 datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "datastoreCoreAndroid" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "androidxSecurityCrypto" }
 
 room-runtime      = { module = "androidx.room:room-runtime",      version.ref = "room" }
 room-compiler     = { module = "androidx.room:room-compiler",     version.ref = "room" }

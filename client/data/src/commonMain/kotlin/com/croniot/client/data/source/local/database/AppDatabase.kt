@@ -3,6 +3,7 @@ package com.croniot.client.data.source.local.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.croniot.client.data.source.local.database.daos.AccountDao
+import com.croniot.client.data.source.local.database.daos.BleKnownDeviceDao
 import com.croniot.client.data.source.local.database.daos.DeviceDao
 import com.croniot.client.data.source.local.database.daos.ParameterSensorDao
 import com.croniot.client.data.source.local.database.daos.ParameterTaskDao
@@ -13,6 +14,7 @@ import com.croniot.client.data.source.local.database.daos.TaskHistoryCacheDao
 import com.croniot.client.data.source.local.database.daos.TaskStateInfoDao
 import com.croniot.client.data.source.local.database.daos.TaskTypeDao
 import com.croniot.client.data.source.local.database.entities.AccountEntity
+import com.croniot.client.data.source.local.database.entities.BleKnownDeviceEntity
 import com.croniot.client.data.source.local.database.entities.DeviceEntity
 import com.croniot.client.data.source.local.database.entities.ParameterSensorEntity
 import com.croniot.client.data.source.local.database.entities.ParameterTaskEntity
@@ -35,8 +37,9 @@ import com.croniot.client.data.source.local.database.entities.TaskTypeEntity
         TaskStateInfoEntity::class,
         TaskHistoryCacheEntity::class,
         SensorDataEntity::class,
+        BleKnownDeviceEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -50,4 +53,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun taskStateInfoDao(): TaskStateInfoDao
     abstract fun taskHistoryCacheDao(): TaskHistoryCacheDao
     abstract fun sensorDataDao(): SensorDataDao
+    abstract fun bleKnownDeviceDao(): BleKnownDeviceDao
 }

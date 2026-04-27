@@ -5,11 +5,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,6 +44,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.android.app.AppError
 import com.croniot.client.domain.models.Device
+import com.croniot.client.domain.models.TransportKind
 import com.croniot.client.features.sensors.presentation.SensorsScreen
 import com.croniot.client.features.taskhistory.presentation.TaskHistoryScreen
 import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesScreen
@@ -81,7 +90,12 @@ fun DeviceScreen(
             TopAppBar(
                 title = {
                     if (state is DeviceState.Content) {
-                        Text(text = (state as DeviceState.Content).device.name)
+                        val device = (state as DeviceState.Content).device
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = device.name)
+                            Spacer(Modifier.width(8.dp))
+                            DeviceTransportBadge(transport = device.transport)
+                        }
                     }
                 },
                 navigationIcon = {
@@ -125,6 +139,31 @@ fun DeviceScreen(
                 }
             }
         },
+    )
+}
+
+@Composable
+private fun DeviceTransportBadge(transport: TransportKind) {
+    val (label, icon) = when (transport) {
+        TransportKind.CLOUD -> "Cloud" to Icons.Default.Cloud
+        TransportKind.BLE -> "BLE" to Icons.Default.Bluetooth
+    }
+    AssistChip(
+        onClick = { },
+        enabled = false,
+        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+        leadingIcon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp),
+            )
+        },
+        colors = AssistChipDefaults.assistChipColors(
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLeadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
     )
 }
 

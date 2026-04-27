@@ -46,6 +46,10 @@ interface LocalDatasource {
 
     suspend fun saveServerMode(serverMode: String)
 
+    suspend fun getAppSessionMode(): String?
+
+    suspend fun saveAppSessionMode(mode: String?)
+
     suspend fun clearAllCacheExceptDeviceUuid()
 
     suspend fun getServerIp(): Flow<String?>

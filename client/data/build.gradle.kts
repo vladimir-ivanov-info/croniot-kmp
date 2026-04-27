@@ -64,6 +64,7 @@ kotlin {
                 implementation(libs.okhttpLoggingInterceptor)
                 implementation(libs.mqtt)
                 implementation(libs.accompanistPermissions)
+                implementation(libs.androidx.security.crypto)
             }
         }
     }
