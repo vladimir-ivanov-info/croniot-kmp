@@ -3,100 +3,89 @@ package com.croniot.client.data.repositories
 import com.croniot.client.domain.models.Account
 import com.croniot.client.domain.models.Device
 import com.croniot.client.core.util.DevicePropertiesController
-import com.croniot.client.data.source.local.LocalDatasource
+import com.croniot.client.data.source.local.AppPreferencesLocalDatasource
+import com.croniot.client.data.source.local.AuthLocalDatasource
+import com.croniot.client.data.source.local.DeviceLocalDatasource
+import com.croniot.client.data.source.local.NavigationLocalDatasource
+import com.croniot.client.data.source.local.ServerConfigLocalDatasource
 import com.croniot.client.domain.repositories.LocalDataRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 class LocalDataRepositoryImpl(
-    private val localDatasource: LocalDatasource,
+    private val navigationLocalDatasource: NavigationLocalDatasource,
+    private val authLocalDatasource: AuthLocalDatasource,
+    private val deviceLocalDatasource: DeviceLocalDatasource,
+    private val appPreferencesLocalDatasource: AppPreferencesLocalDatasource,
+    private val serverConfigLocalDatasource: ServerConfigLocalDatasource,
 ) : LocalDataRepository {
 
     override suspend fun getCurrentRoute(): String? {
-        return localDatasource.getCurrentRoute()
+        return navigationLocalDatasource.getCurrentRoute()
     }
 
     override suspend fun saveCurrentRoute(route: String) {
-        return localDatasource.saveCurrentRoute(route)
-    }
-
-    override suspend fun getCurrentPassword(): String? {
-        return localDatasource.getCurrentPassword()
+        return navigationLocalDatasource.saveCurrentRoute(route)
     }
 
     override suspend fun getLocalDeviceUuid(): String? {
-        return localDatasource.getLocalDeviceUuid()
+        return deviceLocalDatasource.getLocalDeviceUuid()
     }
 
     override suspend fun getIsForegroundServiceEnabled(): Boolean {
-        return localDatasource.getIsForegroundServiceEnabled()
+        return appPreferencesLocalDatasource.getIsForegroundServiceEnabled()
     }
 
     override suspend fun saveIsForegroundServiceEnabled(foregroundServiceEnabled: Boolean) {
-        return localDatasource.saveIsForegroundServiceEnabled(foregroundServiceEnabled)
+        return appPreferencesLocalDatasource.saveIsForegroundServiceEnabled(foregroundServiceEnabled)
     }
 
     override suspend fun generateAndSaveDeviceUuidIfNotExists() {
-        localDatasource.generateAndSaveDeviceUuidIfNotExists()
+        deviceLocalDatasource.generateAndSaveDeviceUuidIfNotExists()
     }
 
     override suspend fun getCurrentScreen(): String? {
-        return localDatasource.getCurrentScreen()
+        return navigationLocalDatasource.getCurrentScreen()
     }
 
     override suspend fun saveCurrentScreen(screen: String) {
-        return localDatasource.saveCurrentScreen(screen)
+        return navigationLocalDatasource.saveCurrentScreen(screen)
     }
 
     override suspend fun getCurrentAccount(): Account? {
-        return localDatasource.getCurrentAccount()
+        return authLocalDatasource.getCurrentAccount()
     }
 
     override suspend fun getSelectedDevice(): Device? {
-        return localDatasource.getSelectedDevice()
+        return deviceLocalDatasource.getSelectedDevice()
     }
 
     override suspend fun saveSelectedDevice(device: Device) {
-        localDatasource.saveSelectedDevice(device)
+        deviceLocalDatasource.saveSelectedDevice(device)
     }
 
     override suspend fun getLocalDeviceToken(): String? {
-        return localDatasource.getLocalDeviceToken()
+        return deviceLocalDatasource.getLocalDeviceToken()
     }
 
     override suspend fun saveCurrentAccount(account: Account?) {
-        localDatasource.saveCurrentAccount(account)
+        authLocalDatasource.saveCurrentAccount(account)
     }
 
     override suspend fun saveEmail(email: String) {
-        localDatasource.saveEmail(email)
-    }
-
-    override suspend fun savePassword(password: String) {
-        localDatasource.savePassword(password) // TODO plain text, fix later
-    }
-
-    override suspend fun saveToken(token: String) {
-        localDatasource.saveToken(token)
+        authLocalDatasource.saveEmail(email)
     }
 
     override fun getDeviceProperties(): Map<String, String> {
         return DevicePropertiesController.getDeviceDetails()
     }
 
-    fun clearAccount() {
-        // TODO
-        // repositoryScope.launch {
-        //    com.croniot.client.data.source.local.DataStoreController.saveAccount(null)
-        // }
-    }
-
     override suspend fun clearAllCacheExceptDeviceUuid() {
-        localDatasource.clearAllCacheExceptDeviceUuid()
+        appPreferencesLocalDatasource.clearAllCacheExceptDeviceUuid()
     }
 
     override fun getServerMode(): Flow<String?> {
-        return localDatasource.getServerMode()
+        return serverConfigLocalDatasource.getServerMode()
     }
 
     override suspend fun getAppSessionMode(): String? {
@@ -108,10 +97,10 @@ class LocalDataRepositoryImpl(
     }
 
     /*override suspend fun getServerIp(): Flow<String?> {
-        return localDatasource.getServerIp()
+        return serverConfigLocalDatasource.getServerIp()
     }*/
 
     override suspend fun getServerIp(): String? {
-        return localDatasource.getServerIp().first()
+        return serverConfigLocalDatasource.getServerIp().first()
     }
 }

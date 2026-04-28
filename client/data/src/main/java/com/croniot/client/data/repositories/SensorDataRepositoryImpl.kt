@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import map
+import onSuccess
 import java.time.ZonedDateTime
 
 class SensorDataRepositoryImpl(
@@ -32,6 +34,11 @@ class SensorDataRepositoryImpl(
             TransportKind.CLOUD -> cloudSensorDataSource
         }
 
+    override suspend fun stopListeningFor(deviceUuid: String) {
+        dataSourceFor(deviceUuid).stopListening(deviceUuid)
+        _devicesLatestSensorTimestamp.update { it - deviceUuid }
+    }
+
     override suspend fun stopAllListeners() {
         cloudSensorDataSource.stopListening(deviceUuid = null)
         bleSensorDataSource.stopListening(deviceUuid = null)
@@ -40,18 +47,16 @@ class SensorDataRepositoryImpl(
     }
 
     override suspend fun listenToDeviceSensors(device: Device): Outcome<Unit, ConnectionError> {
-        return dataSourceFor(device.uuid).listenDeviceSensors(
-            deviceUuid = device.uuid,
-            onNewSensorData = { sensorData ->
-                scope.launch {
+        return dataSourceFor(device.uuid).listenDeviceSensors(device.uuid).onSuccess { sensorFlow ->
+            scope.launch {
+                sensorFlow.collect { sensorData ->
                     localSensorDataSource.save(sensorData)
-
                     _devicesLatestSensorTimestamp.update { oldMap ->
                         oldMap + (device.uuid to ZonedDateTime.now().toInstant().toEpochMilli())
                     }
                 }
-            },
-        )
+            }
+        }.map { Unit }
     }
 
     override suspend fun getLatestSensorData(deviceUuid: String, sensorTypeUid: Long, elements: Int) =

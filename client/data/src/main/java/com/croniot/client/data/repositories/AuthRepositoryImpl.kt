@@ -2,6 +2,7 @@ package com.croniot.client.data.repositories
 
 import Outcome
 import com.croniot.client.domain.models.auth.AuthError
+import com.croniot.client.domain.models.auth.AuthTokens
 import com.croniot.client.data.source.remote.http.login.LoginDataSource
 import com.croniot.client.data.source.remote.mappers.toDomain
 import com.croniot.client.domain.LoginResult
@@ -36,9 +37,21 @@ class AuthRepositoryImpl(
 
     private fun mapToLoginResult(body: LoginResultDto): Outcome<LoginResult, AuthError> {
         val account = body.accountDto?.toDomain()
-        val token = body.token
+        val accessToken = body.token
+        val refreshToken = body.refreshToken
+        val expiresAt = body.accessTokenExpiresAtEpochSeconds
         return when {
-            account != null && token != null -> Outcome.Ok(LoginResult(account = account, token = token))
+            account != null && accessToken != null && refreshToken != null && expiresAt != null ->
+                Outcome.Ok(
+                    LoginResult(
+                        account = account,
+                        tokens = AuthTokens(
+                            accessToken = accessToken,
+                            refreshToken = refreshToken,
+                            expiresAtEpochSeconds = expiresAt,
+                        ),
+                    ),
+                )
             !body.result.success -> Outcome.Err(AuthError.InvalidCredentials)
             account == null -> Outcome.Err(AuthError.AccountMissing)
             else -> Outcome.Err(AuthError.TokenMissing)

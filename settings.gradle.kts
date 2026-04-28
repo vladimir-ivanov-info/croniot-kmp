@@ -39,4 +39,6 @@ include(":client:features:tasktypes")
 include(":client:features:taskhistory")
 include(":client:features:blediscovery")
 
+include(":testing:fakes")
+
 include(":baselineprofile")

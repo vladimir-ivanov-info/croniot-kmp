@@ -9,4 +9,11 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.serialization.json)
     implementation(projects.shared)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.assertk)
+    testImplementation(libs.coroutines.test)
+    testImplementation(projects.testing.fakes)
 }

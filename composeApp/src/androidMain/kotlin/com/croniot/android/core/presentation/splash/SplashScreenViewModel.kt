@@ -3,10 +3,11 @@ package com.croniot.android.core.presentation.splash
 import Outcome
 import androidx.lifecycle.ViewModel
 import com.croniot.android.app.AppError
+import com.croniot.client.domain.models.auth.AuthTokens
 import com.croniot.client.domain.models.toUserMessage
 import com.croniot.client.domain.repositories.AppSessionRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
-import com.croniot.client.domain.usecases.LogInUseCase
+import com.croniot.client.domain.repositories.SessionRepository
 import com.croniot.client.domain.usecases.LogoutUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
 import com.croniot.client.presentation.viewmodel.launchInVmScope
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.SharedFlow
 
 class SplashScreenViewModel(
     private val localDataRepository: LocalDataRepository,
-    private val logInUseCase: LogInUseCase,
+    private val sessionRepository: SessionRepository,
     private val logOutUseCase: LogoutUseCase,
     private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
     private val appSessionRepository: AppSessionRepository,
@@ -26,27 +27,27 @@ class SplashScreenViewModel(
 
     fun initSplash() = launchInVmScope {
         val account = localDataRepository.getCurrentAccount()
-        val password = localDataRepository.getCurrentPassword()
+        val tokens = sessionRepository.getTokens()
 
-        if (account == null || password == null) {
+        if (account == null || tokens == null || !tokens.isAccessTokenValid()) {
             logOut()
             return@launchInVmScope
         }
 
-        when (logInUseCase(email = account.email, password = password)) {
-            is Outcome.Ok -> {
-                appSessionRepository.activateServerSession(account)
-                val appError = when (val result = startDeviceListenersUseCase(account.devices)) {
-                    is Outcome.Err -> AppError(
-                        title = "Error de conexión",
-                        message = result.error.joinToString("\n") { it.toUserMessage() },
-                    )
-                    is Outcome.Ok -> null
-                }
-                navigateOnLogin(appError)
-            }
-            else -> logOut()
+        appSessionRepository.activateServerSession(account)
+        val appError = when (val result = startDeviceListenersUseCase(account.devices)) {
+            is Outcome.Err -> AppError(
+                title = "Error de conexión",
+                message = result.error.joinToString("\n") { it.toUserMessage() },
+            )
+            is Outcome.Ok -> null
         }
+        navigateOnLogin(appError)
+    }
+
+    private fun AuthTokens.isAccessTokenValid(): Boolean {
+        val nowSeconds = System.currentTimeMillis() / 1000L
+        return expiresAtEpochSeconds > nowSeconds
     }
 
     private suspend fun navigateOnLogin(error: AppError?) {
