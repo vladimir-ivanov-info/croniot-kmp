@@ -114,7 +114,9 @@ class LoginViewModelTest {
         assertEquals(1, effects.size)
         val effect = effects.first()
         assertTrue(effect is LoginEffect.ShowSnackbar)
-        assertEquals("Credenciales inválidas.", (effect as LoginEffect.ShowSnackbar).content)
+        val snackbar = effect as LoginEffect.ShowSnackbar
+        assertEquals("Login failed", snackbar.title)
+        assertEquals("Credenciales inválidas.", snackbar.content)
         job.cancel()
     }
 
