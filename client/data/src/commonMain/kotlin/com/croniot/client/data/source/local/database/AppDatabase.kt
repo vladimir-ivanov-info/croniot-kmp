@@ -39,7 +39,7 @@ import com.croniot.client.data.source.local.database.entities.TaskTypeEntity
         SensorDataEntity::class,
         BleKnownDeviceEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {

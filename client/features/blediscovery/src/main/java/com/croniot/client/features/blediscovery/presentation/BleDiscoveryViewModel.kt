@@ -144,6 +144,7 @@ private fun BleError.toUserMessage(): String = when (this) {
     BleError.BluetoothNotSupported -> "Este dispositivo no soporta BLE."
     BleError.Timeout -> "Tiempo de espera agotado."
     BleError.AuthFailed -> "Credenciales inválidas."
+    BleError.BondingFailed -> "Error de vinculación (PIN incorrecto o rechazo)."
     BleError.RequiresPairing -> "El dispositivo requiere emparejamiento."
     is BleError.NotFound -> "Dispositivo no encontrado: $deviceUuid"
     is BleError.GattError -> "Error GATT: $status"
@@ -162,8 +163,10 @@ data class BleDiscoveryState(
 data class PairingState(
     val uuid: String,
     val displayName: String,
-    val username: String = "",
-    val password: String = "",
+    //val username: String = "",
+    //val password: String = "",
+    val username: String = "user123",
+    val password: String = "123456",
     val isSubmitting: Boolean = false,
     val error: String? = null,
 )

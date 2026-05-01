@@ -5,7 +5,6 @@ import com.croniot.client.data.source.remote.mqtt.TasksDataSource
 import com.croniot.client.domain.errors.RemoteError
 import com.croniot.client.domain.errors.TaskError
 import com.croniot.client.domain.models.Task
-import com.croniot.client.domain.models.TaskHistoryFilter
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
 import com.croniot.client.domain.models.events.TaskStateInfoEvent
 import croniot.messages.MessageAddTask
@@ -41,6 +40,11 @@ class BleTasksDataSourceImpl(
             connection.observeTaskStateInfoEvents().collect { onNewEvent(it) }
         }
         progressJobs[deviceUuid] = job
+    }
+
+    override suspend fun stopListening(deviceUuid: String) {
+        newTaskJobs.remove(deviceUuid)?.cancel()
+        progressJobs.remove(deviceUuid)?.cancel()
     }
 
     override suspend fun stopAllListeners() {
@@ -81,13 +85,13 @@ class BleTasksDataSourceImpl(
         limit: Int,
         before: String?,
         beforeId: Long?,
-        filter: TaskHistoryFilter,
+        taskTypeUid: Long?,
     ): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> = Outcome.Ok(emptyList())
 
     override suspend fun fetchTaskStateInfoHistoryCount(
         deviceUuid: String,
         before: String?,
         beforeId: Long?,
-        filter: TaskHistoryFilter,
+        taskTypeUid: Long?,
     ): Outcome<Int, TaskError> = Outcome.Ok(0)
 }

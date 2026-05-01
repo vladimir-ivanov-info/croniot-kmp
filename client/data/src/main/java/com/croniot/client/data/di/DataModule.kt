@@ -28,8 +28,6 @@ import com.croniot.client.data.source.remote.ble.BlePermissionsHelperImpl
 import com.croniot.client.data.source.remote.ble.BleScanner
 import com.croniot.client.data.source.remote.ble.BleScannerImpl
 import com.croniot.client.data.source.remote.ble.BleTasksDataSourceImpl
-import com.croniot.client.data.source.remote.http.NetworkUtil
-import com.croniot.client.data.source.remote.http.NetworkUtilImpl
 import com.croniot.client.data.source.remote.http.login.LoginDataSource
 import com.croniot.client.data.source.remote.http.login.LoginDataSourceImpl
 import com.croniot.client.data.source.remote.mqtt.TasksDataSource
@@ -64,6 +62,13 @@ private val MIGRATION_2_3 = object : Migration(2, 3) {
             "CREATE INDEX IF NOT EXISTS `index_task_history_cache_deviceUuid_taskTypeUid_timeStampMillis` " +
                 "ON `task_history_cache` (`deviceUuid`, `taskTypeUid`, `timeStampMillis`)"
         )
+    }
+}
+
+private val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE `ble_known_devices` ADD COLUMN `schemaVersion` INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE `ble_known_devices` ADD CO      LUMN `schemaJson` TEXT DEFAULT NULL")
     }
 }
 
@@ -118,7 +123,7 @@ val dataModule = module {
             context = androidContext(),
             klass = AppDatabase::class.java,
             name = "croniot.db",
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
     }
 
     single { get<AppDatabase>().sensorDataDao() }

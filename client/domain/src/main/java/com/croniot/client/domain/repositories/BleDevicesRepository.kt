@@ -21,6 +21,8 @@ interface BleDevicesRepository {
 
     suspend fun connect(deviceUuid: String): Outcome<Device, BleError>
 
+    suspend fun getDevice(deviceUuid: String): Device?
+
     suspend fun forget(deviceUuid: String)
 
     suspend fun disconnectAll()

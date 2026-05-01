@@ -25,6 +25,9 @@ interface BleKnownDeviceDao {
     @Query("UPDATE ble_known_devices SET lastSeenAtMillis = :timestampMillis WHERE uuid = :uuid")
     suspend fun touchLastSeen(uuid: String, timestampMillis: Long)
 
+    @Query("UPDATE ble_known_devices SET schemaVersion = :version, schemaJson = :json WHERE uuid = :uuid")
+    suspend fun updateSchema(uuid: String, version: Long, json: String)
+
     @Query("DELETE FROM ble_known_devices WHERE uuid = :uuid")
     suspend fun delete(uuid: String)
 }

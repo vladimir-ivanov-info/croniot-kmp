@@ -6,6 +6,9 @@ import com.croniot.client.domain.models.ConnectionError
 import com.croniot.client.domain.models.SensorData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
@@ -18,17 +21,21 @@ class BleSensorDataSourceImpl(
 
     override suspend fun listenDeviceSensors(
         deviceUuid: String,
-        onNewSensorData: (sensorData: SensorData) -> Unit,
-    ): Outcome<Unit, ConnectionError> {
+    ): Outcome<Flow<SensorData>, ConnectionError> {
         val connection = connectionPool.get(deviceUuid)
             ?: return Outcome.Err(ConnectionError.Unknown)
 
-        collectorJobs.remove(deviceUuid)?.cancel()
+        val sensorDataFlow = MutableSharedFlow<SensorData>(extraBufferCapacity = 64)
+        
+        collectorJobs[deviceUuid]?.cancel()
         val job = appScope.launch {
-            connection.observeSensorData().collect { onNewSensorData(it) }
+            connection.observeSensorData().collect {
+                sensorDataFlow.tryEmit(it)
+            }
         }
         collectorJobs[deviceUuid] = job
-        return Outcome.Ok(Unit)
+
+        return Outcome.Ok(sensorDataFlow.asSharedFlow())
     }
 
     override suspend fun stopListening(deviceUuid: String?) {

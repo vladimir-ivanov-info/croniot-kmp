@@ -89,6 +89,7 @@ object MainDIModule {
                 localDataRepository = get(),
                 fetchTasksUseCase = get(),
                 startDeviceListenersUseCase = get(),
+                getDeviceUseCase = get(),
             )
         }
 

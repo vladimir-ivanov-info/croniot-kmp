@@ -1,6 +1,7 @@
 package com.croniot.client.domain.di
 
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
+import com.croniot.client.domain.usecases.GetDeviceUseCase
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryCountUseCase
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.LogInUseCase
@@ -64,6 +65,8 @@ val domainDiModule = module {
             taskTypesRepository = get(),
         )
     }
+
+    factory { GetDeviceUseCase(appSessionRepository = get(), bleDevicesRepository = get()) }
 
     factory { ScanBleDevicesUseCase(bleDevicesRepository = get()) }
     factory { ObserveKnownBleDevicesUseCase(bleDevicesRepository = get()) }

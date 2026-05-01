@@ -22,10 +22,17 @@ interface BleConnection {
     fun observeNewTasks(): Flow<Task>
     fun observeTaskStateInfoEvents(): Flow<TaskStateInfoEvent>
 
+    suspend fun syncSchema(cachedSchemaVersion: Long?): Outcome<BleSyncResult, BleError>
+
     suspend fun sendNewTask(message: MessageAddTask): Outcome<Unit, BleError>
     suspend fun requestTaskStateInfoSync(taskTypeUid: Long): Outcome<Unit, BleError>
 
     fun close()
+}
+
+sealed interface BleSyncResult {
+    data object UpToDate : BleSyncResult
+    data class Updated(val schemaVersion: Long, val schemaJson: String) : BleSyncResult
 }
 
 enum class BleConnectionState {

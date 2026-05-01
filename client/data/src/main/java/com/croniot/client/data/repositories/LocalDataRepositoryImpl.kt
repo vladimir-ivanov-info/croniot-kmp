@@ -89,11 +89,11 @@ class LocalDataRepositoryImpl(
     }
 
     override suspend fun getAppSessionMode(): String? {
-        return localDatasource.getAppSessionMode()
+        return appPreferencesLocalDatasource.getAppSessionMode()
     }
 
     override suspend fun saveAppSessionMode(mode: String?) {
-        localDatasource.saveAppSessionMode(mode)
+        appPreferencesLocalDatasource.saveAppSessionMode(mode)
     }
 
     /*override suspend fun getServerIp(): Flow<String?> {
