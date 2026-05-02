@@ -90,6 +90,7 @@ object MainDIModule {
                 fetchTasksUseCase = get(),
                 startDeviceListenersUseCase = get(),
                 getDeviceUseCase = get(),
+                observeBleRssiUseCase = get(),
             )
         }
 

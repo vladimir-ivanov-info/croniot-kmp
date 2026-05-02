@@ -25,6 +25,7 @@ class BleGattCallbackBridge : BluetoothGattCallback() {
     val characteristicReads: Channel<ReadAck> = Channel(capacity = Channel.UNLIMITED)
     val descriptorWrites: Channel<DescriptorAck> = Channel(capacity = Channel.UNLIMITED)
     val characteristicWrites: Channel<WriteAck> = Channel(capacity = Channel.UNLIMITED)
+    val rssiReads: Channel<Int> = Channel(capacity = Channel.UNLIMITED)
     // Channel instead of SharedFlow: buffers the NOTIFY even before the consumer is
     // registered, avoiding the race where the ESP32 responds faster than coroutine setup.
     val authNotification: Channel<String> = Channel(capacity = Channel.UNLIMITED)
@@ -95,7 +96,6 @@ class BleGattCallbackBridge : BluetoothGattCallback() {
             return
         }
         if (characteristic.uuid == BleProfile.CHARACTERISTIC_SYNC_DATA) {
-            // Binary protocol: [seq: uint8][total: uint8][data: bytes...]
             if (value.size >= 2) {
                 syncDataChunks.trySend(
                     SyncDataChunk(
@@ -112,12 +112,19 @@ class BleGattCallbackBridge : BluetoothGattCallback() {
         _notifications.tryEmit(NotificationEvent(characteristicUuid = characteristic.uuid, payload = payload))
     }
 
+    override fun onReadRemoteRssi(gatt: BluetoothGatt, rssi: Int, status: Int) {
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+            rssiReads.trySend(rssi)
+        }
+    }
+
     fun close() {
         servicesDiscovered.close()
         mtuChanged.close()
         characteristicReads.close()
         descriptorWrites.close()
         characteristicWrites.close()
+        rssiReads.close()
         authNotification.close()
         syncDataChunks.close()
     }

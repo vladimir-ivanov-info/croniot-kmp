@@ -13,6 +13,8 @@ interface BleDevicesRepository {
 
     fun observeKnownDevices(): Flow<List<KnownBleDevice>>
 
+    fun observeRssi(deviceUuid: String): Flow<Int?>
+
     suspend fun pair(
         deviceUuid: String,
         username: String,

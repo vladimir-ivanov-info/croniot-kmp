@@ -21,6 +21,7 @@ interface BleConnection {
     fun observeSensorData(): Flow<SensorData>
     fun observeNewTasks(): Flow<Task>
     fun observeTaskStateInfoEvents(): Flow<TaskStateInfoEvent>
+    fun observeRssi(): Flow<Int>
 
     suspend fun syncSchema(cachedSchemaVersion: Long?): Outcome<BleSyncResult, BleError>
 

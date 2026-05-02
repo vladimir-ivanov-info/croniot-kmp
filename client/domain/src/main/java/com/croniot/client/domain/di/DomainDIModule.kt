@@ -18,6 +18,7 @@ import com.croniot.client.domain.usecases.ble.ActivateBleOnlyModeUseCase
 import com.croniot.client.domain.usecases.ble.ConnectBleDeviceUseCase
 import com.croniot.client.domain.usecases.ble.ExitBleOnlyModeUseCase
 import com.croniot.client.domain.usecases.ble.ForgetBleDeviceUseCase
+import com.croniot.client.domain.usecases.ble.ObserveBleRssiUseCase
 import com.croniot.client.domain.usecases.ble.ObserveKnownBleDevicesUseCase
 import com.croniot.client.domain.usecases.ble.PairBleDeviceUseCase
 import com.croniot.client.domain.usecases.ble.ScanBleDevicesUseCase
@@ -73,6 +74,7 @@ val domainDiModule = module {
     factory { PairBleDeviceUseCase(bleDevicesRepository = get()) }
     factory { ConnectBleDeviceUseCase(bleDevicesRepository = get()) }
     factory { ForgetBleDeviceUseCase(bleDevicesRepository = get()) }
+    factory { ObserveBleRssiUseCase(bleDevicesRepository = get()) }
 
     factory {
         ActivateBleOnlyModeUseCase(

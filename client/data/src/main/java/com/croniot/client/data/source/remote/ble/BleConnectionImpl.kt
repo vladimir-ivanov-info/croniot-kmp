@@ -26,11 +26,14 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
@@ -277,6 +280,18 @@ class BleConnectionImpl(
                 Log.w("BleConnection", "TaskStateInfo parse failed: ${it.message} | payload=${event.payload}")
             }.getOrNull()
         }
+
+    override fun observeRssi(): Flow<Int> = callbackFlow {
+        while (true) {
+            val gattInstance = gatt ?: break
+            if (!gattInstance.readRemoteRssi()) break
+            val rssi = withTimeoutOrNull(5000) { bridge.rssiReads.receive() }
+                ?: break
+            trySend(rssi)
+            delay(2000)
+        }
+        awaitClose {}
+    }
 
     override suspend fun sendNewTask(message: MessageAddTask): Outcome<Unit, BleError> =
         writeToChar(

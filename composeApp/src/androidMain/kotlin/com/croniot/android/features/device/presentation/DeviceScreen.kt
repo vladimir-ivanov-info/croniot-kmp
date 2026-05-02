@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -90,11 +91,14 @@ fun DeviceScreen(
             TopAppBar(
                 title = {
                     if (state is DeviceState.Content) {
-                        val device = (state as DeviceState.Content).device
+                        val content = state as DeviceState.Content
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = device.name)
+                            Text(text = content.device.name)
                             Spacer(Modifier.width(8.dp))
-                            DeviceTransportBadge(transport = device.transport)
+                            DeviceTransportBadge(
+                                transport = content.device.transport,
+                                rssi = content.rssi,
+                            )
                         }
                     }
                 },
@@ -143,28 +147,61 @@ fun DeviceScreen(
 }
 
 @Composable
-private fun DeviceTransportBadge(transport: TransportKind) {
+private fun DeviceTransportBadge(transport: TransportKind, rssi: Int? = null) {
     val (label, icon) = when (transport) {
         TransportKind.CLOUD -> "Cloud" to Icons.Default.Cloud
         TransportKind.BLE -> "BLE" to Icons.Default.Bluetooth
     }
-    AssistChip(
-        onClick = { },
-        enabled = false,
-        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
-        leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-            )
-        },
-        colors = AssistChipDefaults.assistChipColors(
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledLeadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-    )
+
+    if (transport == TransportKind.BLE && rssi != null) {
+        val rssiColor = rssiQualityColor(rssi)
+        val rssiLabel = "BLE ${rssi} dBm"
+
+        AssistChip(
+            onClick = { },
+            enabled = false,
+            label = { Text(rssiLabel, style = MaterialTheme.typography.labelSmall) },
+            leadingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = rssiColor,
+                )
+            },
+            colors = AssistChipDefaults.assistChipColors(
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledLabelColor = rssiColor,
+                disabledLeadingIconContentColor = rssiColor,
+            ),
+        )
+    } else {
+        AssistChip(
+            onClick = { },
+            enabled = false,
+            label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+            leadingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                )
+            },
+            colors = AssistChipDefaults.assistChipColors(
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLeadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+        )
+    }
+}
+
+private fun rssiQualityColor(rssi: Int): Color = when {
+    rssi >= -60 -> Color(0xFF4CAF50)
+    rssi >= -70 -> Color(0xFF8BC34A)
+    rssi >= -80 -> Color(0xFFFFC107)
+    rssi >= -90 -> Color(0xFFFF9800)
+    else -> Color(0xFFF44336)
 }
 
 @Composable

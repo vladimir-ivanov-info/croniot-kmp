@@ -31,10 +31,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.delay
 
 @SuppressLint("MissingPermission")
 class BleDevicesRepositoryImpl(
@@ -85,6 +87,16 @@ class BleDevicesRepositoryImpl(
                 lastSeenAtMillis = entity.lastSeenAtMillis,
                 isInRange = entity.uuid in nearbyMacs,
             )
+        }
+    }
+
+    override fun observeRssi(deviceUuid: String): Flow<Int?> = flow {
+        while (true) {
+            val connection = connectionPool.get(deviceUuid)
+            if (connection != null) {
+                connection.observeRssi().collect { rssi -> emit(rssi) }
+            }
+            delay(5000)
         }
     }
 
