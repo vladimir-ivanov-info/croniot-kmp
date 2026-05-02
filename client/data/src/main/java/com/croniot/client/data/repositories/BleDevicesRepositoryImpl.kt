@@ -47,12 +47,12 @@ class BleDevicesRepositoryImpl(
     appScope: CoroutineScope,
 ) : BleDevicesRepository {
 
-    // Caché transitoria UUID → ScanResult: necesaria para resolver MAC en pair() sin volver a scanear.
-    private val recentScanByUuid = MutableStateFlow<Map<String, BleScanResult>>(emptyMap())
+    // Caché transitoria MAC → ScanResult: necesaria para recuperar el ScanResult en pair() sin volver a escanear.
+    private val recentScanByMac = MutableStateFlow<Map<String, BleScanResult>>(emptyMap())
 
     private val sharedScan = scanner.scan()
         .onEach { results ->
-            recentScanByUuid.value = results.associateBy { it.deviceUuid }
+            recentScanByMac.value = results.associateBy { it.macAddress }
         }
         .shareIn(
             scope = appScope,
@@ -65,10 +65,10 @@ class BleDevicesRepositoryImpl(
             val pairedUuids = bleKnownDeviceDao.getAllUuids().toSet()
             results.map { sr ->
                 DiscoveredBleDevice(
-                    uuid = sr.deviceUuid,
-                    displayName = sr.advertisedName ?: sr.deviceUuid,
+                    uuid = sr.macAddress,
+                    displayName = sr.advertisedName ?: sr.macAddress,
                     rssi = sr.rssi,
-                    isPaired = sr.deviceUuid in pairedUuids,
+                    isPaired = sr.macAddress in pairedUuids,
                 )
             }
         }
@@ -77,13 +77,13 @@ class BleDevicesRepositoryImpl(
         bleKnownDeviceDao.observeAll(),
         sharedScan.onStart { emit(emptyList()) },
     ) { entities, scanned ->
-        val nearbyUuids = scanned.map { it.deviceUuid }.toSet()
+        val nearbyMacs = scanned.map { it.macAddress }.toSet()
         entities.map { entity ->
             KnownBleDevice(
                 uuid = entity.uuid,
                 displayName = entity.displayName,
                 lastSeenAtMillis = entity.lastSeenAtMillis,
-                isInRange = entity.uuid in nearbyUuids,
+                isInRange = entity.uuid in nearbyMacs,
             )
         }
     }
@@ -93,7 +93,7 @@ class BleDevicesRepositoryImpl(
         username: String,
         password: String,
     ): Outcome<Device, BleError> {
-        val scanResult = recentScanByUuid.value[deviceUuid]
+        val scanResult = recentScanByMac.value[deviceUuid]
             ?: return Outcome.Err(BleError.NotFound(deviceUuid))
         val adapter = adapterOrNull() ?: return Outcome.Err(BleError.BluetoothOff)
         val btDevice = adapter.getRemoteDevice(scanResult.macAddress)

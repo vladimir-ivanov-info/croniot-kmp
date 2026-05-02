@@ -83,10 +83,13 @@ class BleDiscoveryViewModel(
     }
 
     private fun observeDeviceLists() = launchInVmScope {
-        combine(nearbyFlow, knownFlow) { nearby, known -> nearby to known }
-            .collect { (nearby, known) ->
-                _state.update { it.copy(nearby = nearby, known = known) }
-            }
+        combine(nearbyFlow, knownFlow) { nearby, known ->
+            val knownUuids = known.map { it.uuid }.toSet()
+            val newNearby = nearby.filter { it.uuid !in knownUuids }
+            newNearby to known
+        }.collect { (nearby, known) ->
+            _state.update { it.copy(nearby = nearby, known = known) }
+        }
     }
 
     private fun showPairDialog(uuid: String, displayName: String) {
