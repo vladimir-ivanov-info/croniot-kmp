@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.croniot.client.domain.models.TaskStateInfo
 import com.croniot.client.domain.models.TaskType
 import com.croniot.client.domain.errors.TaskError
-import com.croniot.client.domain.repositories.LocalDataRepository
+import com.croniot.client.domain.usecases.GetDeviceUseCase
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.ObserveTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.SendNewTaskUseCase
@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 class CreateTaskViewModel(
-    private val localDataRepository: LocalDataRepository,
+    private val getDeviceUseCase: GetDeviceUseCase,
     private val sendNewTaskUseCase: SendNewTaskUseCase,
     private val observeTaskStateInfoUseCase: ObserveTaskStateInfoUseCase,
     private val getLatestTaskStateInfoUseCase: GetLatestTaskStateInfoUseCase,
@@ -49,19 +49,9 @@ class CreateTaskViewModel(
     fun initialize(_deviceUuid: String, _taskTypeUid: Long) {
         if (deviceUuid != null) return
         viewModelScope.launch {
-            val account = localDataRepository.getCurrentAccount()
-
-            if (account != null) {
-                val device = account.devices.find { it.uuid == _deviceUuid }
-                if (device != null) {
-                    deviceUuid = device.uuid
-
-                    val taskType = device.taskTypes.find { it.uid == _taskTypeUid }
-                    if (taskType != null) {
-                        _taskType.value = taskType
-                    }
-                }
-            }
+            val device = getDeviceUseCase(_deviceUuid) ?: return@launch
+            deviceUuid = device.uuid
+            _taskType.value = device.taskTypes.find { it.uid == _taskTypeUid }
         }
     }
 

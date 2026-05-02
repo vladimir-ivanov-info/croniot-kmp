@@ -33,6 +33,7 @@ class DataStoreController(
         val KEY_DEVICE_TOKEN = stringPreferencesKey("device_token")
         val KEY_DEVICE_UUID = stringPreferencesKey("device_uuid")
         val KEY_SERVER_MODE = stringPreferencesKey("server_mode")
+        val KEY_APP_SESSION_MODE = stringPreferencesKey("app_session_mode")
         val KEY_CURRENT_SCREEN = stringPreferencesKey("current_screen")
         val KEY_CURRENT_ROUTE = stringPreferencesKey("current_route")
     }
@@ -182,5 +183,19 @@ class DataStoreController(
 
     override suspend fun saveServerMode(serverMode: String) {
         saveData(KEY_SERVER_MODE, serverMode)
+    }
+
+    override suspend fun getAppSessionMode(): String? {
+        return loadData(KEY_APP_SESSION_MODE).firstOrNull()
+    }
+
+    override suspend fun saveAppSessionMode(mode: String?) {
+        if (mode == null) {
+            dataStore.edit { preferences ->
+                preferences.remove(KEY_APP_SESSION_MODE)
+            }
+        } else {
+            saveData(KEY_APP_SESSION_MODE, mode)
+        }
     }
 }

@@ -57,4 +57,6 @@ class FakeLocalDataRepository(
 
     override fun getServerMode(): Flow<String?> = serverMode
     override suspend fun getServerIp(): String? = serverIp
+    override suspend fun getAppSessionMode(): String? = null
+    override suspend fun saveAppSessionMode(mode: String?) {}
 }

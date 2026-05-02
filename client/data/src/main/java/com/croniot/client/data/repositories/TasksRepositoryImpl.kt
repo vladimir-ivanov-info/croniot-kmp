@@ -1,13 +1,15 @@
 package com.croniot.client.data.repositories
 
 import Outcome
+import com.croniot.client.data.source.remote.mqtt.TasksDataSource
+import com.croniot.client.data.source.taskhistory.LocalTaskHistoryDataSource
+import com.croniot.client.data.source.transport.TransportRouter
+import com.croniot.client.domain.errors.TaskError
 import com.croniot.client.domain.models.Task
 import com.croniot.client.domain.models.TaskStateInfo
 import com.croniot.client.domain.models.TaskStateInfoHistoryEntry
+import com.croniot.client.domain.models.TransportKind
 import com.croniot.client.domain.models.events.TaskStateInfoEvent
-import com.croniot.client.data.source.remote.mqtt.TasksDataSource
-import com.croniot.client.data.source.taskhistory.LocalTaskHistoryDataSource
-import com.croniot.client.domain.errors.TaskError
 import com.croniot.client.domain.repositories.TasksRepository
 import croniot.messages.MessageAddTask
 import croniot.models.TaskKey
@@ -20,13 +22,21 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 class TasksRepositoryImpl(
-    private val tasksDataSource: TasksDataSource,
+    private val cloudTasksDataSource: TasksDataSource,
+    private val bleTasksDataSource: TasksDataSource,
+    private val transportRouter: TransportRouter,
     private val localTaskHistoryDataSource: LocalTaskHistoryDataSource,
 ) : TasksRepository {
     //TODO Pager3
     private val tasksByDevice = ConcurrentHashMap<String, CopyOnWriteArrayList<Task>>()
 
     private val newTaskFlowByDevice = ConcurrentHashMap<String, MutableSharedFlow<Task>>()
+
+    private fun dataSourceFor(deviceUuid: String): TasksDataSource =
+        when (transportRouter.transportFor(deviceUuid)) {
+            TransportKind.BLE -> bleTasksDataSource
+            TransportKind.CLOUD -> cloudTasksDataSource
+        }
 
     private fun taskFlowFor(deviceUuid: String): MutableSharedFlow<Task> {
         return newTaskFlowByDevice.getOrPut(deviceUuid) {
@@ -55,7 +65,7 @@ class TasksRepositoryImpl(
         val cachedTaskList = tasksByDevice[deviceUuid]
         if (!cachedTaskList.isNullOrEmpty()) return Outcome.Ok(cachedTaskList.toList())
 
-        return tasksDataSource.fetchTasks(deviceUuid)
+        return dataSourceFor(deviceUuid).fetchTasks(deviceUuid)
             .onSuccess { fetchedTasks ->
                 fetchedTasks.forEach { task ->
                     task.initialTaskStateInfo?.let { initialState ->
@@ -70,7 +80,7 @@ class TasksRepositoryImpl(
 
     override suspend fun listenTasks(deviceUuid: String) {
         val taskFlow = taskFlowFor(deviceUuid)
-        tasksDataSource.listenTasks(deviceUuid) { task ->
+        dataSourceFor(deviceUuid).listenTasks(deviceUuid) { task ->
             tasksByDevice.getOrPut(deviceUuid) { CopyOnWriteArrayList() }.add(task)
             taskFlow.tryEmit(task)
 
@@ -88,14 +98,14 @@ class TasksRepositoryImpl(
 
     override suspend fun listenTaskStateInfos(deviceUuid: String) {
         val shared = taskStateInfoFlowFor(deviceUuid)
-        tasksDataSource.listenTaskStateInfos(deviceUuid) { event ->
+        dataSourceFor(deviceUuid).listenTaskStateInfos(deviceUuid) { event ->
             latestStateByTaskKey[event.key] = event.info
             shared.tryEmit(event)
         }
     }
 
     override suspend fun stopListeningFor(deviceUuid: String) {
-        tasksDataSource.stopListening(deviceUuid)
+        dataSourceFor(deviceUuid).stopListening(deviceUuid)
         newTaskFlowByDevice.remove(deviceUuid)
         taskStateInfoFlowByDevice.remove(deviceUuid)
         tasksByDevice.remove(deviceUuid)
@@ -105,7 +115,8 @@ class TasksRepositoryImpl(
     }
 
     override suspend fun stopAllListeners() {
-        tasksDataSource.stopAllListeners()
+        cloudTasksDataSource.stopAllListeners()
+        bleTasksDataSource.stopAllListeners()
         newTaskFlowByDevice.clear()
         taskStateInfoFlowByDevice.clear()
         tasksByDevice.clear()
@@ -145,7 +156,7 @@ class TasksRepositoryImpl(
             newTask.parametersValues
         )
         taskFlowFor(newTask.deviceUuid).tryEmit(newTask) // TODO add TaskStateInfo como "SENT_TO_SERVER"
-        return tasksDataSource.sendNewTask(messageAddTask)
+        return dataSourceFor(newTask.deviceUuid).sendNewTask(messageAddTask)
     }
 
     override suspend fun addTask(task: Task) {
@@ -156,7 +167,7 @@ class TasksRepositoryImpl(
     }
 
     override suspend fun requestTaskStateInfoSync(deviceUuid: String, taskTypeUid: Long): Outcome<Unit, TaskError> =
-        tasksDataSource.requestTaskStateInfoSync(deviceUuid, taskTypeUid)
+        dataSourceFor(deviceUuid).requestTaskStateInfoSync(deviceUuid, taskTypeUid)
 
     override suspend fun fetchTaskStateInfoHistory(
         deviceUuid: String,
@@ -167,7 +178,7 @@ class TasksRepositoryImpl(
     ): Outcome<List<TaskStateInfoHistoryEntry>, TaskError> {
         // When a filter is active, skip local cache (it stores unfiltered data) and go directly to the server.
         if (taskTypeUid != null) {
-            return tasksDataSource.fetchTaskStateInfoHistory(deviceUuid, limit, before, beforeId, taskTypeUid)
+            return dataSourceFor(deviceUuid).fetchTaskStateInfoHistory(deviceUuid, limit, before, beforeId, taskTypeUid)
         }
 
         val localPage = localTaskHistoryDataSource.getPage(
@@ -179,7 +190,9 @@ class TasksRepositoryImpl(
         if (localPage.size >= limit) return Outcome.Ok(localPage)
 
         val remoteBeforeId = beforeId?.takeIf { it > 0L }
-        return when (val remoteResult = tasksDataSource.fetchTaskStateInfoHistory(deviceUuid, limit, before, remoteBeforeId)) {
+        val remoteResult = dataSourceFor(deviceUuid)
+            .fetchTaskStateInfoHistory(deviceUuid, limit, before, remoteBeforeId, taskTypeUid)
+        return when (remoteResult) {
             is Outcome.Ok -> {
                 if (remoteResult.value.isNotEmpty()) {
                     localTaskHistoryDataSource.savePage(deviceUuid, remoteResult.value)
@@ -206,7 +219,7 @@ class TasksRepositoryImpl(
         taskTypeUid: Long?,
     ): Outcome<Int, TaskError> {
         if (taskTypeUid != null) {
-            return tasksDataSource.fetchTaskStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUid)
+            return dataSourceFor(deviceUuid).fetchTaskStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUid)
         }
 
         val localCount = localTaskHistoryDataSource.count(
@@ -216,7 +229,9 @@ class TasksRepositoryImpl(
         )
 
         val remoteBeforeId = beforeId?.takeIf { it > 0L }
-        return when (val remoteResult = tasksDataSource.fetchTaskStateInfoHistoryCount(deviceUuid, before, remoteBeforeId)) {
+        val remoteResult = dataSourceFor(deviceUuid)
+            .fetchTaskStateInfoHistoryCount(deviceUuid, before, remoteBeforeId, taskTypeUid)
+        return when (remoteResult) {
             is Outcome.Ok -> Outcome.Ok(maxOf(localCount, remoteResult.value))
             is Outcome.Err -> if (localCount > 0) Outcome.Ok(localCount) else Outcome.Err(remoteResult.error)
         }

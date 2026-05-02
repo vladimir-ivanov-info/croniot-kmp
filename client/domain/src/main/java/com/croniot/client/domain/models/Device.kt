@@ -9,4 +9,5 @@ data class Device(
     val description: String,
     val sensorTypes: List<SensorType> = emptyList(),
     val taskTypes: List<TaskType> = emptyList(),
+    val transport: TransportKind = TransportKind.CLOUD,
 )

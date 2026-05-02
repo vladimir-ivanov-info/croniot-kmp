@@ -14,6 +14,7 @@ import com.croniot.android.features.configuration.ConfigurationScreen
 import com.croniot.android.features.device.presentation.DeviceScreen
 import com.croniot.android.features.devicelist.DeviceListScreen
 import com.croniot.android.features.registeraccount.presentation.ScreenRegisterAccount
+import com.croniot.client.features.blediscovery.presentation.BleDiscoveryScreen
 import com.croniot.client.features.login.presentation.LoginScreen
 import com.croniot.client.features.tasktypes.presentation.create_task.CreateTaskScreen
 import org.koin.androidx.compose.koinViewModel
@@ -80,6 +81,24 @@ fun CurrentScreen(viewModel: AppViewModel = koinViewModel()) {
                         popUpTo<AppRoute.Login> { inclusive = true }
                     }
                 },
+                onNavigateToBleDiscovery = {
+                    navController.navigate(AppRoute.BleDiscovery)
+                },
+            )
+        }
+
+        composable<AppRoute.BleDiscovery> {
+            BleDiscoveryScreen(
+                onNavigateBack = {
+                    if (!navController.popBackStack()) {
+                        navController.navigate(AppRoute.Login)
+                    }
+                },
+                onNavigateToDevice = { deviceUuid ->
+                    navController.navigate(AppRoute.Device(deviceUuid)) {
+                        popUpTo<AppRoute.Login> { inclusive = true }
+                    }
+                },
             )
         }
 
@@ -116,6 +135,9 @@ fun CurrentScreen(viewModel: AppViewModel = koinViewModel()) {
                 },
                 onDeviceClicked = { deviceUuid ->
                     navController.navigate(AppRoute.Device(deviceUuid))
+                },
+                onNavigateToBleDiscovery = {
+                    navController.navigate(AppRoute.BleDiscovery)
                 },
             )
         }

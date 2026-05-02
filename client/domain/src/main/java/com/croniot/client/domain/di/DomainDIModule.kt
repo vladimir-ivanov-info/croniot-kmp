@@ -1,6 +1,7 @@
 package com.croniot.client.domain.di
 
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
+import com.croniot.client.domain.usecases.GetDeviceUseCase
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryCountUseCase
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.LogInUseCase
@@ -13,6 +14,14 @@ import com.croniot.client.domain.usecases.SendNewTaskUseCase
 import com.croniot.client.domain.usecases.SendNewTaskUseCaseImpl
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
 import com.croniot.client.domain.usecases.StopDeviceListenersUseCase
+import com.croniot.client.domain.usecases.ble.ActivateBleOnlyModeUseCase
+import com.croniot.client.domain.usecases.ble.ConnectBleDeviceUseCase
+import com.croniot.client.domain.usecases.ble.ExitBleOnlyModeUseCase
+import com.croniot.client.domain.usecases.ble.ForgetBleDeviceUseCase
+import com.croniot.client.domain.usecases.ble.ObserveBleRssiUseCase
+import com.croniot.client.domain.usecases.ble.ObserveKnownBleDevicesUseCase
+import com.croniot.client.domain.usecases.ble.PairBleDeviceUseCase
+import com.croniot.client.domain.usecases.ble.ScanBleDevicesUseCase
 import org.koin.dsl.module
 
 val domainDiModule = module {
@@ -28,6 +37,7 @@ val domainDiModule = module {
         LogoutUseCase(
             sessionRepository = get(),
             stopDeviceListenersUseCase = get(),
+            appSessionRepository = get(),
         )
     }
 
@@ -54,6 +64,29 @@ val domainDiModule = module {
             sensorDataRepository = get(),
             tasksRepository = get(),
             taskTypesRepository = get(),
+        )
+    }
+
+    factory { GetDeviceUseCase(appSessionRepository = get(), bleDevicesRepository = get()) }
+
+    factory { ScanBleDevicesUseCase(bleDevicesRepository = get()) }
+    factory { ObserveKnownBleDevicesUseCase(bleDevicesRepository = get()) }
+    factory { PairBleDeviceUseCase(bleDevicesRepository = get()) }
+    factory { ConnectBleDeviceUseCase(bleDevicesRepository = get()) }
+    factory { ForgetBleDeviceUseCase(bleDevicesRepository = get()) }
+    factory { ObserveBleRssiUseCase(bleDevicesRepository = get()) }
+
+    factory {
+        ActivateBleOnlyModeUseCase(
+            stopDeviceListenersUseCase = get(),
+            appSessionRepository = get(),
+        )
+    }
+
+    factory {
+        ExitBleOnlyModeUseCase(
+            bleDevicesRepository = get(),
+            appSessionRepository = get(),
         )
     }
 }

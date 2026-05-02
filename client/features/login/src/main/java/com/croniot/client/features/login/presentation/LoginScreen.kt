@@ -6,6 +6,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,10 +16,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -56,6 +64,7 @@ fun LoginScreen(
     onNavigateToDeviceList: () -> Unit,
     onNavigateToRegisterAccount: () -> Unit,
     onNavigateToConfiguration: () -> Unit,
+    onNavigateToBleDiscovery: () -> Unit,
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -75,6 +84,7 @@ fun LoginScreen(
                 LoginEffect.NavigateHome -> onNavigateToDeviceList()
                 LoginEffect.NavigateToRegisterAccount -> onNavigateToRegisterAccount()
                 LoginEffect.NavigateToConfiguration -> onNavigateToConfiguration()
+                LoginEffect.NavigateToBleDiscovery -> onNavigateToBleDiscovery()
                 is LoginEffect.ConnectionErrors -> {
                     val message = effect.errors.joinToString("\n") { it.toUserMessage() }
                     snackbarHostState.showSnackbar(
@@ -123,12 +133,13 @@ fun LoginScreenContent(
     Box(
         modifier = Modifier
             .padding(innerPadding)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .imePadding(),
     ) {
         LoginContent(
             state = state,
             modifier = Modifier
-                .align(Alignment.Center),
+                .fillMaxSize(),
             onAction = onAction,
         )
     }
@@ -142,8 +153,10 @@ fun LoginContent(
 ) {
     Column(
         modifier = modifier
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         SlowHeroSlogan()
 
@@ -210,17 +223,52 @@ fun LoginContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        GuestLoginButton(
-            state = state,
-            onAction = onAction,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         RegisterButton(
             state = state,
             onAction = onAction,
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        BleDiscoveryEntryPoint(
+            state = state,
+            onAction = onAction,
+        )
+    }
+}
+
+@Composable
+fun BleDiscoveryEntryPoint(
+    state: State<LoginState>,
+    onAction: (LoginIntent) -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = "─── o ───",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        //Spacer(modifier = Modifier.height(8.dp))
+        TextButton(
+            enabled = !state.value.isLoading,
+            onClick = { onAction(LoginIntent.GoToBleDiscovery) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Bluetooth,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(R.string.ble_direct_connection),
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
     }
 }
 
@@ -248,22 +296,6 @@ fun LoginButton(
         } else {
             Text(text = "Log in")
         }
-    }
-}
-
-@Composable
-fun GuestLoginButton(
-    state: State<LoginState>,
-    onAction: (LoginIntent) -> Unit,
-) {
-    TextButton(
-        enabled = !state.value.isLoading,
-        onClick = {
-            onAction(LoginIntent.LoginAsGuest)
-        },
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(text = "Continue as Guest")
     }
 }
 

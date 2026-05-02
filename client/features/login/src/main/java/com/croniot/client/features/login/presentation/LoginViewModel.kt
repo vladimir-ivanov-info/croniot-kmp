@@ -4,11 +4,10 @@ import Outcome
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.croniot.client.core.config.AppConfig
-import com.croniot.client.core.config.Constants.DEMO_EMAIL
 import com.croniot.client.domain.models.auth.AuthError
 // import com.croniot.client.data.strategy.DataSourceStrategy
 // import com.croniot.client.data.strategy.DataSourceStrategyBus
+import com.croniot.client.domain.repositories.AppSessionRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
@@ -26,13 +25,13 @@ class LoginViewModel(
     private val loginUseCase: LogInUseCase,
     private val localDataRepository: LocalDataRepository,
     private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
+    private val appSessionRepository: AppSessionRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     companion object {
         private const val KEY_LOGIN_STATE = "login_state"
         private const val LOGIN_TIMEOUT_MILLIS = 30_000L
-        // const val DEMO_EMAIL = "croniot_demo@email.com"
     }
 
     private val _state = MutableStateFlow(
@@ -60,9 +59,9 @@ class LoginViewModel(
             is LoginIntent.EmailChanged -> updateState { it.copy(email = action.value) }
             is LoginIntent.PasswordChanged -> updateState { it.copy(password = action.value) }
             LoginIntent.Login -> login()
-            LoginIntent.LoginAsGuest -> loginAsGuest()
             LoginIntent.GoToCreateAccountScreen -> sendEffect(LoginEffect.NavigateToRegisterAccount)
             LoginIntent.GoToConfigurationScreen -> sendEffect(LoginEffect.NavigateToConfiguration)
+            LoginIntent.GoToBleDiscovery -> sendEffect(LoginEffect.NavigateToBleDiscovery)
         }
     }
 
@@ -80,6 +79,7 @@ class LoginViewModel(
                 is Outcome.Ok -> {
                     _state.update { it.copy(isLoading = false) }
                     localDataRepository.getCurrentAccount()?.let { account ->
+                        appSessionRepository.activateServerSession(account)
                         val listenersResult = startDeviceListenersUseCase(account.devices)
                         if (listenersResult is Outcome.Err) {
                             sendEffect(LoginEffect.ConnectionErrors(listenersResult.error))
@@ -113,48 +113,6 @@ class LoginViewModel(
             it.copy(isLoading = false)
         }
     }
-
-    private fun loginAsGuest() = launchInVmScope {
-        updateState {
-            it.copy(
-                email = DEMO_EMAIL,
-                password = "guest_password", // Placeholder if required by use case
-                isLoading = true
-            )
-        }
-
-        withTimeoutOrNull(LOGIN_TIMEOUT_MILLIS) {
-            when (val result = loginUseCase(DEMO_EMAIL, "guest_password")) {
-                is Outcome.Ok -> {
-                    _state.update { it.copy(isLoading = false) }
-                    localDataRepository.getCurrentAccount()?.let { account ->
-                        val listenersResult = startDeviceListenersUseCase(account.devices)
-                        if (listenersResult is Outcome.Err) {
-                            sendEffect(LoginEffect.ConnectionErrors(listenersResult.error))
-                        }
-                    }
-                    sendEffect(LoginEffect.NavigateHome)
-                }
-                is Outcome.Err -> {
-                    _state.update { it.copy(isLoading = false) }
-                    sendEffect(
-                        LoginEffect.ShowSnackbar(
-                            title = "Guest login failed",
-                            content = result.error.toUserMessage(),
-                        ),
-                    )
-                }
-            }
-        } ?: run {
-            updateState { it.copy(isLoading = false) }
-            sendEffect(
-                LoginEffect.ShowSnackbar(
-                    title = "Guest login failed",
-                    content = "Could not connect to server",
-                ),
-            )
-        }
-    }
 }
 
 private fun AuthError.toUserMessage(): String = when (this) {
@@ -179,6 +137,7 @@ sealed interface LoginEffect {
     data object NavigateHome : LoginEffect
     data object NavigateToRegisterAccount : LoginEffect
     data object NavigateToConfiguration : LoginEffect
+    data object NavigateToBleDiscovery : LoginEffect
     data class ShowSnackbar(val title: String, val content: String) : LoginEffect
     data class ConnectionErrors(val errors: List<com.croniot.client.domain.models.ConnectionError>) : LoginEffect
 }
@@ -187,7 +146,7 @@ sealed interface LoginIntent {
     data class EmailChanged(val value: String) : LoginIntent
     data class PasswordChanged(val value: String) : LoginIntent
     data object Login : LoginIntent
-    data object LoginAsGuest : LoginIntent
     data object GoToCreateAccountScreen : LoginIntent
     data object GoToConfigurationScreen : LoginIntent
+    data object GoToBleDiscovery : LoginIntent
 }

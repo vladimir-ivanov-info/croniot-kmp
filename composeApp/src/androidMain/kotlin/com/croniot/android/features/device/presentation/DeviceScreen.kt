@@ -5,11 +5,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,12 +38,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.android.app.AppError
 import com.croniot.client.domain.models.Device
+import com.croniot.client.domain.models.TransportKind
 import com.croniot.client.features.sensors.presentation.SensorsScreen
 import com.croniot.client.features.taskhistory.presentation.TaskHistoryScreen
 import com.croniot.client.features.tasktypes.presentation.tasktypes.TaskTypesScreen
@@ -81,7 +91,15 @@ fun DeviceScreen(
             TopAppBar(
                 title = {
                     if (state is DeviceState.Content) {
-                        Text(text = (state as DeviceState.Content).device.name)
+                        val content = state as DeviceState.Content
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = content.device.name)
+                            Spacer(Modifier.width(8.dp))
+                            DeviceTransportBadge(
+                                transport = content.device.transport,
+                                rssi = content.rssi,
+                            )
+                        }
                     }
                 },
                 navigationIcon = {
@@ -126,6 +144,64 @@ fun DeviceScreen(
             }
         },
     )
+}
+
+@Composable
+private fun DeviceTransportBadge(transport: TransportKind, rssi: Int? = null) {
+    val (label, icon) = when (transport) {
+        TransportKind.CLOUD -> "Cloud" to Icons.Default.Cloud
+        TransportKind.BLE -> "BLE" to Icons.Default.Bluetooth
+    }
+
+    if (transport == TransportKind.BLE && rssi != null) {
+        val rssiColor = rssiQualityColor(rssi)
+        val rssiLabel = "BLE ${rssi} dBm"
+
+        AssistChip(
+            onClick = { },
+            enabled = false,
+            label = { Text(rssiLabel, style = MaterialTheme.typography.labelSmall) },
+            leadingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = rssiColor,
+                )
+            },
+            colors = AssistChipDefaults.assistChipColors(
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledLabelColor = rssiColor,
+                disabledLeadingIconContentColor = rssiColor,
+            ),
+        )
+    } else {
+        AssistChip(
+            onClick = { },
+            enabled = false,
+            label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+            leadingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                )
+            },
+            colors = AssistChipDefaults.assistChipColors(
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledLeadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+        )
+    }
+}
+
+private fun rssiQualityColor(rssi: Int): Color = when {
+    rssi >= -60 -> Color(0xFF4CAF50)
+    rssi >= -70 -> Color(0xFF8BC34A)
+    rssi >= -80 -> Color(0xFFFFC107)
+    rssi >= -90 -> Color(0xFFFF9800)
+    else -> Color(0xFFF44336)
 }
 
 @Composable
