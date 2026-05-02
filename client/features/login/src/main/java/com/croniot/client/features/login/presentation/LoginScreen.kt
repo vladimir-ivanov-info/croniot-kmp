@@ -19,8 +19,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -219,19 +223,12 @@ fun LoginContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        GuestLoginButton(
-            state = state,
-            onAction = onAction,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         RegisterButton(
             state = state,
             onAction = onAction,
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         BleDiscoveryEntryPoint(
             state = state,
@@ -254,16 +251,22 @@ fun BleDiscoveryEntryPoint(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        //Spacer(modifier = Modifier.height(8.dp))
         TextButton(
             enabled = !state.value.isLoading,
             onClick = { onAction(LoginIntent.GoToBleDiscovery) },
             modifier = Modifier.fillMaxWidth(),
         ) {
+            Icon(
+                imageVector = Icons.Filled.Bluetooth,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Conectar a un dispositivo cercano →",
+                text = stringResource(R.string.ble_direct_connection),
                 color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
             )
         }
     }
@@ -293,22 +296,6 @@ fun LoginButton(
         } else {
             Text(text = "Log in")
         }
-    }
-}
-
-@Composable
-fun GuestLoginButton(
-    state: State<LoginState>,
-    onAction: (LoginIntent) -> Unit,
-) {
-    TextButton(
-        enabled = !state.value.isLoading,
-        onClick = {
-            onAction(LoginIntent.LoginAsGuest)
-        },
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(text = "Continue as Guest")
     }
 }
 

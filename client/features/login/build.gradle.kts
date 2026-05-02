@@ -62,6 +62,8 @@ kotlin {
                 implementation(libs.compose.ui.tooling)
                 implementation(libs.compose.material3.android)
 
+                implementation(libs.material.icons.extended)
+
                 implementation(libs.koin.androidx.compose)
 
                 // Project dependencies
