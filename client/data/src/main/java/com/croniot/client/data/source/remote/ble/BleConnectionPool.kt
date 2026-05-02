@@ -27,7 +27,7 @@ class BleConnectionPoolImpl(
     private val context: Context,
     private val maxConnections: Int = DEFAULT_MAX_CONNECTIONS,
     private val connectionFactory: (deviceUuid: String, device: BluetoothDevice) -> BleConnection = { uuid, dev ->
-        BleConnectionImpl(uuid, dev, context)
+        BleConnectionImpl(uuid, dev, context, false) //TODO for now, no bonding. easier connection
     },
 ) : BleConnectionPool {
 

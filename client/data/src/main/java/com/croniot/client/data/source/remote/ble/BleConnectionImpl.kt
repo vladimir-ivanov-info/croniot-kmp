@@ -47,6 +47,7 @@ class BleConnectionImpl(
     override val deviceUuid: String,
     private val device: BluetoothDevice,
     private val context: Context,
+    private val requireBonding: Boolean = false,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BleConnection {
 
@@ -87,12 +88,14 @@ class BleConnectionImpl(
             _connectionState.value = BleConnectionState.Connected
             Log.d("BleConnection", "Conectado. Estado inicial: ${device.bondState}")
 
-            // For bonded devices Android re-establishes the encrypted link asynchronously
-            // after STATE_CONNECTED with no callback. discoverServices() called before the
-            // cipher is ready returns error 257, so we wait here unconditionally.
-            if (device.bondState == BluetoothDevice.BOND_BONDED) {
-                Log.d("BleConnection", "Dispositivo vinculado — esperando establecimiento de cifrado...")
-                delay(2000)
+            if (requireBonding) {
+                // For bonded devices Android re-establishes the encrypted link asynchronously
+                // after STATE_CONNECTED with no callback. discoverServices() called before the
+                // cipher is ready returns error 257, so we wait here unconditionally.
+                if (device.bondState == BluetoothDevice.BOND_BONDED) {
+                    Log.d("BleConnection", "Dispositivo vinculado — esperando establecimiento de cifrado...")
+                    delay(2000)
+                }
             }
 
             // MTU before pairing: larger MTU reduces SyncData chunks (507 bytes/chunk
@@ -101,34 +104,32 @@ class BleConnectionImpl(
             gattInstance.requestMtu(512)
             withTimeoutOrNull(5000) { bridge.mtuChanged.receive() }
 
-            // 1. Manejo de Emparejamiento (PIN)
-            // Esperamos un momento por si el dispositivo inicia la seguridad (Slave Security Request)
-            var securityWait = 0
-            while (device.bondState == BluetoothDevice.BOND_NONE && securityWait < 6) {
-                delay(500)
-                securityWait++
-            }
-
-            if (device.bondState == BluetoothDevice.BOND_NONE) {
-                Log.d("BleConnection", "Dispositivo no inició PIN. Forzando vínculo...")
-                device.createBond()
-                // Android updates bondState asynchronously; without this delay the
-                // BOND_BONDING check below fires before the system transitions the state,
-                // causing discoverServices() to race with the security handshake → error 257.
-                delay(1500)
-            }
-
-            if (device.bondState == BluetoothDevice.BOND_BONDING) {
-                Log.d("BleConnection", "Esperando a que el usuario complete el PIN...")
-                while (device.bondState == BluetoothDevice.BOND_BONDING) {
-                    if (bridge.connectionState.value != BluetoothProfile.STATE_CONNECTED) {
-                        Log.w("BleConnection", "Desconectado durante PIN.")
-                        break
-                    }
-                    delay(1000)
+            if (requireBonding) {
+                // Esperamos un momento por si el dispositivo inicia la seguridad (Slave Security Request)
+                var securityWait = 0
+                while (device.bondState == BluetoothDevice.BOND_NONE && securityWait < 6) {
+                    delay(500)
+                    securityWait++
                 }
-                Log.d("BleConnection", "PIN procesado. Estado final: ${device.bondState}")
-                delay(3000) // Delay de "enfriamiento" crítico tras PIN
+
+                if (device.bondState == BluetoothDevice.BOND_NONE) {
+                    Log.d("BleConnection", "Dispositivo no inició PIN. Forzando vínculo...")
+                    device.createBond()
+                    delay(1500)
+                }
+
+                if (device.bondState == BluetoothDevice.BOND_BONDING) {
+                    Log.d("BleConnection", "Esperando a que el usuario complete el PIN...")
+                    while (device.bondState == BluetoothDevice.BOND_BONDING) {
+                        if (bridge.connectionState.value != BluetoothProfile.STATE_CONNECTED) {
+                            Log.w("BleConnection", "Desconectado durante PIN.")
+                            break
+                        }
+                        delay(1000)
+                    }
+                    Log.d("BleConnection", "PIN procesado. Estado final: ${device.bondState}")
+                    delay(3000)
+                }
             }
 
             // 2. Descubrimiento de Servicios (Resiliente al Error 257)
