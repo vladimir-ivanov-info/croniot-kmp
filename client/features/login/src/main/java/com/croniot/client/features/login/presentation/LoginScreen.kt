@@ -247,7 +247,7 @@ fun BleDiscoveryEntryPoint(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            text = "─── o ───",
+            text = "─── or ───",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

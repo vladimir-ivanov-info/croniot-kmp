@@ -70,7 +70,8 @@ import com.croniot.client.core.config.AppConfig
 import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.models.TransportKind
 import com.croniot.client.core.util.getRelativeTimeText
-import com.croniot.client.features.login.R
+import com.croniot.android.R
+import androidx.compose.ui.res.stringResource
 import com.croniot.client.presentation.components.GenericAlertDialog
 import com.croniot.client.presentation.components.StatusDot
 import androidx.compose.material.icons.filled.Add
@@ -147,7 +148,10 @@ fun DeviceListScreenBody(
     BackHandler { showLogoutDialog = true }
 
     if (showLogoutDialog) {
-        GenericAlertDialog(title = "Log Out", content = "Are you sure you want to log out?") { confirmed ->
+        GenericAlertDialog(
+            title = stringResource(R.string.device_list_logout_title),
+            content = stringResource(R.string.device_list_logout_message),
+        ) { confirmed ->
             if (confirmed) onIntent(DeviceListIntent.LogOut)
             showLogoutDialog = false
         }
@@ -181,7 +185,7 @@ fun DeviceListScreenBody(
                     IconButton(onClick = { expanded = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Actions",
+                            contentDescription = stringResource(R.string.device_list_menu_actions),
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
@@ -194,7 +198,7 @@ fun DeviceListScreenBody(
                                 expanded = false
                                 showLogoutDialog = true
                             },
-                            text = { Text("Log out") },
+                            text = { Text(stringResource(R.string.device_list_logout_action)) },
                         )
                     }
                 },
@@ -230,7 +234,7 @@ fun DeviceListContent(
 
     Column(modifier = modifier) {
         Text(
-            text = "Devices",
+            text = stringResource(R.string.device_list_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(16.dp).semantics { heading() },
@@ -301,12 +305,12 @@ private fun BleDiscoveryCta(
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    text = "Buscar dispositivos cercanos",
+                    text = stringResource(R.string.device_list_ble_cta_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Text(
-                    text = "Escanea y emparéjate con un nuevo ESP32",
+                    text = stringResource(R.string.device_list_ble_cta_subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
                 )
@@ -340,7 +344,7 @@ fun EmptyDeviceList() {
                 contentScale = ContentScale.Fit,
             )
             Text(
-                text = "No IoT devices yet",
+                text = stringResource(R.string.device_list_empty),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -357,9 +361,12 @@ fun DeviceRow(
     onClick: () -> Unit,
     onForget: (() -> Unit)? = null,
 ) {
-    val statusText = if (isOnline) "Online" else "Offline"
+    val statusText = if (isOnline) stringResource(R.string.device_list_status_online) else stringResource(R.string.device_list_status_offline)
     val relative = remember(lastSeen, now) { getRelativeTimeText(now, lastSeen) }
-    val spoken = remember(statusText, device.name, relative) { "$statusText. ${device.name}. Última señal $relative" }
+    val lastSignalText = stringResource(R.string.device_list_last_signal, relative)
+    val openDeviceLabel = stringResource(R.string.device_list_open_device, device.name)
+    val moreActionsDesc = stringResource(R.string.device_list_more_actions_for_device, device.name)
+    val spoken = remember(statusText, device.name, lastSignalText) { "$statusText. ${device.name}. $lastSignalText" }
 
     val infoText = remember(device.sensorTypes, device.taskTypes) {
         buildList {
@@ -378,7 +385,7 @@ fun DeviceRow(
             .semantics(mergeDescendants = true) {
                 contentDescription = spoken
                 role = Role.Button
-                onClick(label = "Abrir ${device.name}") {
+                onClick(label = openDeviceLabel) {
                     onClick()
                     true
                 }
@@ -426,7 +433,7 @@ fun DeviceRow(
                     IconButton(
                         onClick = { menuExpanded = true },
                         modifier = Modifier.clearAndSetSemantics {
-                            contentDescription = "Más acciones para ${device.name}"
+                            contentDescription = moreActionsDesc
                             role = Role.Button
                         },
                     ) {
@@ -441,7 +448,7 @@ fun DeviceRow(
                         onDismissRequest = { menuExpanded = false },
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Olvidar dispositivo") },
+                            text = { Text(stringResource(R.string.device_list_forget_device)) },
                             onClick = {
                                 menuExpanded = false
                                 onForget()
@@ -462,9 +469,11 @@ fun DeviceRow(
 
 @Composable
 private fun TransportBadge(transport: TransportKind) {
+    val cloudLabel = stringResource(R.string.transport_cloud)
+    val bleLabel = stringResource(R.string.transport_ble)
     val (label, icon) = when (transport) {
-        TransportKind.CLOUD -> "Cloud" to Icons.Default.Cloud
-        TransportKind.BLE -> "BLE" to Icons.Default.Bluetooth
+        TransportKind.CLOUD -> cloudLabel to Icons.Default.Cloud
+        TransportKind.BLE -> bleLabel to Icons.Default.Bluetooth
     }
     AssistChip(
         onClick = { },

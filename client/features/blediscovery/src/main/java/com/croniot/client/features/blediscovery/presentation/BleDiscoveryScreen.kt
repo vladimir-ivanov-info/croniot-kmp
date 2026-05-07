@@ -43,8 +43,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.croniot.client.features.blediscovery.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.domain.models.ble.DiscoveredBleDevice
 import com.croniot.client.domain.models.ble.KnownBleDevice
@@ -62,12 +64,13 @@ fun BleDiscoveryScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.effects.collect { effect ->
             when (effect) {
                 is BleDiscoveryEffect.NavigateToDevice -> onNavigateToDevice(effect.deviceUuid)
                 is BleDiscoveryEffect.ShowSnackbar -> snackbarHostState.showSnackbar(
-                    message = effect.message,
+                    message = effect.message.asString(context),
                     withDismissAction = true,
                 )
             }
@@ -84,7 +87,6 @@ fun BleDiscoveryScreen(
         }
     }
 
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
         // Re-check on resume in case the user toggled permissions in Settings.
         viewModel.onAction(BleDiscoveryIntent.RefreshPermissionStatus)
@@ -94,10 +96,10 @@ fun BleDiscoveryScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Dispositivos cercanos") },
+                title = { Text(stringResource(R.string.ble_discovery_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.ble_discovery_back))
                     }
                 },
             )
@@ -162,19 +164,19 @@ private fun PermissionsGate(
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            text = "Necesitamos permisos de Bluetooth para escanear dispositivos cercanos.",
+            text = stringResource(R.string.ble_permissions_message),
             style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(Modifier.height(8.dp))
         if (missing.isNotEmpty()) {
             Text(
-                text = "Faltan: ${missing.joinToString(", ") { it.substringAfterLast('.') }}",
+                text = stringResource(R.string.ble_permissions_missing, missing.joinToString(", ") { it.substringAfterLast('.') }),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Spacer(Modifier.height(24.dp))
-        Button(onClick = onRequest) { Text("Conceder permisos") }
+        Button(onClick = onRequest) { Text(stringResource(R.string.ble_permissions_grant)) }
     }
 }
 
@@ -189,7 +191,7 @@ private fun DeviceLists(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (state.known.isNotEmpty()) {
-            item { SectionHeader(text = "Conocidos") }
+            item { SectionHeader(text = stringResource(R.string.ble_known_devices)) }
             items(state.known, key = { "k-${it.uuid}" }) { known ->
                 KnownDeviceRow(
                     device = known,
@@ -201,11 +203,11 @@ private fun DeviceLists(
             item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
         }
 
-        item { SectionHeader(text = "Cerca de ti") }
+        item { SectionHeader(text = stringResource(R.string.ble_nearby_devices)) }
         if (state.nearby.isEmpty()) {
             item {
                 Text(
-                    text = "Buscando dispositivos…",
+                    text = stringResource(R.string.ble_searching),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -252,7 +254,7 @@ private fun KnownDeviceRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = device.displayName, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    text = if (device.isInRange) "En rango" else "Fuera de rango",
+                    text = if (device.isInRange) stringResource(R.string.ble_in_range) else stringResource(R.string.ble_out_of_range),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -266,10 +268,10 @@ private fun KnownDeviceRow(
                 TextButton(
                     onClick = onConnect,
                     enabled = device.isInRange,
-                ) { Text("Conectar") }
+                ) { Text(stringResource(R.string.ble_connect)) }
             }
             IconButton(onClick = onForget) {
-                Icon(Icons.Filled.Close, contentDescription = "Olvidar")
+                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.ble_forget))
             }
         }
     }
@@ -290,13 +292,13 @@ private fun DiscoveredDeviceRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = device.displayName, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    text = if (device.isPaired) "Ya conocido" else "RSSI ${device.rssi}",
+                    text = if (device.isPaired) stringResource(R.string.ble_already_known) else stringResource(R.string.ble_rssi, device.rssi),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             TextButton(onClick = onPair, enabled = !device.isPaired) {
-                Text(if (device.isPaired) "Conectado" else "Emparejar")
+                Text(if (device.isPaired) stringResource(R.string.ble_connected) else stringResource(R.string.ble_pair))
             }
         }
     }
@@ -311,13 +313,13 @@ private fun PairDialog(
         onDismissRequest = {
             if (!pairing.isSubmitting) onAction(BleDiscoveryIntent.PairDialogDismissed)
         },
-        title = { Text("Emparejar ${pairing.displayName}") },
+        title = { Text(stringResource(R.string.ble_pair_title, pairing.displayName)) },
         text = {
             Column {
                 StatefulTextField(
                     value = pairing.username,
                     onValueChange = { onAction(BleDiscoveryIntent.UsernameChanged(it)) },
-                    label = "Usuario",
+                    label = stringResource(R.string.ble_pair_username),
                     enabled = !pairing.isSubmitting,
                 )
                 Spacer(Modifier.height(8.dp))
@@ -328,7 +330,7 @@ private fun PairDialog(
                 )
                 pairing.error?.let { error ->
                     Spacer(Modifier.height(8.dp))
-                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                    Text(text = error.asString(), color = MaterialTheme.colorScheme.error)
                 }
             }
         },
@@ -340,7 +342,7 @@ private fun PairDialog(
                 if (pairing.isSubmitting) {
                     CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
                 } else {
-                    Text("Emparejar")
+                    Text(stringResource(R.string.ble_pair_confirm))
                 }
             }
         },
@@ -348,7 +350,7 @@ private fun PairDialog(
             TextButton(
                 onClick = { onAction(BleDiscoveryIntent.PairDialogDismissed) },
                 enabled = !pairing.isSubmitting,
-            ) { Text("Cancelar") }
+            ) { Text(stringResource(R.string.ble_pair_cancel)) }
         },
     )
 }

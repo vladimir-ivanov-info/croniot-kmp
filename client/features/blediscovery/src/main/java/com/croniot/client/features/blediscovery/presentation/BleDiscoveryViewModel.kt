@@ -13,6 +13,8 @@ import com.croniot.client.domain.usecases.ble.ForgetBleDeviceUseCase
 import com.croniot.client.domain.usecases.ble.ObserveKnownBleDevicesUseCase
 import com.croniot.client.domain.usecases.ble.PairBleDeviceUseCase
 import com.croniot.client.domain.usecases.ble.ScanBleDevicesUseCase
+import com.croniot.client.features.blediscovery.R
+import com.croniot.client.presentation.UiText
 import com.croniot.client.presentation.viewmodel.launchInVmScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -141,17 +143,17 @@ class BleDiscoveryViewModel(
     }
 }
 
-private fun BleError.toUserMessage(): String = when (this) {
-    BleError.PermissionDenied -> "Permisos BLE denegados."
-    BleError.BluetoothOff -> "Bluetooth desactivado."
-    BleError.BluetoothNotSupported -> "Este dispositivo no soporta BLE."
-    BleError.Timeout -> "Tiempo de espera agotado."
-    BleError.AuthFailed -> "Credenciales inválidas."
-    BleError.BondingFailed -> "Error de vinculación (PIN incorrecto o rechazo)."
-    BleError.RequiresPairing -> "El dispositivo requiere emparejamiento."
-    is BleError.NotFound -> "Dispositivo no encontrado: $deviceUuid"
-    is BleError.GattError -> "Error GATT: $status"
-    is BleError.Unknown -> message ?: "Error desconocido."
+private fun BleError.toUserMessage(): UiText = when (this) {
+    BleError.PermissionDenied -> UiText.Resource(R.string.ble_error_permission_denied)
+    BleError.BluetoothOff -> UiText.Resource(R.string.ble_error_bluetooth_off)
+    BleError.BluetoothNotSupported -> UiText.Resource(R.string.ble_error_bluetooth_not_supported)
+    BleError.Timeout -> UiText.Resource(R.string.ble_error_timeout)
+    BleError.AuthFailed -> UiText.Resource(R.string.ble_error_auth_failed)
+    BleError.BondingFailed -> UiText.Resource(R.string.ble_error_bonding_failed)
+    BleError.RequiresPairing -> UiText.Resource(R.string.ble_error_requires_pairing)
+    is BleError.NotFound -> UiText.Resource(R.string.ble_error_not_found, listOf(deviceUuid))
+    is BleError.GattError -> UiText.Resource(R.string.ble_error_gatt, listOf(status))
+    is BleError.Unknown -> UiText.Resource(R.string.ble_error_unknown)
 }
 
 data class BleDiscoveryState(
@@ -171,7 +173,7 @@ data class PairingState(
     val username: String = "user123",
     val password: String = "123456",
     val isSubmitting: Boolean = false,
-    val error: String? = null,
+    val error: UiText? = null,
 )
 
 sealed interface BleDiscoveryIntent {
@@ -188,5 +190,5 @@ sealed interface BleDiscoveryIntent {
 
 sealed interface BleDiscoveryEffect {
     data class NavigateToDevice(val deviceUuid: String) : BleDiscoveryEffect
-    data class ShowSnackbar(val message: String) : BleDiscoveryEffect
+    data class ShowSnackbar(val message: UiText) : BleDiscoveryEffect
 }
