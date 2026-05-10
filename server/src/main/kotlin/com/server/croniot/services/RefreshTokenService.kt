@@ -53,7 +53,7 @@ class RefreshTokenService @Inject constructor(
 
         refreshTokenDao.revokeById(record.id, now)
         val email = accountRepository.getEmailById(record.accountId) ?: return null
-        val newAccess = jwtConfig.issueAccessToken(record.accountId, email, now)
+        val newAccess = jwtConfig.issueAccessToken(record.accountId, email, now = now)
         val newRefresh = issueForAccount(record.accountId, record.deviceUuid)
         return RotationResult(
             accessToken = newAccess.token,

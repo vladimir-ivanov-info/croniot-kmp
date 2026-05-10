@@ -5,6 +5,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.croniot.client.data.repositories.AccountRepositoryImpl
 import com.croniot.client.data.repositories.AuthRepositoryImpl
+import com.croniot.client.data.repositories.FeatureFlagRepositoryImpl
 import com.croniot.client.data.repositories.SensorDataRepositoryImpl
 import com.croniot.client.data.repositories.SessionRepositoryImpl
 import com.croniot.client.data.repositories.TaskTypesRepositoryImpl
@@ -14,9 +15,11 @@ import com.croniot.client.data.source.local.AuthLocalDatasource
 import com.croniot.client.data.source.local.DataStoreController
 import com.croniot.client.data.source.local.DeviceLocalDatasource
 import com.croniot.client.data.source.local.EncryptedTokenStore
+import com.croniot.client.data.source.local.FeatureFlagLocalDatasource
 import com.croniot.client.data.source.local.NavigationLocalDatasource
 import com.croniot.client.data.source.local.ServerConfigLocalDatasource
 import com.croniot.client.data.source.local.TokenStore
+import com.croniot.client.data.source.remote.http.FeatureFlagApi
 import com.croniot.client.data.source.remote.http.login.LoginDataSource
 import com.croniot.client.data.source.remote.http.login.LoginDataSourceImpl
 import com.croniot.client.data.source.remote.mqtt.TasksDataSource
@@ -29,6 +32,7 @@ import com.croniot.client.data.source.taskhistory.LocalTaskHistoryDataSource
 import com.croniot.client.data.source.taskhistory.LocalTaskHistoryDataSourceRoomImpl
 import com.croniot.client.domain.repositories.AccountRepository
 import com.croniot.client.domain.repositories.AuthRepository
+import com.croniot.client.domain.repositories.FeatureFlagRepository
 import com.croniot.client.domain.repositories.SensorDataRepository
 import com.croniot.client.domain.repositories.SessionRepository
 import com.croniot.client.domain.repositories.TaskTypesRepository
@@ -122,6 +126,17 @@ val dataModule = module {
     }
 
     single<TaskTypesRepository> { TaskTypesRepositoryImpl() }
+
+    single { FeatureFlagLocalDatasource(context = androidContext()) }
+
+    single<FeatureFlagRepository> {
+        FeatureFlagRepositoryImpl(
+            api = get(),
+            localDatasource = get(),
+            serverConfigLocalDatasource = get(),
+            appScope = get(named("appScope")),
+        )
+    }
 
     single<LocalSensorDataSource> {
         LocalSensorDataSourceRoomImpl(sensorDataDao = get())

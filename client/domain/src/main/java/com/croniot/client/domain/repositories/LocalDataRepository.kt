@@ -41,7 +41,7 @@ interface LocalDataRepository { // TODO god class, but will be delegated to Room
 
     fun getServerMode(): Flow<String?>
 
-    //suspend fun getServerIp(): Flow<String?>
+    // suspend fun getServerIp(): Flow<String?>
 
     suspend fun getServerIp(): String?
 }

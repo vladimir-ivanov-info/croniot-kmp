@@ -28,6 +28,7 @@ class JwtConfig @Inject constructor(
     fun issueAccessToken(
         accountId: Long,
         email: String,
+        isAdmin: Boolean = false,
         now: Instant = Instant.now(Clock.systemUTC()),
     ): IssuedAccessToken {
         val expiresAt = now.plus(accessTokenTtl)
@@ -36,6 +37,7 @@ class JwtConfig @Inject constructor(
             .withAudience(audience)
             .withSubject(accountId.toString())
             .withClaim(CLAIM_EMAIL, email)
+            .withClaim(CLAIM_IS_ADMIN, isAdmin)
             .withIssuedAt(Date.from(now))
             .withExpiresAt(Date.from(expiresAt))
             .sign(currentAlgorithm)
@@ -61,5 +63,6 @@ class JwtConfig @Inject constructor(
 
     companion object {
         const val CLAIM_EMAIL = "email"
+        const val CLAIM_IS_ADMIN = "is_admin"
     }
 }
