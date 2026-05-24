@@ -217,4 +217,16 @@ object MqttController {
             deviceMqttClient.publish(topic, message)
         }
     }
+
+    suspend fun broadcastFeatureFlagUpdate(flag: croniot.models.dto.FeatureFlagDto) {
+        clientLock.withLock {
+            val topic = MqttTopics.featureFlagUpdate(flag.name)
+            val json = MessageFactory.toJson(flag)
+            val message = MqttMessage(json.toByteArray()).apply {
+                qos = 1
+                isRetained = true
+            }
+            deviceMqttClient.publish(topic, message)
+        }
+    }
 }
