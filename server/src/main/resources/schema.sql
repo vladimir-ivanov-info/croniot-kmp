@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS account (
     uuid VARCHAR(255) NOT NULL,
     nickname VARCHAR(255),
     email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS device (
@@ -213,3 +214,13 @@ CREATE INDEX IF NOT EXISTS idx_task_task_type ON task(task_type);
 CREATE INDEX IF NOT EXISTS idx_refresh_token_account ON refresh_token(account);
 CREATE INDEX IF NOT EXISTS idx_refresh_token_expires_at ON refresh_token(expires_at);
 CREATE INDEX IF NOT EXISTS idx_account_email ON account(email);
+
+ALTER TABLE account ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS feature_flag (
+    name        VARCHAR(255) PRIMARY KEY,
+    enabled     BOOLEAN      NOT NULL DEFAULT FALSE,
+    description VARCHAR(1000),
+    updated_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+

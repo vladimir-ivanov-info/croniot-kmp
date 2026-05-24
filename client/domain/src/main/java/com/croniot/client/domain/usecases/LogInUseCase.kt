@@ -1,10 +1,10 @@
 package com.croniot.client.domain.usecases
 
 import Outcome
+import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.models.auth.AuthError
 import com.croniot.client.domain.models.auth.AuthSession
-import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.repositories.AccountRepository
 import com.croniot.client.domain.repositories.AuthRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
@@ -39,7 +39,7 @@ class LogInUseCase(
                         session = AuthSession(email = email, token = accessToken),
                     )
                     sessionRepository.saveTokens(loginResult.value.tokens)
-                   // accountRepository.save(account = loginResult.value.account)
+                    // accountRepository.save(account = loginResult.value.account)
                     accountRepository.save(
                         account = loginResult.value.account.copy(
                             devices = loginResult.value.account.devices + listOf(

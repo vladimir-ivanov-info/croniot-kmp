@@ -4,11 +4,14 @@ import Global
 import com.server.croniot.config.Secrets
 import com.server.croniot.controllers.AccountController
 import com.server.croniot.controllers.DeviceController
+import com.server.croniot.controllers.FeatureFlagController
 import com.server.croniot.controllers.SensorTypeController
 import com.server.croniot.controllers.TaskController
 import com.server.croniot.controllers.TaskTypeController
 import com.server.croniot.data.db.daos.AccountDao
 import com.server.croniot.data.db.daos.AccountJooqDaoImpl
+import com.server.croniot.data.db.daos.FeatureFlagDao
+import com.server.croniot.data.db.daos.FeatureFlagJooqDaoImpl
 import com.server.croniot.data.db.daos.DeviceDao
 import com.server.croniot.data.db.daos.DeviceJooqDaoImpl
 import com.server.croniot.data.db.daos.DeviceTokenDao
@@ -28,9 +31,11 @@ import com.server.croniot.data.db.daos.TaskTypeDaoJooqImpl
 import com.server.croniot.data.repositories.AccountRepository
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.DeviceTokenRepository
+import com.server.croniot.data.repositories.FeatureFlagRepository
 import com.server.croniot.data.repositories.SensorTypeRepository
 import com.server.croniot.data.repositories.TaskRepository
 import com.server.croniot.data.repositories.TaskTypeRepository
+import com.server.croniot.services.FeatureFlagService
 import com.server.croniot.http.SensorsDataController
 import com.server.croniot.services.AccountService
 import com.server.croniot.services.DeviceService
@@ -202,4 +207,16 @@ class AppModule {
     fun provideTaskTypeRepository(taskTypeDao: TaskTypeDao, parameterTaskDao: ParameterTaskDao): TaskTypeRepository {
         return TaskTypeRepository(taskTypeDao, parameterTaskDao)
     }
+
+    @Provides @Singleton
+    fun provideFeatureFlagDao(dsl: DSLContext): FeatureFlagDao =
+        FeatureFlagJooqDaoImpl(dsl)
+
+    @Provides @Singleton
+    fun provideFeatureFlagRepository(dao: FeatureFlagDao): FeatureFlagRepository =
+        FeatureFlagRepository(dao)
+
+    @Provides @Singleton
+    fun provideFeatureFlagController(service: FeatureFlagService): FeatureFlagController =
+        FeatureFlagController(service)
 }

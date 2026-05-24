@@ -3,6 +3,7 @@ package com.croniot.client.domain.usecases
 import Outcome
 import com.croniot.client.domain.models.ConnectionError
 import com.croniot.client.domain.models.Device
+import com.croniot.client.domain.repositories.FeatureFlagRepository
 import com.croniot.client.domain.repositories.SensorDataRepository
 import com.croniot.client.domain.repositories.TaskTypesRepository
 import com.croniot.client.domain.repositories.TasksRepository
@@ -15,11 +16,15 @@ class StartDeviceListenersUseCase(
     private val sensorDataRepository: SensorDataRepository,
     private val tasksRepository: TasksRepository,
     private val taskTypesRepository: TaskTypesRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
+    private val fetchFeatureFlagsUseCase: FetchFeatureFlagsUseCase,
 ) {
 
     suspend operator fun invoke(devices: List<Device>): Outcome<Unit, List<ConnectionError>> = coroutineScope {
+        fetchFeatureFlagsUseCase()
+        featureFlagRepository.startMqttListener()
 
-        val filteredDevices = devices.filter { !it.uuid.startsWith("android") } //TODO patch
+        val filteredDevices = devices.filter { !it.uuid.startsWith("android") } // TODO patch
 
         val results = filteredDevices.map { device ->
             async {
@@ -44,5 +49,4 @@ class StartDeviceListenersUseCase(
 
         if (errors.isEmpty()) Outcome.Ok(Unit) else Outcome.Err(errors)
     }
-
 }

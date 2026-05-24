@@ -66,7 +66,8 @@ class LoginService @Inject constructor(
         val account = accountRepository.getAccount(accountEmail)
             ?: throw DomainException(DomainError.Internal("Account fetch failed."))
 
-        val accessToken = jwtConfig.issueAccessToken(accountId, accountEmail)
+        val isAdmin = accountRepository.isAdmin(accountEmail)
+        val accessToken = jwtConfig.issueAccessToken(accountId, accountEmail, isAdmin)
         val refresh = refreshTokenService.issueForAccount(accountId, deviceUuid)
 
         return LoginResultDto(

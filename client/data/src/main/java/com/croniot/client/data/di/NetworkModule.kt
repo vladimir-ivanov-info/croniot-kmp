@@ -3,6 +3,7 @@ package com.croniot.client.data.di
 import com.croniot.client.core.config.Constants
 import com.croniot.client.core.config.ServerConfig
 import com.croniot.client.data.source.local.TokenStore
+import com.croniot.client.data.source.remote.http.FeatureFlagApi
 import com.croniot.client.data.source.remote.http.HostHolder
 import com.croniot.client.data.source.remote.http.RegisterApi
 import com.croniot.client.data.source.remote.http.TaskApi
@@ -119,5 +120,6 @@ object NetworkModule {
         single { LoginApi(http = get()) }
         single { TaskApi(http = get()) }
         single { RegisterApi(http = get()) }
+        single { FeatureFlagApi(http = get()) }
     }
 }

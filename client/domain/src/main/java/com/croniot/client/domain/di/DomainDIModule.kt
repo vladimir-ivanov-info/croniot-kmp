@@ -1,7 +1,8 @@
 package com.croniot.client.domain.di
 
-import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
+import com.croniot.client.domain.usecases.FetchFeatureFlagsUseCase
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryCountUseCase
+import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.LogoutUseCase
@@ -41,6 +42,7 @@ val domainDiModule = module {
         )
     }
 
+    factory { FetchFeatureFlagsUseCase(featureFlagRepository = get()) }
     factory { FetchTaskStateInfoHistoryUseCase(tasksRepository = get()) }
     factory { FetchTaskStateInfoHistoryCountUseCase(tasksRepository = get()) }
     factory { ObserveNewTasksUseCase(tasksRepository = get()) }
@@ -54,6 +56,8 @@ val domainDiModule = module {
             sensorDataRepository = get(),
             tasksRepository = get(),
             taskTypesRepository = get(),
+            featureFlagRepository = get(),
+            fetchFeatureFlagsUseCase = get(),
         )
     }
 }

@@ -105,6 +105,8 @@ class AccountRepository @Inject constructor(
         return accountDao.verifyPassword(email, plaintext)
     }
 
+    fun isAdmin(email: String): Boolean = accountDao.get(email)?.isAdmin ?: false
+
     // TODO see if this function should be here or in DeviceRepository
     // TODO assicated with /api/account_info, which will probably be deleted
     fun getAccountOfDevice(device: Device): List<Account> {

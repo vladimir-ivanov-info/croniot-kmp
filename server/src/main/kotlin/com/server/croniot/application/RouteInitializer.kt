@@ -5,6 +5,7 @@ import croniot.messages.MessageFactory
 import io.ktor.http.ContentType
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
 import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.*
@@ -21,6 +22,7 @@ class RouteInitializer @Inject constructor(
     private val taskController: TaskController,
     private val sensorTypeController: SensorTypeController,
     private val taskTypeController: TaskTypeController,
+    private val featureFlagController: FeatureFlagController,
 ) {
     fun setupRoutes(application: Application) {
         val prometheusRegistry = application.attributes.getOrNull(PROMETHEUS_REGISTRY_KEY)
@@ -121,6 +123,16 @@ class RouteInitializer @Inject constructor(
 
             post("/api/request_task_state_info_sync") {
                 taskController.requestTaskStateInfoSync(call)
+            }
+
+            get("/api/feature_flags") {
+                featureFlagController.getAllFlags(call)
+            }
+
+            authenticate(AUTH_JWT_REALM) {
+                put("/api/admin/feature_flags/{name}") {
+                    featureFlagController.setFlag(call)
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.server.croniot.application
 
 import com.server.croniot.controllers.AccountController
 import com.server.croniot.controllers.DeviceController
+import com.server.croniot.controllers.FeatureFlagController
 import com.server.croniot.controllers.LoginController
 import com.server.croniot.controllers.SensorTypeController
 import com.server.croniot.controllers.TaskController
@@ -31,5 +32,6 @@ interface AppComponent {
     fun applicationScope(): ApplicationScope
 
     fun deviceRepository(): DeviceRepository
+    fun featureFlagController(): FeatureFlagController
     fun dataSource(): DataSource
 }
