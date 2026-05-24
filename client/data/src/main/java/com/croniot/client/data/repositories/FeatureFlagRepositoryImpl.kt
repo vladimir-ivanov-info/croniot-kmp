@@ -1,6 +1,7 @@
 package com.croniot.client.data.repositories
 
 import MqttHandler
+import Outcome
 import com.croniot.client.core.config.ServerConfig
 import com.croniot.client.core.util.StringUtil.generateUniqueString
 import com.croniot.client.data.source.local.FeatureFlagLocalDatasource
@@ -8,9 +9,13 @@ import com.croniot.client.data.source.local.ServerConfigLocalDatasource
 import com.croniot.client.data.source.remote.http.FeatureFlagApi
 import com.croniot.client.data.source.remote.mqtt.MqttDataProcessorFeatureFlag
 import com.croniot.client.data.util.TaggingSocketFactory
+import com.croniot.client.domain.models.FeatureFlagError
 import com.croniot.client.domain.repositories.FeatureFlagRepository
 import croniot.models.MqttTopics
 import croniot.models.dto.FeatureFlagDto
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +23,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.eclipse.paho.client.mqttv3.MqttClient
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.coroutines.cancellation.CancellationException
 
 class FeatureFlagRepositoryImpl(
     private val api: FeatureFlagApi,
@@ -30,10 +37,25 @@ class FeatureFlagRepositoryImpl(
     private val flagCache = ConcurrentHashMap<String, Boolean>()
     private var mqttHandler: MqttHandler? = null
 
-    override suspend fun fetchAndCache(): Result<Unit> = runCatching {
-        val flags = api.fetchAll()
-        localDatasource.saveFlags(flags)
-        flags.forEach { flagCache[it.name] = it.enabled }
+    override suspend fun fetchAndCache(): Outcome<Unit, FeatureFlagError> {
+        return try {
+            val flags = api.fetchAll()
+            localDatasource.saveFlags(flags)
+            flags.forEach { flagCache[it.name] = it.enabled }
+            Outcome.Ok(Unit)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: HttpRequestTimeoutException) {
+            Outcome.Err(FeatureFlagError.Network)
+        } catch (e: ConnectTimeoutException) {
+            Outcome.Err(FeatureFlagError.Network)
+        } catch (e: SocketTimeoutException) {
+            Outcome.Err(FeatureFlagError.Network)
+        } catch (e: IOException) {
+            Outcome.Err(FeatureFlagError.Network)
+        } catch (e: Exception) {
+            Outcome.Err(FeatureFlagError.Unknown)
+        }
     }
 
     override fun observeFlags(): Flow<List<FeatureFlagDto>> =
