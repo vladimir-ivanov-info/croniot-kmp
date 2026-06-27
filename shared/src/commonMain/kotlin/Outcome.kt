@@ -30,3 +30,27 @@ inline fun <T, E> Outcome<T, E>.onFailure(action: (E) -> Unit): Outcome<T, E> {
     if (this is Outcome.Err) action(error)
     return this
 }
+
+inline fun <T, E, R> Outcome<T, E>.fold(onSuccess: (T) -> R, onFailure: (E) -> R): R =
+    when (this) {
+        is Outcome.Ok -> onSuccess(value)
+        is Outcome.Err -> onFailure(error)
+    }
+
+fun <T, E> Outcome<T, E>.getOrNull(): T? =
+    when (this) {
+        is Outcome.Ok -> value
+        is Outcome.Err -> null
+    }
+
+inline fun <T, E> Outcome<T, E>.getOrElse(onFailure: (E) -> T): T =
+    when (this) {
+        is Outcome.Ok -> value
+        is Outcome.Err -> onFailure(error)
+    }
+
+inline fun <T, E> Outcome<T, E>.recover(transform: (E) -> T): Outcome<T, Nothing> =
+    when (this) {
+        is Outcome.Ok -> this
+        is Outcome.Err -> Outcome.Ok(transform(error))
+    }

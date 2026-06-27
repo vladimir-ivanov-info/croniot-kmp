@@ -15,4 +15,5 @@ object Constants {
     const val ENDPOINT_TASK_CONFIGURATION: String = "/taskConfiguration/{deviceUuid}"
     const val ENDPOINT_TASK_STATE_INFO_HISTORY: String = "/taskStateInfoHistory/{deviceUuid}"
     const val ENDPOINT_TASK_STATE_INFO_HISTORY_COUNT: String = "/taskStateInfoHistoryCount/{deviceUuid}"
+    const val ENDPOINT_FEATURE_FLAGS: String = "/api/feature_flags"
 }

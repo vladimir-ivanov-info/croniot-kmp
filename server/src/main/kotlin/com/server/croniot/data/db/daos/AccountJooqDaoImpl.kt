@@ -47,6 +47,7 @@ class AccountJooqDaoImpl @Inject constructor(
             nickname = rec.nickname!!,
             email = rec.email!!,
             password = rec.password!!,
+            isAdmin = rec.isAdmin ?: false,
         )
     }
 
@@ -164,6 +165,7 @@ class AccountJooqDaoImpl @Inject constructor(
             nickname = accRec.nickname ?: "",
             email = accRec.email ?: "",
             password = accRec.password ?: "",
+            isAdmin = accRec.isAdmin ?: false,
         )
     }
 
