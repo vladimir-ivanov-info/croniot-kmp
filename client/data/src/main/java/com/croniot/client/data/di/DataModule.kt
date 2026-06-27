@@ -60,19 +60,12 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-private val MIGRATION_2_3 = object : Migration(2, 3) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL(
-            "CREATE INDEX IF NOT EXISTS `index_task_history_cache_deviceUuid_taskTypeUid_timeStampMillis` " +
-                "ON `task_history_cache` (`deviceUuid`, `taskTypeUid`, `timeStampMillis`)"
-        )
-    }
-}
+
 
 private val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE `ble_known_devices` ADD COLUMN `schemaVersion` INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("ALTER TABLE `ble_known_devices` ADD CO      LUMN `schemaJson` TEXT DEFAULT NULL")
+        db.execSQL("ALTER TABLE `ble_known_devices` ADD COLUMN `schemaJson` TEXT DEFAULT NULL")
     }
 }
 
@@ -89,6 +82,15 @@ private val MIGRATION_3_4 = object : Migration(3, 4) {
                 PRIMARY KEY(`uuid`)
             )
             """.trimIndent()
+        )
+    }
+}
+
+private val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_task_history_cache_deviceUuid_taskTypeUid_timeStampMillis` " +
+                    "ON `task_history_cache` (`deviceUuid`, `taskTypeUid`, `timeStampMillis`)"
         )
     }
 }

@@ -4,7 +4,6 @@ import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
 import com.croniot.client.domain.usecases.GetDeviceUseCase
 import com.croniot.client.domain.usecases.FetchFeatureFlagsUseCase
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryCountUseCase
-import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
 import com.croniot.client.domain.usecases.GetLatestTaskStateInfoUseCase
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.LogoutUseCase
