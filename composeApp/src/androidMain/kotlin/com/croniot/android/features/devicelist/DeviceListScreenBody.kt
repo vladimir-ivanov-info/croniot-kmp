@@ -68,10 +68,17 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.croniot.client.core.config.AppConfig
 import com.croniot.client.domain.models.Device
+import com.croniot.client.domain.models.TransportKind
 import com.croniot.client.core.util.getRelativeTimeText
-import com.croniot.client.features.login.R
+import com.croniot.android.R
+import androidx.compose.ui.res.stringResource
 import com.croniot.client.presentation.components.GenericAlertDialog
 import com.croniot.client.presentation.components.StatusDot
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
@@ -80,6 +87,7 @@ import org.koin.androidx.compose.koinViewModel
 fun DeviceListScreen(
     onLogOut: () -> Unit,
     onDeviceClicked: (deviceUuid: String) -> Unit,
+    onNavigateToBleDiscovery: () -> Unit,
     appError: AppError? = null,
     viewModel: DeviceListViewModel = koinViewModel(),
 ) {
@@ -115,6 +123,7 @@ fun DeviceListScreen(
             when (effect) {
                 is DeviceListEffect.LogOut -> onLogOut()
                 is DeviceListEffect.NavigateToDevice -> onDeviceClicked(effect.deviceUuid)
+                is DeviceListEffect.NavigateToBleDiscovery -> onNavigateToBleDiscovery()
             }
         }
     }
@@ -139,7 +148,10 @@ fun DeviceListScreenBody(
     BackHandler { showLogoutDialog = true }
 
     if (showLogoutDialog) {
-        GenericAlertDialog(title = "Log Out", content = "Are you sure you want to log out?") { confirmed ->
+        GenericAlertDialog(
+            title = stringResource(R.string.device_list_logout_title),
+            content = stringResource(R.string.device_list_logout_message),
+        ) { confirmed ->
             if (confirmed) onIntent(DeviceListIntent.LogOut)
             showLogoutDialog = false
         }
@@ -173,7 +185,7 @@ fun DeviceListScreenBody(
                     IconButton(onClick = { expanded = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Actions",
+                            contentDescription = stringResource(R.string.device_list_menu_actions),
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
@@ -186,7 +198,7 @@ fun DeviceListScreenBody(
                                 expanded = false
                                 showLogoutDialog = true
                             },
-                            text = { Text("Log out") },
+                            text = { Text(stringResource(R.string.device_list_logout_action)) },
                         )
                     }
                 },
@@ -222,11 +234,19 @@ fun DeviceListContent(
 
     Column(modifier = modifier) {
         Text(
-            text = "Devices",
+            text = stringResource(R.string.device_list_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(16.dp).semantics { heading() },
         )
+
+        if (state.mode == TransportKind.BLE) {
+            BleDiscoveryCta(
+                onClick = { onIntent(DeviceListIntent.GoToBleDiscovery) },
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Spacer(Modifier.size(12.dp))
+        }
 
         if (state.devices.isEmpty()) {
             EmptyDeviceList()
@@ -236,7 +256,12 @@ fun DeviceListContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(items = state.devices, key = { it.uuid }) { device ->
-                    val isOnline = state.lastSeenMillis[device.uuid]?.let { ts -> (now - ts) < 5_000 } == true
+                    val isOnline = when (device.transport) {
+                        TransportKind.CLOUD ->
+                            state.lastSeenMillis[device.uuid]?.let { ts -> (now - ts) < 5_000 } == true
+                        TransportKind.BLE ->
+                            device.uuid in state.inRangeUuids
+                    }
                     DeviceRow(
                         device = device,
                         isOnline = isOnline,
@@ -245,9 +270,56 @@ fun DeviceListContent(
                         onClick = {
                             onIntent(DeviceListIntent.DeviceClicked(device.uuid))
                         },
+                        onForget = if (device.transport == TransportKind.BLE) {
+                            { onIntent(DeviceListIntent.ForgetBleDevice(device.uuid)) }
+                        } else null,
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun BleDiscoveryCta(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.device_list_ble_cta_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+                Text(
+                    text = stringResource(R.string.device_list_ble_cta_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
         }
     }
 }
@@ -272,7 +344,7 @@ fun EmptyDeviceList() {
                 contentScale = ContentScale.Fit,
             )
             Text(
-                text = "No IoT devices yet",
+                text = stringResource(R.string.device_list_empty),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -287,10 +359,14 @@ fun DeviceRow(
     lastSeen: Long?,
     now: Long,
     onClick: () -> Unit,
+    onForget: (() -> Unit)? = null,
 ) {
-    val statusText = if (isOnline) "Online" else "Offline"
+    val statusText = if (isOnline) stringResource(R.string.device_list_status_online) else stringResource(R.string.device_list_status_offline)
     val relative = remember(lastSeen, now) { getRelativeTimeText(now, lastSeen) }
-    val spoken = remember(statusText, device.name, relative) { "$statusText. ${device.name}. Última señal $relative" }
+    val lastSignalText = stringResource(R.string.device_list_last_signal, relative)
+    val openDeviceLabel = stringResource(R.string.device_list_open_device, device.name)
+    val moreActionsDesc = stringResource(R.string.device_list_more_actions_for_device, device.name)
+    val spoken = remember(statusText, device.name, lastSignalText) { "$statusText. ${device.name}. $lastSignalText" }
 
     val infoText = remember(device.sensorTypes, device.taskTypes) {
         buildList {
@@ -298,6 +374,8 @@ fun DeviceRow(
             if (device.taskTypes.isNotEmpty()) add("${device.taskTypes.size} task${if (device.taskTypes.size > 1) "s" else ""}")
         }.joinToString(" · ")
     }
+
+    var menuExpanded by remember { mutableStateOf(false) }
 
     Card(
         onClick = onClick,
@@ -307,7 +385,7 @@ fun DeviceRow(
             .semantics(mergeDescendants = true) {
                 contentDescription = spoken
                 role = Role.Button
-                onClick(label = "Abrir ${device.name}") {
+                onClick(label = openDeviceLabel) {
                     onClick()
                     true
                 }
@@ -325,7 +403,16 @@ fun DeviceRow(
             StatusDot(isOnline = isOnline)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(device.name, style = MaterialTheme.typography.titleMedium, maxLines = 1)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = device.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        maxLines = 1,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    TransportBadge(transport = device.transport)
+                }
                 Text(
                     text = relative,
                     style = MaterialTheme.typography.bodySmall,
@@ -341,11 +428,68 @@ fun DeviceRow(
                     )
                 }
             }
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (onForget != null) {
+                Box {
+                    IconButton(
+                        onClick = { menuExpanded = true },
+                        modifier = Modifier.clearAndSetSemantics {
+                            contentDescription = moreActionsDesc
+                            role = Role.Button
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.device_list_forget_device)) },
+                            onClick = {
+                                menuExpanded = false
+                                onForget()
+                            },
+                        )
+                    }
+                }
+            } else {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun TransportBadge(transport: TransportKind) {
+    val cloudLabel = stringResource(R.string.transport_cloud)
+    val bleLabel = stringResource(R.string.transport_ble)
+    val (label, icon) = when (transport) {
+        TransportKind.CLOUD -> cloudLabel to Icons.Default.Cloud
+        TransportKind.BLE -> bleLabel to Icons.Default.Bluetooth
+    }
+    AssistChip(
+        onClick = { },
+        enabled = false,
+        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+        leadingIcon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp),
+            )
+        },
+        colors = AssistChipDefaults.assistChipColors(
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledLeadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+    )
 }

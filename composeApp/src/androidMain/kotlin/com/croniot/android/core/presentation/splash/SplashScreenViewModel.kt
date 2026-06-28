@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.croniot.android.app.AppError
 import com.croniot.client.domain.models.auth.AuthTokens
 import com.croniot.client.domain.models.toUserMessage
+import com.croniot.client.domain.repositories.AppSessionRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.SessionRepository
 import com.croniot.client.domain.usecases.LogoutUseCase
@@ -18,6 +19,7 @@ class SplashScreenViewModel(
     private val sessionRepository: SessionRepository,
     private val logOutUseCase: LogoutUseCase,
     private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
+    private val appSessionRepository: AppSessionRepository,
 ) : ViewModel() {
 
     val effects: SharedFlow<SplashEffect>
@@ -32,6 +34,7 @@ class SplashScreenViewModel(
             return@launchInVmScope
         }
 
+        appSessionRepository.activateServerSession(account)
         val appError = when (val result = startDeviceListenersUseCase(account.devices)) {
             is Outcome.Err -> AppError(
                 title = "Error de conexión",

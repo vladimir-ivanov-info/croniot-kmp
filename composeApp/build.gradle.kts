@@ -139,6 +139,7 @@ dependencies {
     implementation(projects.client.features.sensors)
     implementation(projects.client.features.tasktypes)
     implementation(projects.client.features.taskhistory)
+    implementation(projects.client.features.blediscovery)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.common)
 

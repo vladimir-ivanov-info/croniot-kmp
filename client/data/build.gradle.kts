@@ -70,6 +70,7 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx)
                 implementation(libs.mqtt)
                 implementation(libs.accompanistPermissions)
+                implementation(libs.androidx.security.crypto)
             }
         }
     }
