@@ -2,9 +2,12 @@ package com.croniot.android.features.device.presentation
 
 import androidx.lifecycle.ViewModel
 import com.croniot.client.domain.models.Device
+import com.croniot.client.domain.models.TransportKind
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.FetchTasksUseCase
+import com.croniot.client.domain.usecases.GetDeviceUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
+import com.croniot.client.domain.usecases.ble.ObserveBleRssiUseCase
 import com.croniot.client.presentation.viewmodel.launchInVmScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +17,8 @@ class DeviceScreenViewModel(
     private val localDataRepository: LocalDataRepository,
     private val fetchTasksUseCase: FetchTasksUseCase,
     private val startDeviceListenersUseCase: StartDeviceListenersUseCase,
+    private val getDeviceUseCase: GetDeviceUseCase,
+    private val observeBleRssiUseCase: ObserveBleRssiUseCase,
 ) : ViewModel() {
 
     val state: StateFlow<DeviceState>
@@ -42,24 +47,33 @@ class DeviceScreenViewModel(
 
     private fun loadDevice(deviceUuid: String) = launchInVmScope {
         state.value = DeviceState.Loading
-        val account = localDataRepository.getCurrentAccount()
-        if (account == null) {
-            state.value = DeviceState.Error("No account found")
-            return@launchInVmScope
-        }
-        val device = account.devices.find { it.uuid == deviceUuid }
+        val device = getDeviceUseCase(deviceUuid)
         if (device == null) {
             state.value = DeviceState.Error("Device not found")
             return@launchInVmScope
         }
         state.value = DeviceState.Content(device = device)
+        startDeviceListenersUseCase(listOf(device))
         fetchTasksUseCase(deviceUuid)
+
+        if (device.transport == TransportKind.BLE) {
+            observeBleRssi(deviceUuid)
+        }
+    }
+
+    private fun observeBleRssi(deviceUuid: String) = launchInVmScope {
+        observeBleRssiUseCase(deviceUuid).collect { rssi ->
+            val current = state.value
+            if (current is DeviceState.Content) {
+                state.update { current.copy(rssi = rssi) }
+            }
+        }
     }
 }
 
 sealed interface DeviceState {
     data object Loading : DeviceState
-    data class Content(val device: Device, val selectedTab: Int = 0) : DeviceState
+    data class Content(val device: Device, val selectedTab: Int = 0, val rssi: Int? = null) : DeviceState
     data class Error(val message: String) : DeviceState
 }
 

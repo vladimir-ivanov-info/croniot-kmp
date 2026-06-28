@@ -6,6 +6,7 @@ import com.croniot.client.domain.models.Account
 import com.croniot.client.domain.models.ConnectionError
 import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.models.auth.AuthTokens
+import com.croniot.client.domain.repositories.AppSessionRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.SessionRepository
 import com.croniot.client.domain.usecases.LogoutUseCase
@@ -36,6 +37,7 @@ class SplashScreenViewModelTest {
     private val sessionRepository = mockk<SessionRepository>()
     private val logOutUseCase = mockk<LogoutUseCase>(relaxed = true)
     private val startDeviceListenersUseCase = mockk<StartDeviceListenersUseCase>()
+    private val appSessionRepository = mockk<AppSessionRepository>(relaxed = true)
 
     private lateinit var viewModel: SplashScreenViewModel
 
@@ -47,6 +49,7 @@ class SplashScreenViewModelTest {
             sessionRepository = sessionRepository,
             logOutUseCase = logOutUseCase,
             startDeviceListenersUseCase = startDeviceListenersUseCase,
+            appSessionRepository = appSessionRepository,
         )
     }
 

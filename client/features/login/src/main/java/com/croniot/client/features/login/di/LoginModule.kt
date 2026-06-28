@@ -12,6 +12,7 @@ object LoginModule {
                 loginUseCase = get(),
                 localDataRepository = get(),
                 startDeviceListenersUseCase = get(),
+                appSessionRepository = get(),
                 savedStateHandle = get(),
             )
         }

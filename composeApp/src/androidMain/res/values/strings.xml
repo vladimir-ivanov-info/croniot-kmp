@@ -5,4 +5,22 @@
     <string name="register_bridge">It only takes a minute.</string>
     <string name="create_account">Create account</string>
     <string name="register_sign_up">Sign up</string>
+
+    <!-- Device list -->
+    <string name="device_list_title">Devices</string>
+    <string name="device_list_logout_title">Log Out</string>
+    <string name="device_list_logout_message">Are you sure you want to log out?</string>
+    <string name="device_list_logout_action">Log out</string>
+    <string name="device_list_menu_actions">Actions</string>
+    <string name="device_list_empty">No IoT devices yet</string>
+    <string name="device_list_status_online">Online</string>
+    <string name="device_list_status_offline">Offline</string>
+    <string name="device_list_ble_cta_title">Search nearby devices</string>
+    <string name="device_list_ble_cta_subtitle">Scan and pair with a new ESP32</string>
+    <string name="device_list_forget_device">Forget device</string>
+    <string name="device_list_last_signal">Last signal %1$s</string>
+    <string name="device_list_open_device">Open %1$s</string>
+    <string name="device_list_more_actions_for_device">More actions for %1$s</string>
+    <string name="transport_cloud">Cloud</string>
+    <string name="transport_ble">BLE</string>
 </resources>

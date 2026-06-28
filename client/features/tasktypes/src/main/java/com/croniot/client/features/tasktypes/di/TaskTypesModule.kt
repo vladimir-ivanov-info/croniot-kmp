@@ -12,7 +12,7 @@ object TaskTypesModule {
 
         viewModel {
             CreateTaskViewModel(
-                localDataRepository = get(),
+                getDeviceUseCase = get(),
                 sendNewTaskUseCase = get(),
                 observeTaskStateInfoUseCase = get(),
                 getLatestTaskStateInfoUseCase = get(),

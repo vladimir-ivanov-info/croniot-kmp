@@ -3,6 +3,7 @@ package com.croniot.client.features.login.presentation
 import Outcome
 import androidx.lifecycle.SavedStateHandle
 import com.croniot.client.domain.models.auth.AuthError
+import com.croniot.client.domain.repositories.AppSessionRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
@@ -32,6 +33,7 @@ class LoginViewModelTest {
     private lateinit var loginUseCase: LogInUseCase
     private lateinit var localDataRepository: LocalDataRepository
     private lateinit var startDeviceListenersUseCase: StartDeviceListenersUseCase
+    private lateinit var appSessionRepository: AppSessionRepository
     private lateinit var viewModel: LoginViewModel
 
     @BeforeEach
@@ -40,11 +42,13 @@ class LoginViewModelTest {
         loginUseCase = mockk()
         localDataRepository = mockk()
         startDeviceListenersUseCase = mockk()
+        appSessionRepository = mockk(relaxed = true)
 
         viewModel = LoginViewModel(
             loginUseCase = loginUseCase,
             localDataRepository = localDataRepository,
             startDeviceListenersUseCase = startDeviceListenersUseCase,
+            appSessionRepository = appSessionRepository,
             savedStateHandle = SavedStateHandle(),
         )
     }
@@ -110,7 +114,9 @@ class LoginViewModelTest {
         assertEquals(1, effects.size)
         val effect = effects.first()
         assertTrue(effect is LoginEffect.ShowSnackbar)
-        assertEquals("Credenciales inválidas.", (effect as LoginEffect.ShowSnackbar).content)
+        val snackbar = effect as LoginEffect.ShowSnackbar
+        assertEquals("Login failed", snackbar.title)
+        assertEquals("Credenciales inválidas.", snackbar.content)
         job.cancel()
     }
 

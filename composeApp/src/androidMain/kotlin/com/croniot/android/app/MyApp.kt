@@ -8,6 +8,7 @@ import com.croniot.android.features.registeraccount.di.RegisterAccountModule
 import com.croniot.client.data.di.NetworkModule
 import com.croniot.client.data.di.dataModule
 import com.croniot.client.domain.di.domainDiModule
+import com.croniot.client.features.blediscovery.di.BleDiscoveryModule
 import com.croniot.client.features.login.di.LoginModule
 import com.croniot.client.features.sensors.di.SensorsModule
 import com.croniot.client.features.taskhistory.di.TaskHistoryModule
@@ -41,6 +42,7 @@ class MyApp : Application() {
                     NetworkModule.networkModule,
                     RegisterAccountModule.registerAccountModule,
                     LoginModule.loginModule,
+                    BleDiscoveryModule.bleDiscoveryModule,
                     SensorsModule.sensorsModule,
                     dataModule,
                     domainDiModule,

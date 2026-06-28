@@ -26,12 +26,11 @@ class LoginScreenTest {
             LoginScreenBody(
                 state = state,
                 onAction = {},
-                serverMode = "production",
                 snackbarHostState = SnackbarHostState()
             )
         }
 
-        composeTestRule.onNodeWithText("Login").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Log in").assertIsDisplayed()
         composeTestRule.onNodeWithTag("login_screen_login_button").assertIsDisplayed()
         composeTestRule.onNodeWithTag("login_screen_login_button").assertIsEnabled()
     }
@@ -44,7 +43,6 @@ class LoginScreenTest {
             LoginScreenBody(
                 state = state,
                 onAction = {},
-                serverMode = "production",
                 snackbarHostState = SnackbarHostState()
             )
         }
@@ -61,15 +59,14 @@ class LoginScreenTest {
             LoginScreenBody(
                 state = state,
                 onAction = { capturedAction = it },
-                serverMode = "production",
                 snackbarHostState = SnackbarHostState()
             )
         }
 
-        composeTestRule.onNodeWithText("Email").performTextInput("test@example.com")
+        composeTestRule.onNodeWithText("e m a i l").performTextInput("test@example.com")
         assert(capturedAction is LoginIntent.EmailChanged && (capturedAction as LoginIntent.EmailChanged).value == "test@example.com")
 
-        composeTestRule.onNodeWithText("Password").performTextInput("password123")
+        composeTestRule.onNodeWithText("p a s s w o r d").performTextInput("password123")
         assert(capturedAction is LoginIntent.PasswordChanged && (capturedAction as LoginIntent.PasswordChanged).value == "password123")
         
         composeTestRule.onNodeWithTag("login_screen_login_button").performClick()
