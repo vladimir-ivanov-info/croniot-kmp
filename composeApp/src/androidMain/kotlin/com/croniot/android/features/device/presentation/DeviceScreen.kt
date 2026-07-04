@@ -95,10 +95,13 @@ fun DeviceScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(text = content.device.name)
                             Spacer(Modifier.width(8.dp))
-                            DeviceTransportBadge(
-                                transport = content.device.transport,
-                                rssi = content.rssi,
-                            )
+                            if(content.device.transport == TransportKind.BLE){ //TODO quick fix
+                                DeviceTransportBadge(
+                                    transport = content.device.transport,
+                                    rssi = content.rssi,
+                                )
+                            }
+
                         }
                     }
                 },
@@ -180,13 +183,13 @@ private fun DeviceTransportBadge(transport: TransportKind, rssi: Int? = null) {
             onClick = { },
             enabled = false,
             label = { Text(label, style = MaterialTheme.typography.labelSmall) },
-            leadingIcon = {
+            /*leadingIcon = {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     modifier = Modifier.size(14.dp),
                 )
-            },
+            },*/
             colors = AssistChipDefaults.assistChipColors(
                 disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
