@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ble_discovery_title">Nearby devices</string>
+    <string name="ble_discovery_back">Back</string>
+
+    <!-- Permissions gate -->
+    <string name="ble_permissions_message">We need Bluetooth permissions to scan nearby devices.</string>
+    <string name="ble_permissions_missing">Missing: %s</string>
+    <string name="ble_permissions_grant">Grant permissions</string>
+
+    <!-- Device lists -->
+    <string name="ble_known_devices">Known</string>
+    <string name="ble_nearby_devices">Near you</string>
+    <string name="ble_searching">Searching for devices…</string>
+
+    <!-- Known device row -->
+    <string name="ble_in_range">In range</string>
+    <string name="ble_out_of_range">Out of range</string>
+    <string name="ble_connect">Connect</string>
+    <string name="ble_forget">Forget</string>
+
+    <!-- Discovered device row -->
+    <string name="ble_already_known">Already known</string>
+    <string name="ble_rssi">RSSI %d</string>
+    <string name="ble_connected">Connected</string>
+    <string name="ble_pair">Pair</string>
+
+    <!-- Pair dialog -->
+    <string name="ble_pair_title">Pair %s</string>
+    <string name="ble_pair_username">Username</string>
+    <string name="ble_pair_confirm">Pair</string>
+    <string name="ble_pair_cancel">Cancel</string>
+
+    <!-- Error messages -->
+    <string name="ble_error_permission_denied">BLE permissions denied.</string>
+    <string name="ble_error_bluetooth_off">Bluetooth is turned off.</string>
+    <string name="ble_error_bluetooth_not_supported">This device does not support BLE.</string>
+    <string name="ble_error_timeout">Timed out.</string>
+    <string name="ble_error_auth_failed">Invalid credentials.</string>
+    <string name="ble_error_bonding_failed">Bonding error (incorrect PIN or rejected).</string>
+    <string name="ble_error_requires_pairing">Device requires pairing.</string>
+    <string name="ble_error_not_found">Device not found: %s</string>
+    <string name="ble_error_gatt">GATT error: %s</string>
+    <string name="ble_error_unknown">Unknown error.</string>
+</resources>

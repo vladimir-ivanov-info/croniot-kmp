@@ -1,12 +1,11 @@
 package androidTest
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsOff
-import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import com.croniot.android.features.configuration.ConfigurationIntent
 import com.croniot.android.features.configuration.ConfigurationScreenBody
 import com.croniot.android.features.configuration.ConfigurationState
@@ -21,7 +20,7 @@ class ConfigurationScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun configurationScreen_displaysAllElements() {
+    fun displaysTitleAndBackButton() {
         composeTestRule.setContent {
             ConfigurationScreenBody(
                 state = ConfigurationState(),
@@ -31,103 +30,37 @@ class ConfigurationScreenTest {
         }
 
         composeTestRule.onNodeWithText("Configuration").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Run app in foreground service").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Use remote server").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Server IP:").assertIsDisplayed()
         composeTestRule.onNodeWithTag("config_back_button").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("config_foreground_switch").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("config_remote_server_switch").assertIsDisplayed()
     }
 
     @Test
-    fun configurationScreen_foregroundSwitchOff_whenDisabled() {
+    fun displaysServerIpField() {
         composeTestRule.setContent {
             ConfigurationScreenBody(
-                state = ConfigurationState(foregroundServiceEnabled = false),
+                state = ConfigurationState(),
                 onIntent = {},
                 onNavigateBack = {},
             )
         }
 
-        composeTestRule.onNodeWithTag("config_foreground_switch").assertIsOff()
+        composeTestRule.onNodeWithTag("config_server_ip_field").assertIsDisplayed()
     }
 
     @Test
-    fun configurationScreen_foregroundSwitchOn_whenEnabled() {
+    fun displaysCustomServerIp() {
         composeTestRule.setContent {
             ConfigurationScreenBody(
-                state = ConfigurationState(foregroundServiceEnabled = true),
+                state = ConfigurationState(serverIp = "10.0.0.1"),
                 onIntent = {},
                 onNavigateBack = {},
             )
         }
 
-        composeTestRule.onNodeWithTag("config_foreground_switch").assertIsOn()
+        composeTestRule.onNodeWithText("10.0.0.1").assertIsDisplayed()
     }
 
     @Test
-    fun configurationScreen_remoteServerSwitchOn_whenRemote() {
-        composeTestRule.setContent {
-            ConfigurationScreenBody(
-                state = ConfigurationState(serverMode = "remote"),
-                onIntent = {},
-                onNavigateBack = {},
-            )
-        }
-
-        composeTestRule.onNodeWithTag("config_remote_server_switch").assertIsOn()
-    }
-
-    @Test
-    fun configurationScreen_remoteServerSwitchOff_whenLocal() {
-        composeTestRule.setContent {
-            ConfigurationScreenBody(
-                state = ConfigurationState(serverMode = "local"),
-                onIntent = {},
-                onNavigateBack = {},
-            )
-        }
-
-        composeTestRule.onNodeWithTag("config_remote_server_switch").assertIsOff()
-    }
-
-    @Test
-    fun configurationScreen_foregroundSwitchClick_sendsIntent() {
-        var capturedIntent: ConfigurationIntent? = null
-
-        composeTestRule.setContent {
-            ConfigurationScreenBody(
-                state = ConfigurationState(foregroundServiceEnabled = false),
-                onIntent = { capturedIntent = it },
-                onNavigateBack = {},
-            )
-        }
-
-        composeTestRule.onNodeWithTag("config_foreground_switch").performClick()
-
-        assertTrue(capturedIntent is ConfigurationIntent.SetForegroundService)
-        assertEquals(true, (capturedIntent as ConfigurationIntent.SetForegroundService).enabled)
-    }
-
-    @Test
-    fun configurationScreen_remoteServerSwitchClick_sendsToggleIntent() {
-        var capturedIntent: ConfigurationIntent? = null
-
-        composeTestRule.setContent {
-            ConfigurationScreenBody(
-                state = ConfigurationState(serverMode = "remote"),
-                onIntent = { capturedIntent = it },
-                onNavigateBack = {},
-            )
-        }
-
-        composeTestRule.onNodeWithTag("config_remote_server_switch").performClick()
-
-        assertTrue(capturedIntent is ConfigurationIntent.ToggleServerMode)
-    }
-
-    @Test
-    fun configurationScreen_backButton_triggersNavigation() {
+    fun backButton_triggersNavigation() {
         var backPressed = false
 
         composeTestRule.setContent {
@@ -144,15 +77,40 @@ class ConfigurationScreenTest {
     }
 
     @Test
-    fun configurationScreen_displaysServerIp() {
+    fun typingInServerIpField_sendsSetServerIpIntent() {
+        var capturedIntent: ConfigurationIntent? = null
+
         composeTestRule.setContent {
             ConfigurationScreenBody(
-                state = ConfigurationState(serverIp = "10.0.0.1"),
-                onIntent = {},
+                state = ConfigurationState(serverIp = ""),
+                onIntent = { capturedIntent = it },
                 onNavigateBack = {},
             )
         }
 
-        composeTestRule.onNodeWithText("10.0.0.1").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("config_server_ip_field").performTextInput("192.168.1.50")
+
+        val intent = capturedIntent
+        assertTrue(intent is ConfigurationIntent.SetServerIp)
+        assertEquals("192.168.1.50", (intent as ConfigurationIntent.SetServerIp).ip)
+    }
+
+    @Test
+    fun editingServerIp_sendsUpdatedIntentOnEachChange() {
+        val intents = mutableListOf<ConfigurationIntent>()
+
+        composeTestRule.setContent {
+            ConfigurationScreenBody(
+                state = ConfigurationState(serverIp = "old"),
+                onIntent = { intents.add(it) },
+                onNavigateBack = {},
+            )
+        }
+
+        composeTestRule.onNodeWithTag("config_server_ip_field").performTextInput("new")
+
+        assertEquals(1, intents.size)
+        assertTrue(intents.first() is ConfigurationIntent.SetServerIp)
+        assertEquals("new", (intents.first() as ConfigurationIntent.SetServerIp).ip)
     }
 }

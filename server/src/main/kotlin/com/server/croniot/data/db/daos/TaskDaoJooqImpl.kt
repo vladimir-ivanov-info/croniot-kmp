@@ -203,7 +203,7 @@ class TaskDaoJooqImpl @Inject constructor(
                 val taskId = r.get(TASK.ID)!!
                 val taskUid = r.get(TASK.UID)!!
                 val taskTypeUid = r.get(TASK_TYPE.UID)!!
-                val mostRecentStateInfo = stateInfosByTaskId[taskId]?.maxWithOrNull(compareBy { it.dateTime })
+                val mostRecentStateInfo = stateInfosByTaskId[taskId]?.maxByOrNull { it.dateTime }
 
                 Task(
                     uid = taskUid,
@@ -220,13 +220,7 @@ class TaskDaoJooqImpl @Inject constructor(
         limit: Int,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
-<<<<<<< HEAD
-        taskTypeUids: List<Long>?,
-        dateFrom: java.time.OffsetDateTime?,
-        dateTo: java.time.OffsetDateTime?,
-=======
         taskTypeUid: Long?,
->>>>>>> 67a5a19 (Major migration april)
     ): List<TaskStateInfoHistoryEntryDto> {
         return dsl.transactionResult { cfg ->
             val tx = using(cfg)
@@ -244,15 +238,6 @@ class TaskDaoJooqImpl @Inject constructor(
                                 .and(TASK_STATE_INFO.ID.lt(effectiveBeforeId))
                         )
                 )
-            }
-            if (!taskTypeUids.isNullOrEmpty()) {
-                condition = condition.and(TASK_TYPE.UID.`in`(taskTypeUids))
-            }
-            if (dateFrom != null) {
-                condition = condition.and(TASK_STATE_INFO.DATE_TIME.ge(dateFrom))
-            }
-            if (dateTo != null) {
-                condition = condition.and(TASK_STATE_INFO.DATE_TIME.le(dateTo))
             }
 
             tx.select(
@@ -292,13 +277,7 @@ class TaskDaoJooqImpl @Inject constructor(
         deviceUuid: String,
         before: java.time.OffsetDateTime?,
         beforeId: Long?,
-<<<<<<< HEAD
-        taskTypeUids: List<Long>?,
-        dateFrom: java.time.OffsetDateTime?,
-        dateTo: java.time.OffsetDateTime?,
-=======
         taskTypeUid: Long?,
->>>>>>> 67a5a19 (Major migration april)
     ): Int {
         return dsl.transactionResult { cfg ->
             val tx = using(cfg)
@@ -316,15 +295,6 @@ class TaskDaoJooqImpl @Inject constructor(
                                 .and(TASK_STATE_INFO.ID.lt(effectiveBeforeId))
                         )
                 )
-            }
-            if (!taskTypeUids.isNullOrEmpty()) {
-                condition = condition.and(TASK_TYPE.UID.`in`(taskTypeUids))
-            }
-            if (dateFrom != null) {
-                condition = condition.and(TASK_STATE_INFO.DATE_TIME.ge(dateFrom))
-            }
-            if (dateTo != null) {
-                condition = condition.and(TASK_STATE_INFO.DATE_TIME.le(dateTo))
             }
 
             tx.selectCount()

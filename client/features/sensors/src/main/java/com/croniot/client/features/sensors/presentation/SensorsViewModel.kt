@@ -15,13 +15,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
 
 class SensorsViewModel(
     private val sensorDataRepository: SensorDataRepository,
-) : ViewModel(), KoinComponent {
+) : ViewModel() {
 
     companion object {
         private const val SENSOR_DATA_CACHE_SIZE = 50

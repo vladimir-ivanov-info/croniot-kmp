@@ -62,6 +62,8 @@ kotlin {
                 implementation(libs.compose.ui.tooling)
                 implementation(libs.compose.material3.android)
 
+                implementation(libs.material.icons.extended)
+
                 implementation(libs.koin.androidx.compose)
 
                 // Project dependencies
@@ -88,6 +90,13 @@ kotlin {
                 implementation(libs.robolectric)
                 implementation(libs.androidx.test.junit)
                 implementation(libs.composeUiTestJunit4)
+
+                implementation(libs.turbine)
+                implementation(libs.assertk)
+                implementation(libs.mockk)
+                implementation(libs.coroutines.test)
+                implementation(projects.testing.fakes)
+                implementation(projects.client.domain)
             }
         }
         val androidInstrumentedTest by getting {

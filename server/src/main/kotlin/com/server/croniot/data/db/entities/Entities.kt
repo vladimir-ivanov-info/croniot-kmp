@@ -1,4 +1,5 @@
 package com.server.croniot.data.db.entities
+import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 
 /* =========================
@@ -11,6 +12,7 @@ data class AccountEntity(
     val nickname: String,
     val email: String,
     val password: String,
+    val isAdmin: Boolean = false,
 )
 
 /* =========================
@@ -175,4 +177,15 @@ data class TaskStateInfoEntity(
     val state: String,
     val progress: Double,
     val errorMessage: String?,
+)
+
+/* =========================
+   FEATURE FLAG
+   ========================= */
+
+data class FeatureFlagEntity(
+    val name: String,
+    val enabled: Boolean,
+    val description: String?,
+    val updatedAt: OffsetDateTime,
 )

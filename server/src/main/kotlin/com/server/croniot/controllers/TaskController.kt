@@ -178,28 +178,9 @@ class TaskController @Inject constructor(
         val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 50
         val before = parseBefore(call.request.queryParameters["before"])
         val beforeId = call.request.queryParameters["beforeId"]?.toLongOrNull()
-<<<<<<< HEAD
-        val taskTypeUids = call.request.queryParameters["taskTypeUids"]
-            ?.split(",")
-            ?.mapNotNull { it.trim().toLongOrNull() }
-            ?.takeIf { it.isNotEmpty() }
-        val dateFrom = parseBefore(call.request.queryParameters["dateFrom"])
-        val dateTo = parseBefore(call.request.queryParameters["dateTo"])
-
-        val history = taskService.getTaskStateInfoHistory(
-            deviceUuid,
-            limit,
-            before,
-            beforeId,
-            taskTypeUids,
-            dateFrom,
-            dateTo
-        )
-=======
         val taskTypeUid = call.request.queryParameters["taskTypeUid"]?.toLongOrNull()
 
         val history = taskService.getTaskStateInfoHistory(deviceUuid, limit, before, beforeId, taskTypeUid)
->>>>>>> 67a5a19 (Major migration april)
         call.respond(history)
     }
 
@@ -209,25 +190,8 @@ class TaskController @Inject constructor(
 
         val before = parseBefore(call.request.queryParameters["before"])
         val beforeId = call.request.queryParameters["beforeId"]?.toLongOrNull()
-<<<<<<< HEAD
-        val taskTypeUids = call.request.queryParameters["taskTypeUids"]
-            ?.split(",")
-            ?.mapNotNull { it.trim().toLongOrNull() }
-            ?.takeIf { it.isNotEmpty() }
-        val dateFrom = parseBefore(call.request.queryParameters["dateFrom"])
-        val dateTo = parseBefore(call.request.queryParameters["dateTo"])
-        val total = taskService.getTaskStateInfoHistoryCount(
-            deviceUuid,
-            before,
-            beforeId,
-            taskTypeUids,
-            dateFrom,
-            dateTo
-        )
-=======
         val taskTypeUid = call.request.queryParameters["taskTypeUid"]?.toLongOrNull()
         val total = taskService.getTaskStateInfoHistoryCount(deviceUuid, before, beforeId, taskTypeUid)
->>>>>>> 67a5a19 (Major migration april)
         call.respond(total)
     }
 

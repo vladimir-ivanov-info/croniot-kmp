@@ -37,5 +37,8 @@ include(":client:features:sensors")
 include(":client:presentation")
 include(":client:features:tasktypes")
 include(":client:features:taskhistory")
+include(":client:features:blediscovery")
+
+include(":testing:fakes")
 
 include(":baselineprofile")

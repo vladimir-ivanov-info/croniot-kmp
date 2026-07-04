@@ -1,20 +1,18 @@
 package com.croniot.android.core.di
 
 import com.croniot.android.app.AppViewModel
+import com.croniot.android.core.notifications.NotificationHelper
+import com.croniot.android.core.notifications.TaskNotificationManager
 import com.croniot.android.core.presentation.splash.SplashScreenViewModel
 import com.croniot.android.features.configuration.ConfigurationScreenViewModel
 import com.croniot.android.features.device.presentation.DeviceScreenViewModel
 import com.croniot.android.features.devicelist.DeviceListViewModel
+import com.croniot.client.core.util.DevicePropertiesController
 import com.croniot.client.data.repositories.LocalDataRepositoryImpl
 import com.croniot.client.data.repositories.TasksRepositoryImpl
-import com.croniot.client.data.source.local.DataStoreController
-import com.croniot.client.data.source.local.LocalDatasource
+import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.repositories.TasksRepository
-import com.croniot.android.core.notifications.NotificationHelper
-import com.croniot.android.core.notifications.TaskNotificationManager
-import com.croniot.client.core.util.DevicePropertiesController
-import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.usecases.FetchTasksUseCase
 import com.croniot.client.features.sensors.presentation.SensorsViewModel
 import org.koin.core.module.dsl.viewModel
@@ -37,16 +35,23 @@ object MainDIModule {
             )
         }
 
-        single<LocalDatasource> { DataStoreController(context = get()) }
-
-        single<LocalDataRepository> { LocalDataRepositoryImpl(get()) }
+        single<LocalDataRepository> {
+            LocalDataRepositoryImpl(
+                navigationLocalDatasource = get(),
+                authLocalDatasource = get(),
+                deviceLocalDatasource = get(),
+                appPreferencesLocalDatasource = get(),
+                serverConfigLocalDatasource = get(),
+            )
+        }
 
         viewModel { AppViewModel(localDataRepository = get()) }
 
         viewModel {
             ConfigurationScreenViewModel(
-                localDatasource = get(),
-                hostInterceptor = get(),
+                serverConfigLocalDatasource = get(),
+             //   hostInterceptor = get(),
+                hostHolder = get(),
             )
         }
 
@@ -54,9 +59,13 @@ object MainDIModule {
             DeviceListViewModel(
                 localDataRepository = get(),
                 sensorDataRepository = get(),
+                tasksRepository = get(),
                 logOutUseCase = get(),
                 startDeviceListenersUseCase = get(),
                 taskNotificationManager = get(),
+                appSessionRepository = get(),
+                observeKnownBleDevicesUseCase = get(),
+                forgetBleDeviceUseCase = get(),
             )
         }
 
@@ -68,7 +77,9 @@ object MainDIModule {
 
         single<TasksRepository> {
             TasksRepositoryImpl(
-                tasksDataSource = get(),
+                cloudTasksDataSource = get(),
+                bleTasksDataSource = get(named("ble")),
+                transportRouter = get(),
                 localTaskHistoryDataSource = get(),
             )
         }
@@ -78,15 +89,18 @@ object MainDIModule {
                 localDataRepository = get(),
                 fetchTasksUseCase = get(),
                 startDeviceListenersUseCase = get(),
+                getDeviceUseCase = get(),
+                observeBleRssiUseCase = get(),
             )
         }
 
         viewModel {
             SplashScreenViewModel(
                 localDataRepository = get(),
-                logInUseCase = get(),
+                sessionRepository = get(),
                 logOutUseCase = get(),
                 startDeviceListenersUseCase = get(),
+                appSessionRepository = get(),
             )
         }
 

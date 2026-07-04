@@ -10,7 +10,7 @@ import org.koin.dsl.module
 object RegisterAccountModule {
 
     val registerAccountModule = module {
-        single<RegisterAccountRepository> { RegisterAccountRepositoryImpl(networkUtil = get()) }
+        single<RegisterAccountRepository> { RegisterAccountRepositoryImpl(registerApi = get()) }
         factory { RegisterAccountUseCase(repository = get()) }
         viewModel {
             ViewModelRegisterAccount(

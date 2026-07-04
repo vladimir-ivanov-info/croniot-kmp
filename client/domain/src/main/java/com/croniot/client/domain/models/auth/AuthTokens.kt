@@ -1,0 +1,7 @@
+package com.croniot.client.domain.models.auth
+
+data class AuthTokens(
+    val accessToken: String,
+    val refreshToken: String,
+    val expiresAtEpochSeconds: Long,
+)

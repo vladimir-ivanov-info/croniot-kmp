@@ -1,10 +1,10 @@
 package com.croniot.client.domain.usecases
 
 import Outcome
+import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.models.auth.AuthError
 import com.croniot.client.domain.models.auth.AuthSession
-import com.croniot.client.domain.DevicePropertiesProvider
 import com.croniot.client.domain.repositories.AccountRepository
 import com.croniot.client.domain.repositories.AuthRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
@@ -33,12 +33,13 @@ class LogInUseCase(
 
             result = when (loginResult) {
                 is Outcome.Ok -> {
-                    val token = loginResult.value.token
+                    val accessToken = loginResult.value.tokens.accessToken
 
                     sessionRepository.save(
-                        session = AuthSession(email = email, token = token),
+                        session = AuthSession(email = email, token = accessToken),
                     )
-                   // accountRepository.save(account = loginResult.value.account)
+                    sessionRepository.saveTokens(loginResult.value.tokens)
+                    // accountRepository.save(account = loginResult.value.account)
                     accountRepository.save(
                         account = loginResult.value.account.copy(
                             devices = loginResult.value.account.devices + listOf(
@@ -70,7 +71,6 @@ class LogInUseCase(
                             )
                         )
                     )
-                    localDataRepository.savePassword(password = password)
                     Outcome.Ok(Unit)
                 }
                 is Outcome.Err -> loginResult

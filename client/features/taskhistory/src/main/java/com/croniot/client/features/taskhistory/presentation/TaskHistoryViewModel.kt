@@ -8,14 +8,13 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.croniot.client.domain.models.TaskHistoryFilter
+import com.croniot.client.domain.models.TaskType
 import com.croniot.client.domain.repositories.TaskTypesRepository
 import com.croniot.client.domain.repositories.TasksRepository
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryCountUseCase
 import com.croniot.client.domain.usecases.FetchTaskStateInfoHistoryUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,17 +25,9 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
-
-sealed interface TaskHistoryFilterAction {
-    data class SetTaskTypeFilter(val taskTypeUids: Set<Long>) : TaskHistoryFilterAction
-    data class SetDateRange(val fromMillis: Long?, val toMillis: Long?) : TaskHistoryFilterAction
-    data object ClearAllFilters : TaskHistoryFilterAction
-    data object ToggleFilterSheet : TaskHistoryFilterAction
-}
 
 @Immutable
 data class TaskHistoryItem(
@@ -88,13 +79,12 @@ class TaskHistoryViewModel(
 
     private val deviceUuidFlow = MutableStateFlow<String?>(null)
     private val snapshotBeforeFlow = MutableStateFlow<String?>(null)
-    private val countRefreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    private val _filterState = MutableStateFlow(TaskHistoryFilter.NONE)
-    val filterState: StateFlow<TaskHistoryFilter> = _filterState.asStateFlow()
+    private val _taskTypeFilter = MutableStateFlow<TaskType?>(null)
+    val taskTypeFilter: StateFlow<TaskType?> = _taskTypeFilter.asStateFlow()
 
-    private val _isFilterSheetVisible = MutableStateFlow(false)
-    val isFilterSheetVisible: StateFlow<Boolean> = _isFilterSheetVisible.asStateFlow()
+    private val _availableTaskTypes = MutableStateFlow<List<TaskType>>(emptyList())
+    val availableTaskTypes: StateFlow<List<TaskType>> = _availableTaskTypes.asStateFlow()
 
     private val _newItems = MutableStateFlow<List<TaskHistoryItem>>(emptyList())
     val newItems: StateFlow<List<TaskHistoryItem>> = _newItems.asStateFlow()
@@ -110,7 +100,7 @@ class TaskHistoryViewModel(
     val pagingFlow: Flow<PagingData<TaskHistoryItem>> = combine(
         deviceUuidFlow,
         snapshotBeforeFlow,
-        _filterState,
+        _taskTypeFilter,
     ) { uuid, snapshotBefore, filter ->
         Triple(uuid, snapshotBefore, filter)
     }.flatMapLatest { (uuid, snapshotBefore, filter) ->
@@ -130,8 +120,7 @@ class TaskHistoryViewModel(
                     deviceUuid = uuid,
                     snapshotBefore = snapshotBefore,
                     pageSize = PAGE_SIZE,
-                    filter = filter,
-                    onFirstPageLoaded = { countRefreshTrigger.tryEmit(Unit) },
+                    taskTypeUidFilter = filter?.uid,
                 )
             },
         ).flow
@@ -139,21 +128,16 @@ class TaskHistoryViewModel(
 
     init {
         viewModelScope.launch {
-            deviceUuidFlow
-                .filterNotNull()
-                .distinctUntilChanged()
-                .flatMapLatest { uuid ->
+            combine(
+                deviceUuidFlow.filterNotNull().distinctUntilChanged(),
+                _taskTypeFilter,
+            ) { uuid, filter -> uuid to filter }
+                .flatMapLatest { (uuid, filter) ->
                     resetLiveNewItemsState()
-                    tasksRepository.observeTaskStateInfoUpdates(uuid).map { event -> uuid to event }
+                    tasksRepository.observeTaskStateInfoUpdates(uuid).map { event -> Triple(uuid, filter, event) }
                 }
-                .collect { (deviceUuid, event) ->
-                    val currentFilter = _filterState.value
-                    if (currentFilter.taskTypeUids.isNotEmpty() && event.key.taskTypeUid !in currentFilter.taskTypeUids) return@collect
-                    val eventMillis = event.info.dateTime.toInstant().toEpochMilli()
-                    val fromMillis = currentFilter.dateFromMillis
-                    val toMillis = currentFilter.dateToMillis
-                    if (fromMillis != null && eventMillis < fromMillis) return@collect
-                    if (toMillis != null && eventMillis > toMillis) return@collect
+                .collect { (deviceUuid, filter, event) ->
+                    if (filter != null && event.key.taskTypeUid != filter.uid) return@collect
 
                     val typeName = taskTypesRepository.get(deviceUuid, event.key.taskTypeUid)?.name ?: "Unknown"
                     val item = buildTaskHistoryItem(
@@ -183,13 +167,9 @@ class TaskHistoryViewModel(
         }
 
         viewModelScope.launch {
-            val stateFlow = combine(deviceUuidFlow, snapshotBeforeFlow, _filterState) { uuid, snapshotBefore, filter ->
+            combine(deviceUuidFlow, snapshotBeforeFlow, _taskTypeFilter) { uuid, snapshotBefore, filter ->
                 Triple(uuid, snapshotBefore, filter)
             }
-            val refreshFlow = countRefreshTrigger.map {
-                Triple(deviceUuidFlow.value, snapshotBeforeFlow.value, _filterState.value)
-            }
-            merge(stateFlow, refreshFlow)
                 .collectLatest { (uuid, snapshotBefore, filter) ->
                     if (uuid == null || snapshotBefore == null) {
                         _totalEntries.value = null
@@ -201,9 +181,9 @@ class TaskHistoryViewModel(
                         _totalEntries.value = null
                         totalEntriesDeviceUuid = uuid
                     }
-                    when (val result = fetchTaskStateInfoHistoryCountUseCase(uuid, snapshotBefore, filter = filter)) {
+                    when (val result = fetchTaskStateInfoHistoryCountUseCase(uuid, snapshotBefore, taskTypeUid = filter?.uid)) {
                         is Outcome.Ok -> _totalEntries.value = result.value
-                        is Outcome.Err -> Unit
+                        is Outcome.Err -> Unit // Keep last known total to avoid UI flicker on transient errors.
                     }
                 }
         }
@@ -216,6 +196,7 @@ class TaskHistoryViewModel(
         if (currentDeviceUuid != deviceUuid) {
             deviceUuidFlow.value = deviceUuid
             snapshotBeforeFlow.value = System.currentTimeMillis().toString()
+            _availableTaskTypes.value = taskTypesRepository.getAll(deviceUuid)
             resetLiveNewItemsState()
             return
         }
@@ -224,6 +205,11 @@ class TaskHistoryViewModel(
             snapshotBeforeFlow.value = System.currentTimeMillis().toString()
             resetLiveNewItemsState()
         }
+    }
+
+    fun setFilter(taskType: TaskType?) {
+        _taskTypeFilter.value = taskType
+        resetLiveNewItemsState()
     }
 
     private fun registerNewIdentity(identity: TaskHistoryItemIdentity): Boolean {
@@ -237,28 +223,6 @@ class TaskHistoryViewModel(
             }
         }
         return true
-    }
-
-    fun onFilterAction(action: TaskHistoryFilterAction) {
-        when (action) {
-            is TaskHistoryFilterAction.SetTaskTypeFilter -> applyFilter(
-                _filterState.value.copy(taskTypeUids = action.taskTypeUids),
-            )
-            is TaskHistoryFilterAction.SetDateRange -> applyFilter(
-                _filterState.value.copy(dateFromMillis = action.fromMillis, dateToMillis = action.toMillis),
-            )
-            TaskHistoryFilterAction.ClearAllFilters -> applyFilter(TaskHistoryFilter.NONE)
-            TaskHistoryFilterAction.ToggleFilterSheet -> {
-                _isFilterSheetVisible.update { !it }
-            }
-        }
-    }
-
-    private fun applyFilter(newFilter: TaskHistoryFilter) {
-        if (newFilter == _filterState.value) return
-        _filterState.value = newFilter
-        resetLiveNewItemsState()
-        snapshotBeforeFlow.value = System.currentTimeMillis().toString()
     }
 
     private fun resetLiveNewItemsState() {

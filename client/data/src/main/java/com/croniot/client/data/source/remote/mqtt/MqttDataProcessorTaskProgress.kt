@@ -16,7 +16,7 @@ class MqttDataProcessorTaskProgress(
         try {
             val dataString = data as String
 
-            val key = parseProgressTopic(topic) ?: return
+            val key = parseTaskStateInfoTopic(topic) ?: return
 
             val dto = MessageFactory.fromJsonWithZonedDateTime<TaskStateInfoDto>(dataString)
             val info = dto.toModel()
@@ -24,11 +24,11 @@ class MqttDataProcessorTaskProgress(
             Log.d("RTT", "MQTT received: ${info.state} (topic: $topic)")
             onNewData(TaskStateInfoEvent(key = key, info = info))
         } catch (e: Exception) {
-            Log.e("MqttTaskProgress", "Failed to process message on topic=$topic", e)
+            Log.e("MqttTaskStateInfo", "Failed to process message on topic=$topic", e)
         }
     }
 
-    private fun parseProgressTopic(topic: String): TaskKey? {
+    private fun parseTaskStateInfoTopic(topic: String): TaskKey? {
         val parts = topic.trim('/').split('/')
         // server_to_devices/{deviceUuid}/task_types/{taskTypeUid}/tasks/{taskUid}/progress
         if (parts.size != 7) return null

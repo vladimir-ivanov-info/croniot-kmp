@@ -12,6 +12,31 @@ interface TaskHistoryCacheDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(entities: List<TaskHistoryCacheEntity>)
 
+    @Query("SELECT COUNT(*) FROM task_history_cache WHERE deviceUuid = :deviceUuid")
+    suspend fun countByDevice(deviceUuid: String): Int
+
+    @Query(
+        """
+        SELECT MIN(timeStampMillis) FROM task_history_cache
+        WHERE deviceUuid = :deviceUuid
+        """,
+    )
+    suspend fun oldestTimestamp(deviceUuid: String): Long?
+
+    @Query(
+        """
+        DELETE FROM task_history_cache
+        WHERE deviceUuid = :deviceUuid
+          AND id NOT IN (
+              SELECT id FROM task_history_cache
+              WHERE deviceUuid = :deviceUuid
+              ORDER BY timeStampMillis DESC, id DESC
+              LIMIT :maxEntries
+          )
+        """,
+    )
+    suspend fun deleteOldest(deviceUuid: String, maxEntries: Int)
+
     @Query(
         """
         SELECT * FROM task_history_cache

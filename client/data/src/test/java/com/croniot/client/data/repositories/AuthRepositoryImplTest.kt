@@ -26,6 +26,8 @@ class AuthRepositoryImplTest {
         devices = emptyList(),
     )
     private val validToken = "jwt-token-abc"
+    private val validRefreshToken = "refresh-token-xyz"
+    private val validExpiresAt = 1_800_000_000L
 
     @BeforeEach
     fun setUp() {
@@ -35,11 +37,13 @@ class AuthRepositoryImplTest {
     private fun loginParams() = Triple("test@test.com", "password", "device-uuid")
 
     @Test
-    fun `login returns Ok with LoginResult when account and token are present`() = runTest {
+    fun `login returns Ok with LoginResult when account and tokens are present`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = validAccountDto,
             token = validToken,
+            refreshToken = validRefreshToken,
+            accessTokenExpiresAtEpochSeconds = validExpiresAt,
         )
         coEvery { loginDataSource.login(any()) } returns Outcome.Ok(dto)
 
@@ -48,7 +52,9 @@ class AuthRepositoryImplTest {
 
         assertInstanceOf(Outcome.Ok::class.java, result)
         val ok = result as Outcome.Ok
-        assertEquals(validToken, ok.value.token)
+        assertEquals(validToken, ok.value.tokens.accessToken)
+        assertEquals(validRefreshToken, ok.value.tokens.refreshToken)
+        assertEquals(validExpiresAt, ok.value.tokens.expiresAtEpochSeconds)
         assertEquals("acc-uuid", ok.value.account.uuid)
     }
 
@@ -83,6 +89,8 @@ class AuthRepositoryImplTest {
             result = Result(success = true),
             accountDto = null,
             token = validToken,
+            refreshToken = validRefreshToken,
+            accessTokenExpiresAtEpochSeconds = validExpiresAt,
         )
         coEvery { loginDataSource.login(any()) } returns Outcome.Ok(dto)
 

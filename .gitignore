@@ -74,4 +74,6 @@ server/KotlinMQTTServer*/
 **/persistence.xml
 **/secrets.json
 
+#Local AI files
+Modelfile
 
