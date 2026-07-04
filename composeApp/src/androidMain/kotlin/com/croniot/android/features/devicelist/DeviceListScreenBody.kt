@@ -411,7 +411,9 @@ fun DeviceRow(
                         modifier = Modifier.weight(1f, fill = false),
                     )
                     Spacer(Modifier.width(8.dp))
-                    TransportBadge(transport = device.transport)
+                    if(device.transport == TransportKind.BLE){ //TODO quick fix
+                        TransportBadge(transport = device.transport)
+                    }
                 }
                 Text(
                     text = relative,
@@ -478,13 +480,18 @@ private fun TransportBadge(transport: TransportKind) {
     AssistChip(
         onClick = { },
         enabled = false,
-        label = { Text(label, style = MaterialTheme.typography.labelSmall) },
+        label = {
+            Text(label, style = MaterialTheme.typography.labelSmall)
+        },
         leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-            )
+            if(transport == TransportKind.BLE) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                )
+            }
+
         },
         colors = AssistChipDefaults.assistChipColors(
             disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
