@@ -3,11 +3,13 @@ package com.croniot.android.features.configuration
 import com.croniot.client.core.config.ServerConfig
 import com.croniot.client.data.source.local.ServerConfigLocalDatasource
 import com.croniot.client.data.source.remote.http.HostHolder
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -67,5 +69,25 @@ class ConfigurationScreenViewModelTest {
         viewModel.onIntent(ConfigurationIntent.SetServerIp("172.16.0.1"))
 
         assertEquals("172.16.0.1", hostHolder.host)
+    }
+
+    @Test
+    fun `init loads stored server ip into state`() = runTest {
+        val datasource: ServerConfigLocalDatasource = mockk(relaxed = true)
+        coEvery { datasource.getServerIp() } returns flowOf("10.20.30.40")
+
+        val vm = ConfigurationScreenViewModel(serverConfigLocalDatasource = datasource, hostHolder = hostHolder)
+
+        assertEquals("10.20.30.40", vm.state.value.serverIp)
+    }
+
+    @Test
+    fun `init falls back to remote default ip when stored ip is null`() = runTest {
+        val datasource: ServerConfigLocalDatasource = mockk(relaxed = true)
+        coEvery { datasource.getServerIp() } returns flowOf(null)
+
+        val vm = ConfigurationScreenViewModel(serverConfigLocalDatasource = datasource, hostHolder = hostHolder)
+
+        assertEquals(ServerConfig.SERVER_IP_REMOTE, vm.state.value.serverIp)
     }
 }

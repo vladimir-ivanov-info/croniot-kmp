@@ -75,4 +75,24 @@ class TaskTypesRepositoryImplTest {
         assertEquals(first, repository.get(deviceUuid, 1L))
         assertEquals(second, repository.get(deviceUuid, 2L))
     }
+
+    @Test
+    fun `getAll returns empty list when cache is empty`() {
+        assertEquals(emptyList<TaskType>(), repository.getAll(deviceUuid))
+    }
+
+    @Test
+    fun `getAll returns only the task types for the given device`() {
+        val first = TaskType(uid = 1L, name = "First", description = "", parameters = emptyList())
+        val second = TaskType(uid = 2L, name = "Second", description = "", parameters = emptyList())
+        val other = TaskType(uid = 1L, name = "Other device", description = "", parameters = emptyList())
+
+        repository.add(deviceUuid, first)
+        repository.add(deviceUuid, second)
+        repository.add("other-device", other)
+
+        val all = repository.getAll(deviceUuid)
+
+        assertEquals(setOf(first, second), all.toSet())
+    }
 }

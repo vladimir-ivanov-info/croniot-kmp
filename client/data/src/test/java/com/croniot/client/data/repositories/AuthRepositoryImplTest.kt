@@ -114,4 +114,59 @@ class AuthRepositoryImplTest {
 
         assertEquals(Outcome.Err(AuthError.TokenMissing), result)
     }
+
+    @Test
+    fun `login returns TokenMissing when refreshToken is missing`() = runTest {
+        val dto = LoginResultDto(
+            result = Result(success = true),
+            accountDto = validAccountDto,
+            token = validToken,
+            refreshToken = null,
+            accessTokenExpiresAtEpochSeconds = validExpiresAt,
+        )
+        coEvery { loginDataSource.login(any()) } returns Outcome.Ok(dto)
+
+        val (email, password, deviceUuid) = loginParams()
+        val result = repository.login(email, password, deviceUuid, null, emptyMap())
+
+        assertEquals(Outcome.Err(AuthError.TokenMissing), result)
+    }
+
+    @Test
+    fun `login returns TokenMissing when expiresAt is missing`() = runTest {
+        val dto = LoginResultDto(
+            result = Result(success = true),
+            accountDto = validAccountDto,
+            token = validToken,
+            refreshToken = validRefreshToken,
+            accessTokenExpiresAtEpochSeconds = null,
+        )
+        coEvery { loginDataSource.login(any()) } returns Outcome.Ok(dto)
+
+        val (email, password, deviceUuid) = loginParams()
+        val result = repository.login(email, password, deviceUuid, null, emptyMap())
+
+        assertEquals(Outcome.Err(AuthError.TokenMissing), result)
+    }
+
+    @Test
+    fun `login passes deviceToken and deviceProperties through to the data source`() = runTest {
+        val dto = LoginResultDto(
+            result = Result(success = true),
+            accountDto = validAccountDto,
+            token = validToken,
+            refreshToken = validRefreshToken,
+            accessTokenExpiresAtEpochSeconds = validExpiresAt,
+        )
+        coEvery { loginDataSource.login(any()) } returns Outcome.Ok(dto)
+        val properties = mapOf("model" to "Pixel")
+
+        repository.login("test@test.com", "password", "device-uuid", "device-token-123", properties)
+
+        io.mockk.coVerify(exactly = 1) {
+            loginDataSource.login(
+                match { it.deviceToken == "device-token-123" && it.deviceProperties == properties },
+            )
+        }
+    }
 }

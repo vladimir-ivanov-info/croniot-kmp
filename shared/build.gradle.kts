@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKmpLibrary)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kover)
     id("io.gitlab.arturbosch.detekt")
 }
 
@@ -31,5 +32,17 @@ kotlin {
             implementation(libs.mqtt)
             implementation(libs.coroutinesCore)
         }
+        val jvmTest by getting {
+            dependencies {
+                implementation(libs.junit.jupiter)
+                runtimeOnly(libs.junit.jupiter.engine)
+                runtimeOnly(libs.junit.platform.launcher)
+                implementation(libs.assertk)
+            }
+        }
     }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }

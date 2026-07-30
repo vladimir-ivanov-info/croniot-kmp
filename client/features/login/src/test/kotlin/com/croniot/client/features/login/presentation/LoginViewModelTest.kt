@@ -2,12 +2,15 @@ package com.croniot.client.features.login.presentation
 
 import Outcome
 import androidx.lifecycle.SavedStateHandle
+import com.croniot.client.domain.models.Account
+import com.croniot.client.domain.models.ConnectionError
 import com.croniot.client.domain.models.auth.AuthError
 import com.croniot.client.domain.repositories.AppSessionRepository
 import com.croniot.client.domain.repositories.LocalDataRepository
 import com.croniot.client.domain.usecases.LogInUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -121,6 +124,137 @@ class LoginViewModelTest {
     }
 
     @Test
+    fun `on Login failure with Network error, shows correct message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.Network)
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals("No hay conexión con el servidor.", (effects.first() as LoginEffect.ShowSnackbar).content)
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login failure with NetworkTiemout error, shows correct message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.NetworkTiemout)
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals("Timeout con el servidor.", (effects.first() as LoginEffect.ShowSnackbar).content)
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login failure with DeviceMissing error, shows correct message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.DeviceMissing)
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals(
+            "No se encontró el identificador del dispositivo.",
+            (effects.first() as LoginEffect.ShowSnackbar).content,
+        )
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login failure with Server error carrying a message, shows that message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.Server("Custom server error"))
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals("Custom server error", (effects.first() as LoginEffect.ShowSnackbar).content)
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login failure with Server error without a message, falls back to default message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.Server(null))
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals("Error de servidor.", (effects.first() as LoginEffect.ShowSnackbar).content)
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login failure with Unknown error, shows correct message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.Unknown)
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals("Error desconocido.", (effects.first() as LoginEffect.ShowSnackbar).content)
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login failure with AccountMissing error, shows correct message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.AccountMissing)
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals("No account returned", (effects.first() as LoginEffect.ShowSnackbar).content)
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login failure with TokenMissing error, shows correct message`() = runTest {
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Err(AuthError.TokenMissing)
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals("No token returned", (effects.first() as LoginEffect.ShowSnackbar).content)
+        job.cancel()
+    }
+
+    @Test
     fun `on GoToCreateAccountScreen action, navigates to register`() = runTest {
         val effects = mutableListOf<LoginEffect>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -145,6 +279,86 @@ class LoginViewModelTest {
 
         assertEquals(1, effects.size)
         assertEquals(LoginEffect.NavigateToConfiguration, effects.first())
+        job.cancel()
+    }
+
+    @Test
+    fun `on GoToBleDiscovery action, navigates to ble discovery`() = runTest {
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.GoToBleDiscovery)
+
+        assertEquals(1, effects.size)
+        assertEquals(LoginEffect.NavigateToBleDiscovery, effects.first())
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login success with account, activates server session and starts listeners`() = runTest {
+        val account = Account(uuid = "acc-1", nickname = "nick", email = "user@example.com", devices = emptyList())
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Ok(Unit)
+        coEvery { localDataRepository.getCurrentAccount() } returns account
+        coEvery { startDeviceListenersUseCase(account.devices) } returns Outcome.Ok(Unit)
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { appSessionRepository.activateServerSession(account) }
+        coVerify(exactly = 1) { startDeviceListenersUseCase(account.devices) }
+        assertEquals(LoginEffect.NavigateHome, effects.last())
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login success with listener errors, emits ConnectionErrors effect before navigating home`() = runTest {
+        val account = Account(uuid = "acc-1", nickname = "nick", email = "user@example.com", devices = emptyList())
+        val errors = listOf(ConnectionError.Unknown)
+        coEvery { loginUseCase(any(), any()) } returns Outcome.Ok(Unit)
+        coEvery { localDataRepository.getCurrentAccount() } returns account
+        coEvery { startDeviceListenersUseCase(account.devices) } returns Outcome.Err(errors)
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertEquals(2, effects.size)
+        assertEquals(LoginEffect.ConnectionErrors(errors), effects[0])
+        assertEquals(LoginEffect.NavigateHome, effects[1])
+        job.cancel()
+    }
+
+    @Test
+    fun `on Login timeout, shows could not connect snackbar`() = runTest {
+        coEvery { loginUseCase(any(), any()) } coAnswers {
+            kotlinx.coroutines.delay(60_000L)
+            Outcome.Ok(Unit)
+        }
+
+        val effects = mutableListOf<LoginEffect>()
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.effects.collect { effects.add(it) }
+        }
+
+        viewModel.onAction(LoginIntent.Login)
+        advanceUntilIdle()
+
+        assertFalse(viewModel.state.value.isLoading)
+        assertEquals(1, effects.size)
+        val effect = effects.first()
+        assertTrue(effect is LoginEffect.ShowSnackbar)
+        assertEquals("Could not connect to server", (effect as LoginEffect.ShowSnackbar).content)
         job.cancel()
     }
 }

@@ -5,10 +5,13 @@ import com.croniot.client.domain.models.auth.AuthTokens
 import com.croniot.client.data.source.local.AppPreferencesLocalDatasource
 import com.croniot.client.data.source.local.AuthLocalDatasource
 import com.croniot.client.data.source.local.TokenStore
+import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -61,5 +64,37 @@ class SessionRepositoryImplTest {
 
         coVerify(exactly = 1) { tokenStore.clearTokens() }
         coVerify(exactly = 1) { appPreferencesLocalDatasource.clearAllCacheExceptDeviceUuid() }
+    }
+
+    @Test
+    fun `getTokens returns tokens from token store`() = runTest {
+        val tokens = AuthTokens(
+            accessToken = "access-123",
+            refreshToken = "refresh-123",
+            expiresAtEpochSeconds = 1_700_000_000L,
+        )
+        coEvery { tokenStore.getTokens() } returns tokens
+
+        val result = repository.getTokens()
+
+        assertEquals(tokens, result)
+    }
+
+    @Test
+    fun `getTokens returns null when token store has none`() = runTest {
+        coEvery { tokenStore.getTokens() } returns null
+
+        val result = repository.getTokens()
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `clearTokens delegates to token store`() = runTest {
+        coJustRun { tokenStore.clearTokens() }
+
+        repository.clearTokens()
+
+        coVerify(exactly = 1) { tokenStore.clearTokens() }
     }
 }

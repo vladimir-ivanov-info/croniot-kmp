@@ -8,6 +8,9 @@ import croniot.models.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
@@ -110,6 +113,33 @@ class LoginDataSourceImplTest {
 
         assertInstanceOf(Outcome.Err::class.java, result)
         assertInstanceOf(AuthError.Server::class.java, (result as Outcome.Err).error)
+    }
+
+    @Test
+    fun `HttpRequestTimeoutException maps to AuthError NetworkTiemout`() = runTest {
+        val source = dataSource { throw HttpRequestTimeoutException("login", 5000L) }
+
+        val result = source.login(loginRequest)
+
+        assertEquals(Outcome.Err(AuthError.NetworkTiemout), result)
+    }
+
+    @Test
+    fun `ConnectTimeoutException maps to AuthError NetworkTiemout`() = runTest {
+        val source = dataSource { throw ConnectTimeoutException("login", cause = java.io.IOException()) }
+
+        val result = source.login(loginRequest)
+
+        assertEquals(Outcome.Err(AuthError.NetworkTiemout), result)
+    }
+
+    @Test
+    fun `SocketTimeoutException maps to AuthError NetworkTiemout`() = runTest {
+        val source = dataSource { throw SocketTimeoutException("login", cause = java.io.IOException()) }
+
+        val result = source.login(loginRequest)
+
+        assertEquals(Outcome.Err(AuthError.NetworkTiemout), result)
     }
 
     @Test
