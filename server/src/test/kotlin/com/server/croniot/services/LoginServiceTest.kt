@@ -118,6 +118,7 @@ class LoginServiceTest {
         every { accountRepository.getAccountId("user@example.com") } returns 77L
         every { deviceRepository.createDevice(any(), 77L) } returns 1L
         every { accountRepository.getAccount("user@example.com") } returns account
+        every { accountRepository.isAdmin("user@example.com") } returns false
         every { refreshTokenService.issueForAccount(77L, "device-uuid") } returns "refresh-token-plaintext"
 
         val result = service.login(loginDto)
