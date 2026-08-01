@@ -22,7 +22,7 @@ class FeatureFlagLocalDatasourceTest {
     private fun datasource() = FeatureFlagLocalDatasource(ApplicationProvider.getApplicationContext())
 
     @Test
-    fun `saveFlags then observeFlags emits the saved flags`() = runTest {
+    fun `WHEN saveFlags is called THEN observeFlags emits the saved flags`() = runTest {
         val ds = datasource()
         val flags = listOf(FeatureFlagDto(name = "new_ui", enabled = true), FeatureFlagDto(name = "beta", enabled = false))
 
@@ -32,7 +32,7 @@ class FeatureFlagLocalDatasourceTest {
     }
 
     @Test
-    fun `updateFlag toggles the matching flag and leaves others untouched`() = runTest {
+    fun `WHEN updateFlag is called for a matching flag THEN it toggles it and leaves others untouched`() = runTest {
         val ds = datasource()
         ds.saveFlags(listOf(FeatureFlagDto(name = "new_ui", enabled = false), FeatureFlagDto(name = "beta", enabled = false)))
 
@@ -44,7 +44,7 @@ class FeatureFlagLocalDatasourceTest {
     }
 
     @Test
-    fun `updateFlag with a name that matches nothing leaves the saved flags unchanged`() = runTest {
+    fun `WHEN updateFlag is called with a name that matches nothing THEN the saved flags remain unchanged`() = runTest {
         val ds = datasource()
         val flags = listOf(FeatureFlagDto(name = "new_ui", enabled = false))
         ds.saveFlags(flags)

@@ -19,30 +19,30 @@ class TaskTypesRepositoryImplTest {
     }
 
     @Test
-    fun `get returns null when cache is empty`() {
+    fun `WHEN cache is empty THEN get returns null`() {
         assertNull(repository.get(deviceUuid, taskType.uid))
     }
 
     @Test
-    fun `add and get returns stored task type`() {
+    fun `WHEN a task type has been added THEN get returns the stored task type`() {
         repository.add(deviceUuid, taskType)
         assertEquals(taskType, repository.get(deviceUuid, taskType.uid))
     }
 
     @Test
-    fun `get with wrong deviceUuid returns null`() {
+    fun `WHEN deviceUuid is wrong THEN get returns null`() {
         repository.add(deviceUuid, taskType)
         assertNull(repository.get("other-device", taskType.uid))
     }
 
     @Test
-    fun `get with wrong uid returns null`() {
+    fun `WHEN uid is wrong THEN get returns null`() {
         repository.add(deviceUuid, taskType)
         assertNull(repository.get(deviceUuid, 999L))
     }
 
     @Test
-    fun `add is idempotent - second add does not overwrite first`() {
+    fun `WHEN add is called twice with the same key THEN the second add does not overwrite the first`() {
         val original = taskType
         val duplicate = taskType.copy(name = "Modified")
 
@@ -53,7 +53,7 @@ class TaskTypesRepositoryImplTest {
     }
 
     @Test
-    fun `different devices with same uid are stored independently`() {
+    fun `WHEN different devices share the same uid THEN they are stored independently`() {
         val taskTypeA = TaskType(uid = 1L, name = "A", description = "", parameters = emptyList())
         val taskTypeB = TaskType(uid = 1L, name = "B", description = "", parameters = emptyList())
 
@@ -65,7 +65,7 @@ class TaskTypesRepositoryImplTest {
     }
 
     @Test
-    fun `same device with different uids stores both`() {
+    fun `WHEN the same device has different uids THEN both are stored`() {
         val first = TaskType(uid = 1L, name = "First", description = "", parameters = emptyList())
         val second = TaskType(uid = 2L, name = "Second", description = "", parameters = emptyList())
 
@@ -77,12 +77,12 @@ class TaskTypesRepositoryImplTest {
     }
 
     @Test
-    fun `getAll returns empty list when cache is empty`() {
+    fun `WHEN cache is empty THEN getAll returns empty list`() {
         assertEquals(emptyList<TaskType>(), repository.getAll(deviceUuid))
     }
 
     @Test
-    fun `getAll returns only the task types for the given device`() {
+    fun `WHEN multiple devices have task types THEN getAll returns only those for the given device`() {
         val first = TaskType(uid = 1L, name = "First", description = "", parameters = emptyList())
         val second = TaskType(uid = 2L, name = "Second", description = "", parameters = emptyList())
         val other = TaskType(uid = 1L, name = "Other device", description = "", parameters = emptyList())

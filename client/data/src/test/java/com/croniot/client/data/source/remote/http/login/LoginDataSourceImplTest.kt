@@ -53,7 +53,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `successful response returns Ok with body`() = runTest {
+    fun `WHEN response is successful THEN it returns Ok with body`() = runTest {
         val source = dataSource {
             respond(
                 content = ByteReadChannel(json.encodeToString(validBody)),
@@ -69,7 +69,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `ConnectException maps to AuthError Network`() = runTest {
+    fun `WHEN ConnectException is thrown THEN it maps to AuthError Network`() = runTest {
         val source = dataSource { throw ConnectException("refused") }
 
         val result = source.login(loginRequest)
@@ -78,7 +78,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `UnknownHostException maps to AuthError Network`() = runTest {
+    fun `WHEN UnknownHostException is thrown THEN it maps to AuthError Network`() = runTest {
         val source = dataSource { throw UnknownHostException("unknown host") }
 
         val result = source.login(loginRequest)
@@ -87,7 +87,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `HTTP 401 maps to AuthError InvalidCredentials`() = runTest {
+    fun `WHEN server responds with HTTP 401 THEN it maps to AuthError InvalidCredentials`() = runTest {
         val source = dataSource {
             respond(
                 content = ByteReadChannel(""),
@@ -101,7 +101,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `HTTP 500 maps to AuthError Server`() = runTest {
+    fun `WHEN server responds with HTTP 500 THEN it maps to AuthError Server`() = runTest {
         val source = dataSource {
             respond(
                 content = ByteReadChannel(""),
@@ -116,7 +116,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `HttpRequestTimeoutException maps to AuthError NetworkTiemout`() = runTest {
+    fun `WHEN HttpRequestTimeoutException is thrown THEN it maps to AuthError NetworkTiemout`() = runTest {
         val source = dataSource { throw HttpRequestTimeoutException("login", 5000L) }
 
         val result = source.login(loginRequest)
@@ -125,7 +125,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `ConnectTimeoutException maps to AuthError NetworkTiemout`() = runTest {
+    fun `WHEN ConnectTimeoutException is thrown THEN it maps to AuthError NetworkTiemout`() = runTest {
         val source = dataSource { throw ConnectTimeoutException("login", cause = java.io.IOException()) }
 
         val result = source.login(loginRequest)
@@ -134,7 +134,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `SocketTimeoutException maps to AuthError NetworkTiemout`() = runTest {
+    fun `WHEN SocketTimeoutException is thrown THEN it maps to AuthError NetworkTiemout`() = runTest {
         val source = dataSource { throw SocketTimeoutException("login", cause = java.io.IOException()) }
 
         val result = source.login(loginRequest)
@@ -143,7 +143,7 @@ class LoginDataSourceImplTest {
     }
 
     @Test
-    fun `unexpected exception maps to AuthError Unknown`() = runTest {
+    fun `WHEN an unexpected exception is thrown THEN it maps to AuthError Unknown`() = runTest {
         val source = dataSource { throw RuntimeException("unexpected") }
 
         val result = source.login(loginRequest)

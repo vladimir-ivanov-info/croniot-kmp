@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 class ExitBleOnlyModeUseCaseTest {
 
     @Test
-    fun `disconnects all ble devices and clears the app session`() = runTest {
+    fun `WHEN ExitBleOnlyModeUseCase is invoked THEN it disconnects all ble devices and clears the app session`() = runTest {
         val bleDevicesRepository = FakeBleDevicesRepository()
         val appSessionRepository = FakeAppSessionRepository(initial = AppSession.BleOnly)
         val useCase = ExitBleOnlyModeUseCase(

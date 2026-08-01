@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class UiTextTest {
 
     @Test
-    fun `Dynamic asString returns its value regardless of context`() {
+    fun `WHEN the UiText is Dynamic THEN asString returns its value regardless of context`() {
         val context: Context = mockk()
 
         val result = UiText.Dynamic("hello world").asString(context)
@@ -18,7 +18,7 @@ class UiTextTest {
     }
 
     @Test
-    fun `Resource asString delegates to context getString with the given id`() {
+    fun `WHEN the UiText is a Resource THEN asString delegates to context getString with the given id`() {
         val context: Context = mockk()
         every { context.getString(42, *arrayOf<Any>()) } returns "resolved string"
 
@@ -28,7 +28,7 @@ class UiTextTest {
     }
 
     @Test
-    fun `Resource asString passes args to context getString`() {
+    fun `WHEN the Resource has args THEN asString passes them to context getString`() {
         val context: Context = mockk()
         every { context.getString(42, "arg1", 2) } returns "formatted arg1 2"
 

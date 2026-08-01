@@ -33,7 +33,7 @@ class BleConnectionPoolImplTest {
     }
 
     @Test
-    fun `getOrConnect creates and caches a new connection on success`() = runTest {
+    fun `WHEN connection succeeds THEN getOrConnect creates and caches a new connection`() = runTest {
         val connection = connectionMock("device-1")
         val pool = buildPool { _, _ -> connection }
 
@@ -44,7 +44,7 @@ class BleConnectionPoolImplTest {
     }
 
     @Test
-    fun `getOrConnect returns cached connection without invoking factory again`() = runTest {
+    fun `WHEN a connection is already cached THEN getOrConnect returns it without invoking the factory again`() = runTest {
         var factoryCalls = 0
         val connection = connectionMock("device-1")
         val pool = buildPool { _, _ -> factoryCalls++; connection }
@@ -56,7 +56,7 @@ class BleConnectionPoolImplTest {
     }
 
     @Test
-    fun `getOrConnect on failure closes the connection and does not cache it`() = runTest {
+    fun `WHEN connection fails THEN getOrConnect closes the connection and does not cache it`() = runTest {
         val connection = connectionMock("device-1", connectOutcome = Outcome.Err(BleError.Timeout))
         val pool = buildPool { _, _ -> connection }
 
@@ -68,14 +68,14 @@ class BleConnectionPoolImplTest {
     }
 
     @Test
-    fun `get returns null for a device never connected`() {
+    fun `WHEN a device was never connected THEN get returns null`() {
         val pool = buildPool { _, _ -> connectionMock("unused") }
 
         assertNull(pool.get("device-1"))
     }
 
     @Test
-    fun `close removes and closes the specific connection`() = runTest {
+    fun `WHEN close is called THEN it removes and closes the specific connection`() = runTest {
         val connection = connectionMock("device-1")
         val pool = buildPool { _, _ -> connection }
         pool.getOrConnect("device-1", device, "user", "pass")
@@ -87,7 +87,7 @@ class BleConnectionPoolImplTest {
     }
 
     @Test
-    fun `closeAll closes and clears every connection`() = runTest {
+    fun `WHEN closeAll is called THEN it closes and clears every connection`() = runTest {
         val connectionA = connectionMock("device-a")
         val connectionB = connectionMock("device-b")
         val pool = buildPool { uuid, _ -> if (uuid == "device-a") connectionA else connectionB }
@@ -103,7 +103,7 @@ class BleConnectionPoolImplTest {
     }
 
     @Test
-    fun `getOrConnect evicts the oldest connection when max connections is reached`() = runTest {
+    fun `WHEN max connections is reached THEN getOrConnect evicts the oldest connection`() = runTest {
         val connectionA = connectionMock("device-a")
         val connectionB = connectionMock("device-b")
         val connectionC = connectionMock("device-c")

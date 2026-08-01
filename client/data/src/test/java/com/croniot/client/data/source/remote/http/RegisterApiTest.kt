@@ -32,7 +32,7 @@ class RegisterApiTest {
     }
 
     @Test
-    fun `registerAccount posts to the register endpoint and returns success result`() = runTest {
+    fun `WHEN registerAccount is called THEN it posts to the register endpoint and returns success result`() = runTest {
         val message = MessageRegisterAccount(
             accountUuid = "acc-1",
             nickname = "nick",
@@ -59,7 +59,7 @@ class RegisterApiTest {
     }
 
     @Test
-    fun `registerAccount returns failure result with message on business error`() = runTest {
+    fun `WHEN a business error occurs THEN registerAccount returns failure result with message`() = runTest {
         val message = MessageRegisterAccount("acc-1", "nick", "user@example.com", "pass")
         val registerApi = api {
             respond(

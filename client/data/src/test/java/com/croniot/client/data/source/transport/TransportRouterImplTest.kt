@@ -14,19 +14,19 @@ class TransportRouterImplTest {
     private val router = TransportRouterImpl(bleKnownDeviceDao)
 
     @Test
-    fun `transportFor an unknown device defaults to CLOUD`() {
+    fun `WHEN a device is unknown THEN transportFor defaults to CLOUD`() {
         assertEquals(TransportKind.CLOUD, router.transportFor("device-1"))
     }
 
     @Test
-    fun `markBle then transportFor returns BLE`() = runTest {
+    fun `WHEN markBle is called THEN transportFor returns BLE`() = runTest {
         router.markBle("device-1")
 
         assertEquals(TransportKind.BLE, router.transportFor("device-1"))
     }
 
     @Test
-    fun `markCloud after markBle reverts transportFor to CLOUD`() = runTest {
+    fun `WHEN markCloud is called after markBle THEN transportFor reverts to CLOUD`() = runTest {
         router.markBle("device-1")
 
         router.markCloud("device-1")
@@ -35,14 +35,14 @@ class TransportRouterImplTest {
     }
 
     @Test
-    fun `markBle only affects the given deviceUuid`() = runTest {
+    fun `WHEN markBle is called for one deviceUuid THEN it only affects that device`() = runTest {
         router.markBle("device-1")
 
         assertEquals(TransportKind.CLOUD, router.transportFor("device-2"))
     }
 
     @Test
-    fun `bleDeviceUuids reflects marked devices`() = runTest {
+    fun `WHEN devices are marked ble THEN bleDeviceUuids reflects them`() = runTest {
         router.markBle("device-1")
         router.markBle("device-2")
 
@@ -50,7 +50,7 @@ class TransportRouterImplTest {
     }
 
     @Test
-    fun `loadInitial populates bleDeviceUuids from the dao`() = runTest {
+    fun `WHEN loadInitial is called THEN it populates bleDeviceUuids from the dao`() = runTest {
         coEvery { bleKnownDeviceDao.getAllUuids() } returns listOf("device-a", "device-b")
 
         router.loadInitial()
@@ -60,7 +60,7 @@ class TransportRouterImplTest {
     }
 
     @Test
-    fun `loadInitial with empty dao result clears bleDeviceUuids`() = runTest {
+    fun `WHEN the dao returns an empty result THEN loadInitial clears bleDeviceUuids`() = runTest {
         router.markBle("device-1")
         coEvery { bleKnownDeviceDao.getAllUuids() } returns emptyList()
 
@@ -70,7 +70,7 @@ class TransportRouterImplTest {
     }
 
     @Test
-    fun `markCloud on a device never marked ble is a no-op`() = runTest {
+    fun `WHEN markCloud is called on a device never marked ble THEN it is a no-op`() = runTest {
         router.markCloud("unknown-device")
 
         assertEquals(emptySet<String>(), router.bleDeviceUuids.value)

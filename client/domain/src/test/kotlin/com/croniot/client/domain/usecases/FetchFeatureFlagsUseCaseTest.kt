@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 class FetchFeatureFlagsUseCaseTest {
 
     @Test
-    fun `returns Ok when repository fetch succeeds`() = runTest {
+    fun `WHEN repository fetch succeeds THEN it returns Ok`() = runTest {
         val repository = FakeFeatureFlagRepository(fetchAndCacheOutcome = Outcome.Ok(Unit))
         val useCase = FetchFeatureFlagsUseCase(repository)
 
@@ -21,7 +21,7 @@ class FetchFeatureFlagsUseCaseTest {
     }
 
     @Test
-    fun `propagates network error from repository`() = runTest {
+    fun `WHEN repository returns a network error THEN it propagates that error`() = runTest {
         val repository = FakeFeatureFlagRepository(fetchAndCacheOutcome = Outcome.Err(FeatureFlagError.Network))
         val useCase = FetchFeatureFlagsUseCase(repository)
 
@@ -31,7 +31,7 @@ class FetchFeatureFlagsUseCaseTest {
     }
 
     @Test
-    fun `propagates unknown error from repository`() = runTest {
+    fun `WHEN repository returns an unknown error THEN it propagates that error`() = runTest {
         val repository = FakeFeatureFlagRepository(fetchAndCacheOutcome = Outcome.Err(FeatureFlagError.Unknown))
         val useCase = FetchFeatureFlagsUseCase(repository)
 
@@ -41,7 +41,7 @@ class FetchFeatureFlagsUseCaseTest {
     }
 
     @Test
-    fun `calls fetchAndCache exactly once`() = runTest {
+    fun `WHEN the use case is invoked THEN it calls fetchAndCache exactly once`() = runTest {
         val repository = FakeFeatureFlagRepository()
         val useCase = FetchFeatureFlagsUseCase(repository)
 

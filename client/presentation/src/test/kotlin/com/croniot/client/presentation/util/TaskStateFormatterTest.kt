@@ -18,19 +18,19 @@ class TaskStateFormatterTest {
     )
 
     @Test
-    fun `formatStateInfo returns empty string for null info`() {
+    fun `WHEN info is null THEN formatStateInfo returns an empty string`() {
         assertEquals("", formatStateInfo(null))
     }
 
     @Test
-    fun `formatStateInfo for RUNNING includes the label, progress percentage and time`() {
+    fun `WHEN state is RUNNING THEN formatStateInfo includes the label, progress percentage and time`() {
         val result = formatStateInfo(info(TaskState.RUNNING, progress = 42.0))
 
         assertEquals("Running • 42% · 14:05", result)
     }
 
     @Test
-    fun `formatStateInfo for ERROR includes the label, truncated error message and time`() {
+    fun `WHEN state is ERROR THEN formatStateInfo includes the label, truncated error message and time`() {
         val longMessage = "x".repeat(80)
 
         val result = formatStateInfo(info(TaskState.ERROR, errorMessage = longMessage))
@@ -39,14 +39,14 @@ class TaskStateFormatterTest {
     }
 
     @Test
-    fun `formatStateInfo for other states shows only the humanized label without the time`() {
+    fun `WHEN state is neither RUNNING nor ERROR THEN formatStateInfo shows only the humanized label without the time`() {
         val result = formatStateInfo(info(TaskState.COMPLETED))
 
         assertEquals("Completed", result)
     }
 
     @Test
-    fun `formatStateInfo humanizes underscored state names`() {
+    fun `WHEN state has an underscored name THEN formatStateInfo humanizes it`() {
         val result = formatStateInfo(info(TaskState.STORED_LOCALLY_IN_DESTINATION))
 
         assertEquals("Stored locally in destination", result)

@@ -18,7 +18,7 @@ class ModelMappersTest {
     )
 
     @Test
-    fun `TaskStateInfoDto maps all fields to domain`() {
+    fun `WHEN mapping TaskStateInfoDto to domain THEN all fields are mapped`() {
         val result = stateInfoDto.toModel()
 
         assertEquals(stateInfoDto.dateTime, result.dateTime)
@@ -28,7 +28,7 @@ class ModelMappersTest {
     }
 
     @Test
-    fun `TaskDto maps fields and nested initial state info when present`() {
+    fun `WHEN initial task state info is present THEN TaskDto maps fields and nested initial state info`() {
         val dto = TaskDto(
             uid = 1L,
             taskTypeUid = 2L,
@@ -45,7 +45,7 @@ class ModelMappersTest {
     }
 
     @Test
-    fun `TaskDto maps null initial state info`() {
+    fun `WHEN initial task state info is null THEN TaskDto maps it to null`() {
         val dto = TaskDto(uid = 1L, taskTypeUid = 2L, initialTaskStateInfo = null)
 
         val result = dto.toModel()
@@ -54,7 +54,7 @@ class ModelMappersTest {
     }
 
     @Test
-    fun `TaskStateInfoHistoryEntryDto maps fields and builds task key from device uuid`() {
+    fun `WHEN mapping TaskStateInfoHistoryEntryDto THEN it maps fields and builds task key from device uuid`() {
         val dto = TaskStateInfoHistoryEntryDto(
             stateInfoId = 99L,
             taskUid = 5L,

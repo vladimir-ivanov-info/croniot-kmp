@@ -32,7 +32,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `save delegates email to auth datasource`() = runTest {
+    fun `WHEN save is called THEN it delegates email to auth datasource`() = runTest {
         val session = AuthSession(email = "user@example.com", token = "token-123")
         coJustRun { authLocalDatasource.saveEmail(any()) }
 
@@ -42,7 +42,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `saveTokens delegates to token store`() = runTest {
+    fun `WHEN saveTokens is called THEN it delegates to token store`() = runTest {
         val tokens = AuthTokens(
             accessToken = "access-123",
             refreshToken = "refresh-123",
@@ -56,7 +56,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `clearAllExceptDeviceUuid clears tokens and app preferences`() = runTest {
+    fun `WHEN clearAllExceptDeviceUuid is called THEN it clears tokens and app preferences`() = runTest {
         coJustRun { tokenStore.clearTokens() }
         coJustRun { appPreferencesLocalDatasource.clearAllCacheExceptDeviceUuid() }
 
@@ -67,7 +67,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `getTokens returns tokens from token store`() = runTest {
+    fun `WHEN token store has tokens THEN getTokens returns them`() = runTest {
         val tokens = AuthTokens(
             accessToken = "access-123",
             refreshToken = "refresh-123",
@@ -81,7 +81,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `getTokens returns null when token store has none`() = runTest {
+    fun `WHEN token store has none THEN getTokens returns null`() = runTest {
         coEvery { tokenStore.getTokens() } returns null
 
         val result = repository.getTokens()
@@ -90,7 +90,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `clearTokens delegates to token store`() = runTest {
+    fun `WHEN clearTokens is called THEN it delegates to token store`() = runTest {
         coJustRun { tokenStore.clearTokens() }
 
         repository.clearTokens()

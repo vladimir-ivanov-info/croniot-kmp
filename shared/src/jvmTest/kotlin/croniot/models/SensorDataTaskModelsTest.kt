@@ -15,7 +15,7 @@ class SensorDataTaskModelsTest {
     private fun device() = Device(uuid = "device-1", name = "My Device", iot = true)
 
     @Test
-    fun `SensorData serializes and deserializes`() {
+    fun `WHEN encoded and decoded THEN SensorData roundtrips correctly`() {
         val original = SensorData(
             device = device(),
             sensorType = SensorType(uid = 1L, name = "temp", description = "", parameters = emptyList()),
@@ -29,7 +29,7 @@ class SensorDataTaskModelsTest {
     }
 
     @Test
-    fun `Task defaults mostRecentStateInfo to null`() {
+    fun `WHEN mostRecentStateInfo is not provided THEN Task defaults it to null`() {
         val parameter = ParameterTask(uid = 1L, name = "duration", type = "int", unit = "s", description = "")
         val task = Task(uid = 1L, parametersValues = mapOf(parameter to "10"), taskTypeUid = 10L)
 
@@ -38,7 +38,7 @@ class SensorDataTaskModelsTest {
     }
 
     @Test
-    fun `Task carries an explicit mostRecentStateInfo and is equal by value`() {
+    fun `WHEN mostRecentStateInfo is provided explicitly THEN Task carries it and is equal by value`() {
         val stateInfo = TaskStateInfo(
             taskUid = 1L,
             dateTime = ZonedDateTime.of(2024, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC),
@@ -54,7 +54,7 @@ class SensorDataTaskModelsTest {
     }
 
     @Test
-    fun `TaskStateInfo serializes and deserializes`() {
+    fun `WHEN encoded and decoded THEN TaskStateInfo roundtrips correctly`() {
         val original = TaskStateInfo(
             taskUid = 5L,
             dateTime = ZonedDateTime.of(2024, 6, 15, 12, 30, 0, 0, ZoneOffset.UTC),

@@ -62,14 +62,14 @@ class DeviceScreenViewModelTest {
     }
 
     @Test
-    fun `Initial state verification`() {
+    fun `WHEN the ViewModel is created THEN the state is Loading`() {
         val result = viewModel.state.value
 
         assertTrue(result is DeviceState.Loading)
     }
 
     @Test
-    fun `Given device found, When Initialize, Then state is Content and listeners and tasks are triggered`() =
+    fun `WHEN Initialize is dispatched and the device is found THEN the state becomes Content and listeners and tasks are triggered`() =
         runTest {
             val device = cloudDevice()
             coEvery { getDeviceUseCase(device.uuid) } returns device
@@ -84,7 +84,7 @@ class DeviceScreenViewModelTest {
         }
 
     @Test
-    fun `Given device not found, When Initialize, Then state is Error`() = runTest {
+    fun `WHEN Initialize is dispatched and the device is not found THEN the state becomes Error`() = runTest {
         coEvery { getDeviceUseCase("missing-uuid") } returns null
 
         viewModel.onIntent(DeviceIntent.Initialize("missing-uuid"))
@@ -94,7 +94,7 @@ class DeviceScreenViewModelTest {
     }
 
     @Test
-    fun `Given already in Content for the same uuid, When Initialize is called again, Then does not reload device`() =
+    fun `WHEN Initialize is called again for the same uuid while already in Content THEN it does not reload the device`() =
         runTest {
             val device = cloudDevice()
             coEvery { getDeviceUseCase(device.uuid) } returns device
@@ -106,7 +106,7 @@ class DeviceScreenViewModelTest {
         }
 
     @Test
-    fun `Given Content state, When SelectTab, Then updates selectedTab keeping rest of the state`() = runTest {
+    fun `WHEN SelectTab is dispatched in Content state THEN it updates selectedTab keeping the rest of the state`() = runTest {
         val device = cloudDevice()
         coEvery { getDeviceUseCase(device.uuid) } returns device
         viewModel.onIntent(DeviceIntent.Initialize(device.uuid))
@@ -122,7 +122,7 @@ class DeviceScreenViewModelTest {
     }
 
     @Test
-    fun `Given a BLE device, When Initialize, Then observes rssi and updates state`() = runTest {
+    fun `WHEN Initialize is dispatched for a BLE device THEN it observes rssi and updates the state`() = runTest {
         val device = cloudDevice().copy(transport = TransportKind.BLE)
         coEvery { getDeviceUseCase(device.uuid) } returns device
         coEvery { observeBleRssiUseCase(device.uuid) } returns flowOf(-50)
@@ -135,14 +135,14 @@ class DeviceScreenViewModelTest {
     }
 
     @Test
-    fun `Given Loading state, When SelectTab, Then state remains Loading`() = runTest {
+    fun `WHEN SelectTab is dispatched in Loading state THEN the state remains Loading`() = runTest {
         viewModel.onIntent(DeviceIntent.SelectTab(2))
 
         assertTrue(viewModel.state.value is DeviceState.Loading)
     }
 
     @Test
-    fun `Given a stored account, When reconnectIfNeeded, Then starts device listeners with account devices`() =
+    fun `WHEN reconnectIfNeeded is called with a stored account THEN it starts device listeners with the account devices`() =
         runTest {
             val device = cloudDevice()
             val account = Account(uuid = "acc-1", nickname = "nick", email = "user@test.com", devices = listOf(device))
@@ -161,7 +161,7 @@ class DeviceScreenViewModelTest {
         }
 
     @Test
-    fun `Given no stored account, When reconnectIfNeeded, Then does not start device listeners`() = runTest {
+    fun `WHEN reconnectIfNeeded is called with no stored account THEN it does not start device listeners`() = runTest {
         viewModel.reconnectIfNeeded()
 
         coVerify(exactly = 0) { startDeviceListenersUseCase(any()) }

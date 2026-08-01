@@ -55,7 +55,7 @@ class LocalTaskHistoryDataSourceRoomImplIntegrationTest {
     )
 
     @Test
-    fun `savePage then getPage returns entries ordered by newest first`() = runTest {
+    fun `WHEN savePage is called THEN getPage returns entries ordered by newest first`() = runTest {
         dataSource.savePage(
             deviceUuid,
             listOf(historyEntry(1L, 1000L), historyEntry(2L, 3000L), historyEntry(3L, 2000L)),
@@ -67,7 +67,7 @@ class LocalTaskHistoryDataSourceRoomImplIntegrationTest {
     }
 
     @Test
-    fun `count reflects the number of saved entries`() = runTest {
+    fun `WHEN entries are saved THEN count reflects the number of them`() = runTest {
         dataSource.savePage(deviceUuid, listOf(historyEntry(1L, 1000L), historyEntry(2L, 2000L)))
 
         val count = dataSource.count(deviceUuid, before = null, beforeId = null)
@@ -76,14 +76,14 @@ class LocalTaskHistoryDataSourceRoomImplIntegrationTest {
     }
 
     @Test
-    fun `savePage with an empty list is a no-op`() = runTest {
+    fun `WHEN savePage is called with an empty list THEN it is a no-op`() = runTest {
         dataSource.savePage(deviceUuid, emptyList())
 
         assertTrue(dataSource.getPage(deviceUuid, limit = 10, before = null, beforeId = null).isEmpty())
     }
 
     @Test
-    fun `getPage with a numeric before cursor paginates strictly older entries`() = runTest {
+    fun `WHEN a numeric before cursor is given THEN getPage paginates strictly older entries`() = runTest {
         dataSource.savePage(deviceUuid, listOf(historyEntry(1L, 1000L), historyEntry(2L, 2000L)))
         val firstPage = dataSource.getPage(deviceUuid, limit = 1, before = null, beforeId = null)
         val cursorMillis = firstPage.first().stateInfo.dateTime.toInstant().toEpochMilli()

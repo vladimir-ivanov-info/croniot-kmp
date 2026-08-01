@@ -15,7 +15,7 @@ class ModelSerializationRoundtripTest {
     private val json = Json { ignoreUnknownKeys = true }
 
     @Test
-    fun `Account roundtrips with nested devices`() {
+    fun `WHEN it contains nested devices THEN Account roundtrips correctly`() {
         val original = Account(
             uuid = "acc-1",
             nickname = "nick",
@@ -29,7 +29,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `Account roundtrips with no devices`() {
+    fun `WHEN it has no devices THEN Account roundtrips correctly`() {
         val original = Account(uuid = "acc-1", nickname = "nick", email = "user@example.com", devices = emptyList())
 
         val decoded = json.decodeFromString<Account>(json.encodeToString(original))
@@ -38,7 +38,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `Device roundtrips with nested sensor and task types`() {
+    fun `WHEN it contains nested sensor and task types THEN Device roundtrips correctly`() {
         val sensorType = SensorType(uid = 1L, name = "Temp", description = "desc", parameters = emptyList())
         val taskType = TaskType(uid = 2L, name = "Water", description = "desc")
         val original = Device(
@@ -56,7 +56,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `Device roundtrips using default description and empty type lists`() {
+    fun `WHEN description and type lists use their defaults THEN Device roundtrips correctly`() {
         val original = Device(uuid = "device-1", name = "Device", iot = false)
 
         val decoded = json.decodeFromString<Device>(json.encodeToString(original))
@@ -66,7 +66,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `SensorType roundtrips with nested ParameterSensor list`() {
+    fun `WHEN it contains a nested ParameterSensor list THEN SensorType roundtrips correctly`() {
         val parameter = ParameterSensor(
             uid = 1L,
             name = "threshold",
@@ -83,7 +83,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `TaskType roundtrips with default empty parameters`() {
+    fun `WHEN parameters use their default empty value THEN TaskType roundtrips correctly`() {
         val original = TaskType(uid = 1L, name = "Water", description = "desc")
 
         val decoded = json.decodeFromString<TaskType>(json.encodeToString(original))
@@ -93,7 +93,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `ParameterTask roundtrips with default empty constraints`() {
+    fun `WHEN constraints use their default empty value THEN ParameterTask roundtrips correctly`() {
         val original = ParameterTask(uid = 1L, name = "duration", type = "number", unit = "s", description = "desc")
 
         val decoded = json.decodeFromString<ParameterTask>(json.encodeToString(original))
@@ -103,7 +103,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `ParameterSensor roundtrips with non-empty constraints`() {
+    fun `WHEN constraints are non-empty THEN ParameterSensor roundtrips correctly`() {
         val original = ParameterSensor(
             uid = 1L,
             name = "threshold",
@@ -119,7 +119,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `DeviceToken roundtrips`() {
+    fun `WHEN encoded and decoded THEN DeviceToken roundtrips correctly`() {
         val original = DeviceToken(deviceId = 42L, token = "device-token-abc")
 
         val decoded = json.decodeFromString<DeviceToken>(json.encodeToString(original))
@@ -128,7 +128,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `TaskProgressUpdate roundtrips`() {
+    fun `WHEN encoded and decoded THEN TaskProgressUpdate roundtrips correctly`() {
         val original = TaskProgressUpdate(
             taskTypeUid = 10L,
             taskUid = 1L,
@@ -143,7 +143,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `ErrorResponse roundtrips with default empty details`() {
+    fun `WHEN details use their default empty value THEN ErrorResponse roundtrips correctly`() {
         val original = ErrorResponse(code = "NOT_FOUND", message = "Resource not found")
 
         val decoded = json.decodeFromString<ErrorResponse>(json.encodeToString(original))
@@ -153,7 +153,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `ErrorResponse roundtrips with non-empty details`() {
+    fun `WHEN details are non-empty THEN ErrorResponse roundtrips correctly`() {
         val original = ErrorResponse(
             code = "VALIDATION",
             message = "Invalid field",
@@ -166,7 +166,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `TaskStateInfoHistoryEntryDto roundtrips with ZonedDateTime`() {
+    fun `WHEN it contains a ZonedDateTime THEN TaskStateInfoHistoryEntryDto roundtrips correctly`() {
         val original = TaskStateInfoHistoryEntryDto(
             stateInfoId = 1L,
             taskUid = 5L,
@@ -183,7 +183,7 @@ class ModelSerializationRoundtripTest {
     }
 
     @Test
-    fun `TaskStateInfoHistoryEntryDto uses default stateInfoId of minus one`() {
+    fun `WHEN stateInfoId is not provided THEN TaskStateInfoHistoryEntryDto defaults it to minus one`() {
         val original = TaskStateInfoHistoryEntryDto(
             taskUid = 5L,
             taskTypeUid = 10L,

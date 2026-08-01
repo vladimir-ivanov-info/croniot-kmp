@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class DomainErrorTest {
 
     @Test
-    fun `Unauthorized has code UNAUTHORIZED and a default message`() {
+    fun `WHEN Unauthorized is created with no message THEN it has code UNAUTHORIZED and a default message`() {
         val error = DomainError.Unauthorized()
 
         assertThat(error.code).isEqualTo("UNAUTHORIZED")
@@ -15,7 +15,7 @@ class DomainErrorTest {
     }
 
     @Test
-    fun `Unauthorized accepts a custom message while keeping its code`() {
+    fun `WHEN Unauthorized is created with a custom message THEN it keeps code UNAUTHORIZED`() {
         val error = DomainError.Unauthorized(message = "Token expired")
 
         assertThat(error.code).isEqualTo("UNAUTHORIZED")
@@ -23,7 +23,7 @@ class DomainErrorTest {
     }
 
     @Test
-    fun `InvalidCredentials has code INVALID_CREDENTIALS and a default message`() {
+    fun `WHEN InvalidCredentials is created with no message THEN it has code INVALID_CREDENTIALS and a default message`() {
         val error = DomainError.InvalidCredentials()
 
         assertThat(error.code).isEqualTo("INVALID_CREDENTIALS")
@@ -31,7 +31,7 @@ class DomainErrorTest {
     }
 
     @Test
-    fun `NotFound has code NOT_FOUND and builds a default message from the resource name`() {
+    fun `WHEN NotFound is created with a resource name THEN it has code NOT_FOUND and builds a default message from it`() {
         val error = DomainError.NotFound(resource = "Account")
 
         assertThat(error.code).isEqualTo("NOT_FOUND")
@@ -39,14 +39,14 @@ class DomainErrorTest {
     }
 
     @Test
-    fun `NotFound accepts a custom message overriding the default`() {
+    fun `WHEN NotFound is created with a custom message THEN it overrides the default message`() {
         val error = DomainError.NotFound(resource = "Device", message = "Device is not registered")
 
         assertThat(error.message).isEqualTo("Device is not registered")
     }
 
     @Test
-    fun `Validation has code VALIDATION and carries the offending field`() {
+    fun `WHEN Validation is created with a field THEN it has code VALIDATION and carries that field`() {
         val error = DomainError.Validation(field = "email", message = "Invalid email format")
 
         assertThat(error.code).isEqualTo("VALIDATION")
@@ -55,7 +55,7 @@ class DomainErrorTest {
     }
 
     @Test
-    fun `Conflict has code CONFLICT and requires an explicit message`() {
+    fun `WHEN Conflict is created with an explicit message THEN it has code CONFLICT`() {
         val error = DomainError.Conflict(message = "Email already registered")
 
         assertThat(error.code).isEqualTo("CONFLICT")
@@ -63,7 +63,7 @@ class DomainErrorTest {
     }
 
     @Test
-    fun `RateLimited has code RATE_LIMITED and a default message`() {
+    fun `WHEN RateLimited is created with no message THEN it has code RATE_LIMITED and a default message`() {
         val error = DomainError.RateLimited()
 
         assertThat(error.code).isEqualTo("RATE_LIMITED")
@@ -71,7 +71,7 @@ class DomainErrorTest {
     }
 
     @Test
-    fun `Internal has code INTERNAL and a default message`() {
+    fun `WHEN Internal is created with no message THEN it has code INTERNAL and a default message`() {
         val error = DomainError.Internal()
 
         assertThat(error.code).isEqualTo("INTERNAL")
@@ -79,19 +79,19 @@ class DomainErrorTest {
     }
 
     @Test
-    fun `Internal accepts a custom message`() {
+    fun `WHEN Internal is created with a custom message THEN it uses that message`() {
         val error = DomainError.Internal(message = "Database connection lost")
 
         assertThat(error.message).isEqualTo("Database connection lost")
     }
 
     @Test
-    fun `two Unauthorized instances with the same message are equal`() {
+    fun `WHEN two Unauthorized instances share the same message THEN they are equal`() {
         assertThat(DomainError.Unauthorized("x")).isEqualTo(DomainError.Unauthorized("x"))
     }
 
     @Test
-    fun `NotFound instances with different resources are not equal`() {
+    fun `WHEN two NotFound instances have different resources THEN they are not equal`() {
         val a = DomainError.NotFound(resource = "Account")
         val b = DomainError.NotFound(resource = "Device")
 

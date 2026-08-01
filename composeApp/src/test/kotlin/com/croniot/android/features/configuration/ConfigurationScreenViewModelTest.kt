@@ -43,7 +43,7 @@ class ConfigurationScreenViewModelTest {
     }
 
     @Test
-    fun `Initial state verification`() {
+    fun `WHEN the ViewModel is created THEN the state matches the default ConfigurationState`() {
         val expectedState = ConfigurationState()
         val result = viewModel.state.value
 
@@ -51,28 +51,28 @@ class ConfigurationScreenViewModelTest {
     }
 
     @Test
-    fun `SetServerIp updates state`() = runTest {
+    fun `WHEN SetServerIp is dispatched THEN the state is updated`() = runTest {
         viewModel.onIntent(ConfigurationIntent.SetServerIp("192.168.1.1"))
 
         assertEquals("192.168.1.1", viewModel.state.value.serverIp)
     }
 
     @Test
-    fun `SetServerIp saves to datasource`() = runTest {
+    fun `WHEN SetServerIp is dispatched THEN it saves to the datasource`() = runTest {
         viewModel.onIntent(ConfigurationIntent.SetServerIp("10.0.0.5"))
 
         coVerify(exactly = 1) { serverConfigLocalDatasource.saveServerIp("10.0.0.5") }
     }
 
     @Test
-    fun `SetServerIp updates HostHolder`() = runTest {
+    fun `WHEN SetServerIp is dispatched THEN it updates HostHolder`() = runTest {
         viewModel.onIntent(ConfigurationIntent.SetServerIp("172.16.0.1"))
 
         assertEquals("172.16.0.1", hostHolder.host)
     }
 
     @Test
-    fun `init loads stored server ip into state`() = runTest {
+    fun `WHEN the ViewModel is initialized with a stored server ip THEN it loads it into the state`() = runTest {
         val datasource: ServerConfigLocalDatasource = mockk(relaxed = true)
         coEvery { datasource.getServerIp() } returns flowOf("10.20.30.40")
 
@@ -82,7 +82,7 @@ class ConfigurationScreenViewModelTest {
     }
 
     @Test
-    fun `init falls back to remote default ip when stored ip is null`() = runTest {
+    fun `WHEN the stored ip is null THEN the ViewModel falls back to the remote default ip`() = runTest {
         val datasource: ServerConfigLocalDatasource = mockk(relaxed = true)
         coEvery { datasource.getServerIp() } returns flowOf(null)
 

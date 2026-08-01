@@ -69,7 +69,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndCache returns Ok and saves flags to local datasource on success`() = runTest {
+    fun `WHEN fetch succeeds THEN fetchAndCache returns Ok and saves flags to local datasource`() = runTest {
         coEvery { api.fetchAll() } returns flags
         coJustRun { localDatasource.saveFlags(any()) }
 
@@ -80,7 +80,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndCache populates flag cache so isEnabled reflects fetched flags`() = runTest {
+    fun `WHEN fetchAndCache is called THEN it populates flag cache so isEnabled reflects fetched flags`() = runTest {
         coEvery { api.fetchAll() } returns flags
         coJustRun { localDatasource.saveFlags(any()) }
 
@@ -91,7 +91,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndCache returns Network error on HttpRequestTimeoutException`() = runTest {
+    fun `WHEN api throws HttpRequestTimeoutException THEN fetchAndCache returns Network error`() = runTest {
         coEvery { api.fetchAll() } throws HttpRequestTimeoutException("http://example.com", 1000L)
 
         val result = repository.fetchAndCache()
@@ -100,7 +100,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndCache returns Network error on ConnectTimeoutException`() = runTest {
+    fun `WHEN api throws ConnectTimeoutException THEN fetchAndCache returns Network error`() = runTest {
         coEvery { api.fetchAll() } throws ConnectTimeoutException("connect timeout")
 
         val result = repository.fetchAndCache()
@@ -109,7 +109,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndCache returns Network error on SocketTimeoutException`() = runTest {
+    fun `WHEN api throws SocketTimeoutException THEN fetchAndCache returns Network error`() = runTest {
         coEvery { api.fetchAll() } throws SocketTimeoutException("socket timeout")
 
         val result = repository.fetchAndCache()
@@ -118,7 +118,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndCache returns Network error on generic IOException`() = runTest {
+    fun `WHEN api throws a generic IOException THEN fetchAndCache returns Network error`() = runTest {
         coEvery { api.fetchAll() } throws IOException("io error")
 
         val result = repository.fetchAndCache()
@@ -127,7 +127,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndCache returns Unknown error on unexpected exception`() = runTest {
+    fun `WHEN api throws an unexpected exception THEN fetchAndCache returns Unknown error`() = runTest {
         coEvery { api.fetchAll() } throws RuntimeException("boom")
 
         val result = repository.fetchAndCache()
@@ -136,7 +136,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndCache rethrows CancellationException instead of mapping it to Outcome`() = runTest {
+    fun `WHEN api throws CancellationException THEN fetchAndCache rethrows it instead of mapping it to Outcome`() = runTest {
         coEvery { api.fetchAll() } throws CancellationException("cancelled")
 
         var caught: CancellationException? = null
@@ -150,12 +150,12 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `isEnabled returns false for a flag not present in cache`() = runTest {
+    fun `WHEN a flag is not present in cache THEN isEnabled returns false`() = runTest {
         assertFalse(repository.isEnabled("unknown-flag"))
     }
 
     @Test
-    fun `observeFlags populates the cache so isEnabled reflects emitted flags`() = runTest {
+    fun `WHEN observeFlags is collected THEN it populates the cache so isEnabled reflects emitted flags`() = runTest {
         coEvery { localDatasource.observeFlags() } returns kotlinx.coroutines.flow.flowOf(flags)
 
         repository.observeFlags().collect {}
@@ -165,7 +165,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `observeFlags emits the same list of flags received from the datasource`() = runTest {
+    fun `WHEN datasource emits flags THEN observeFlags emits the same list`() = runTest {
         coEvery { localDatasource.observeFlags() } returns kotlinx.coroutines.flow.flowOf(flags)
 
         val emitted = repository.observeFlags().first()
@@ -203,7 +203,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `startMqttListener creates a handler using the default host when no server ip is stored`() = runTest {
+    fun `WHEN no server ip is stored THEN startMqttListener creates a handler using the default host`() = runTest {
         coEvery { serverConfigLocalDatasource.getServerIp() } returns flowOf(null)
         stubMqttConstruction()
 
@@ -214,7 +214,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `startMqttListener disconnects the previous handler when called again`() = runTest {
+    fun `WHEN startMqttListener is called again THEN it disconnects the previous handler`() = runTest {
         coEvery { serverConfigLocalDatasource.getServerIp() } returns flowOf("10.0.0.5")
         stubMqttConstruction()
 
@@ -226,7 +226,7 @@ class FeatureFlagRepositoryImplTest {
     }
 
     @Test
-    fun `startMqttListener forwards incoming flag updates to the cache and the local datasource`() = runTest {
+    fun `WHEN a flag update message arrives THEN startMqttListener forwards it to the cache and the local datasource`() = runTest {
         coEvery { serverConfigLocalDatasource.getServerIp() } returns flowOf("10.0.0.5")
         coJustRun { localDatasource.updateFlag(any(), any()) }
         stubMqttConstruction()

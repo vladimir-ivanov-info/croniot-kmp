@@ -33,7 +33,7 @@ class LoginApiTest {
     }
 
     @Test
-    fun `login posts to the login endpoint with json content type`() = runTest {
+    fun `WHEN login is called THEN it posts to the login endpoint with json content type`() = runTest {
         var capturedUrl = ""
         var capturedMethod: HttpMethod? = null
         val body = LoginResultDto(result = Result(success = true), accountDto = null, token = "jwt")
@@ -55,7 +55,7 @@ class LoginApiTest {
     }
 
     @Test
-    fun `login deserializes a failed result without a token`() = runTest {
+    fun `WHEN login fails THEN it deserializes the failed result without a token`() = runTest {
         val body = LoginResultDto(result = Result(success = false, message = "bad credentials"), accountDto = null, token = null)
         val loginApi = api {
             respond(

@@ -35,7 +35,7 @@ class DtoSerializationRoundtripTest {
     )
 
     @Test
-    fun `SensorTypeDto roundtrips with nested parameters`() {
+    fun `WHEN it contains nested parameters THEN SensorTypeDto roundtrips correctly`() {
         val original = SensorTypeDto(uid = 1L, name = "Temp", description = "desc", parameters = listOf(parameterSensorDto()))
 
         val decoded = json.decodeFromString<SensorTypeDto>(json.encodeToString(original))
@@ -44,7 +44,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `TaskTypeDto roundtrips using its default uid`() {
+    fun `WHEN uid is not provided THEN TaskTypeDto roundtrips using its default uid`() {
         val original = TaskTypeDto(name = "Water", description = "desc", parameters = listOf(parameterTaskDto()))
 
         val decoded = json.decodeFromString<TaskTypeDto>(json.encodeToString(original))
@@ -54,7 +54,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `ParameterSensorDto roundtrips`() {
+    fun `WHEN encoded and decoded THEN ParameterSensorDto roundtrips correctly`() {
         val original = parameterSensorDto()
 
         val decoded = json.decodeFromString<ParameterSensorDto>(json.encodeToString(original))
@@ -63,7 +63,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `ParameterTaskDto roundtrips with empty constraints`() {
+    fun `WHEN constraints are empty THEN ParameterTaskDto roundtrips correctly`() {
         val original = parameterTaskDto()
 
         val decoded = json.decodeFromString<ParameterTaskDto>(json.encodeToString(original))
@@ -72,7 +72,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `DeviceDto roundtrips with nested sensor and task types`() {
+    fun `WHEN it contains nested sensor and task types THEN DeviceDto roundtrips correctly`() {
         val original = DeviceDto(
             uuid = "device-1",
             name = "Device",
@@ -88,7 +88,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `AccountDto roundtrips with nested devices`() {
+    fun `WHEN it contains nested devices THEN AccountDto roundtrips correctly`() {
         val device = DeviceDto(
             uuid = "device-1",
             name = "Device",
@@ -105,7 +105,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `FeatureFlagDto roundtrips with a null description`() {
+    fun `WHEN description is null THEN FeatureFlagDto roundtrips correctly`() {
         val original = FeatureFlagDto(name = "dark_mode", enabled = true, description = null)
 
         val decoded = json.decodeFromString<FeatureFlagDto>(json.encodeToString(original))
@@ -115,7 +115,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `FeatureFlagDto roundtrips with a non-null description`() {
+    fun `WHEN description is non-null THEN FeatureFlagDto roundtrips correctly`() {
         val original = FeatureFlagDto(name = "beta", enabled = false, description = "Beta feature")
 
         val decoded = json.decodeFromString<FeatureFlagDto>(json.encodeToString(original))
@@ -124,7 +124,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `LoginResultDto roundtrips with all optional fields present`() {
+    fun `WHEN all optional fields are present THEN LoginResultDto roundtrips correctly`() {
         val account = AccountDto(uuid = "acc-1", nickname = "nick", email = "user@example.com", devices = emptyList())
         val original = LoginResultDto(
             result = Result(success = true),
@@ -140,7 +140,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `LoginResultDto roundtrips using default nulls for optional fields`() {
+    fun `WHEN optional fields use their default nulls THEN LoginResultDto roundtrips correctly`() {
         val original = LoginResultDto(result = Result(success = false, message = "Invalid credentials"), accountDto = null, token = null)
 
         val decoded = json.decodeFromString<LoginResultDto>(json.encodeToString(original))
@@ -151,7 +151,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `RefreshTokenRequestDto roundtrips`() {
+    fun `WHEN encoded and decoded THEN RefreshTokenRequestDto roundtrips correctly`() {
         val original = RefreshTokenRequestDto(refreshToken = "refresh-token-xyz")
 
         val decoded = json.decodeFromString<RefreshTokenRequestDto>(json.encodeToString(original))
@@ -160,7 +160,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `RefreshTokenResultDto roundtrips with all fields present`() {
+    fun `WHEN all fields are present THEN RefreshTokenResultDto roundtrips correctly`() {
         val original = RefreshTokenResultDto(
             result = Result(success = true),
             token = "new-jwt",
@@ -174,7 +174,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `RefreshTokenResultDto roundtrips using default nulls`() {
+    fun `WHEN fields use their default nulls THEN RefreshTokenResultDto roundtrips correctly`() {
         val original = RefreshTokenResultDto(result = Result(success = false, message = "expired"))
 
         val decoded = json.decodeFromString<RefreshTokenResultDto>(json.encodeToString(original))
@@ -183,7 +183,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `LogoutRequestDto roundtrips`() {
+    fun `WHEN encoded and decoded THEN LogoutRequestDto roundtrips correctly`() {
         val original = LogoutRequestDto(refreshToken = "refresh-to-revoke")
 
         val decoded = json.decodeFromString<LogoutRequestDto>(json.encodeToString(original))
@@ -192,7 +192,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `Result roundtrips with default empty message`() {
+    fun `WHEN message uses its default empty value THEN Result roundtrips correctly`() {
         val original = Result(success = true)
 
         val decoded = json.decodeFromString<Result>(json.encodeToString(original))
@@ -202,7 +202,7 @@ class DtoSerializationRoundtripTest {
     }
 
     @Test
-    fun `Result roundtrips with a custom message`() {
+    fun `WHEN a custom message is provided THEN Result roundtrips correctly`() {
         val original = Result(success = false, message = "Something went wrong")
 
         val decoded = json.decodeFromString<Result>(json.encodeToString(original))

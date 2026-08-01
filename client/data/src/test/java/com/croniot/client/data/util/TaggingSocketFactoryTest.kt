@@ -34,7 +34,7 @@ class TaggingSocketFactoryTest {
     }
 
     @Test
-    fun `createSocket with no args tags and returns delegate socket`() {
+    fun `WHEN createSocket is called with no args THEN it tags and returns the delegate socket`() {
         val socket: Socket = mockk()
         every { delegate.createSocket() } returns socket
 
@@ -45,7 +45,7 @@ class TaggingSocketFactoryTest {
     }
 
     @Test
-    fun `createSocket with host and port delegates correctly`() {
+    fun `WHEN createSocket is called with host and port THEN it delegates correctly`() {
         val socket: Socket = mockk()
         every { delegate.createSocket("host", 8080) } returns socket
 
@@ -56,7 +56,7 @@ class TaggingSocketFactoryTest {
     }
 
     @Test
-    fun `createSocket with host port localHost localPort delegates correctly`() {
+    fun `WHEN createSocket is called with host port localHost and localPort THEN it delegates correctly`() {
         val socket: Socket = mockk()
         val localHost: InetAddress = mockk()
         every { delegate.createSocket("host", 8080, localHost, 9090) } returns socket
@@ -68,7 +68,7 @@ class TaggingSocketFactoryTest {
     }
 
     @Test
-    fun `createSocket with InetAddress and port delegates correctly`() {
+    fun `WHEN createSocket is called with an InetAddress and port THEN it delegates correctly`() {
         val socket: Socket = mockk()
         val address: InetAddress = mockk()
         every { delegate.createSocket(address, 8080) } returns socket
@@ -80,7 +80,7 @@ class TaggingSocketFactoryTest {
     }
 
     @Test
-    fun `createSocket with address port localAddress localPort delegates correctly`() {
+    fun `WHEN createSocket is called with address port localAddress and localPort THEN it delegates correctly`() {
         val socket: Socket = mockk()
         val address: InetAddress = mockk()
         val localAddress: InetAddress = mockk()
@@ -93,7 +93,7 @@ class TaggingSocketFactoryTest {
     }
 
     @Test
-    fun `delegate is only constructed once via lazy initialization`() {
+    fun `WHEN createSocket is called multiple times THEN the delegate is only constructed once via lazy initialization`() {
         var callCount = 0
         val lazyFactory = TaggingSocketFactory(delegateProvider = { callCount++; delegate })
         val socket: Socket = mockk()
@@ -106,7 +106,7 @@ class TaggingSocketFactoryTest {
     }
 
     @Test
-    fun `no-arg constructor resolves the default SocketFactory under an allow-thread-disk-reads policy`() {
+    fun `WHEN the no-arg constructor is used THEN it resolves the default SocketFactory under an allow-thread-disk-reads policy`() {
         mockkStatic(StrictMode::class)
         val oldPolicy: StrictMode.ThreadPolicy = mockk()
         every { StrictMode.allowThreadDiskReads() } returns oldPolicy

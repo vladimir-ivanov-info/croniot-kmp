@@ -26,7 +26,7 @@ class BleSensorDataSourceImplTest {
     private fun sensorData() = SensorData(deviceUuid = "device-1", sensorTypeUid = 1L, value = "25.5", timeStamp = ZonedDateTime.now())
 
     @Test
-    fun `listenDeviceSensors returns Err Unknown when device has no active connection`() = runTest {
+    fun `WHEN device has no active connection THEN listenDeviceSensors returns Err Unknown`() = runTest {
         every { connectionPool.get("device-1") } returns null
 
         val result = dataSource.listenDeviceSensors("device-1")
@@ -35,7 +35,7 @@ class BleSensorDataSourceImplTest {
     }
 
     @Test
-    fun `listenDeviceSensors returns Ok and subscribes to the connection's sensor data`() = runTest {
+    fun `WHEN device has an active connection THEN listenDeviceSensors returns Ok and subscribes to its sensor data`() = runTest {
         val connection: BleConnection = mockk {
             every { observeSensorData() } returns flowOf(sensorData())
         }
@@ -48,12 +48,12 @@ class BleSensorDataSourceImplTest {
     }
 
     @Test
-    fun `stopListening for a specific deviceUuid does not throw when nothing is active`() = runTest {
+    fun `WHEN nothing is active THEN stopListening for a specific deviceUuid does not throw`() = runTest {
         dataSource.stopListening("device-1")
     }
 
     @Test
-    fun `stopListening with null cancels all active listeners without throwing`() = runTest {
+    fun `WHEN stopListening is called with null THEN it cancels all active listeners without throwing`() = runTest {
         val connection: BleConnection = mockk {
             every { observeSensorData() } returns flowOf(sensorData())
         }
@@ -65,7 +65,7 @@ class BleSensorDataSourceImplTest {
     }
 
     @Test
-    fun `listenDeviceSensors called twice for the same device replaces the previous listener`() = runTest {
+    fun `WHEN listenDeviceSensors is called twice for the same device THEN it replaces the previous listener`() = runTest {
         val connection: BleConnection = mockk {
             every { observeSensorData() } returns flowOf(sensorData())
         }

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class ObserveNewTasksUseCaseTest {
 
     @Test
-    fun `emits tasks pushed by the repository flow`() = runTest {
+    fun `WHEN repository flow pushes tasks THEN it emits those tasks`() = runTest {
         val task1 = Task(deviceUuid = "device-1", taskTypeUid = 10L, uid = 1L)
         val task2 = Task(deviceUuid = "device-1", taskTypeUid = 10L, uid = 2L)
         val repository = FakeTasksRepository(newTasksFlow = flowOf(task1, task2))
@@ -24,7 +24,7 @@ class ObserveNewTasksUseCaseTest {
     }
 
     @Test
-    fun `emits nothing when repository flow is empty`() = runTest {
+    fun `WHEN repository flow is empty THEN it emits nothing`() = runTest {
         val repository = FakeTasksRepository()
         val useCase = ObserveNewTasksUseCase(repository)
 

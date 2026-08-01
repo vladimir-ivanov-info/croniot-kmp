@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class SendNewTaskUseCaseImplTest {
 
     @Test
-    fun `returns Ok when repository accepts the task`() = runTest {
+    fun `WHEN repository accepts the task THEN it returns Ok`() = runTest {
         val repository = FakeTasksRepository(sendNewTaskOutcome = Outcome.Ok(Unit))
         val useCase = SendNewTaskUseCaseImpl(repository)
 
@@ -22,7 +22,7 @@ class SendNewTaskUseCaseImplTest {
     }
 
     @Test
-    fun `propagates error from repository`() = runTest {
+    fun `WHEN repository returns an error THEN it propagates that error`() = runTest {
         val error = TaskError.Remote(RemoteError.Unreachable)
         val repository = FakeTasksRepository(sendNewTaskOutcome = Outcome.Err(error))
         val useCase = SendNewTaskUseCaseImpl(repository)
@@ -33,7 +33,7 @@ class SendNewTaskUseCaseImplTest {
     }
 
     @Test
-    fun `builds task with given device task type and parameters`() = runTest {
+    fun `WHEN invoked with a device, task type and parameters THEN it builds and sends the task`() = runTest {
         val repository = FakeTasksRepository()
         val useCase = SendNewTaskUseCaseImpl(repository)
 

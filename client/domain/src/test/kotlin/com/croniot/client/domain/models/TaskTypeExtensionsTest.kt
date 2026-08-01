@@ -25,28 +25,28 @@ class TaskTypeExtensionsTest {
     )
 
     @Test
-    fun `isInstant is true for a single non-time parameter`() {
+    fun `WHEN there is a single non-time parameter THEN isInstant is true`() {
         val type = taskType(listOf(parameter(ParameterTypes.NUMBER)))
 
         assertThat(type.isInstant()).isTrue()
     }
 
     @Test
-    fun `isInstant is false for a single time parameter`() {
+    fun `WHEN there is a single time parameter THEN isInstant is false`() {
         val type = taskType(listOf(parameter(ParameterTypes.TIME)))
 
         assertThat(type.isInstant()).isFalse()
     }
 
     @Test
-    fun `isInstant is false when there is more than one parameter`() {
+    fun `WHEN there is more than one parameter THEN isInstant is false`() {
         val type = taskType(listOf(parameter(ParameterTypes.NUMBER), parameter(ParameterTypes.NUMBER)))
 
         assertThat(type.isInstant()).isFalse()
     }
 
     @Test
-    fun `isInstant is false when there are no parameters`() {
+    fun `WHEN there are no parameters THEN isInstant is false`() {
         val type = taskType(emptyList())
 
         assertThat(type.isInstant()).isFalse()

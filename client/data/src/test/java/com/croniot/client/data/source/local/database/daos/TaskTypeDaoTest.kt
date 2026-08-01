@@ -40,7 +40,7 @@ class TaskTypeDaoTest {
     }
 
     @Test
-    fun `insert then getByUid returns the persisted task type`() = runTest {
+    fun `WHEN a task type is inserted THEN getByUid returns the persisted task type`() = runTest {
         taskTypeDao.insert(TaskTypeEntity(uid = 1L, deviceId = deviceId, name = "Water", description = "desc"))
 
         val result = taskTypeDao.getByUid(1L)
@@ -49,12 +49,12 @@ class TaskTypeDaoTest {
     }
 
     @Test
-    fun `getByUid returns null for an unknown uid`() = runTest {
+    fun `WHEN uid is unknown THEN getByUid returns null`() = runTest {
         assertNull(taskTypeDao.getByUid(999L))
     }
 
     @Test
-    fun `getByDeviceId returns only task types for that device`() = runTest {
+    fun `WHEN task types exist for other devices THEN getByDeviceId only returns those for that device`() = runTest {
         val otherDeviceId = db.deviceDao().insert(DeviceEntity(uuid = "device-2", accountId = 1L, name = "D2", description = ""))
         taskTypeDao.insert(TaskTypeEntity(uid = 1L, deviceId = deviceId, name = "Water", description = ""))
         taskTypeDao.insert(TaskTypeEntity(uid = 2L, deviceId = otherDeviceId, name = "Light", description = ""))
@@ -66,7 +66,7 @@ class TaskTypeDaoTest {
     }
 
     @Test
-    fun `realTime defaults to false when not specified`() = runTest {
+    fun `WHEN realTime is not specified THEN it defaults to false`() = runTest {
         taskTypeDao.insert(TaskTypeEntity(uid = 1L, deviceId = deviceId, name = "Water", description = ""))
 
         val result = taskTypeDao.getByUid(1L)
@@ -75,7 +75,7 @@ class TaskTypeDaoTest {
     }
 
     @Test
-    fun `deleting the parent device cascades and deletes its task types`() = runTest {
+    fun `WHEN the parent device is deleted THEN it cascades and deletes its task types`() = runTest {
         taskTypeDao.insert(TaskTypeEntity(uid = 1L, deviceId = deviceId, name = "Water", description = ""))
 
         db.deviceDao().deleteByUuid("device-1")

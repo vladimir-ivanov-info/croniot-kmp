@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 class DevicesRepositoryImplTest {
 
     @Test
-    fun `getDevices returns empty list`() {
+    fun `WHEN getDevices is called THEN it returns empty list`() {
         val repository = DevicesRepositoryImpl()
 
         val result = repository.getDevices("account-1")
@@ -15,7 +15,7 @@ class DevicesRepositoryImplTest {
     }
 
     @Test
-    fun `getDevices returns empty list regardless of accountUuid`() {
+    fun `WHEN getDevices is called with any accountUuid THEN it returns empty list`() {
         val repository = DevicesRepositoryImpl()
 
         val result = repository.getDevices("any-other-account")

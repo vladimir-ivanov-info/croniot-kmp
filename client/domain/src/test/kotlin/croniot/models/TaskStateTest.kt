@@ -7,17 +7,17 @@ import org.junit.jupiter.api.Test
 class TaskStateTest {
 
     @Test
-    fun `fromString resolves a known enum name`() {
+    fun `WHEN name is a known enum value THEN fromString resolves it`() {
         assertThat(TaskState.fromString("RUNNING")).isEqualTo(TaskState.RUNNING)
     }
 
     @Test
-    fun `fromString falls back to UNDEFINED for an unknown value`() {
+    fun `WHEN value is unknown THEN fromString falls back to UNDEFINED`() {
         assertThat(TaskState.fromString("NOT_A_REAL_STATE")).isEqualTo(TaskState.UNDEFINED)
     }
 
     @Test
-    fun `fromString is case sensitive and falls back to UNDEFINED for lowercase input`() {
+    fun `WHEN input is lowercase THEN fromString falls back to UNDEFINED (case sensitive)`() {
         assertThat(TaskState.fromString("running")).isEqualTo(TaskState.UNDEFINED)
     }
 }

@@ -60,7 +60,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getCurrentRoute delegates to navigation local datasource and returns its result`() = runTest {
+    fun `WHEN getCurrentRoute is called THEN it delegates to navigation local datasource and returns its result`() = runTest {
         coEvery { navigationLocalDatasource.getCurrentRoute() } returns "home"
 
         val result = repository.getCurrentRoute()
@@ -70,7 +70,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `saveCurrentRoute delegates route to navigation local datasource`() = runTest {
+    fun `WHEN saveCurrentRoute is called THEN it delegates route to navigation local datasource`() = runTest {
         coJustRun { navigationLocalDatasource.saveCurrentRoute(any()) }
 
         repository.saveCurrentRoute("settings")
@@ -79,7 +79,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getCurrentAccount delegates to auth local datasource and returns its result`() = runTest {
+    fun `WHEN getCurrentAccount is called THEN it delegates to auth local datasource and returns its result`() = runTest {
         coEvery { authLocalDatasource.getCurrentAccount() } returns account
 
         val result = repository.getCurrentAccount()
@@ -89,7 +89,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getCurrentAccount returns null when no account stored`() = runTest {
+    fun `WHEN no account is stored THEN getCurrentAccount returns null`() = runTest {
         coEvery { authLocalDatasource.getCurrentAccount() } returns null
 
         val result = repository.getCurrentAccount()
@@ -98,7 +98,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `generateAndSaveDeviceUuidIfNotExists delegates to device local datasource`() = runTest {
+    fun `WHEN generateAndSaveDeviceUuidIfNotExists is called THEN it delegates to device local datasource`() = runTest {
         coJustRun { deviceLocalDatasource.generateAndSaveDeviceUuidIfNotExists() }
 
         repository.generateAndSaveDeviceUuidIfNotExists()
@@ -107,7 +107,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getSelectedDevice delegates to device local datasource and returns its result`() = runTest {
+    fun `WHEN getSelectedDevice is called THEN it delegates to device local datasource and returns its result`() = runTest {
         coEvery { deviceLocalDatasource.getSelectedDevice() } returns device
 
         val result = repository.getSelectedDevice()
@@ -117,7 +117,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `saveSelectedDevice delegates device to device local datasource`() = runTest {
+    fun `WHEN saveSelectedDevice is called THEN it delegates device to device local datasource`() = runTest {
         coJustRun { deviceLocalDatasource.saveSelectedDevice(any()) }
 
         repository.saveSelectedDevice(device)
@@ -126,7 +126,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `clearAllCacheExceptDeviceUuid delegates to app preferences local datasource`() = runTest {
+    fun `WHEN clearAllCacheExceptDeviceUuid is called THEN it delegates to app preferences local datasource`() = runTest {
         coJustRun { appPreferencesLocalDatasource.clearAllCacheExceptDeviceUuid() }
 
         repository.clearAllCacheExceptDeviceUuid()
@@ -135,7 +135,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getDeviceProperties delegates to DevicePropertiesController`() {
+    fun `WHEN getDeviceProperties is called THEN it delegates to DevicePropertiesController`() {
         mockkObject(DevicePropertiesController)
         try {
             every { DevicePropertiesController.getDeviceDetails() } returns mapOf("Android Version" to "14")
@@ -149,7 +149,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getServerIp returns first value emitted by server config local datasource`() = runTest {
+    fun `WHEN server config local datasource emits values THEN getServerIp returns the first one`() = runTest {
         coEvery { serverConfigLocalDatasource.getServerIp() } returns flowOf("1.2.3.4")
 
         val result = repository.getServerIp()
@@ -158,7 +158,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getIsForegroundServiceEnabled delegates to app preferences local datasource`() = runTest {
+    fun `WHEN getIsForegroundServiceEnabled is called THEN it delegates to app preferences local datasource`() = runTest {
         coEvery { appPreferencesLocalDatasource.getIsForegroundServiceEnabled() } returns true
 
         val result = repository.getIsForegroundServiceEnabled()
@@ -167,7 +167,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `saveIsForegroundServiceEnabled delegates flag to app preferences local datasource`() = runTest {
+    fun `WHEN saveIsForegroundServiceEnabled is called THEN it delegates flag to app preferences local datasource`() = runTest {
         coJustRun { appPreferencesLocalDatasource.saveIsForegroundServiceEnabled(any()) }
 
         repository.saveIsForegroundServiceEnabled(true)
@@ -176,7 +176,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getCurrentScreen delegates to navigation local datasource and returns its result`() = runTest {
+    fun `WHEN getCurrentScreen is called THEN it delegates to navigation local datasource and returns its result`() = runTest {
         coEvery { navigationLocalDatasource.getCurrentScreen() } returns "HomeScreen"
 
         val result = repository.getCurrentScreen()
@@ -185,7 +185,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `saveCurrentScreen delegates screen to navigation local datasource`() = runTest {
+    fun `WHEN saveCurrentScreen is called THEN it delegates screen to navigation local datasource`() = runTest {
         coJustRun { navigationLocalDatasource.saveCurrentScreen(any()) }
 
         repository.saveCurrentScreen("DetailScreen")
@@ -194,7 +194,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getLocalDeviceToken delegates to device local datasource and returns its result`() = runTest {
+    fun `WHEN getLocalDeviceToken is called THEN it delegates to device local datasource and returns its result`() = runTest {
         coEvery { deviceLocalDatasource.getLocalDeviceToken() } returns "token-abc"
 
         val result = repository.getLocalDeviceToken()
@@ -203,7 +203,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `saveCurrentAccount delegates account to auth local datasource`() = runTest {
+    fun `WHEN saveCurrentAccount is called THEN it delegates account to auth local datasource`() = runTest {
         coJustRun { authLocalDatasource.saveCurrentAccount(any()) }
 
         repository.saveCurrentAccount(account)
@@ -212,7 +212,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `saveCurrentAccount with null clears stored account`() = runTest {
+    fun `WHEN saveCurrentAccount is called with null THEN it clears the stored account`() = runTest {
         coJustRun { authLocalDatasource.saveCurrentAccount(any()) }
 
         repository.saveCurrentAccount(null)
@@ -221,7 +221,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `saveEmail delegates email to auth local datasource`() = runTest {
+    fun `WHEN saveEmail is called THEN it delegates email to auth local datasource`() = runTest {
         coJustRun { authLocalDatasource.saveEmail(any()) }
 
         repository.saveEmail("user@example.com")
@@ -230,7 +230,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getServerMode delegates to server config local datasource`() = runTest {
+    fun `WHEN getServerMode is called THEN it delegates to server config local datasource`() = runTest {
         every { serverConfigLocalDatasource.getServerMode() } returns flowOf("cloud")
 
         val result = repository.getServerMode().first()
@@ -239,7 +239,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `getAppSessionMode delegates to app preferences local datasource`() = runTest {
+    fun `WHEN getAppSessionMode is called THEN it delegates to app preferences local datasource`() = runTest {
         coEvery { appPreferencesLocalDatasource.getAppSessionMode() } returns "server"
 
         val result = repository.getAppSessionMode()
@@ -248,7 +248,7 @@ class LocalDataRepositoryImplTest {
     }
 
     @Test
-    fun `saveAppSessionMode delegates mode to app preferences local datasource`() = runTest {
+    fun `WHEN saveAppSessionMode is called THEN it delegates mode to app preferences local datasource`() = runTest {
         coJustRun { appPreferencesLocalDatasource.saveAppSessionMode(any()) }
 
         repository.saveAppSessionMode("ble")

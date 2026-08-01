@@ -36,21 +36,21 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onConnectionStateChange updates connectionState`() {
+    fun `WHEN onConnectionStateChange is called THEN it updates connectionState`() {
         bridge.onConnectionStateChange(gatt, 0, BluetoothProfile.STATE_CONNECTED)
 
         assertEquals(BluetoothProfile.STATE_CONNECTED, bridge.connectionState.value)
     }
 
     @Test
-    fun `onServicesDiscovered sends status through channel`() = runTest {
+    fun `WHEN onServicesDiscovered is called THEN it sends status through channel`() = runTest {
         bridge.onServicesDiscovered(gatt, BluetoothGatt.GATT_SUCCESS)
 
         assertEquals(BluetoothGatt.GATT_SUCCESS, bridge.servicesDiscovered.receive())
     }
 
     @Test
-    fun `onMtuChanged sends MtuAck through channel`() = runTest {
+    fun `WHEN onMtuChanged is called THEN it sends MtuAck through channel`() = runTest {
         bridge.onMtuChanged(gatt, 247, BluetoothGatt.GATT_SUCCESS)
 
         val ack = bridge.mtuChanged.receive()
@@ -59,7 +59,7 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onDescriptorWrite sends DescriptorAck with characteristic and descriptor uuids`() = runTest {
+    fun `WHEN onDescriptorWrite is called THEN it sends DescriptorAck with characteristic and descriptor uuids`() = runTest {
         val charUuid = UUID.randomUUID()
         val descUuid = UUID.randomUUID()
         val characteristic: BluetoothGattCharacteristic = mockk { every { uuid } returns charUuid }
@@ -76,7 +76,7 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onCharacteristicRead sends ReadAck with value bytes`() = runTest {
+    fun `WHEN onCharacteristicRead is called THEN it sends ReadAck with value bytes`() = runTest {
         val charUuid = UUID.randomUUID()
         val characteristic: BluetoothGattCharacteristic = mockk { every { uuid } returns charUuid }
         val bytes = byteArrayOf(1, 2, 3)
@@ -89,7 +89,7 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onCharacteristicWrite sends WriteAck`() = runTest {
+    fun `WHEN onCharacteristicWrite is called THEN it sends WriteAck`() = runTest {
         val charUuid = UUID.randomUUID()
         val characteristic: BluetoothGattCharacteristic = mockk { every { uuid } returns charUuid }
 
@@ -101,7 +101,7 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onCharacteristicChanged with auth uuid sends decoded payload to authNotification channel`() = runTest {
+    fun `WHEN onCharacteristicChanged is called with the auth uuid THEN it sends the decoded payload to authNotification channel`() = runTest {
         val characteristic: BluetoothGattCharacteristic = mockk { every { uuid } returns BleProfile.CHARACTERISTIC_AUTH }
 
         bridge.onCharacteristicChanged(gatt, characteristic, "token123".toByteArray())
@@ -110,7 +110,7 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onCharacteristicChanged with sync data uuid and enough bytes parses seq total and data`() = runTest {
+    fun `WHEN onCharacteristicChanged is called with the sync data uuid and enough bytes THEN it parses seq total and data`() = runTest {
         val characteristic: BluetoothGattCharacteristic = mockk { every { uuid } returns BleProfile.CHARACTERISTIC_SYNC_DATA }
         val value = byteArrayOf(2, 5, 10, 20, 30)
 
@@ -123,7 +123,7 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onCharacteristicChanged with sync data uuid but too few bytes is ignored`() = runTest {
+    fun `WHEN onCharacteristicChanged is called with the sync data uuid but too few bytes THEN it is ignored`() = runTest {
         val characteristic: BluetoothGattCharacteristic = mockk { every { uuid } returns BleProfile.CHARACTERISTIC_SYNC_DATA }
 
         bridge.onCharacteristicChanged(gatt, characteristic, byteArrayOf(1))
@@ -132,7 +132,7 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onCharacteristicChanged with other uuid emits a NotificationEvent`() = runTest {
+    fun `WHEN onCharacteristicChanged is called with another uuid THEN it emits a NotificationEvent`() = runTest {
         val otherUuid = UUID.randomUUID()
         val characteristic: BluetoothGattCharacteristic = mockk { every { uuid } returns otherUuid }
 
@@ -150,21 +150,21 @@ class BleGattCallbackBridgeTest {
     }
 
     @Test
-    fun `onReadRemoteRssi with success status sends rssi through channel`() = runTest {
+    fun `WHEN onReadRemoteRssi is called with success status THEN it sends rssi through channel`() = runTest {
         bridge.onReadRemoteRssi(gatt, -60, BluetoothGatt.GATT_SUCCESS)
 
         assertEquals(-60, bridge.rssiReads.receive())
     }
 
     @Test
-    fun `onReadRemoteRssi with failure status does not send anything`() = runTest {
+    fun `WHEN onReadRemoteRssi is called with failure status THEN it does not send anything`() = runTest {
         bridge.onReadRemoteRssi(gatt, -60, BluetoothGatt.GATT_FAILURE)
 
         assertTrue(bridge.rssiReads.tryReceive().isFailure)
     }
 
     @Test
-    fun `close closes all channels`() = runTest {
+    fun `WHEN close is called THEN it closes all channels`() = runTest {
         bridge.close()
 
         assertTrue(bridge.servicesDiscovered.isClosedForSend)

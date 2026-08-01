@@ -31,7 +31,7 @@ class FeatureFlagApiTest {
     }
 
     @Test
-    fun `fetchAll deserializes list of feature flags`() = runTest {
+    fun `WHEN fetchAll is called THEN it deserializes the list of feature flags`() = runTest {
         val flags = listOf(
             FeatureFlagDto(name = "dark_mode", enabled = true),
             FeatureFlagDto(name = "beta_feature", enabled = false, description = "beta"),
@@ -53,7 +53,7 @@ class FeatureFlagApiTest {
     }
 
     @Test
-    fun `fetchAll returns empty list when server has no flags`() = runTest {
+    fun `WHEN server has no flags THEN fetchAll returns empty list`() = runTest {
         val featureFlagApi = api {
             respond(
                 content = ByteReadChannel(json.encodeToString(emptyList<FeatureFlagDto>())),

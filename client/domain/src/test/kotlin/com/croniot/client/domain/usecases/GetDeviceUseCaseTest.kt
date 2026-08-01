@@ -17,7 +17,7 @@ class GetDeviceUseCaseTest {
     private val otherDevice = Device(uuid = "device-2", name = "Device 2", description = "")
 
     @Test
-    fun `returns matching device from the server session account`() = runTest {
+    fun `WHEN device is part of the server session account THEN it returns the matching device`() = runTest {
         val account = Account(
             uuid = "account-1",
             nickname = "nick",
@@ -37,7 +37,7 @@ class GetDeviceUseCaseTest {
     }
 
     @Test
-    fun `returns null when device is not part of the server session account`() = runTest {
+    fun `WHEN device is not part of the server session account THEN it returns null`() = runTest {
         val account = Account(
             uuid = "account-1",
             nickname = "nick",
@@ -54,7 +54,7 @@ class GetDeviceUseCaseTest {
     }
 
     @Test
-    fun `delegates to ble devices repository when in ble only mode`() = runTest {
+    fun `WHEN in ble-only mode THEN it delegates to the ble devices repository`() = runTest {
         val bleDevicesRepository = FakeBleDevicesRepository(devicesByUuid = mapOf("device-1" to matchingDevice))
         val useCase = buildUseCase(
             appSessionRepository = FakeAppSessionRepository(initial = AppSession.BleOnly),
@@ -68,7 +68,7 @@ class GetDeviceUseCaseTest {
     }
 
     @Test
-    fun `returns null without querying ble repository when there is no session`() = runTest {
+    fun `WHEN there is no session THEN it returns null without querying the ble repository`() = runTest {
         val bleDevicesRepository = FakeBleDevicesRepository()
         val useCase = buildUseCase(
             appSessionRepository = FakeAppSessionRepository(initial = AppSession.None),

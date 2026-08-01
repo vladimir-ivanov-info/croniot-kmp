@@ -37,7 +37,7 @@ class AuthRepositoryImplTest {
     private fun loginParams() = Triple("test@test.com", "password", "device-uuid")
 
     @Test
-    fun `login returns Ok with LoginResult when account and tokens are present`() = runTest {
+    fun `WHEN account and tokens are present THEN login returns Ok with LoginResult`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = validAccountDto,
@@ -59,7 +59,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login propagates Err from data source`() = runTest {
+    fun `WHEN data source returns Err THEN login propagates it`() = runTest {
         coEvery { loginDataSource.login(any()) } returns Outcome.Err(AuthError.Network)
 
         val (email, password, deviceUuid) = loginParams()
@@ -69,7 +69,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns InvalidCredentials when result success is false`() = runTest {
+    fun `WHEN result success is false THEN login returns InvalidCredentials`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = false),
             accountDto = null,
@@ -84,7 +84,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns AccountMissing when account is null but result is success`() = runTest {
+    fun `WHEN account is null but result is success THEN login returns AccountMissing`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = null,
@@ -101,7 +101,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns TokenMissing when token is null but account is present`() = runTest {
+    fun `WHEN token is null but account is present THEN login returns TokenMissing`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = validAccountDto,
@@ -116,7 +116,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns TokenMissing when refreshToken is missing`() = runTest {
+    fun `WHEN refreshToken is missing THEN login returns TokenMissing`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = validAccountDto,
@@ -133,7 +133,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns TokenMissing when expiresAt is missing`() = runTest {
+    fun `WHEN expiresAt is missing THEN login returns TokenMissing`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = validAccountDto,
@@ -150,7 +150,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login passes deviceToken and deviceProperties through to the data source`() = runTest {
+    fun `WHEN deviceToken and deviceProperties are provided THEN login passes them through to the data source`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = validAccountDto,

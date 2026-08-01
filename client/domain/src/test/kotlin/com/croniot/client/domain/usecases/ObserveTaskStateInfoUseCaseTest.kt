@@ -18,7 +18,7 @@ class ObserveTaskStateInfoUseCaseTest {
         TaskStateInfo(dateTime = ZonedDateTime.now(), state = state, progress = 0.0, errorMessage = "")
 
     @Test
-    fun `emits mapped state info for the requested device`() = runTest {
+    fun `WHEN an event arrives for the requested device THEN it emits the mapped state info`() = runTest {
         val event = TaskStateInfoEvent(key = TaskKey("device-1", 10L, 1L), info = stateInfo("RUNNING"))
         val repository = FakeTasksRepository(taskStateInfoEventsFlow = flowOf(event))
         val useCase = ObserveTaskStateInfoUseCase(repository)
@@ -29,7 +29,7 @@ class ObserveTaskStateInfoUseCaseTest {
     }
 
     @Test
-    fun `filters events by taskTypeUid when provided`() = runTest {
+    fun `WHEN taskTypeUid is provided THEN it filters events by that taskTypeUid`() = runTest {
         val matching = TaskStateInfoEvent(key = TaskKey("device-1", 10L, 1L), info = stateInfo("RUNNING"))
         val other = TaskStateInfoEvent(key = TaskKey("device-1", 20L, 2L), info = stateInfo("PENDING"))
         val repository = FakeTasksRepository(taskStateInfoEventsFlow = flowOf(matching, other))
@@ -41,7 +41,7 @@ class ObserveTaskStateInfoUseCaseTest {
     }
 
     @Test
-    fun `passes through all events when taskTypeUid is null`() = runTest {
+    fun `WHEN taskTypeUid is null THEN it passes through all events`() = runTest {
         val event1 = TaskStateInfoEvent(key = TaskKey("device-1", 10L, 1L), info = stateInfo("RUNNING"))
         val event2 = TaskStateInfoEvent(key = TaskKey("device-1", 20L, 2L), info = stateInfo("PENDING"))
         val repository = FakeTasksRepository(taskStateInfoEventsFlow = flowOf(event1, event2))

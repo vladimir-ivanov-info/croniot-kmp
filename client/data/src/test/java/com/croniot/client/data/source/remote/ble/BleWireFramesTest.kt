@@ -11,7 +11,7 @@ class BleWireFramesTest {
     private val json = Json { ignoreUnknownKeys = true }
 
     @Test
-    fun `BleTaskFrame serializes and deserializes`() {
+    fun `WHEN BleTaskFrame is serialized THEN it deserializes back to the original`() {
         val frame = BleTaskFrame(type = BleTaskFrameType.ADD_TASK, data = JsonPrimitive("payload"))
 
         val decoded = json.decodeFromString<BleTaskFrame>(json.encodeToString(frame))
@@ -20,7 +20,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleDeviceInfo serializes and deserializes`() {
+    fun `WHEN BleDeviceInfo is serialized THEN it deserializes back to the original`() {
         val info = BleDeviceInfo(deviceId = "device-1", protocolVersion = 1, schemaVersion = 42L)
 
         val decoded = json.decodeFromString<BleDeviceInfo>(json.encodeToString(info))
@@ -29,7 +29,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleAuthRequest serializes and deserializes`() {
+    fun `WHEN BleAuthRequest is serialized THEN it deserializes back to the original`() {
         val request = BleAuthRequest(username = "user", password = "pass")
 
         val decoded = json.decodeFromString<BleAuthRequest>(json.encodeToString(request))
@@ -38,7 +38,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleAuthResponse serializes and deserializes with default error`() {
+    fun `WHEN BleAuthResponse is serialized without an error THEN it deserializes with the default null error`() {
         val response = BleAuthResponse(ok = true)
 
         val decoded = json.decodeFromString<BleAuthResponse>(json.encodeToString(response))
@@ -48,7 +48,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleAuthResponse carries an error message when present`() {
+    fun `WHEN BleAuthResponse has an error message THEN it carries it through serialization`() {
         val response = BleAuthResponse(ok = false, error = "bad credentials")
 
         val decoded = json.decodeFromString<BleAuthResponse>(json.encodeToString(response))
@@ -57,7 +57,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleRequestSyncPayload serializes and deserializes`() {
+    fun `WHEN BleRequestSyncPayload is serialized THEN it deserializes back to the original`() {
         val payload = BleRequestSyncPayload(taskTypeUid = 7L)
 
         val decoded = json.decodeFromString<BleRequestSyncPayload>(json.encodeToString(payload))
@@ -66,7 +66,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleSchemaDto serializes and deserializes with empty lists`() {
+    fun `WHEN BleSchemaDto has empty lists THEN it serializes and deserializes correctly`() {
         val dto = BleSchemaDto(sensorTypes = emptyList(), taskTypes = emptyList())
 
         val decoded = json.decodeFromString<BleSchemaDto>(json.encodeToString(dto))
@@ -75,7 +75,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleSensorDataDto serializes and deserializes with default timestamp`() {
+    fun `WHEN BleSensorDataDto is serialized without a timestamp THEN it deserializes with the default null timestamp`() {
         val dto = BleSensorDataDto(sensorTypeUid = 1L, value = JsonPrimitive(23.5))
 
         val decoded = json.decodeFromString<BleSensorDataDto>(json.encodeToString(dto))
@@ -85,7 +85,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleSensorDataDto carries an explicit timestamp when present`() {
+    fun `WHEN BleSensorDataDto has an explicit timestamp THEN it carries it through serialization`() {
         val dto = BleSensorDataDto(sensorTypeUid = 1L, value = JsonPrimitive(23.5), timestampMs = 1000L)
 
         val decoded = json.decodeFromString<BleSensorDataDto>(json.encodeToString(dto))
@@ -94,7 +94,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleTaskStateEventPayload serializes and deserializes with defaults`() {
+    fun `WHEN BleTaskStateEventPayload is serialized without optional fields THEN it deserializes with the default values`() {
         val payload = BleTaskStateEventPayload(taskTypeUid = 1L, state = "RUNNING")
 
         val decoded = json.decodeFromString<BleTaskStateEventPayload>(json.encodeToString(payload))
@@ -106,7 +106,7 @@ class BleWireFramesTest {
     }
 
     @Test
-    fun `BleTaskStateEventPayload carries explicit optional fields when present`() {
+    fun `WHEN BleTaskStateEventPayload has explicit optional fields THEN it carries them through serialization`() {
         val payload = BleTaskStateEventPayload(
             taskTypeUid = 1L,
             taskUid = 2L,

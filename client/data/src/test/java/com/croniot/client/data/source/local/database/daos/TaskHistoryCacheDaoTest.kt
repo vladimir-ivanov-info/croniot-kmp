@@ -53,7 +53,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPage with null cursor returns entries ordered by timestamp descending`() = runTest {
+    fun `WHEN cursor is null THEN getPage returns entries ordered by timestamp descending`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -68,7 +68,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPage only returns entries for the requested device`() = runTest {
+    fun `WHEN entries exist for other devices THEN getPage only returns those for the requested device`() = runTest {
         dao.insertAll(listOf(entity(deviceUuid = "device-1", stateInfoId = 1L, timeStampMillis = 1000L)))
         dao.insertAll(listOf(entity(deviceUuid = "device-2", stateInfoId = 2L, timeStampMillis = 1000L)))
 
@@ -79,7 +79,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPage with a real cursor excludes the cursor row and anything newer`() = runTest {
+    fun `WHEN a real cursor is given THEN getPage excludes the cursor row and anything newer`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -95,7 +95,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPage with beforeMillis and MAX_VALUE beforeId also includes same-timestamp rows with a smaller id`() = runTest {
+    fun `WHEN beforeMillis is set and beforeId is MAX_VALUE THEN getPage also includes same-timestamp rows with a smaller id`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -111,7 +111,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPage paginates using both beforeMillis and beforeId for same-timestamp entries`() = runTest {
+    fun `WHEN entries share the same timestamp THEN getPage paginates using both beforeMillis and beforeId`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -126,7 +126,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPage respects the limit`() = runTest {
+    fun `WHEN more entries exist than the limit THEN getPage respects the limit`() = runTest {
         dao.insertAll((1..5).map { entity(stateInfoId = it.toLong(), timeStampMillis = it.toLong()) })
 
         val result = dao.getPage("device-1", limit = 2, beforeMillis = null, beforeId = Long.MAX_VALUE)
@@ -135,7 +135,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `entries without a stateInfoId are ordered using their negative row id`() = runTest {
+    fun `WHEN an entry has no stateInfoId THEN getPage orders it using its negative row id`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = null, timeStampMillis = 1000L),
@@ -150,7 +150,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `count matches the number of entries returned by getPage without a limit`() = runTest {
+    fun `WHEN getPage is called without a limit THEN count matches the number of entries returned`() = runTest {
         dao.insertAll((1..3).map { entity(stateInfoId = it.toLong(), timeStampMillis = it.toLong()) })
 
         val count = dao.count("device-1", beforeMillis = null, beforeId = Long.MAX_VALUE)
@@ -159,14 +159,14 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `countByDevice counts all entries regardless of cursor`() = runTest {
+    fun `WHEN counting by device THEN countByDevice counts all entries regardless of cursor`() = runTest {
         dao.insertAll((1..4).map { entity(stateInfoId = it.toLong(), timeStampMillis = it.toLong()) })
 
         assertEquals(4, dao.countByDevice("device-1"))
     }
 
     @Test
-    fun `oldestTimestamp returns the minimum timeStampMillis for the device`() = runTest {
+    fun `WHEN a device has multiple entries THEN oldestTimestamp returns the minimum timeStampMillis`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 3000L),
@@ -178,12 +178,12 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `oldestTimestamp returns null when the device has no entries`() = runTest {
+    fun `WHEN the device has no entries THEN oldestTimestamp returns null`() = runTest {
         assertEquals(null, dao.oldestTimestamp("device-1"))
     }
 
     @Test
-    fun `deleteOldest keeps only the maxEntries most recent rows`() = runTest {
+    fun `WHEN deleteOldest is called with maxEntries THEN it keeps only the most recent rows`() = runTest {
         dao.insertAll((1..5).map { entity(stateInfoId = it.toLong(), timeStampMillis = it.toLong()) })
 
         dao.deleteOldest("device-1", maxEntries = 3)
@@ -193,7 +193,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `deleteOldest does not affect other devices`() = runTest {
+    fun `WHEN deleteOldest is called for one device THEN it does not affect other devices`() = runTest {
         dao.insertAll(listOf(entity(deviceUuid = "device-1", stateInfoId = 1L, timeStampMillis = 1000L)))
         dao.insertAll(listOf(entity(deviceUuid = "device-2", stateInfoId = 2L, timeStampMillis = 1000L)))
 
@@ -204,7 +204,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `insertAll with a duplicate deviceUuid and stateInfoId ignores the second insert`() = runTest {
+    fun `WHEN deviceUuid and stateInfoId are duplicated THEN insertAll ignores the second insert`() = runTest {
         dao.insertAll(listOf(entity(stateInfoId = 1L, timeStampMillis = 1000L, state = "RUNNING")))
         dao.insertAll(listOf(entity(stateInfoId = 1L, timeStampMillis = 1000L, state = "COMPLETED")))
 
@@ -215,7 +215,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `insertAll with different stateInfoIds inserts every row`() = runTest {
+    fun `WHEN stateInfoIds are different THEN insertAll inserts every row`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -229,7 +229,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPageFilteredByTaskTypes only returns entries whose taskTypeUid is in the filter set`() = runTest {
+    fun `WHEN a taskTypeUid filter set is given THEN getPageFilteredByTaskTypes only returns entries whose taskTypeUid is in it`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, taskTypeUid = 10L, timeStampMillis = 1000L),
@@ -247,7 +247,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPageFilteredByTaskTypes applies the date range in addition to the type filter`() = runTest {
+    fun `WHEN a date range is given alongside the type filter THEN getPageFilteredByTaskTypes applies both`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, taskTypeUid = 10L, timeStampMillis = 1000L),
@@ -264,7 +264,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPageFilteredByTaskTypes respects the cursor and limit`() = runTest {
+    fun `WHEN a cursor and limit are given THEN getPageFilteredByTaskTypes respects both`() = runTest {
         dao.insertAll(
             (1..5).map { entity(stateInfoId = it.toLong(), taskTypeUid = 10L, timeStampMillis = it.toLong() * 1000) },
         )
@@ -279,7 +279,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `countFilteredByTaskTypes counts only entries matching the type filter`() = runTest {
+    fun `WHEN a type filter is given THEN countFilteredByTaskTypes counts only matching entries`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, taskTypeUid = 10L, timeStampMillis = 1000L),
@@ -296,7 +296,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPageFilteredByDates returns entries within the date range regardless of task type`() = runTest {
+    fun `WHEN a date range is given THEN getPageFilteredByDates returns entries within it regardless of task type`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, taskTypeUid = 10L, timeStampMillis = 1000L),
@@ -314,7 +314,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPageFilteredByDates with null bounds behaves like an unfiltered date range`() = runTest {
+    fun `WHEN date bounds are null THEN getPageFilteredByDates behaves like an unfiltered date range`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -331,7 +331,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `countFilteredByDates counts only entries within the date range`() = runTest {
+    fun `WHEN a date range is given THEN countFilteredByDates counts only entries within it`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -349,7 +349,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPageFilteredByTaskTypes only returns entries for the requested device`() = runTest {
+    fun `WHEN entries exist for other devices THEN getPageFilteredByTaskTypes only returns those for the requested device`() = runTest {
         dao.insertAll(listOf(entity(deviceUuid = "device-1", stateInfoId = 1L, taskTypeUid = 10L, timeStampMillis = 1000L)))
         dao.insertAll(listOf(entity(deviceUuid = "device-2", stateInfoId = 2L, taskTypeUid = 10L, timeStampMillis = 1000L)))
 
@@ -364,7 +364,7 @@ class TaskHistoryCacheDaoTest {
     // --- Cursor (beforeMillis non-null) on the methods that only ever got exercised with beforeMillis = null above ---
 
     @Test
-    fun `count with a real cursor excludes the cursor row and anything newer`() = runTest {
+    fun `WHEN a real cursor is given THEN count excludes the cursor row and anything newer`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -379,7 +379,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPageFilteredByTaskTypes with a real cursor excludes the cursor row and anything newer`() = runTest {
+    fun `WHEN a real cursor is given THEN getPageFilteredByTaskTypes excludes the cursor row and anything newer`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, taskTypeUid = 10L, timeStampMillis = 1000L),
@@ -397,7 +397,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `countFilteredByTaskTypes with a real cursor and a real date range counts only the matching older rows`() = runTest {
+    fun `WHEN a real cursor and a real date range are given THEN countFilteredByTaskTypes counts only the matching older rows`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, taskTypeUid = 10L, timeStampMillis = 1000L),
@@ -415,7 +415,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `getPageFilteredByDates with a real cursor excludes the cursor row and anything newer`() = runTest {
+    fun `WHEN a real cursor is given THEN getPageFilteredByDates excludes the cursor row and anything newer`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),
@@ -433,7 +433,7 @@ class TaskHistoryCacheDaoTest {
     }
 
     @Test
-    fun `countFilteredByDates with a real cursor and null date bounds counts only the older rows`() = runTest {
+    fun `WHEN a real cursor is given and date bounds are null THEN countFilteredByDates counts only the older rows`() = runTest {
         dao.insertAll(
             listOf(
                 entity(stateInfoId = 1L, timeStampMillis = 1000L),

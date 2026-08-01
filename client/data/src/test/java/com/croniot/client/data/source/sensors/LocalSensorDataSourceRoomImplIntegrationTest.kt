@@ -41,7 +41,7 @@ class LocalSensorDataSourceRoomImplIntegrationTest {
     }
 
     @Test
-    fun `save then getLatestSensorData returns the reading mapped back to a domain model`() = runTest {
+    fun `WHEN save is called THEN getLatestSensorData returns the reading mapped back to a domain model`() = runTest {
         val reading = SensorData(
             deviceUuid = "device-1",
             sensorTypeUid = 10L,
@@ -58,7 +58,7 @@ class LocalSensorDataSourceRoomImplIntegrationTest {
     }
 
     @Test
-    fun `save multiple readings then getLatestSensorData returns them newest first`() = runTest {
+    fun `WHEN multiple readings are saved THEN getLatestSensorData returns them newest first`() = runTest {
         dataSource.save(SensorData("device-1", 10L, "20.0", ZonedDateTime.now().minusMinutes(2)))
         dataSource.save(SensorData("device-1", 10L, "22.0", ZonedDateTime.now().minusMinutes(1)))
         dataSource.save(SensorData("device-1", 10L, "25.0", ZonedDateTime.now()))
@@ -69,7 +69,7 @@ class LocalSensorDataSourceRoomImplIntegrationTest {
     }
 
     @Test
-    fun `observeSensorData emits the saved reading mapped to a domain model`() = runTest {
+    fun `WHEN a reading is saved THEN observeSensorData emits it mapped to a domain model`() = runTest {
         val reading = SensorData("device-1", 10L, "18.0", ZonedDateTime.now())
         dataSource.save(reading)
 

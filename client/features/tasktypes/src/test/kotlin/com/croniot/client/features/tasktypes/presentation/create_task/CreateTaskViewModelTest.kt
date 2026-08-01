@@ -76,7 +76,7 @@ class CreateTaskViewModelTest {
     }
 
     @Test
-    fun `initialize sets taskType matching the given uid when device exists`() = runTest(testDispatcher) {
+    fun `WHEN initialize is called and the device exists THEN taskType is set to the one matching the given uid`() = runTest(testDispatcher) {
         coEvery { getDeviceUseCase(deviceUuid) } returns device
 
         viewModel.initialize(deviceUuid, taskTypeTwo.uid)
@@ -85,7 +85,7 @@ class CreateTaskViewModelTest {
     }
 
     @Test
-    fun `initialize does not change state when device is not found`() = runTest(testDispatcher) {
+    fun `WHEN initialize is called and the device is not found THEN the state does not change`() = runTest(testDispatcher) {
         coEvery { getDeviceUseCase(deviceUuid) } returns null
 
         viewModel.initialize(deviceUuid, taskTypeOne.uid)
@@ -94,7 +94,7 @@ class CreateTaskViewModelTest {
     }
 
     @Test
-    fun `initialize called twice only invokes getDeviceUseCase once`() = runTest(testDispatcher) {
+    fun `WHEN initialize is called twice THEN getDeviceUseCase is invoked only once`() = runTest(testDispatcher) {
         coEvery { getDeviceUseCase(deviceUuid) } returns device
 
         viewModel.initialize(deviceUuid, taskTypeOne.uid)
@@ -104,7 +104,7 @@ class CreateTaskViewModelTest {
     }
 
     @Test
-    fun `updateParameter accumulates values and sendTask forwards them to sendNewTaskUseCase`() = runTest(testDispatcher) {
+    fun `WHEN updateParameter is called multiple times and sendTask is called THEN the accumulated values are forwarded to sendNewTaskUseCase`() = runTest(testDispatcher) {
         coEvery { getDeviceUseCase(deviceUuid) } returns device
         coEvery { sendNewTaskUseCase(any(), any(), any()) } returns Outcome.Ok(Unit)
         viewModel.initialize(deviceUuid, taskTypeOne.uid)
@@ -123,14 +123,14 @@ class CreateTaskViewModelTest {
     }
 
     @Test
-    fun `sendTask without an initialized device and task type does not invoke sendNewTaskUseCase`() = runTest(testDispatcher) {
+    fun `WHEN sendTask is called without an initialized device and task type THEN sendNewTaskUseCase is not invoked`() = runTest(testDispatcher) {
         viewModel.sendTask()
 
         coVerify(exactly = 0) { sendNewTaskUseCase(any(), any(), any()) }
     }
 
     @Test
-    fun `observeTaskTypeLatestState returns the same StateFlow instance on repeated calls`() = runTest(testDispatcher) {
+    fun `WHEN observeTaskTypeLatestState is called repeatedly THEN it returns the same StateFlow instance`() = runTest(testDispatcher) {
         val initialState = TaskStateInfo(dateTime = ZonedDateTime.now(), state = "RUNNING", progress = 0.0, errorMessage = "")
         coEvery { getLatestTaskStateInfoUseCase(deviceUuid, taskTypeOne.uid) } returns initialState
         every { observeTaskStateInfoUseCase(deviceUuid, taskTypeOne.uid) } returns flowOf()
@@ -143,7 +143,7 @@ class CreateTaskViewModelTest {
     }
 
     @Test
-    fun `observeTaskTypeLatestState logs round-trip and clears pending timestamp for a genuine IoT state after a send`() =
+    fun `WHEN a genuine IoT state arrives after a pending send THEN observeTaskTypeLatestState logs the round-trip once and clears the pending timestamp`() =
         runTest(testDispatcher) {
             mockkStatic(Log::class)
             every { Log.d(any(), any()) } returns 0
@@ -171,7 +171,7 @@ class CreateTaskViewModelTest {
         }
 
     @Test
-    fun `observeTaskTypeLatestState does not log round-trip for CREATED, UNDEFINED or ERROR states`() =
+    fun `WHEN the incoming state is CREATED, UNDEFINED, or ERROR THEN observeTaskTypeLatestState does not log a round-trip`() =
         runTest(testDispatcher) {
             mockkStatic(Log::class)
             every { Log.d(any(), any()) } returns 0
@@ -193,7 +193,7 @@ class CreateTaskViewModelTest {
         }
 
     @Test
-    fun `observeTaskTypeLatestState does not log round-trip when there is no pending send`() =
+    fun `WHEN there is no pending send THEN observeTaskTypeLatestState does not log a round-trip`() =
         runTest(testDispatcher) {
             mockkStatic(Log::class)
             every { Log.d(any(), any()) } returns 0
@@ -211,7 +211,7 @@ class CreateTaskViewModelTest {
         }
 
     @Test
-    fun `sendStatefulTask on success does not emit any snackbar event`() = runTest(testDispatcher) {
+    fun `WHEN sendStatefulTask succeeds THEN no snackbar event is emitted`() = runTest(testDispatcher) {
         coEvery { sendNewTaskUseCase(deviceUuid, taskTypeOne.uid, any()) } returns Outcome.Ok(Unit)
         val events = mutableListOf<CreateTaskUiEvent>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -225,7 +225,7 @@ class CreateTaskViewModelTest {
     }
 
     @Test
-    fun `sendStatefulTask on failure emits a ShowSnackbar event`() = runTest(testDispatcher) {
+    fun `WHEN sendStatefulTask fails THEN a ShowSnackbar event is emitted`() = runTest(testDispatcher) {
         coEvery { sendNewTaskUseCase(deviceUuid, taskTypeOne.uid, any()) } returns
             Outcome.Err(TaskError.Remote(RemoteError.Unreachable))
         val events = mutableListOf<CreateTaskUiEvent>()
@@ -241,7 +241,7 @@ class CreateTaskViewModelTest {
     }
 
     @Test
-    fun `sendStatefulTask sends only the single updated parameter`() = runTest(testDispatcher) {
+    fun `WHEN sendStatefulTask is called THEN it sends only the single updated parameter`() = runTest(testDispatcher) {
         coEvery { sendNewTaskUseCase(any(), any(), any()) } returns Outcome.Ok(Unit)
 
         viewModel.sendStatefulTask(deviceUuid, taskTypeOne.uid, parameterUid = 7L, newValue = "off")

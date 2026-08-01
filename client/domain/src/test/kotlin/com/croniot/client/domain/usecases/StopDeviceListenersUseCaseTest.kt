@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 class StopDeviceListenersUseCaseTest {
 
     @Test
-    fun `stops both sensor and task listeners`() = runTest {
+    fun `WHEN StopDeviceListenersUseCase is invoked THEN it stops both sensor and task listeners`() = runTest {
         val sensorDataRepository = FakeSensorDataRepository()
         val tasksRepository = FakeTasksRepository()
         val useCase = StopDeviceListenersUseCase(sensorDataRepository, tasksRepository)

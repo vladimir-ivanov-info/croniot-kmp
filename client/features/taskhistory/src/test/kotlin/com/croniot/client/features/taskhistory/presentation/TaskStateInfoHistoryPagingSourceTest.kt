@@ -69,7 +69,7 @@ class TaskStateInfoHistoryPagingSourceTest {
         PagingSource.LoadParams.Refresh<TaskHistoryCursor>(key = null, loadSize = pageSize, placeholdersEnabled = false)
 
     @Test
-    fun `load with initial params uses snapshotBefore and max long as beforeId`() = runTest {
+    fun `WHEN load is called with initial params THEN it uses snapshotBefore and Long MAX_VALUE as beforeId`() = runTest {
         coEvery { fetchTaskStateInfoHistoryUseCase(deviceUuid, 10, "1000000", Long.MAX_VALUE, null) } returns Outcome.Ok(emptyList())
         val source = buildSource()
 
@@ -79,7 +79,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `load maps entries to TaskHistoryItem using task type name`() = runTest {
+    fun `WHEN load returns entries THEN they are mapped to TaskHistoryItem using the task type name`() = runTest {
         val entries = listOf(entry(stateInfoId = 1L))
         coEvery { fetchTaskStateInfoHistoryUseCase(any(), any(), any(), any(), any()) } returns Outcome.Ok(entries)
         every { taskTypesRepository.get(deviceUuid, 10L) } returns taskTypeA
@@ -92,7 +92,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `load falls back to Unknown task type name when not registered`() = runTest {
+    fun `WHEN the task type is not registered THEN load falls back to Unknown as the task type name`() = runTest {
         val entries = listOf(entry(stateInfoId = 1L))
         coEvery { fetchTaskStateInfoHistoryUseCase(any(), any(), any(), any(), any()) } returns Outcome.Ok(entries)
         every { taskTypesRepository.get(deviceUuid, 10L) } returns null
@@ -104,7 +104,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `load with fewer items than pageSize returns null nextKey`() = runTest {
+    fun `WHEN load returns fewer items than pageSize THEN nextKey is null`() = runTest {
         val entries = listOf(entry(stateInfoId = 1L))
         coEvery { fetchTaskStateInfoHistoryUseCase(any(), any(), any(), any(), any()) } returns Outcome.Ok(entries)
         every { taskTypesRepository.get(any(), any()) } returns taskTypeA
@@ -116,7 +116,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `load with empty result returns null nextKey`() = runTest {
+    fun `WHEN load returns an empty result THEN nextKey is null and data is empty`() = runTest {
         coEvery { fetchTaskStateInfoHistoryUseCase(any(), any(), any(), any(), any()) } returns Outcome.Ok(emptyList())
         val source = buildSource()
 
@@ -127,7 +127,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `load with a full page returns a nextKey based on the last item`() = runTest {
+    fun `WHEN load returns a full page THEN nextKey is based on the last item`() = runTest {
         val entries = List(2) { i -> entry(stateInfoId = (i + 1).toLong(), epochMillis = 500_000L + i) }
         coEvery { fetchTaskStateInfoHistoryUseCase(any(), any(), any(), any(), any()) } returns Outcome.Ok(entries)
         every { taskTypesRepository.get(any(), any()) } returns taskTypeA
@@ -139,7 +139,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `load returns null nextKey when candidate cursor equals current cursor to avoid infinite loop`() = runTest {
+    fun `WHEN the candidate cursor equals the current cursor THEN nextKey is null to avoid an infinite loop`() = runTest {
         // A single-item page whose cursor would be identical to the initial one (guards against stuck pagination)
         val entry = entry(stateInfoId = Long.MAX_VALUE, epochMillis = 1000000L)
         coEvery { fetchTaskStateInfoHistoryUseCase(any(), any(), any(), any(), any()) } returns Outcome.Ok(listOf(entry))
@@ -152,7 +152,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `load with error outcome returns LoadResult Error`() = runTest {
+    fun `WHEN load receives an error outcome THEN it returns LoadResult Error`() = runTest {
         coEvery {
             fetchTaskStateInfoHistoryUseCase(any(), any(), any(), any(), any())
         } returns Outcome.Err(TaskError.Remote(RemoteError.Unreachable))
@@ -164,7 +164,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `load applies taskTypeUidFilter when provided`() = runTest {
+    fun `WHEN a taskTypeUidFilter is provided THEN load applies it to the use case call`() = runTest {
         coEvery { fetchTaskStateInfoHistoryUseCase(deviceUuid, 10, "1000000", Long.MAX_VALUE, 99L) } returns Outcome.Ok(emptyList())
         val source = buildSource(taskTypeUidFilter = 99L)
 
@@ -176,7 +176,7 @@ class TaskStateInfoHistoryPagingSourceTest {
     }
 
     @Test
-    fun `getRefreshKey always returns null`() {
+    fun `WHEN getRefreshKey is called THEN it always returns null`() {
         val source = buildSource()
 
         val result = source.getRefreshKey(

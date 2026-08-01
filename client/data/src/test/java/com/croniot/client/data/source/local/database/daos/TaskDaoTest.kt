@@ -43,7 +43,7 @@ class TaskDaoTest {
     }
 
     @Test
-    fun `insert then getByUid returns the persisted task`() = runTest {
+    fun `WHEN a task is inserted THEN getByUid returns the persisted task`() = runTest {
         taskDao.insert(TaskEntity(uid = 1L, deviceId = deviceId, taskTypeId = taskTypeId))
 
         val result = taskDao.getByUid(1L)
@@ -53,12 +53,12 @@ class TaskDaoTest {
     }
 
     @Test
-    fun `getByUid returns null for an unknown uid`() = runTest {
+    fun `WHEN uid is unknown THEN getByUid returns null`() = runTest {
         assertNull(taskDao.getByUid(999L))
     }
 
     @Test
-    fun `insert with the same row id replaces the previous values`() = runTest {
+    fun `WHEN inserting with the same row id THEN it replaces the previous values`() = runTest {
         val rowId = taskDao.insert(TaskEntity(uid = 1L, deviceId = deviceId, taskTypeId = taskTypeId, parametersValuesJson = "{}"))
         taskDao.insert(TaskEntity(id = rowId, uid = 1L, deviceId = deviceId, taskTypeId = taskTypeId, parametersValuesJson = "{\"a\":1}"))
 
@@ -69,7 +69,7 @@ class TaskDaoTest {
     }
 
     @Test
-    fun `insert with the same uid but no explicit id creates two independent rows`() = runTest {
+    fun `WHEN inserting with the same uid but no explicit id THEN it creates two independent rows`() = runTest {
         taskDao.insert(TaskEntity(uid = 1L, deviceId = deviceId, taskTypeId = taskTypeId))
         taskDao.insert(TaskEntity(uid = 1L, deviceId = deviceId, taskTypeId = taskTypeId))
 
@@ -79,7 +79,7 @@ class TaskDaoTest {
     }
 
     @Test
-    fun `getByDeviceId returns only tasks for that device`() = runTest {
+    fun `WHEN tasks exist for other devices THEN getByDeviceId only returns those for that device`() = runTest {
         val otherDeviceId = db.deviceDao().insert(DeviceEntity(uuid = "device-2", accountId = 1L, name = "D2", description = ""))
         taskDao.insert(TaskEntity(uid = 1L, deviceId = deviceId, taskTypeId = taskTypeId))
         taskDao.insert(TaskEntity(uid = 2L, deviceId = otherDeviceId, taskTypeId = taskTypeId))
@@ -91,7 +91,7 @@ class TaskDaoTest {
     }
 
     @Test
-    fun `getByTaskTypeId returns only tasks of that type`() = runTest {
+    fun `WHEN tasks exist of other types THEN getByTaskTypeId only returns those of that type`() = runTest {
         val otherTaskTypeId = db.taskTypeDao().insert(TaskTypeEntity(uid = 2L, deviceId = deviceId, name = "Light", description = ""))
         taskDao.insert(TaskEntity(uid = 1L, deviceId = deviceId, taskTypeId = taskTypeId))
         taskDao.insert(TaskEntity(uid = 2L, deviceId = deviceId, taskTypeId = otherTaskTypeId))
@@ -103,7 +103,7 @@ class TaskDaoTest {
     }
 
     @Test
-    fun `deleting the parent device cascades and deletes its tasks`() = runTest {
+    fun `WHEN the parent device is deleted THEN it cascades and deletes its tasks`() = runTest {
         taskDao.insert(TaskEntity(uid = 1L, deviceId = deviceId, taskTypeId = taskTypeId))
 
         db.deviceDao().deleteByUuid("device-1")

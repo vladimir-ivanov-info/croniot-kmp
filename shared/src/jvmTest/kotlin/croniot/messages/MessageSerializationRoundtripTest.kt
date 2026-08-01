@@ -15,7 +15,7 @@ class MessageSerializationRoundtripTest {
     private val json = Json { ignoreUnknownKeys = true }
 
     @Test
-    fun `LoginDto roundtrips with a null deviceToken`() {
+    fun `WHEN deviceToken is null THEN LoginDto roundtrips correctly`() {
         val original = LoginDto(
             email = "user@example.com",
             password = "secret",
@@ -30,7 +30,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `LoginDto roundtrips with a non-null deviceToken`() {
+    fun `WHEN deviceToken is non-null THEN LoginDto roundtrips correctly`() {
         val original = LoginDto(
             email = "user@example.com",
             password = "secret",
@@ -45,7 +45,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageRegisterAccount roundtrips`() {
+    fun `WHEN encoded and decoded THEN MessageRegisterAccount roundtrips correctly`() {
         val original = MessageRegisterAccount(
             accountUuid = "acc-1",
             nickname = "nick",
@@ -59,7 +59,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageRegisterDevice roundtrips`() {
+    fun `WHEN encoded and decoded THEN MessageRegisterDevice roundtrips correctly`() {
         val original = MessageRegisterDevice(
             accountEmail = "user@example.com",
             accountPassword = "pass",
@@ -74,7 +74,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageRegisterSensorType roundtrips with nested SensorType`() {
+    fun `WHEN it contains a nested SensorType THEN MessageRegisterSensorType roundtrips correctly`() {
         val sensorType = SensorType(uid = 1L, name = "Temperature", description = "desc", parameters = emptyList())
         val original = MessageRegisterSensorType(deviceUuid = "device-1", deviceToken = "token", sensorType = sensorType)
 
@@ -84,7 +84,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageRegisterTaskType roundtrips with nested TaskType`() {
+    fun `WHEN it contains a nested TaskType THEN MessageRegisterTaskType roundtrips correctly`() {
         val taskType = TaskType(uid = 1L, name = "Water", description = "desc", parameters = emptyList())
         val original = MessageRegisterTaskType(deviceUuid = "device-1", deviceToken = "token", taskType = taskType)
 
@@ -94,7 +94,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageTask roundtrips with multiple parameter values`() {
+    fun `WHEN it has multiple parameter values THEN MessageTask roundtrips correctly`() {
         val original = MessageTask(taskTypeUid = 10L, parametersValues = mapOf(1L to "on", 2L to "50"), taskUid = 99L)
 
         val decoded = json.decodeFromString<MessageTask>(json.encodeToString(original))
@@ -103,7 +103,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageTask roundtrips with empty parameter values`() {
+    fun `WHEN parameter values are empty THEN MessageTask roundtrips correctly`() {
         val original = MessageTask(taskTypeUid = 10L, parametersValues = emptyMap(), taskUid = 0L)
 
         val decoded = json.decodeFromString<MessageTask>(json.encodeToString(original))
@@ -112,7 +112,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageSensorData roundtrips`() {
+    fun `WHEN encoded and decoded THEN MessageSensorData roundtrips correctly`() {
         val original = MessageSensorData(sensorTypeId = 5L, value = "23.5")
 
         val decoded = json.decodeFromString<MessageSensorData>(json.encodeToString(original))
@@ -121,7 +121,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageAccountInfo roundtrips with nested Account and devices`() {
+    fun `WHEN it contains a nested Account with devices THEN MessageAccountInfo roundtrips correctly`() {
         val account = Account(
             uuid = "acc-1",
             nickname = "nick",
@@ -136,7 +136,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageGetAccountInfo roundtrips`() {
+    fun `WHEN encoded and decoded THEN MessageGetAccountInfo roundtrips correctly`() {
         val original = MessageGetAccountInfo(token = "jwt-token")
 
         val decoded = json.decodeFromString<MessageGetAccountInfo>(json.encodeToString(original))
@@ -145,7 +145,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageRequestTaskStateInfoSync roundtrips`() {
+    fun `WHEN encoded and decoded THEN MessageRequestTaskStateInfoSync roundtrips correctly`() {
         val original = MessageRequestTaskStateInfoSync(deviceUuid = "device-1", taskTypeUid = "10")
 
         val decoded = json.decodeFromString<MessageRequestTaskStateInfoSync>(json.encodeToString(original))
@@ -154,7 +154,7 @@ class MessageSerializationRoundtripTest {
     }
 
     @Test
-    fun `MessageAddTask roundtrips with multiple parameter values`() {
+    fun `WHEN it has multiple parameter values THEN MessageAddTask roundtrips correctly`() {
         val original = MessageAddTask(deviceUuid = "device-1", taskTypeUid = "10", parametersValues = mapOf(1L to "on"))
 
         val decoded = json.decodeFromString<MessageAddTask>(json.encodeToString(original))

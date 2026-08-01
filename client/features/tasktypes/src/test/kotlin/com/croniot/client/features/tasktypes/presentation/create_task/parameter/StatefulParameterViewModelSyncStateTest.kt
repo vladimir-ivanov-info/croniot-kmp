@@ -42,42 +42,42 @@ class StatefulParameterViewModelSyncStateTest {
     }
 
     @Test
-    fun `null dateTime is not synced and requests sync`() {
+    fun `WHEN dateTime is null THEN it is not synced and requests a sync`() {
         val result = compute(null)
 
         assertEquals(SyncStateResult(isSynced = false, shouldRequestSync = true), result)
     }
 
     @Test
-    fun `dateTime right now is synced and does not request sync`() {
+    fun `WHEN dateTime is right now THEN it is synced and does not request a sync`() {
         val result = compute(ZonedDateTime.now())
 
         assertEquals(SyncStateResult(isSynced = true, shouldRequestSync = false), result)
     }
 
     @Test
-    fun `dateTime 4 seconds ago is synced but already requests a new sync`() {
+    fun `WHEN dateTime is 4 seconds ago THEN it is synced but already requests a new sync`() {
         val result = compute(ZonedDateTime.now().minusSeconds(4))
 
         assertEquals(SyncStateResult(isSynced = true, shouldRequestSync = true), result)
     }
 
     @Test
-    fun `dateTime 6 seconds ago is not synced and requests sync`() {
+    fun `WHEN dateTime is 6 seconds ago THEN it is not synced and requests a sync`() {
         val result = compute(ZonedDateTime.now().minusSeconds(6))
 
         assertEquals(SyncStateResult(isSynced = false, shouldRequestSync = true), result)
     }
 
     @Test
-    fun `dateTime 2 seconds ago is synced and does not yet request sync`() {
+    fun `WHEN dateTime is 2 seconds ago THEN it is synced and does not yet request a sync`() {
         val result = compute(ZonedDateTime.now().minusSeconds(2))
 
         assertEquals(SyncStateResult(isSynced = true, shouldRequestSync = false), result)
     }
 
     @Test
-    fun `dateTime in the future is synced and does not request sync`() {
+    fun `WHEN dateTime is in the future THEN it is synced and does not request a sync`() {
         val result = compute(ZonedDateTime.now().plusSeconds(10))
 
         assertEquals(SyncStateResult(isSynced = true, shouldRequestSync = false), result)

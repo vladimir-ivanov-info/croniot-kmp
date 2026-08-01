@@ -69,7 +69,7 @@ class BleScannerImplTest {
     }
 
     @Test
-    fun `scan emits empty list immediately when permissions are not granted`() = runTest {
+    fun `WHEN permissions are not granted THEN scan emits empty list immediately`() = runTest {
         every { permissionsHelper.allGranted() } returns false
 
         val result = scanner().scan().first()
@@ -78,7 +78,7 @@ class BleScannerImplTest {
     }
 
     @Test
-    fun `scan emits empty list when bluetooth service is unavailable`() = runTest {
+    fun `WHEN bluetooth service is unavailable THEN scan emits empty list`() = runTest {
         every { permissionsHelper.allGranted() } returns true
         every { context.getSystemService(Context.BLUETOOTH_SERVICE) } returns null
 
@@ -88,7 +88,7 @@ class BleScannerImplTest {
     }
 
     @Test
-    fun `scan emits empty list when bluetooth adapter is disabled`() = runTest {
+    fun `WHEN bluetooth adapter is disabled THEN scan emits empty list`() = runTest {
         every { permissionsHelper.allGranted() } returns true
         val leScanner: android.bluetooth.le.BluetoothLeScanner = mockk()
         val adapter: BluetoothAdapter = mockk {
@@ -104,7 +104,7 @@ class BleScannerImplTest {
     }
 
     @Test
-    fun `scan emits empty list when bluetoothLeScanner is null`() = runTest {
+    fun `WHEN bluetoothLeScanner is null THEN scan emits empty list`() = runTest {
         every { permissionsHelper.allGranted() } returns true
         val adapter: BluetoothAdapter = mockk {
             every { bluetoothLeScanner } returns null
@@ -119,7 +119,7 @@ class BleScannerImplTest {
     }
 
     @Test
-    fun `scan starts BLE scan and accumulates results from callback`() = runTest {
+    fun `WHEN scan is started THEN it starts the BLE scan and accumulates results from the callback`() = runTest {
         stubScanFilterAndSettingsConstruction()
         every { permissionsHelper.allGranted() } returns true
         val leScanner: BluetoothLeScanner = mockk()
@@ -159,7 +159,7 @@ class BleScannerImplTest {
     }
 
     @Test
-    fun `scan closes flow with error when onScanFailed is invoked`() = runTest {
+    fun `WHEN onScanFailed is invoked THEN scan closes the flow with an error`() = runTest {
         stubScanFilterAndSettingsConstruction()
         every { permissionsHelper.allGranted() } returns true
         val leScanner: BluetoothLeScanner = mockk()
@@ -183,7 +183,7 @@ class BleScannerImplTest {
     }
 
     @Test
-    fun `scan closes flow with error when startScan throws SecurityException`() = runTest {
+    fun `WHEN startScan throws SecurityException THEN scan closes the flow with an error`() = runTest {
         stubScanFilterAndSettingsConstruction()
         every { permissionsHelper.allGranted() } returns true
         val leScanner: BluetoothLeScanner = mockk()

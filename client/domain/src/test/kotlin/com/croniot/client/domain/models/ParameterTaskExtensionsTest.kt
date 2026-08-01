@@ -18,18 +18,18 @@ class ParameterTaskExtensionsTest {
     )
 
     @Test
-    fun `isStateful is true only for the stateful parameter type`() {
+    fun `WHEN parameter type is stateful THEN isStateful is true, otherwise false`() {
         assertThat(parameter(type = "stateful").isStateful()).isTrue()
         assertThat(parameter(type = "number").isStateful()).isFalse()
     }
 
     @Test
-    fun `isRepresentsSwitch requires exactly state_1 and state_2 constraints`() {
+    fun `WHEN constraints are exactly state_1 and state_2 THEN isRepresentsSwitch is true`() {
         assertThat(parameter(constraints = mapOf("state_1" to "ON", "state_2" to "OFF")).isRepresentsSwitch()).isTrue()
     }
 
     @Test
-    fun `isRepresentsSwitch is false with extra or missing constraints`() {
+    fun `WHEN constraints have extra or missing keys THEN isRepresentsSwitch is false`() {
         assertThat(parameter(constraints = mapOf("state_1" to "ON")).isRepresentsSwitch()).isFalse()
         assertThat(
             parameter(constraints = mapOf("state_1" to "ON", "state_2" to "OFF", "extra" to "x")).isRepresentsSwitch(),
@@ -37,33 +37,33 @@ class ParameterTaskExtensionsTest {
     }
 
     @Test
-    fun `isRepresentsSlider requires minValue, maxValue and stepSize constraints`() {
+    fun `WHEN constraints include minValue, maxValue and stepSize THEN isRepresentsSlider is true`() {
         val constraints = mapOf("minValue" to "0", "maxValue" to "100", "stepSize" to "1")
         assertThat(parameter(constraints = constraints).isRepresentsSlider()).isTrue()
     }
 
     @Test
-    fun `isRepresentsSlider is false when any constraint is missing`() {
+    fun `WHEN any required constraint is missing THEN isRepresentsSlider is false`() {
         val constraints = mapOf("minValue" to "0", "maxValue" to "100")
         assertThat(parameter(constraints = constraints).isRepresentsSlider()).isFalse()
     }
 
     @Test
-    fun `formatValue rounds to an integer string when decimals constraint is zero`() {
+    fun `WHEN decimals constraint is zero THEN formatValue rounds to an integer string`() {
         val param = parameter(constraints = mapOf("decimals" to "0"))
 
         assertThat(param.formatValue(3.7f)).isEqualTo("4")
     }
 
     @Test
-    fun `formatValue keeps the float representation when decimals constraint is absent`() {
+    fun `WHEN decimals constraint is absent THEN formatValue keeps the float representation`() {
         val param = parameter()
 
         assertThat(param.formatValue(3.5f)).isEqualTo("3.5")
     }
 
     @Test
-    fun `formatValue keeps the float representation when decimals constraint is nonzero`() {
+    fun `WHEN decimals constraint is nonzero THEN formatValue keeps the float representation`() {
         val param = parameter(constraints = mapOf("decimals" to "2"))
 
         assertThat(param.formatValue(3.5f)).isEqualTo("3.5")

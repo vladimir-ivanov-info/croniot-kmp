@@ -22,7 +22,7 @@ class FetchTaskStateInfoHistoryUseCaseTest {
     )
 
     @Test
-    fun `returns history entries from repository`() = runTest {
+    fun `WHEN repository fetch succeeds THEN it returns the history entries`() = runTest {
         val entries = listOf(entry())
         val repository = FakeTasksRepository(historyOutcome = Outcome.Ok(entries))
         val useCase = FetchTaskStateInfoHistoryUseCase(repository)
@@ -33,7 +33,7 @@ class FetchTaskStateInfoHistoryUseCaseTest {
     }
 
     @Test
-    fun `propagates error from repository`() = runTest {
+    fun `WHEN repository returns an error THEN it propagates that error`() = runTest {
         val error = TaskError.Remote(RemoteError.Unreachable)
         val repository = FakeTasksRepository(historyOutcome = Outcome.Err(error))
         val useCase = FetchTaskStateInfoHistoryUseCase(repository)
@@ -44,7 +44,7 @@ class FetchTaskStateInfoHistoryUseCaseTest {
     }
 
     @Test
-    fun `returns empty list when repository has no history`() = runTest {
+    fun `WHEN repository has no history THEN it returns an empty list`() = runTest {
         val repository = FakeTasksRepository(historyOutcome = Outcome.Ok(emptyList()))
         val useCase = FetchTaskStateInfoHistoryUseCase(repository)
 

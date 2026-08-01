@@ -40,7 +40,7 @@ class SensorTypeDaoTest {
     }
 
     @Test
-    fun `insert then getByUid returns the persisted sensor type`() = runTest {
+    fun `WHEN a sensor type is inserted THEN getByUid returns the persisted sensor type`() = runTest {
         sensorTypeDao.insert(SensorTypeEntity(uid = 1L, deviceId = deviceId, name = "Temperature", description = "desc"))
 
         val result = sensorTypeDao.getByUid(1L)
@@ -49,12 +49,12 @@ class SensorTypeDaoTest {
     }
 
     @Test
-    fun `getByUid returns null for an unknown uid`() = runTest {
+    fun `WHEN uid is unknown THEN getByUid returns null`() = runTest {
         assertNull(sensorTypeDao.getByUid(999L))
     }
 
     @Test
-    fun `getByDeviceId returns only sensor types for that device`() = runTest {
+    fun `WHEN sensor types exist for other devices THEN getByDeviceId only returns those for that device`() = runTest {
         val otherDeviceId = db.deviceDao().insert(DeviceEntity(uuid = "device-2", accountId = 1L, name = "D2", description = ""))
         sensorTypeDao.insert(SensorTypeEntity(uid = 1L, deviceId = deviceId, name = "Temp", description = ""))
         sensorTypeDao.insert(SensorTypeEntity(uid = 2L, deviceId = otherDeviceId, name = "Humidity", description = ""))
@@ -66,7 +66,7 @@ class SensorTypeDaoTest {
     }
 
     @Test
-    fun `deleting the parent device cascades and deletes its sensor types`() = runTest {
+    fun `WHEN the parent device is deleted THEN it cascades and deletes its sensor types`() = runTest {
         sensorTypeDao.insert(SensorTypeEntity(uid = 1L, deviceId = deviceId, name = "Temp", description = ""))
 
         db.deviceDao().deleteByUuid("device-1")

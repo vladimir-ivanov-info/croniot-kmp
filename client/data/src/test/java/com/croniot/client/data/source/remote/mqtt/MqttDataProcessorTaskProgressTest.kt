@@ -36,7 +36,7 @@ class MqttDataProcessorTaskProgressTest {
     )
 
     @Test
-    fun `process parses valid progress topic and emits TaskStateInfoEvent`() {
+    fun `WHEN a valid progress topic is given THEN process parses it and emits TaskStateInfoEvent`() {
         val received = mutableListOf<TaskStateInfoEvent>()
         val processor = MqttDataProcessorTaskProgress(onNewData = { received.add(it) })
         val json = MessageFactory.toJson(stateInfoDto())
@@ -49,7 +49,7 @@ class MqttDataProcessorTaskProgressTest {
     }
 
     @Test
-    fun `process with malformed topic does not invoke callback`() {
+    fun `WHEN topic is malformed THEN process does not invoke callback`() {
         val received = mutableListOf<TaskStateInfoEvent>()
         val processor = MqttDataProcessorTaskProgress(onNewData = { received.add(it) })
         val json = MessageFactory.toJson(stateInfoDto())
@@ -60,7 +60,7 @@ class MqttDataProcessorTaskProgressTest {
     }
 
     @Test
-    fun `process with invalid json does not invoke callback`() {
+    fun `WHEN json is invalid THEN process does not invoke callback`() {
         val received = mutableListOf<TaskStateInfoEvent>()
         val processor = MqttDataProcessorTaskProgress(onNewData = { received.add(it) })
 
@@ -70,7 +70,7 @@ class MqttDataProcessorTaskProgressTest {
     }
 
     @Test
-    fun `process with non-numeric taskTypeUid does not invoke callback`() {
+    fun `WHEN taskTypeUid is non-numeric THEN process does not invoke callback`() {
         val received = mutableListOf<TaskStateInfoEvent>()
         val processor = MqttDataProcessorTaskProgress(onNewData = { received.add(it) })
         val json = MessageFactory.toJson(stateInfoDto())

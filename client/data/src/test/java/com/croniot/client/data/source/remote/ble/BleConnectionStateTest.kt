@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class BleConnectionStateTest {
 
     @Test
-    fun `entries contains every connection state`() {
+    fun `WHEN listing entries THEN it contains every connection state`() {
         assertEquals(
             listOf("Disconnected", "Connecting", "Connected", "Authenticating", "Ready", "Failed"),
             BleConnectionState.entries.map { it.name },
@@ -15,7 +15,7 @@ class BleConnectionStateTest {
     }
 
     @Test
-    fun `valueOf resolves each state by name`() {
+    fun `WHEN valueOf is called with each state's name THEN it resolves that state`() {
         BleConnectionState.entries.forEach { state ->
             assertEquals(state, BleConnectionState.valueOf(state.name))
         }
@@ -25,14 +25,14 @@ class BleConnectionStateTest {
 class BleSyncResultTest {
 
     @Test
-    fun `UpToDate is a singleton`() {
+    fun `WHEN accessing UpToDate THEN it is a singleton`() {
         val result: BleSyncResult = BleSyncResult.UpToDate
 
         assertTrue(result is BleSyncResult.UpToDate)
     }
 
     @Test
-    fun `Updated carries the schema version and json payload`() {
+    fun `WHEN Updated is constructed THEN it carries the schema version and json payload`() {
         val result: BleSyncResult = BleSyncResult.Updated(schemaVersion = 3L, schemaJson = """{"a":1}""")
 
         assertTrue(result is BleSyncResult.Updated)

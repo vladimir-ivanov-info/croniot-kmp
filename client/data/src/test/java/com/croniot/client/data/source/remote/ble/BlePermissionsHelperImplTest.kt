@@ -29,7 +29,7 @@ class BlePermissionsHelperImplTest {
     }
 
     @Test
-    fun `requiredPermissions on SDK below S requests legacy bluetooth and location permissions`() {
+    fun `WHEN SDK is below S THEN requiredPermissions requests legacy bluetooth and location permissions`() {
         val required = helper().requiredPermissions()
 
         assertEquals(
@@ -39,7 +39,7 @@ class BlePermissionsHelperImplTest {
     }
 
     @Test
-    fun `missingPermissions returns all required permissions when none are granted`() {
+    fun `WHEN none of the permissions are granted THEN missingPermissions returns all required permissions`() {
         mockkStatic(ContextCompat::class)
         every { ContextCompat.checkSelfPermission(any(), any()) } returns PackageManager.PERMISSION_DENIED
 
@@ -49,7 +49,7 @@ class BlePermissionsHelperImplTest {
     }
 
     @Test
-    fun `allGranted is false when permissions are missing`() {
+    fun `WHEN permissions are missing THEN allGranted is false`() {
         mockkStatic(ContextCompat::class)
         every { ContextCompat.checkSelfPermission(any(), any()) } returns PackageManager.PERMISSION_DENIED
 
@@ -57,7 +57,7 @@ class BlePermissionsHelperImplTest {
     }
 
     @Test
-    fun `allGranted is true once every required permission is granted`() {
+    fun `WHEN every required permission is granted THEN allGranted is true`() {
         mockkStatic(ContextCompat::class)
         every { ContextCompat.checkSelfPermission(any(), any()) } returns PackageManager.PERMISSION_GRANTED
 
@@ -65,7 +65,7 @@ class BlePermissionsHelperImplTest {
     }
 
     @Test
-    fun `missingPermissions excludes permissions that were granted`() {
+    fun `WHEN some permissions were granted THEN missingPermissions excludes them`() {
         val required = helper().requiredPermissions()
         mockkStatic(ContextCompat::class)
         every { ContextCompat.checkSelfPermission(context, any()) } returns PackageManager.PERMISSION_DENIED
@@ -84,7 +84,7 @@ class BlePermissionsHelperImplSApiTest {
     private val context = ApplicationProvider.getApplicationContext<android.content.Context>()
 
     @Test
-    fun `requiredPermissions on SDK S and above requests scan and connect permissions`() {
+    fun `WHEN SDK is S and above THEN requiredPermissions requests scan and connect permissions`() {
         val required = BlePermissionsHelperImpl(context).requiredPermissions()
 
         assertEquals(

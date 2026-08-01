@@ -45,7 +45,7 @@ class TaskStateInfoDaoTest {
     }
 
     @Test
-    fun `getByTaskId returns entries ordered by timestamp descending`() = runTest {
+    fun `WHEN multiple entries exist THEN getByTaskId returns them ordered by timestamp descending`() = runTest {
         taskStateInfoDao.insert(TaskStateInfoEntity(taskId = taskId, state = "CREATED", progress = 0.0, errorMessage = "", timeStampMillis = 1000L))
         taskStateInfoDao.insert(TaskStateInfoEntity(taskId = taskId, state = "RUNNING", progress = 50.0, errorMessage = "", timeStampMillis = 3000L))
         taskStateInfoDao.insert(TaskStateInfoEntity(taskId = taskId, state = "COMPLETED", progress = 100.0, errorMessage = "", timeStampMillis = 2000L))
@@ -56,12 +56,12 @@ class TaskStateInfoDaoTest {
     }
 
     @Test
-    fun `getByTaskId returns an empty list when there is no history`() = runTest {
+    fun `WHEN there is no history THEN getByTaskId returns an empty list`() = runTest {
         assertEquals(emptyList<TaskStateInfoEntity>(), taskStateInfoDao.getByTaskId(taskId))
     }
 
     @Test
-    fun `observeLatestByTaskId emits the most recent state info`() = runTest {
+    fun `WHEN multiple entries exist THEN observeLatestByTaskId emits the most recent state info`() = runTest {
         taskStateInfoDao.insert(TaskStateInfoEntity(taskId = taskId, state = "CREATED", progress = 0.0, errorMessage = "", timeStampMillis = 1000L))
         taskStateInfoDao.insert(TaskStateInfoEntity(taskId = taskId, state = "RUNNING", progress = 50.0, errorMessage = "", timeStampMillis = 2000L))
 
@@ -71,12 +71,12 @@ class TaskStateInfoDaoTest {
     }
 
     @Test
-    fun `observeLatestByTaskId emits null when there is no history`() = runTest {
+    fun `WHEN there is no history THEN observeLatestByTaskId emits null`() = runTest {
         assertNull(taskStateInfoDao.observeLatestByTaskId(taskId).first())
     }
 
     @Test
-    fun `deleting the parent task cascades and deletes its state info history`() = runTest {
+    fun `WHEN the parent task is deleted THEN it cascades and deletes its state info history`() = runTest {
         taskStateInfoDao.insert(TaskStateInfoEntity(taskId = taskId, state = "CREATED", progress = 0.0, errorMessage = "", timeStampMillis = 1000L))
 
         db.deviceDao().deleteByUuid("device-1")

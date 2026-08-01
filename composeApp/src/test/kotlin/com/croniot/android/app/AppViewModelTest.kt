@@ -32,12 +32,12 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `Given viewModel just created, When init runs, Then generates device uuid if not exists`() = runTest {
+    fun `WHEN the ViewModel is created THEN it generates a device uuid if one does not exist`() = runTest {
         assertNotNull(localDataRepository.getLocalDeviceUuid())
     }
 
     @Test
-    fun `Given a route, When onScreenChanged is called, Then saves current screen`() = runTest {
+    fun `WHEN onScreenChanged is called with a route THEN it saves the current screen`() = runTest {
         viewModel.onScreenChanged("home")
 
         assertEquals("home", localDataRepository.getCurrentScreen())

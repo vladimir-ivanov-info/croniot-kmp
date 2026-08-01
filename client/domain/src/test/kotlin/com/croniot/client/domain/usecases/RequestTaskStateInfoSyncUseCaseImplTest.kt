@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class RequestTaskStateInfoSyncUseCaseImplTest {
 
     @Test
-    fun `returns Ok when repository confirms sync request`() = runTest {
+    fun `WHEN repository confirms the sync request THEN it returns Ok`() = runTest {
         val repository = FakeTasksRepository(requestSyncOutcome = Outcome.Ok(Unit))
         val useCase = RequestTaskStateInfoSyncUseCaseImpl(repository)
 
@@ -22,7 +22,7 @@ class RequestTaskStateInfoSyncUseCaseImplTest {
     }
 
     @Test
-    fun `propagates error from repository`() = runTest {
+    fun `WHEN repository returns an error THEN it propagates that error`() = runTest {
         val error = TaskError.Remote(RemoteError.Unreachable)
         val repository = FakeTasksRepository(requestSyncOutcome = Outcome.Err(error))
         val useCase = RequestTaskStateInfoSyncUseCaseImpl(repository)

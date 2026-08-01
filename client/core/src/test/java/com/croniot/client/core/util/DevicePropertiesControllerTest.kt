@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class DevicePropertiesControllerTest {
 
     @Test
-    fun `getScreenDetails maps DisplayMetrics fields to strings`() {
+    fun `WHEN DisplayMetrics fields are provided THEN getScreenDetails maps them to strings`() {
         val displayMetrics = DisplayMetrics().apply {
             widthPixels = 1080
             heightPixels = 1920
@@ -34,7 +34,7 @@ class DevicePropertiesControllerTest {
     }
 
     @Test
-    fun `getRefreshRate on legacy SDK reads defaultDisplay refreshRate`() {
+    fun `WHEN the SDK is legacy THEN getRefreshRate reads the refreshRate from defaultDisplay`() {
         val display: android.view.Display = mockk { every { refreshRate } returns 60f }
         val windowManager: WindowManager = mockk { every { defaultDisplay } returns display }
         val context: Context = mockk {
@@ -47,7 +47,7 @@ class DevicePropertiesControllerTest {
     }
 
     @Test
-    fun `getDeviceDetails returns a map with all expected keys`() {
+    fun `WHEN retrieving device details THEN the result contains all expected keys`() {
         val details = DevicePropertiesController.getDeviceDetails()
 
         assertTrue(details.containsKey("Android Version"))
@@ -61,14 +61,14 @@ class DevicePropertiesControllerTest {
     }
 
     @Test
-    fun `getDeviceDetails returns exactly eight entries`() {
+    fun `WHEN retrieving device details THEN the result contains exactly eight entries`() {
         val details = DevicePropertiesController.getDeviceDetails()
 
         assertTrue(details.size == 8)
     }
 
     @Test
-    fun `getDeviceDetails does not throw and values are non-null strings`() {
+    fun `WHEN retrieving device details THEN it does not throw and all values are non-null strings`() {
         val details = DevicePropertiesController.getDeviceDetails()
 
         details.values.forEach { value ->

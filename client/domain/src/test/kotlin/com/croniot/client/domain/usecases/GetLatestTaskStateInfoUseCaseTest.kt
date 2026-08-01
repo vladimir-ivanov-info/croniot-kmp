@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 class GetLatestTaskStateInfoUseCaseTest {
 
     @Test
-    fun `returns null when repository has no state info`() {
+    fun `WHEN repository has no state info THEN it returns null`() {
         val repository = FakeTasksRepository()
         val useCase = GetLatestTaskStateInfoUseCase(repository)
 
@@ -21,7 +21,7 @@ class GetLatestTaskStateInfoUseCaseTest {
     }
 
     @Test
-    fun `returns state info from repository when present`() {
+    fun `WHEN repository has state info THEN it returns that state info`() {
         val info = TaskStateInfo(dateTime = ZonedDateTime.now(), state = "RUNNING", progress = 0.5, errorMessage = "")
         val repository = FakeTasksRepository(latestTaskStateInfo = info)
         val useCase = GetLatestTaskStateInfoUseCase(repository)

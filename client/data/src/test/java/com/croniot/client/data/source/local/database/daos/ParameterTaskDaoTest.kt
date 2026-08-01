@@ -42,7 +42,7 @@ class ParameterTaskDaoTest {
     }
 
     @Test
-    fun `insert then getByTaskTypeId returns the persisted parameter`() = runTest {
+    fun `WHEN a parameter is inserted THEN getByTaskTypeId returns the persisted parameter`() = runTest {
         parameterTaskDao.insert(
             ParameterTaskEntity(uid = 1L, taskTypeId = taskTypeId, name = "duration", type = "number", unit = "s", description = ""),
         )
@@ -54,12 +54,12 @@ class ParameterTaskDaoTest {
     }
 
     @Test
-    fun `getByTaskTypeId returns an empty list when there are no parameters`() = runTest {
+    fun `WHEN there are no parameters THEN getByTaskTypeId returns an empty list`() = runTest {
         assertTrue(parameterTaskDao.getByTaskTypeId(taskTypeId).isEmpty())
     }
 
     @Test
-    fun `deleting the parent task type cascades and deletes its parameters`() = runTest {
+    fun `WHEN the parent task type is deleted THEN it cascades and deletes its parameters`() = runTest {
         parameterTaskDao.insert(
             ParameterTaskEntity(uid = 1L, taskTypeId = taskTypeId, name = "duration", type = "number", unit = "s", description = ""),
         )

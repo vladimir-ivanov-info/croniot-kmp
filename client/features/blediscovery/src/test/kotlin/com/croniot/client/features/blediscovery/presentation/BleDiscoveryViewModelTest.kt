@@ -74,13 +74,13 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `initial state reflects permission status from helper`() = runTest(testDispatcher) {
+    fun `WHEN the ViewModel is initialized THEN the state reflects permission status from helper`() = runTest(testDispatcher) {
         assertTrue(viewModel.state.value.permissionsGranted)
         assertTrue(viewModel.state.value.missingPermissions.isEmpty())
     }
 
     @Test
-    fun `PermissionsGranted intent marks permissions as granted`() = runTest(testDispatcher) {
+    fun `WHEN the PermissionsGranted intent is dispatched THEN permissions are marked as granted`() = runTest(testDispatcher) {
         every { permissionsHelper.allGranted() } returns false
         every { permissionsHelper.missingPermissions() } returns listOf("BLUETOOTH_SCAN")
         buildViewModel()
@@ -92,7 +92,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `RefreshPermissionStatus intent re-reads permission status from helper`() = runTest(testDispatcher) {
+    fun `WHEN the RefreshPermissionStatus intent is dispatched THEN permission status is re-read from the helper`() = runTest(testDispatcher) {
         every { permissionsHelper.allGranted() } returns false
         every { permissionsHelper.missingPermissions() } returns listOf("BLUETOOTH_CONNECT")
 
@@ -103,7 +103,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `PairRequested shows the pairing dialog with device uuid and display name`() = runTest(testDispatcher) {
+    fun `WHEN PairRequested is dispatched THEN the pairing dialog shows the device uuid and display name`() = runTest(testDispatcher) {
         viewModel.onAction(BleDiscoveryIntent.PairRequested(uuid = "device-1", displayName = "My Device"))
 
         val pairing = viewModel.state.value.pairing
@@ -112,7 +112,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `PairDialogDismissed clears the pairing state`() = runTest(testDispatcher) {
+    fun `WHEN PairDialogDismissed is dispatched THEN the pairing state is cleared`() = runTest(testDispatcher) {
         viewModel.onAction(BleDiscoveryIntent.PairRequested(uuid = "device-1", displayName = "My Device"))
 
         viewModel.onAction(BleDiscoveryIntent.PairDialogDismissed)
@@ -121,7 +121,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `UsernameChanged updates the pairing username`() = runTest(testDispatcher) {
+    fun `WHEN UsernameChanged is dispatched THEN the pairing username is updated`() = runTest(testDispatcher) {
         viewModel.onAction(BleDiscoveryIntent.PairRequested(uuid = "device-1", displayName = "My Device"))
 
         viewModel.onAction(BleDiscoveryIntent.UsernameChanged("new-user"))
@@ -130,7 +130,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `PasswordChanged updates the pairing password`() = runTest(testDispatcher) {
+    fun `WHEN PasswordChanged is dispatched THEN the pairing password is updated`() = runTest(testDispatcher) {
         viewModel.onAction(BleDiscoveryIntent.PairRequested(uuid = "device-1", displayName = "My Device"))
 
         viewModel.onAction(BleDiscoveryIntent.PasswordChanged("new-pass"))
@@ -139,7 +139,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `PairConfirmed on success clears pairing state and activates ble only mode`() = runTest(testDispatcher) {
+    fun `WHEN PairConfirmed succeeds THEN the pairing state is cleared and ble only mode is activated`() = runTest(testDispatcher) {
         buildViewModel(devicesByUuid = mapOf("device-1" to device))
         viewModel.onAction(BleDiscoveryIntent.PairRequested(uuid = "device-1", displayName = "My Device"))
 
@@ -150,7 +150,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `PairConfirmed on failure keeps dialog open with error message`() = runTest(testDispatcher) {
+    fun `WHEN PairConfirmed fails THEN the dialog stays open with an error message`() = runTest(testDispatcher) {
         viewModel.onAction(BleDiscoveryIntent.PairRequested(uuid = "unknown-device", displayName = "Unknown"))
 
         viewModel.onAction(BleDiscoveryIntent.PairConfirmed)
@@ -160,14 +160,14 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `PairConfirmed with no pairing state does nothing`() = runTest(testDispatcher) {
+    fun `WHEN PairConfirmed is dispatched with no pairing state THEN nothing happens`() = runTest(testDispatcher) {
         viewModel.onAction(BleDiscoveryIntent.PairConfirmed)
 
         assertNull(viewModel.state.value.pairing)
     }
 
     @Test
-    fun `ConnectKnown on success clears busy state and activates ble only mode`() = runTest(testDispatcher) {
+    fun `WHEN ConnectKnown succeeds THEN the busy state is cleared and ble only mode is activated`() = runTest(testDispatcher) {
         buildViewModel(devicesByUuid = mapOf("device-1" to device))
 
         viewModel.onAction(BleDiscoveryIntent.ConnectKnown("device-1"))
@@ -177,7 +177,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `ConnectKnown on failure clears busy state without activating ble only mode`() = runTest(testDispatcher) {
+    fun `WHEN ConnectKnown fails THEN the busy state is cleared without activating ble only mode`() = runTest(testDispatcher) {
         viewModel.onAction(BleDiscoveryIntent.ConnectKnown("unknown-device"))
 
         assertNull(viewModel.state.value.busyUuid)
@@ -185,7 +185,7 @@ class BleDiscoveryViewModelTest {
     }
 
     @Test
-    fun `ForgetKnown removes the device from the repository`() = runTest(testDispatcher) {
+    fun `WHEN ForgetKnown is dispatched THEN the device is removed from the repository`() = runTest(testDispatcher) {
         buildViewModel(devicesByUuid = mapOf("device-1" to device))
 
         viewModel.onAction(BleDiscoveryIntent.ForgetKnown("device-1"))

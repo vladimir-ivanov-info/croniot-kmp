@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class FetchTaskStateInfoHistoryCountUseCaseTest {
 
     @Test
-    fun `returns count from repository`() = runTest {
+    fun `WHEN repository fetch succeeds THEN it returns the count`() = runTest {
         val repository = FakeTasksRepository(historyCountOutcome = Outcome.Ok(42))
         val useCase = FetchTaskStateInfoHistoryCountUseCase(repository)
 
@@ -22,7 +22,7 @@ class FetchTaskStateInfoHistoryCountUseCaseTest {
     }
 
     @Test
-    fun `propagates error from repository`() = runTest {
+    fun `WHEN repository returns an error THEN it propagates that error`() = runTest {
         val error = TaskError.Remote(RemoteError.Unreachable)
         val repository = FakeTasksRepository(historyCountOutcome = Outcome.Err(error))
         val useCase = FetchTaskStateInfoHistoryCountUseCase(repository)
@@ -33,7 +33,7 @@ class FetchTaskStateInfoHistoryCountUseCaseTest {
     }
 
     @Test
-    fun `returns zero when repository has no history`() = runTest {
+    fun `WHEN repository has no history THEN it returns zero`() = runTest {
         val repository = FakeTasksRepository(historyCountOutcome = Outcome.Ok(0))
         val useCase = FetchTaskStateInfoHistoryCountUseCase(repository)
 

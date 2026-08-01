@@ -70,7 +70,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTasks maps dto list to domain tasks on success`() = runTest {
+    fun `WHEN fetchTasks succeeds THEN it maps the dto list to domain tasks`() = runTest {
         coEvery { taskApi.requestTaskConfigurations("device-1") } returns listOf(TaskDto(uid = 1L, taskTypeUid = 10L))
 
         val result = dataSource.fetchTasks("device-1")
@@ -81,7 +81,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTasks with IOException maps to Unreachable`() = runTest {
+    fun `WHEN api throws IOException THEN fetchTasks maps it to Unreachable`() = runTest {
         coEvery { taskApi.requestTaskConfigurations(any()) } throws IOException("connection reset")
 
         val result = dataSource.fetchTasks("device-1")
@@ -90,7 +90,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTasks with generic exception maps to Unknown`() = runTest {
+    fun `WHEN api throws a generic exception THEN fetchTasks maps it to Unknown`() = runTest {
         coEvery { taskApi.requestTaskConfigurations(any()) } throws IllegalStateException("boom")
 
         val result = dataSource.fetchTasks("device-1")
@@ -99,7 +99,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTasks with SocketTimeoutException maps to Unreachable`() = runTest {
+    fun `WHEN api throws SocketTimeoutException THEN fetchTasks maps it to Unreachable`() = runTest {
         coEvery { taskApi.requestTaskConfigurations(any()) } throws SocketTimeoutException("device-1", cause = IOException())
 
         val result = dataSource.fetchTasks("device-1")
@@ -108,7 +108,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTasks with ConnectTimeoutException maps to Unreachable`() = runTest {
+    fun `WHEN api throws ConnectTimeoutException THEN fetchTasks maps it to Unreachable`() = runTest {
         coEvery { taskApi.requestTaskConfigurations(any()) } throws ConnectTimeoutException("device-1", cause = IOException())
 
         val result = dataSource.fetchTasks("device-1")
@@ -117,7 +117,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTasks with HttpRequestTimeoutException maps to Unreachable`() = runTest {
+    fun `WHEN api throws HttpRequestTimeoutException THEN fetchTasks maps it to Unreachable`() = runTest {
         coEvery { taskApi.requestTaskConfigurations(any()) } throws HttpRequestTimeoutException("device-1", 5000)
 
         val result = dataSource.fetchTasks("device-1")
@@ -126,7 +126,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `sendNewTask returns Ok when server reports success`() = runTest {
+    fun `WHEN server reports success THEN sendNewTask returns Ok`() = runTest {
         coEvery { taskApi.addTask(any()) } returns Result(success = true)
 
         val result = dataSource.sendNewTask(MessageAddTask("device-1", "10", emptyMap()))
@@ -135,7 +135,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `sendNewTask returns ServerError when server reports failure`() = runTest {
+    fun `WHEN server reports failure THEN sendNewTask returns ServerError`() = runTest {
         coEvery { taskApi.addTask(any()) } returns Result(success = false, message = "Invalid task")
 
         val result = dataSource.sendNewTask(MessageAddTask("device-1", "10", emptyMap()))
@@ -144,7 +144,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync returns Ok on success`() = runTest {
+    fun `WHEN request succeeds THEN requestTaskStateInfoSync returns Ok`() = runTest {
         coEvery { taskApi.requestTaskStateInfoSync(any()) } returns Result(success = true)
 
         val result = dataSource.requestTaskStateInfoSync("device-1", 10L)
@@ -153,7 +153,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync passes taskTypeUid as string in the message`() = runTest {
+    fun `WHEN requestTaskStateInfoSync is called THEN it passes taskTypeUid as string in the message`() = runTest {
         coEvery { taskApi.requestTaskStateInfoSync(any()) } returns Result(success = true)
 
         dataSource.requestTaskStateInfoSync("device-1", 42L)
@@ -164,7 +164,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync returns ServerError on business failure`() = runTest {
+    fun `WHEN a business failure occurs THEN requestTaskStateInfoSync returns ServerError`() = runTest {
         coEvery { taskApi.requestTaskStateInfoSync(any()) } returns Result(success = false, message = "unknown type")
 
         val result = dataSource.requestTaskStateInfoSync("device-1", 10L)
@@ -173,7 +173,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistory maps dtos to domain entries with deviceUuid`() = runTest {
+    fun `WHEN fetchTaskStateInfoHistory is called THEN it maps dtos to domain entries with deviceUuid`() = runTest {
         val dto = TaskStateInfoHistoryEntryDto(
             stateInfoId = 1L,
             taskUid = 5L,
@@ -196,7 +196,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistoryCount returns count on success`() = runTest {
+    fun `WHEN request succeeds THEN fetchTaskStateInfoHistoryCount returns the count`() = runTest {
         coEvery {
             taskApi.requestTaskStateInfoHistoryCount("device-1", null, null, null)
         } returns 7
@@ -207,7 +207,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistoryCount with exception maps to Unknown error`() = runTest {
+    fun `WHEN api throws an exception THEN fetchTaskStateInfoHistoryCount maps it to Unknown error`() = runTest {
         coEvery {
             taskApi.requestTaskStateInfoHistoryCount(any(), any(), any(), any())
         } throws RuntimeException("db error")
@@ -218,7 +218,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTasks with ResponseException maps to Http error carrying the status code`() = runTest {
+    fun `WHEN api throws ResponseException THEN fetchTasks maps it to Http error carrying the status code`() = runTest {
         val response: HttpResponse = mockk { every { status } returns HttpStatusCode.NotFound }
         coEvery { taskApi.requestTaskConfigurations(any()) } throws ResponseException(response, "not found")
 
@@ -228,12 +228,12 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `stopListening is a no-op when there is no active listener for the device`() = runTest {
+    fun `WHEN there is no active listener for the device THEN stopListening is a no-op`() = runTest {
         dataSource.stopListening("device-1")
     }
 
     @Test
-    fun `stopAllListeners is a no-op when there are no active listeners`() = runTest {
+    fun `WHEN there are no active listeners THEN stopAllListeners is a no-op`() = runTest {
         dataSource.stopAllListeners()
     }
 
@@ -261,7 +261,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTasks creates a handler and does not disconnect anything on first call`() = runTest {
+    fun `WHEN listenTasks is called for the first time THEN it creates a handler and does not disconnect anything`() = runTest {
         coEvery { localDatasource.getServerIp() } returns flowOf("10.0.0.5")
         stubMqttConstruction()
 
@@ -271,7 +271,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTasks disconnects the previous handler when called again for the same device`() = runTest {
+    fun `WHEN listenTasks is called again for the same device THEN it disconnects the previous handler`() = runTest {
         coEvery { localDatasource.getServerIp() } returns flowOf("10.0.0.5")
         stubMqttConstruction()
 
@@ -282,7 +282,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTasks falls back to the default MQTT host when no server ip is stored`() = runTest {
+    fun `WHEN no server ip is stored THEN listenTasks falls back to the default MQTT host`() = runTest {
         coEvery { localDatasource.getServerIp() } returns flowOf(null)
         stubMqttConstruction()
 
@@ -292,7 +292,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTaskStateInfos creates a handler and does not disconnect anything on first call`() = runTest {
+    fun `WHEN listenTaskStateInfos is called for the first time THEN it creates a handler and does not disconnect anything`() = runTest {
         coEvery { localDatasource.getServerIp() } returns flowOf("10.0.0.5")
         stubMqttConstruction()
 
@@ -302,7 +302,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTaskStateInfos disconnects the previous handler when called again for the same device`() = runTest {
+    fun `WHEN listenTaskStateInfos is called again for the same device THEN it disconnects the previous handler`() = runTest {
         coEvery { localDatasource.getServerIp() } returns flowOf("10.0.0.5")
         stubMqttConstruction()
 
@@ -313,7 +313,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTasks and listenTaskStateInfos track handlers independently per map`() = runTest {
+    fun `WHEN listenTasks and listenTaskStateInfos are both called THEN they track handlers independently per map`() = runTest {
         coEvery { localDatasource.getServerIp() } returns flowOf("10.0.0.5")
         stubMqttConstruction()
 
@@ -329,7 +329,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTasks forwards incoming mqtt messages as new tasks with the device uuid overridden`() = runTest {
+    fun `WHEN an mqtt message arrives THEN listenTasks forwards it as a new task with the device uuid overridden`() = runTest {
         coEvery { localDatasource.getServerIp() } returns flowOf("10.0.0.5")
         stubMqttConstruction()
         val callbackSlot = io.mockk.slot<MqttCallback>()
@@ -347,7 +347,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistory uses default parameters when omitted`() = runTest {
+    fun `WHEN parameters are omitted THEN fetchTaskStateInfoHistory uses default parameters`() = runTest {
         coEvery {
             taskApi.requestTaskStateInfoHistory("device-1", 10, null, null, null)
         } returns emptyList()
@@ -358,7 +358,7 @@ class TasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistoryCount uses default parameters when omitted`() = runTest {
+    fun `WHEN parameters are omitted THEN fetchTaskStateInfoHistoryCount uses default parameters`() = runTest {
         coEvery {
             taskApi.requestTaskStateInfoHistoryCount("device-1", null, null, null)
         } returns 0

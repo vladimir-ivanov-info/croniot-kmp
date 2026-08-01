@@ -15,7 +15,7 @@ class SimpleBleUsecasesTest {
     private val device = Device(uuid = "device-1", name = "Device 1", description = "")
 
     @Test
-    fun `ScanBleDevicesUseCase delegates to observeNearbyDevices`() = runTest {
+    fun `WHEN ScanBleDevicesUseCase is invoked THEN it delegates to observeNearbyDevices`() = runTest {
         val repository = FakeBleDevicesRepository()
         val useCase = ScanBleDevicesUseCase(repository)
 
@@ -25,7 +25,7 @@ class SimpleBleUsecasesTest {
     }
 
     @Test
-    fun `ObserveKnownBleDevicesUseCase delegates to observeKnownDevices`() = runTest {
+    fun `WHEN ObserveKnownBleDevicesUseCase is invoked THEN it delegates to observeKnownDevices`() = runTest {
         val repository = FakeBleDevicesRepository()
         val useCase = ObserveKnownBleDevicesUseCase(repository)
 
@@ -35,7 +35,7 @@ class SimpleBleUsecasesTest {
     }
 
     @Test
-    fun `ObserveBleRssiUseCase delegates to observeRssi for given device`() = runTest {
+    fun `WHEN ObserveBleRssiUseCase is invoked for a given device THEN it delegates to observeRssi`() = runTest {
         val repository = FakeBleDevicesRepository()
         val useCase = ObserveBleRssiUseCase(repository)
 
@@ -45,7 +45,7 @@ class SimpleBleUsecasesTest {
     }
 
     @Test
-    fun `PairBleDeviceUseCase returns device on success`() = runTest {
+    fun `WHEN pairing succeeds THEN PairBleDeviceUseCase returns the device`() = runTest {
         val repository = FakeBleDevicesRepository(devicesByUuid = mapOf("device-1" to device))
         val useCase = PairBleDeviceUseCase(repository)
 
@@ -55,7 +55,7 @@ class SimpleBleUsecasesTest {
     }
 
     @Test
-    fun `PairBleDeviceUseCase returns error when device is unknown`() = runTest {
+    fun `WHEN device is unknown THEN PairBleDeviceUseCase returns an error`() = runTest {
         val repository = FakeBleDevicesRepository()
         val useCase = PairBleDeviceUseCase(repository)
 
@@ -65,7 +65,7 @@ class SimpleBleUsecasesTest {
     }
 
     @Test
-    fun `ConnectBleDeviceUseCase returns device on success`() = runTest {
+    fun `WHEN connecting succeeds THEN ConnectBleDeviceUseCase returns the device`() = runTest {
         val repository = FakeBleDevicesRepository(devicesByUuid = mapOf("device-1" to device))
         val useCase = ConnectBleDeviceUseCase(repository)
 
@@ -75,7 +75,7 @@ class SimpleBleUsecasesTest {
     }
 
     @Test
-    fun `ConnectBleDeviceUseCase returns error when device is unknown`() = runTest {
+    fun `WHEN device is unknown THEN ConnectBleDeviceUseCase returns an error`() = runTest {
         val repository = FakeBleDevicesRepository()
         val useCase = ConnectBleDeviceUseCase(repository)
 
@@ -85,7 +85,7 @@ class SimpleBleUsecasesTest {
     }
 
     @Test
-    fun `ForgetBleDeviceUseCase removes the device from the repository`() = runTest {
+    fun `WHEN ForgetBleDeviceUseCase is invoked THEN it removes the device from the repository`() = runTest {
         val repository = FakeBleDevicesRepository(devicesByUuid = mapOf("device-1" to device))
         val useCase = ForgetBleDeviceUseCase(repository)
 

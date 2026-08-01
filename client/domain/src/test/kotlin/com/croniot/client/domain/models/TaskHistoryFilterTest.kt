@@ -9,35 +9,35 @@ import org.junit.jupiter.api.Test
 class TaskHistoryFilterTest {
 
     @Test
-    fun `isActive is false when no criteria is set`() {
+    fun `WHEN no criteria is set THEN isActive is false`() {
         val filter = TaskHistoryFilter()
 
         assertThat(filter.isActive).isFalse()
     }
 
     @Test
-    fun `isActive is true when taskTypeUids is not empty`() {
+    fun `WHEN taskTypeUids is not empty THEN isActive is true`() {
         val filter = TaskHistoryFilter(taskTypeUids = setOf(1L, 2L))
 
         assertThat(filter.isActive).isTrue()
     }
 
     @Test
-    fun `isActive is true when dateFromMillis is set`() {
+    fun `WHEN dateFromMillis is set THEN isActive is true`() {
         val filter = TaskHistoryFilter(dateFromMillis = 1_000L)
 
         assertThat(filter.isActive).isTrue()
     }
 
     @Test
-    fun `isActive is true when dateToMillis is set`() {
+    fun `WHEN dateToMillis is set THEN isActive is true`() {
         val filter = TaskHistoryFilter(dateToMillis = 2_000L)
 
         assertThat(filter.isActive).isTrue()
     }
 
     @Test
-    fun `NONE companion constant is an inactive filter`() {
+    fun `WHEN filter is the NONE companion constant THEN it is inactive and equal to a default TaskHistoryFilter`() {
         assertThat(TaskHistoryFilter.NONE.isActive).isFalse()
         assertThat(TaskHistoryFilter.NONE).isEqualTo(TaskHistoryFilter())
     }

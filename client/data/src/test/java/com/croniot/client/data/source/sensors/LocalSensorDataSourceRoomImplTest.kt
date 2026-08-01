@@ -23,7 +23,7 @@ class LocalSensorDataSourceRoomImplTest {
     private val dataSource = LocalSensorDataSourceRoomImpl(sensorDataDao)
 
     @Test
-    fun `save maps SensorData to entity and inserts it`() = runTest {
+    fun `WHEN save is called THEN it maps SensorData to entity and inserts it`() = runTest {
         val timestamp = ZonedDateTime.ofInstant(Instant.ofEpochMilli(5000L), ZoneOffset.UTC)
         val sensorData = SensorData(deviceUuid = "device-1", sensorTypeUid = 10L, value = "25.5", timeStamp = timestamp)
         coJustRun { sensorDataDao.insert(any()) }
@@ -38,7 +38,7 @@ class LocalSensorDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getLatestSensorData maps entities to domain models`() = runTest {
+    fun `WHEN dao returns entities THEN getLatestSensorData maps them to domain models`() = runTest {
         val entity = SensorDataEntity(deviceUuid = "device-1", sensorTypeUid = 10L, value = "20.0", timeStampMillis = 1000L)
         coEvery { sensorDataDao.getLatest("device-1", 10L, 5) } returns listOf(entity)
 
@@ -50,7 +50,7 @@ class LocalSensorDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getLatestSensorData returns empty list when dao has no data`() = runTest {
+    fun `WHEN dao has no data THEN getLatestSensorData returns empty list`() = runTest {
         coEvery { sensorDataDao.getLatest(any(), any(), any()) } returns emptyList()
 
         val result = dataSource.getLatestSensorData("device-1", 10L, 5)
@@ -59,7 +59,7 @@ class LocalSensorDataSourceRoomImplTest {
     }
 
     @Test
-    fun `observeSensorData maps non-null entity emissions to domain models`() = runTest {
+    fun `WHEN dao emits a non-null entity THEN observeSensorData maps it to a domain model`() = runTest {
         val entity = SensorDataEntity(deviceUuid = "device-1", sensorTypeUid = 10L, value = "22.0", timeStampMillis = 2000L)
         every { sensorDataDao.observeLatest("device-1", 10L) } returns flowOf(entity)
 
@@ -69,7 +69,7 @@ class LocalSensorDataSourceRoomImplTest {
     }
 
     @Test
-    fun `observeSensorData filters out null emissions from the dao`() = runTest {
+    fun `WHEN dao emits null THEN observeSensorData filters it out`() = runTest {
         val entity = SensorDataEntity(deviceUuid = "device-1", sensorTypeUid = 10L, value = "22.0", timeStampMillis = 2000L)
         every { sensorDataDao.observeLatest("device-1", 10L) } returns flowOf(null, entity)
 

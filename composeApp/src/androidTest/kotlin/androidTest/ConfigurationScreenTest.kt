@@ -20,7 +20,7 @@ class ConfigurationScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun displaysTitleAndBackButton() {
+    fun `WHEN ConfigurationScreenBody is rendered THEN it displays the title and back button`() {
         composeTestRule.setContent {
             ConfigurationScreenBody(
                 state = ConfigurationState(),
@@ -34,7 +34,7 @@ class ConfigurationScreenTest {
     }
 
     @Test
-    fun displaysServerIpField() {
+    fun `WHEN ConfigurationScreenBody is rendered THEN it displays the server ip field`() {
         composeTestRule.setContent {
             ConfigurationScreenBody(
                 state = ConfigurationState(),
@@ -47,7 +47,7 @@ class ConfigurationScreenTest {
     }
 
     @Test
-    fun displaysCustomServerIp() {
+    fun `WHEN ConfigurationScreenBody is rendered with a custom server ip THEN it displays that ip`() {
         composeTestRule.setContent {
             ConfigurationScreenBody(
                 state = ConfigurationState(serverIp = "10.0.0.1"),
@@ -60,7 +60,7 @@ class ConfigurationScreenTest {
     }
 
     @Test
-    fun backButton_triggersNavigation() {
+    fun `WHEN the back button is clicked THEN it triggers navigation`() {
         var backPressed = false
 
         composeTestRule.setContent {
@@ -77,7 +77,7 @@ class ConfigurationScreenTest {
     }
 
     @Test
-    fun typingInServerIpField_sendsSetServerIpIntent() {
+    fun `WHEN typing in the server ip field THEN it sends a SetServerIp intent`() {
         var capturedIntent: ConfigurationIntent? = null
 
         composeTestRule.setContent {
@@ -96,7 +96,7 @@ class ConfigurationScreenTest {
     }
 
     @Test
-    fun editingServerIp_sendsUpdatedIntentOnEachChange() {
+    fun `WHEN editing the server ip THEN it sends an updated intent on each change`() {
         val intents = mutableListOf<ConfigurationIntent>()
 
         composeTestRule.setContent {

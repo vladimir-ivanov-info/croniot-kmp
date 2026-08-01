@@ -42,7 +42,7 @@ class ViewModelRegisterAccountTest {
     }
 
     @Test
-    fun `Given nickname email and password changed, When onAction, Then updates each field in state`() = runTest {
+    fun `WHEN NicknameChanged, EmailChanged, and PasswordChanged are dispatched THEN each field in state is updated`() = runTest {
         viewModel.onAction(RegisterAccountIntent.NicknameChanged("newNickname"))
         viewModel.onAction(RegisterAccountIntent.EmailChanged("new@email.com"))
         viewModel.onAction(RegisterAccountIntent.PasswordChanged("newPassword"))
@@ -53,7 +53,7 @@ class ViewModelRegisterAccountTest {
     }
 
     @Test
-    fun `Given registerAccountUseCase succeeds, When RegisterAccount, Then isLoading is false and shows success snackbar`() =
+    fun `WHEN RegisterAccount succeeds THEN isLoading is false and a success snackbar is shown`() =
         runTest {
             coEvery {
                 registerAccountUseCase(nickname = any(), email = any(), password = any())
@@ -67,7 +67,7 @@ class ViewModelRegisterAccountTest {
         }
 
     @Test
-    fun `Given registerAccountUseCase fails, When RegisterAccount, Then isLoading is false and shows error snackbar`() =
+    fun `WHEN RegisterAccount fails THEN isLoading is false and an error snackbar is shown`() =
         runTest {
             coEvery {
                 registerAccountUseCase(nickname = any(), email = any(), password = any())
@@ -81,7 +81,7 @@ class ViewModelRegisterAccountTest {
         }
 
     @Test
-    fun `Given NavigateBack action, When onAction, Then emits NavigateBack effect`() = runTest {
+    fun `WHEN the NavigateBack action is dispatched THEN it emits the NavigateBack effect`() = runTest {
         viewModel.onAction(RegisterAccountIntent.NavigateBack)
         val effect = viewModel.effects.first()
 
@@ -89,7 +89,7 @@ class ViewModelRegisterAccountTest {
     }
 
     @Test
-    fun `Given registerAccountUseCase never returns, When RegisterAccount, Then shows could not connect snackbar`() =
+    fun `WHEN RegisterAccount never returns THEN it shows a could not connect snackbar`() =
         runTest {
             coEvery {
                 registerAccountUseCase(nickname = any(), email = any(), password = any())

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class FetchTasksUseCaseTest {
 
     @Test
-    fun `returns tasks from repository on success`() = runTest {
+    fun `WHEN repository fetch succeeds THEN it returns the tasks`() = runTest {
         val tasks = listOf(Task(deviceUuid = "device-1", taskTypeUid = 10L, uid = 1L))
         val repository = FakeTasksRepository(fetchTasksOutcome = Outcome.Ok(tasks))
         val useCase = FetchTasksUseCase(repository)
@@ -24,7 +24,7 @@ class FetchTasksUseCaseTest {
     }
 
     @Test
-    fun `propagates error from repository`() = runTest {
+    fun `WHEN repository returns an error THEN it propagates that error`() = runTest {
         val error = TaskError.Remote(RemoteError.Unreachable)
         val repository = FakeTasksRepository(fetchTasksOutcome = Outcome.Err(error))
         val useCase = FetchTasksUseCase(repository)
@@ -35,7 +35,7 @@ class FetchTasksUseCaseTest {
     }
 
     @Test
-    fun `returns empty list when repository has no tasks`() = runTest {
+    fun `WHEN repository has no tasks THEN it returns an empty list`() = runTest {
         val repository = FakeTasksRepository(fetchTasksOutcome = Outcome.Ok(emptyList()))
         val useCase = FetchTasksUseCase(repository)
 
@@ -45,7 +45,7 @@ class FetchTasksUseCaseTest {
     }
 
     @Test
-    fun `passes through the requested device uuid`() = runTest {
+    fun `WHEN invoked with a device uuid THEN it passes that uuid through to the repository`() = runTest {
         val repository = FakeTasksRepository()
         val useCase = FetchTasksUseCase(repository)
 

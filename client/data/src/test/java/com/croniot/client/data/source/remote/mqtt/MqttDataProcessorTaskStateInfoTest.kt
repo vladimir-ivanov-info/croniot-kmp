@@ -42,7 +42,7 @@ class MqttDataProcessorTaskStateInfoTest {
         parseMethod.invoke(processor, topic) as? TaskKey
 
     @Test
-    fun `valid topic returns correct TaskKey`() {
+    fun `WHEN topic is valid THEN it returns the correct TaskKey`() {
         val topic = "server_to_devices/dev-uuid-1/task_types/10/tasks/99/progress"
         val key = parseProgressTopic(topic)
 
@@ -50,7 +50,7 @@ class MqttDataProcessorTaskStateInfoTest {
     }
 
     @Test
-    fun `valid topic with leading slash is parsed correctly`() {
+    fun `WHEN a valid topic has a leading slash THEN it is parsed correctly`() {
         val topic = "/server_to_devices/dev-uuid/task_types/1/tasks/2/progress"
         val key = parseProgressTopic(topic)
 
@@ -58,60 +58,60 @@ class MqttDataProcessorTaskStateInfoTest {
     }
 
     @Test
-    fun `too few segments returns null`() {
+    fun `WHEN topic has too few segments THEN it returns null`() {
         val topic = "server_to_devices/dev-uuid/task_types/10/tasks/99"
         assertNull(parseProgressTopic(topic))
     }
 
     @Test
-    fun `too many segments returns null`() {
+    fun `WHEN topic has too many segments THEN it returns null`() {
         val topic = "server_to_devices/dev-uuid/task_types/10/tasks/99/progress/extra"
         assertNull(parseProgressTopic(topic))
     }
 
     @Test
-    fun `wrong first segment returns null`() {
+    fun `WHEN the first segment is wrong THEN it returns null`() {
         val topic = "wrong_prefix/dev-uuid/task_types/10/tasks/99/progress"
         assertNull(parseProgressTopic(topic))
     }
 
     @Test
-    fun `wrong third segment returns null`() {
+    fun `WHEN the third segment is wrong THEN it returns null`() {
         val topic = "server_to_devices/dev-uuid/wrong_segment/10/tasks/99/progress"
         assertNull(parseProgressTopic(topic))
     }
 
     @Test
-    fun `wrong fifth segment returns null`() {
+    fun `WHEN the fifth segment is wrong THEN it returns null`() {
         val topic = "server_to_devices/dev-uuid/task_types/10/wrong_segment/99/progress"
         assertNull(parseProgressTopic(topic))
     }
 
     @Test
-    fun `wrong last segment returns null`() {
+    fun `WHEN the last segment is wrong THEN it returns null`() {
         val topic = "server_to_devices/dev-uuid/task_types/10/tasks/99/wrong_suffix"
         assertNull(parseProgressTopic(topic))
     }
 
     @Test
-    fun `non-numeric taskTypeUid returns null`() {
+    fun `WHEN taskTypeUid is non-numeric THEN it returns null`() {
         val topic = "server_to_devices/dev-uuid/task_types/abc/tasks/99/progress"
         assertNull(parseProgressTopic(topic))
     }
 
     @Test
-    fun `non-numeric taskUid returns null`() {
+    fun `WHEN taskUid is non-numeric THEN it returns null`() {
         val topic = "server_to_devices/dev-uuid/task_types/10/tasks/xyz/progress"
         assertNull(parseProgressTopic(topic))
     }
 
     @Test
-    fun `empty topic returns null`() {
+    fun `WHEN topic is empty THEN it returns null`() {
         assertNull(parseProgressTopic(""))
     }
 
     @Test
-    fun `process invokes onNewData with the parsed event on a valid topic`() {
+    fun `WHEN topic is valid THEN process invokes onNewData with the parsed event`() {
         val receivedEvents = mutableListOf<TaskStateInfoEvent>()
         val eventProcessor = MqttDataProcessorTaskStateInfo(onNewData = { receivedEvents.add(it) })
         val dto = TaskStateInfoDto(
@@ -131,7 +131,7 @@ class MqttDataProcessorTaskStateInfoTest {
     }
 
     @Test
-    fun `process does not invoke onNewData when the topic does not match`() {
+    fun `WHEN topic does not match THEN process does not invoke onNewData`() {
         val receivedEvents = mutableListOf<TaskStateInfoEvent>()
         val eventProcessor = MqttDataProcessorTaskStateInfo(onNewData = { receivedEvents.add(it) })
         val dto = TaskStateInfoDto(dateTime = ZonedDateTime.now(), state = "RUNNING", progress = 0.0, errorMessage = "")
@@ -142,7 +142,7 @@ class MqttDataProcessorTaskStateInfoTest {
     }
 
     @Test
-    fun `process swallows exceptions from malformed json`() {
+    fun `WHEN json is malformed THEN process swallows the exception`() {
         val receivedEvents = mutableListOf<TaskStateInfoEvent>()
         val eventProcessor = MqttDataProcessorTaskStateInfo(onNewData = { receivedEvents.add(it) })
         val topic = "server_to_devices/dev-uuid-1/task_types/10/tasks/99/progress"
@@ -153,7 +153,7 @@ class MqttDataProcessorTaskStateInfoTest {
     }
 
     @Test
-    fun `process swallows exceptions from non-string data`() {
+    fun `WHEN data is non-string THEN process swallows the exception`() {
         val receivedEvents = mutableListOf<TaskStateInfoEvent>()
         val eventProcessor = MqttDataProcessorTaskStateInfo(onNewData = { receivedEvents.add(it) })
 

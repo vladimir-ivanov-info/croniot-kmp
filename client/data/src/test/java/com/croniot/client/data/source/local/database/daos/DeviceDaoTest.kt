@@ -41,7 +41,7 @@ class DeviceDaoTest {
         accountDao.insert(AccountEntity(uuid = "acc-1", nickname = "nick", email = "user@example.com"))
 
     @Test
-    fun `insert then getByUuid returns the persisted device`() = runTest {
+    fun `WHEN a device is inserted THEN getByUuid returns the persisted device`() = runTest {
         val accountId = insertAccount()
         deviceDao.insert(DeviceEntity(uuid = "device-1", accountId = accountId, name = "Device 1", description = "desc"))
 
@@ -52,12 +52,12 @@ class DeviceDaoTest {
     }
 
     @Test
-    fun `getByUuid returns null for an unknown uuid`() = runTest {
+    fun `WHEN uuid is unknown THEN getByUuid returns null`() = runTest {
         assertNull(deviceDao.getByUuid("unknown"))
     }
 
     @Test
-    fun `getByAccountId returns every device belonging to that account`() = runTest {
+    fun `WHEN an account has multiple devices THEN getByAccountId returns every one`() = runTest {
         val accountId = insertAccount()
         deviceDao.insert(DeviceEntity(uuid = "device-1", accountId = accountId, name = "A", description = ""))
         deviceDao.insert(DeviceEntity(uuid = "device-2", accountId = accountId, name = "B", description = ""))
@@ -68,7 +68,7 @@ class DeviceDaoTest {
     }
 
     @Test
-    fun `deleting the parent account cascades and deletes its devices`() = runTest {
+    fun `WHEN the parent account is deleted THEN it cascades and deletes its devices`() = runTest {
         val accountId = insertAccount()
         deviceDao.insert(DeviceEntity(uuid = "device-1", accountId = accountId, name = "A", description = ""))
 

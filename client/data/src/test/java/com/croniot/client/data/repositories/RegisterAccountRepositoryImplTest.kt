@@ -23,7 +23,7 @@ class RegisterAccountRepositoryImplTest {
     }
 
     @Test
-    fun `registerAccount returns success result from api`() = runTest {
+    fun `WHEN api returns success THEN registerAccount returns success result`() = runTest {
         coEvery { registerApi.registerAccount(any()) } returns Result(success = true, message = "")
 
         val result = repository.registerAccount("nickname", "user@example.com", "password123")
@@ -32,7 +32,7 @@ class RegisterAccountRepositoryImplTest {
     }
 
     @Test
-    fun `registerAccount returns failure result from api`() = runTest {
+    fun `WHEN api returns failure THEN registerAccount returns failure result`() = runTest {
         coEvery { registerApi.registerAccount(any()) } returns Result(success = false, message = "Email taken")
 
         val result = repository.registerAccount("nickname", "user@example.com", "password123")
@@ -42,7 +42,7 @@ class RegisterAccountRepositoryImplTest {
     }
 
     @Test
-    fun `registerAccount maps IOException to failure result with network error message`() = runTest {
+    fun `WHEN api throws IOException THEN registerAccount maps it to failure result with network error message`() = runTest {
         coEvery { registerApi.registerAccount(any()) } throws IOException("connection refused")
 
         val result = repository.registerAccount("nickname", "user@example.com", "password123")
@@ -52,7 +52,7 @@ class RegisterAccountRepositoryImplTest {
     }
 
     @Test
-    fun `registerAccount maps generic exception to failure result`() = runTest {
+    fun `WHEN api throws a generic exception THEN registerAccount maps it to failure result`() = runTest {
         coEvery { registerApi.registerAccount(any()) } throws IllegalStateException("boom")
 
         val result = repository.registerAccount("nickname", "user@example.com", "password123")
@@ -62,7 +62,7 @@ class RegisterAccountRepositoryImplTest {
     }
 
     @Test
-    fun `registerAccount uses default message when IOException has null message`() = runTest {
+    fun `WHEN IOException has null message THEN registerAccount uses default message`() = runTest {
         coEvery { registerApi.registerAccount(any()) } throws IOException()
 
         val result = repository.registerAccount("nickname", "user@example.com", "password123")
@@ -72,7 +72,7 @@ class RegisterAccountRepositoryImplTest {
     }
 
     @Test
-    fun `registerAccount uses default message when generic exception has null message`() = runTest {
+    fun `WHEN generic exception has null message THEN registerAccount uses default message`() = runTest {
         coEvery { registerApi.registerAccount(any()) } throws RuntimeException()
 
         val result = repository.registerAccount("nickname", "user@example.com", "password123")

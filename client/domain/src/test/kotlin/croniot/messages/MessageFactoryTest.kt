@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class MessageFactoryTest {
 
     @Test
-    fun `toJson followed by fromJson round-trips a simple data class`() {
+    fun `WHEN a simple data class is serialized and deserialized THEN it round-trips correctly`() {
         val token = DeviceToken(deviceId = 42L, token = "abc-123")
 
         val json = MessageFactory.toJson(token)
@@ -18,7 +18,7 @@ class MessageFactoryTest {
     }
 
     @Test
-    fun `toJson followed by fromJson round-trips a class with nullable and map fields`() {
+    fun `WHEN a class has nullable and map fields THEN toJson and fromJson round-trip it correctly`() {
         val dto = LoginDto(
             email = "user@example.com",
             password = "secret",
@@ -34,7 +34,7 @@ class MessageFactoryTest {
     }
 
     @Test
-    fun `fromJson ignores unknown keys instead of failing`() {
+    fun `WHEN json contains unknown keys THEN fromJson ignores them instead of failing`() {
         val json = """{"deviceId":1,"token":"t","unexpectedField":"whatever"}"""
 
         val result = MessageFactory.fromJson<DeviceToken>(json)
@@ -43,7 +43,7 @@ class MessageFactoryTest {
     }
 
     @Test
-    fun `fromJsonWithZonedDateTime round-trips like fromJson for plain data classes`() {
+    fun `WHEN a plain data class is used THEN fromJsonWithZonedDateTime round-trips like fromJson`() {
         val token = DeviceToken(deviceId = 7L, token = "xyz")
 
         val json = MessageFactory.toJson(token)

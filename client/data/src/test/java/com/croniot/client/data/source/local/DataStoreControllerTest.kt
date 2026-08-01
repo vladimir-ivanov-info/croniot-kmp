@@ -27,7 +27,7 @@ class DataStoreControllerTest {
     private fun controller() = DataStoreController(ApplicationProvider.getApplicationContext())
 
     @Test
-    fun `saveCurrentRoute then getCurrentRoute returns the saved route`() = runTest {
+    fun `WHEN saveCurrentRoute is called THEN getCurrentRoute returns the saved route`() = runTest {
         val c = controller()
         c.saveCurrentRoute("home")
 
@@ -35,7 +35,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveCurrentScreen then getCurrentScreen returns the saved screen`() = runTest {
+    fun `WHEN saveCurrentScreen is called THEN getCurrentScreen returns the saved screen`() = runTest {
         val c = controller()
         c.saveCurrentScreen("DeviceListScreen")
 
@@ -43,7 +43,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `generateAndSaveDeviceUuidIfNotExists creates a uuid prefixed with android_`() = runTest {
+    fun `WHEN generateAndSaveDeviceUuidIfNotExists is called THEN it creates a uuid prefixed with android_`() = runTest {
         val c = controller()
         c.saveCurrentRoute("reset-marker-1")
 
@@ -53,7 +53,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `generateAndSaveDeviceUuidIfNotExists does not overwrite an existing uuid`() = runTest {
+    fun `WHEN a uuid already exists THEN generateAndSaveDeviceUuidIfNotExists does not overwrite it`() = runTest {
         val c = controller()
         c.generateAndSaveDeviceUuidIfNotExists()
         val first = c.getLocalDeviceUuid()
@@ -64,7 +64,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveIsForegroundServiceEnabled true then read back returns true`() = runTest {
+    fun `WHEN saveIsForegroundServiceEnabled is called with true THEN reading it back returns true`() = runTest {
         val c = controller()
         c.saveIsForegroundServiceEnabled(true)
 
@@ -72,7 +72,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveIsForegroundServiceEnabled false then read back returns false`() = runTest {
+    fun `WHEN saveIsForegroundServiceEnabled is called with false THEN reading it back returns false`() = runTest {
         val c = controller()
         c.saveIsForegroundServiceEnabled(true)
         c.saveIsForegroundServiceEnabled(false)
@@ -81,7 +81,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveServerIp then getServerIp emits the saved value`() = runTest {
+    fun `WHEN saveServerIp is called THEN getServerIp emits the saved value`() = runTest {
         val c = controller()
         c.saveServerIp("192.168.1.1")
 
@@ -89,7 +89,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveCurrentAccount then getCurrentAccount roundtrips via json`() = runTest {
+    fun `WHEN saveCurrentAccount is called THEN getCurrentAccount roundtrips via json`() = runTest {
         val c = controller()
         val account = Account(uuid = "acc-1", nickname = "nick", email = "user@example.com", devices = emptyList())
 
@@ -99,7 +99,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveCurrentAccount with null removes the stored account`() = runTest {
+    fun `WHEN saveCurrentAccount is called with null THEN it removes the stored account`() = runTest {
         val c = controller()
         val account = Account(uuid = "acc-1", nickname = "nick", email = "user@example.com", devices = emptyList())
         c.saveCurrentAccount(account)
@@ -110,7 +110,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveSelectedDevice then getSelectedDevice roundtrips via json`() = runTest {
+    fun `WHEN saveSelectedDevice is called THEN getSelectedDevice roundtrips via json`() = runTest {
         val c = controller()
         val device = Device(uuid = "device-1", name = "Device", description = "desc")
 
@@ -120,7 +120,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `getSelectedDevice returns null once clearAllCacheExceptDeviceUuid removes it`() = runTest {
+    fun `WHEN clearAllCacheExceptDeviceUuid removes the selected device THEN getSelectedDevice returns null`() = runTest {
         val c = controller()
         val device = Device(uuid = "device-1", name = "Device", description = "desc")
         c.saveSelectedDevice(device)
@@ -133,7 +133,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveAppSessionMode then getAppSessionMode returns the saved mode`() = runTest {
+    fun `WHEN saveAppSessionMode is called THEN getAppSessionMode returns the saved mode`() = runTest {
         val c = controller()
         c.saveAppSessionMode("server")
 
@@ -141,7 +141,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveAppSessionMode with null clears the app session mode`() = runTest {
+    fun `WHEN saveAppSessionMode is called with null THEN it clears the app session mode`() = runTest {
         val c = controller()
         c.saveAppSessionMode("server")
 
@@ -151,7 +151,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `clearAllCacheExceptDeviceUuid preserves device uuid server mode and server ip but clears the rest`() = runTest {
+    fun `WHEN clearAllCacheExceptDeviceUuid is called THEN it preserves device uuid server mode and server ip but clears the rest`() = runTest {
         val c = controller()
         c.generateAndSaveDeviceUuidIfNotExists()
         val deviceUuid = c.getLocalDeviceUuid()
@@ -170,7 +170,7 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveServerMode then getServerMode emits the saved mode`() = runTest {
+    fun `WHEN saveServerMode is called THEN getServerMode emits the saved mode`() = runTest {
         val c = controller()
         c.saveServerMode("local")
 
@@ -178,13 +178,13 @@ class DataStoreControllerTest {
     }
 
     @Test
-    fun `saveEmail does not throw`() = runTest {
+    fun `WHEN saveEmail is called THEN it does not throw`() = runTest {
         // No public getter exposes account_email; this only protects the write path from regressing.
         controller().saveEmail("user@example.com")
     }
 
     @Test
-    fun `getLocalDeviceToken does not throw`() = runTest {
+    fun `WHEN getLocalDeviceToken is called THEN it does not throw`() = runTest {
         // No public setter exists on this class for device_token; this only protects the read path.
         controller().getLocalDeviceToken()
     }

@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test
 class TimeUtilTest {
 
     @Test
-    fun `measure returns the value produced by the block`() {
+    fun `WHEN block completes THEN measure returns its produced value`() {
         val result = measure("test-block") { 40 + 2 }
 
         assertThat(result).isEqualTo(42)
     }
 
     @Test
-    fun `measure invokes the provided log callback instead of printing`() {
+    fun `WHEN a log callback is provided THEN measure invokes it instead of printing`() {
         var loggedMessage: String? = null
 
         measure("test-block", log = { loggedMessage = it }) { "ignored" }
@@ -25,7 +25,7 @@ class TimeUtilTest {
     }
 
     @Test
-    fun `measure log message includes the block name`() {
+    fun `WHEN measure logs THEN the message includes the block name`() {
         var loggedMessage = ""
 
         measure("my-operation", log = { loggedMessage = it }) { Unit }

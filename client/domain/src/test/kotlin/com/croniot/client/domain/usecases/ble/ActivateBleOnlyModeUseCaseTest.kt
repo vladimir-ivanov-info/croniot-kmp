@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class ActivateBleOnlyModeUseCaseTest {
 
     @Test
-    fun `stops device listeners and activates ble only mode`() = runTest {
+    fun `WHEN ActivateBleOnlyModeUseCase is invoked THEN it stops device listeners and activates ble-only mode`() = runTest {
         val sensorDataRepository = FakeSensorDataRepository()
         val tasksRepository = FakeTasksRepository()
         val appSessionRepository = FakeAppSessionRepository()

@@ -36,7 +36,7 @@ class AccountDaoTest {
     }
 
     @Test
-    fun `insert then getByUuid returns the persisted account`() = runTest {
+    fun `WHEN an account is inserted THEN getByUuid returns the persisted account`() = runTest {
         dao.insert(AccountEntity(uuid = "acc-1", nickname = "nick", email = "user@example.com"))
 
         val result = dao.getByUuid("acc-1")
@@ -45,12 +45,12 @@ class AccountDaoTest {
     }
 
     @Test
-    fun `getByUuid returns null for an unknown uuid`() = runTest {
+    fun `WHEN uuid is unknown THEN getByUuid returns null`() = runTest {
         assertNull(dao.getByUuid("unknown"))
     }
 
     @Test
-    fun `getAll returns every inserted account`() = runTest {
+    fun `WHEN multiple accounts are inserted THEN getAll returns every one`() = runTest {
         dao.insert(AccountEntity(uuid = "acc-1", nickname = "A", email = "a@example.com"))
         dao.insert(AccountEntity(uuid = "acc-2", nickname = "B", email = "b@example.com"))
 
@@ -58,7 +58,7 @@ class AccountDaoTest {
     }
 
     @Test
-    fun `insert with the same uuid replaces the previous row`() = runTest {
+    fun `WHEN inserting with the same uuid THEN it replaces the previous row`() = runTest {
         dao.insert(AccountEntity(uuid = "acc-1", nickname = "Old", email = "old@example.com"))
         dao.insert(AccountEntity(uuid = "acc-1", nickname = "New", email = "new@example.com"))
 
@@ -69,7 +69,7 @@ class AccountDaoTest {
     }
 
     @Test
-    fun `deleteByUuid removes the account`() = runTest {
+    fun `WHEN deleteByUuid is called THEN it removes the account`() = runTest {
         dao.insert(AccountEntity(uuid = "acc-1", nickname = "nick", email = "user@example.com"))
 
         dao.deleteByUuid("acc-1")
@@ -78,7 +78,7 @@ class AccountDaoTest {
     }
 
     @Test
-    fun `getAll returns an empty list when there are no accounts`() = runTest {
+    fun `WHEN there are no accounts THEN getAll returns an empty list`() = runTest {
         assertTrue(dao.getAll().isEmpty())
     }
 }

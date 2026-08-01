@@ -29,7 +29,7 @@ class BleTasksDataSourceImplTest {
     private val dataSource = BleTasksDataSourceImpl(appScope, connectionPool)
 
     @Test
-    fun `listenTasks does nothing when there is no active connection`() = runTest {
+    fun `WHEN there is no active connection THEN listenTasks does nothing`() = runTest {
         every { connectionPool.get("device-1") } returns null
 
         dataSource.listenTasks("device-1") { }
@@ -38,7 +38,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTasks subscribes to the connection's new task events`() = runTest {
+    fun `WHEN there is an active connection THEN listenTasks subscribes to its new task events`() = runTest {
         val connection: BleConnection = mockk { every { observeNewTasks() } returns emptyFlow() }
         every { connectionPool.get("device-1") } returns connection
 
@@ -48,7 +48,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTasks forwards each emitted task to the callback`() = runTest {
+    fun `WHEN a task is emitted THEN listenTasks forwards it to the callback`() = runTest {
         val newTasks = MutableSharedFlow<Task>(extraBufferCapacity = 1)
         val connection: BleConnection = mockk { every { observeNewTasks() } returns newTasks }
         every { connectionPool.get("device-1") } returns connection
@@ -62,7 +62,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTasks called twice for the same device cancels the previous subscription`() = runTest {
+    fun `WHEN listenTasks is called twice for the same device THEN it cancels the previous subscription`() = runTest {
         val firstConnection: BleConnection = mockk { every { observeNewTasks() } returns emptyFlow() }
         val secondConnection: BleConnection = mockk { every { observeNewTasks() } returns emptyFlow() }
         every { connectionPool.get("device-1") } returns firstConnection andThen secondConnection
@@ -75,14 +75,14 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTaskStateInfos does nothing when there is no active connection`() = runTest {
+    fun `WHEN there is no active connection THEN listenTaskStateInfos does nothing`() = runTest {
         every { connectionPool.get("device-1") } returns null
 
         dataSource.listenTaskStateInfos("device-1") { }
     }
 
     @Test
-    fun `listenTaskStateInfos subscribes to the connection's state info events`() = runTest {
+    fun `WHEN there is an active connection THEN listenTaskStateInfos subscribes to its state info events`() = runTest {
         val connection: BleConnection = mockk { every { observeTaskStateInfoEvents() } returns emptyFlow() }
         every { connectionPool.get("device-1") } returns connection
 
@@ -92,7 +92,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `listenTaskStateInfos forwards each emitted event to the callback`() = runTest {
+    fun `WHEN an event is emitted THEN listenTaskStateInfos forwards it to the callback`() = runTest {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 1)
         val connection: BleConnection = mockk { every { observeTaskStateInfoEvents() } returns events }
         every { connectionPool.get("device-1") } returns connection
@@ -109,13 +109,13 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `stopListening and stopAllListeners do not throw when nothing is active`() = runTest {
+    fun `WHEN nothing is active THEN stopListening and stopAllListeners do not throw`() = runTest {
         dataSource.stopListening("device-1")
         dataSource.stopAllListeners()
     }
 
     @Test
-    fun `stopListening cancels an active subscription for that device`() = runTest {
+    fun `WHEN stopListening is called THEN it cancels the active subscription for that device`() = runTest {
         val connection: BleConnection = mockk { every { observeNewTasks() } returns MutableSharedFlow() }
         every { connectionPool.get("device-1") } returns connection
         dataSource.listenTasks("device-1") { }
@@ -125,7 +125,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `stopAllListeners cancels every active subscription`() = runTest {
+    fun `WHEN stopAllListeners is called THEN it cancels every active subscription`() = runTest {
         val connection: BleConnection = mockk {
             every { observeNewTasks() } returns MutableSharedFlow()
             every { observeTaskStateInfoEvents() } returns MutableSharedFlow()
@@ -138,28 +138,28 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `fetchTasks always returns an empty list because BLE has no persistent backend`() = runTest {
+    fun `WHEN BLE has no persistent backend THEN fetchTasks always returns an empty list`() = runTest {
         val result = dataSource.fetchTasks("device-1")
 
         assertEquals(Outcome.Ok(emptyList<Task>()), result)
     }
 
     @Test
-    fun `fetchTaskStateInfoHistory always returns an empty list`() = runTest {
+    fun `WHEN fetchTaskStateInfoHistory is called THEN it always returns an empty list`() = runTest {
         val result = dataSource.fetchTaskStateInfoHistory("device-1", 10, null, null, null)
 
         assertEquals(Outcome.Ok(emptyList<Any>()), result)
     }
 
     @Test
-    fun `fetchTaskStateInfoHistoryCount always returns zero`() = runTest {
+    fun `WHEN fetchTaskStateInfoHistoryCount is called THEN it always returns zero`() = runTest {
         val result = dataSource.fetchTaskStateInfoHistoryCount("device-1", null, null, null)
 
         assertEquals(Outcome.Ok(0), result)
     }
 
     @Test
-    fun `sendNewTask returns Unreachable when there is no active connection`() = runTest {
+    fun `WHEN there is no active connection THEN sendNewTask returns Unreachable`() = runTest {
         every { connectionPool.get("device-1") } returns null
 
         val result = dataSource.sendNewTask(MessageAddTask("device-1", "10", emptyMap()))
@@ -168,7 +168,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `sendNewTask returns Ok when the connection accepts the task`() = runTest {
+    fun `WHEN the connection accepts the task THEN sendNewTask returns Ok`() = runTest {
         val connection: BleConnection = mockk()
         coEvery { connection.sendNewTask(any()) } returns Outcome.Ok(Unit)
         every { connectionPool.get("device-1") } returns connection
@@ -179,7 +179,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `sendNewTask maps a connection error to Unknown`() = runTest {
+    fun `WHEN the connection returns an error THEN sendNewTask maps it to Unknown`() = runTest {
         val connection: BleConnection = mockk()
         coEvery { connection.sendNewTask(any()) } returns Outcome.Err(com.croniot.client.domain.errors.BleError.Timeout)
         every { connectionPool.get("device-1") } returns connection
@@ -190,7 +190,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync returns Unreachable when there is no active connection`() = runTest {
+    fun `WHEN there is no active connection THEN requestTaskStateInfoSync returns Unreachable`() = runTest {
         every { connectionPool.get("device-1") } returns null
 
         val result = dataSource.requestTaskStateInfoSync("device-1", 10L)
@@ -199,7 +199,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync returns Ok when the connection accepts the request`() = runTest {
+    fun `WHEN the connection accepts the request THEN requestTaskStateInfoSync returns Ok`() = runTest {
         val connection: BleConnection = mockk()
         coEvery { connection.requestTaskStateInfoSync(10L) } returns Outcome.Ok(Unit)
         every { connectionPool.get("device-1") } returns connection
@@ -210,7 +210,7 @@ class BleTasksDataSourceImplTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync maps a connection error to Unknown`() = runTest {
+    fun `WHEN the connection returns an error THEN requestTaskStateInfoSync maps it to Unknown`() = runTest {
         val connection: BleConnection = mockk()
         coEvery { connection.requestTaskStateInfoSync(any()) } returns Outcome.Err(com.croniot.client.domain.errors.BleError.Timeout)
         every { connectionPool.get("device-1") } returns connection

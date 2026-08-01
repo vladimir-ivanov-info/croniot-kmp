@@ -68,7 +68,7 @@ class SensorsViewModelTest {
     }
 
     @Test
-    fun `loadAllInitialData with two distinct SensorTypes queries the repository once per sensor and populates sensorsInitialData`() = runTest {
+    fun `WHEN loadAllInitialData is called with two distinct SensorTypes THEN it queries the repository once per sensor and populates sensorsInitialData`() = runTest {
         val deviceUuid = "device-1"
         val temperatureType = sensorType(uid = 1L)
         val humidityType = sensorType(uid = 2L)
@@ -94,7 +94,7 @@ class SensorsViewModelTest {
     }
 
     @Test
-    fun `loadAllInitialData called twice for the same deviceUuid and sensorType does not query the repository again`() = runTest {
+    fun `WHEN loadAllInitialData is called twice for the same deviceUuid and sensorType THEN it does not query the repository again`() = runTest {
         val deviceUuid = "device-1"
         val temperatureType = sensorType(uid = 1L)
         val temperatureData = listOf(sensorData(deviceUuid, temperatureType.uid))
@@ -113,7 +113,7 @@ class SensorsViewModelTest {
     }
 
     @Test
-    fun `listenSensorData called twice with the same deviceUuid and sensorUid returns the same StateFlow instance`() = runTest {
+    fun `WHEN listenSensorData is called twice with the same deviceUuid and sensorUid THEN it returns the same StateFlow instance`() = runTest {
         val deviceUuid = "device-1"
         val sensorUid = 10L
         val liveData = MutableStateFlow(sensorData(deviceUuid, sensorUid))
@@ -130,7 +130,7 @@ class SensorsViewModelTest {
     }
 
     @Test
-    fun `listenSensorData with a different sensorUid or deviceUuid returns a different StateFlow instance`() = runTest {
+    fun `WHEN listenSensorData is called with a different sensorUid or deviceUuid THEN it returns a different StateFlow instance`() = runTest {
         val deviceUuid = "device-1"
         val otherDeviceUuid = "device-2"
         val sensorUid = 10L

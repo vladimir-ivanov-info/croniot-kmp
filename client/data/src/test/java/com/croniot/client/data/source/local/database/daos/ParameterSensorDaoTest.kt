@@ -42,7 +42,7 @@ class ParameterSensorDaoTest {
     }
 
     @Test
-    fun `insert then getBySensorTypeId returns the persisted parameter`() = runTest {
+    fun `WHEN a parameter is inserted THEN getBySensorTypeId returns the persisted parameter`() = runTest {
         parameterSensorDao.insert(
             ParameterSensorEntity(uid = 1L, sensorTypeId = sensorTypeId, name = "threshold", type = "number", unit = "c", description = ""),
         )
@@ -54,14 +54,14 @@ class ParameterSensorDaoTest {
     }
 
     @Test
-    fun `getBySensorTypeId returns an empty list when there are no parameters`() = runTest {
+    fun `WHEN there are no parameters THEN getBySensorTypeId returns an empty list`() = runTest {
         val result = parameterSensorDao.getBySensorTypeId(sensorTypeId)
 
         assertTrue(result.isEmpty())
     }
 
     @Test
-    fun `deleting the parent sensor type cascades and deletes its parameters`() = runTest {
+    fun `WHEN the parent sensor type is deleted THEN it cascades and deletes its parameters`() = runTest {
         parameterSensorDao.insert(
             ParameterSensorEntity(uid = 1L, sensorTypeId = sensorTypeId, name = "threshold", type = "number", unit = "c", description = ""),
         )

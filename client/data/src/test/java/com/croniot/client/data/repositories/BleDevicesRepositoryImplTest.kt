@@ -78,7 +78,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `getDevice returns null when entity is not found`() = runTest {
+    fun `WHEN entity is not found THEN getDevice returns null`() = runTest {
         coEvery { bleKnownDeviceDao.getByUuid("unknown-uuid") } returns null
 
         val result = repository.getDevice("unknown-uuid")
@@ -87,7 +87,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `getDevice returns device with empty schema lists when schemaJson is null`() = runTest {
+    fun `WHEN schemaJson is null THEN getDevice returns device with empty schema lists`() = runTest {
         coEvery { bleKnownDeviceDao.getByUuid("device-uuid") } returns entity("device-uuid", schemaJson = null)
 
         val result = repository.getDevice("device-uuid")
@@ -100,7 +100,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `getDevice maps schemaJson sensorTypes and taskTypes to domain`() = runTest {
+    fun `WHEN schemaJson is present THEN getDevice maps sensorTypes and taskTypes to domain`() = runTest {
         val sensorTypeDto = SensorTypeDto(
             uid = 1L,
             name = "temperature",
@@ -147,7 +147,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `getDevice returns device with empty schema lists when schemaJson is corrupted`() = runTest {
+    fun `WHEN schemaJson is corrupted THEN getDevice returns device with empty schema lists`() = runTest {
         coEvery { bleKnownDeviceDao.getByUuid("device-uuid") } returns entity(
             "device-uuid",
             schemaJson = "this-is-not-valid-json",
@@ -161,7 +161,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `forget closes connection, forgets credentials, deletes known device and marks cloud transport`() = runTest {
+    fun `WHEN forget is called THEN it closes connection, forgets credentials, deletes known device and marks cloud transport`() = runTest {
         coJustRun { connectionPool.close(any()) }
         coJustRun { credentialStore.forget(any()) }
         coJustRun { bleKnownDeviceDao.delete(any()) }
@@ -176,7 +176,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `disconnectAll delegates to connection pool`() = runTest {
+    fun `WHEN disconnectAll is called THEN it delegates to connection pool`() = runTest {
         coJustRun { connectionPool.closeAll() }
 
         repository.disconnectAll()
@@ -185,7 +185,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `pair returns NotFound when deviceUuid is not in the recent scan cache`() = runTest {
+    fun `WHEN deviceUuid is not in the recent scan cache THEN pair returns NotFound`() = runTest {
         val result = repository.pair("device-uuid", "user", "pass")
 
         assertTrue(result is Outcome.Err)
@@ -193,7 +193,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect returns NotFound when device is not known`() = runTest {
+    fun `WHEN device is not known THEN connect returns NotFound`() = runTest {
         coEvery { bleKnownDeviceDao.getByUuid("device-uuid") } returns null
 
         val result = repository.connect("device-uuid")
@@ -202,7 +202,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect returns RequiresPairing when no credentials are stored`() = runTest {
+    fun `WHEN no credentials are stored THEN connect returns RequiresPairing`() = runTest {
         coEvery { bleKnownDeviceDao.getByUuid("device-uuid") } returns entity("device-uuid")
         coEvery { credentialStore.get("device-uuid") } returns null
 
@@ -212,7 +212,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect returns BluetoothOff when adapter is unavailable`() = runTest {
+    fun `WHEN adapter is unavailable THEN connect returns BluetoothOff`() = runTest {
         coEvery { bleKnownDeviceDao.getByUuid("device-uuid") } returns entity("device-uuid")
         coEvery { credentialStore.get("device-uuid") } returns BleCredentials("user", "pass")
         every { context.getSystemService(Context.BLUETOOTH_SERVICE) } returns null
@@ -223,7 +223,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect returns BluetoothOff when adapter is disabled`() = runTest {
+    fun `WHEN adapter is disabled THEN connect returns BluetoothOff`() = runTest {
         coEvery { bleKnownDeviceDao.getByUuid("device-uuid") } returns entity("device-uuid")
         coEvery { credentialStore.get("device-uuid") } returns BleCredentials("user", "pass")
         val adapter: BluetoothAdapter = mockk { every { isEnabled } returns false }
@@ -236,7 +236,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect on success marks ble transport, touches last seen and syncs schema`() = runTest {
+    fun `WHEN connect succeeds THEN it marks ble transport, touches last seen and syncs schema`() = runTest {
         val btDevice: BluetoothDevice = mockk()
         val adapter: BluetoothAdapter = mockk {
             every { isEnabled } returns true
@@ -265,7 +265,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect propagates connection pool error`() = runTest {
+    fun `WHEN connection pool returns an error THEN connect propagates it`() = runTest {
         val btDevice: BluetoothDevice = mockk()
         val adapter: BluetoothAdapter = mockk {
             every { isEnabled } returns true
@@ -286,7 +286,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect on schema Updated persists the new schema and parses it`() = runTest {
+    fun `WHEN schema sync returns Updated THEN connect persists the new schema and parses it`() = runTest {
         val btDevice: BluetoothDevice = mockk()
         val adapter: BluetoothAdapter = mockk {
             every { isEnabled } returns true
@@ -315,7 +315,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect on schema UpToDate falls back to empty schema lists when the known device entity has since disappeared`() = runTest {
+    fun `WHEN schema is UpToDate but the known device entity has since disappeared THEN connect falls back to empty schema lists`() = runTest {
         // syncAndBuildDevice() re-reads the dao on the UpToDate path; if the row was deleted
         // concurrently between the initial lookup and this second read, entity is null here.
         val btDevice: BluetoothDevice = mockk()
@@ -345,7 +345,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `connect on schema sync failure logs and returns device with empty schema lists`() = runTest {
+    fun `WHEN schema sync fails THEN connect logs and returns device with empty schema lists`() = runTest {
         val btDevice: BluetoothDevice = mockk()
         val adapter: BluetoothAdapter = mockk {
             every { isEnabled } returns true
@@ -379,7 +379,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `pair saves credentials, upserts known device and marks ble transport`() = runTest {
+    fun `WHEN pairing succeeds THEN it saves credentials, upserts known device and marks ble transport`() = runTest {
         val scanResult = BleScanResult(macAddress = "AA:BB:CC:DD:EE:FF", advertisedName = "MyDevice", rssi = -50)
         every { scanner.scan() } returns flowOf(listOf(scanResult))
         coEvery { bleKnownDeviceDao.getAllUuids() } returns emptyList()
@@ -422,7 +422,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `pair returns BluetoothOff when adapter is unavailable`() = runTest {
+    fun `WHEN adapter is unavailable THEN pair returns BluetoothOff`() = runTest {
         val scanResult = BleScanResult(macAddress = "AA:BB:CC:DD:EE:FF", advertisedName = "MyDevice", rssi = -50)
         every { scanner.scan() } returns flowOf(listOf(scanResult))
         coEvery { bleKnownDeviceDao.getAllUuids() } returns emptyList()
@@ -445,7 +445,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `observeNearbyDevices maps scan results and flags paired devices`() = runTest {
+    fun `WHEN observing nearby devices THEN it maps scan results and flags paired devices`() = runTest {
         val scanResult = BleScanResult(macAddress = "AA:BB:CC:DD:EE:FF", advertisedName = "MyDevice", rssi = -50)
         every { scanner.scan() } returns flowOf(listOf(scanResult))
         coEvery { bleKnownDeviceDao.getAllUuids() } returns listOf("AA:BB:CC:DD:EE:FF")
@@ -469,7 +469,7 @@ class BleDevicesRepositoryImplTest {
     }
 
     @Test
-    fun `observeKnownDevices flags devices currently in scan range`() = runTest {
+    fun `WHEN a known device is currently in scan range THEN observeKnownDevices flags it`() = runTest {
         every { scanner.scan() } returns flowOf(
             listOf(BleScanResult(macAddress = "AA:BB:CC:DD:EE:FF", advertisedName = "MyDevice", rssi = -50)),
         )

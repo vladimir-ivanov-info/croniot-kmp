@@ -20,7 +20,7 @@ class ZonedDateTimeSerializerTest {
     )
 
     @Test
-    fun `serialize then deserialize roundtrips to an equal ZonedDateTime`() {
+    fun `WHEN a ZonedDateTime is serialized then deserialized THEN the result is equal to the original`() {
         val original = ZonedDateTime.of(2024, 3, 15, 10, 30, 0, 0, ZoneOffset.UTC)
 
         val encoded = json.encodeToString(Wrapper(original))
@@ -30,7 +30,7 @@ class ZonedDateTimeSerializerTest {
     }
 
     @Test
-    fun `serialize produces an ISO-8601 zoned date time string`() {
+    fun `WHEN a ZonedDateTime is serialized THEN it produces an ISO-8601 string`() {
         val dateTime = ZonedDateTime.of(2024, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
 
         val encoded = json.encodeToString(Wrapper(dateTime))
@@ -39,7 +39,7 @@ class ZonedDateTimeSerializerTest {
     }
 
     @Test
-    fun `deserialize parses an ISO-8601 string with a non-UTC offset`() {
+    fun `WHEN the ISO-8601 string has a non-UTC offset THEN deserialize parses it correctly`() {
         val encoded = """{"dateTime":"2024-06-01T12:00:00+02:00"}"""
 
         val decoded = json.decodeFromString<Wrapper>(encoded)
@@ -49,12 +49,12 @@ class ZonedDateTimeSerializerTest {
     }
 
     @Test
-    fun `descriptor identifies the serializer as a ZonedDateTime string primitive`() {
+    fun `WHEN the descriptor is inspected THEN it identifies the serializer as a ZonedDateTime string primitive`() {
         assertThat(ZonedDateTimeSerializer.descriptor.serialName).isEqualTo("ZonedDateTime")
     }
 
     @Test
-    fun `roundtrip preserves nanosecond precision`() {
+    fun `WHEN a ZonedDateTime has nanosecond precision THEN the roundtrip preserves it`() {
         val original = ZonedDateTime.of(2024, 5, 20, 8, 15, 30, 123_000_000, ZoneOffset.UTC)
 
         val encoded = json.encodeToString(Wrapper(original))

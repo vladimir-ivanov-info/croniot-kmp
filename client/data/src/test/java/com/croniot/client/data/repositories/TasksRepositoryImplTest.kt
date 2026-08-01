@@ -54,7 +54,7 @@ class TasksRepositoryImplTest {
         TaskStateInfo(dateTime = ZonedDateTime.now(), state = state, progress = progress, errorMessage = "")
 
     @Test
-    fun `fetchTasks delegates to cloud data source when transport is CLOUD`() = runTest {
+    fun `WHEN transport is CLOUD THEN fetchTasks delegates to cloud data source`() = runTest {
         val tasks = listOf(task(1L))
         coEvery { cloudTasksDataSource.fetchTasks(deviceUuid) } returns Outcome.Ok(tasks)
 
@@ -65,7 +65,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTasks delegates to ble data source when transport is BLE`() = runTest {
+    fun `WHEN transport is BLE THEN fetchTasks delegates to ble data source`() = runTest {
         every { transportRouter.transportFor(deviceUuid) } returns TransportKind.BLE
         val tasks = listOf(task(1L))
         coEvery { bleTasksDataSource.fetchTasks(deviceUuid) } returns Outcome.Ok(tasks)
@@ -78,7 +78,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTasks returns cached result on second call without hitting data source again`() = runTest {
+    fun `WHEN fetchTasks is called a second time THEN it returns the cached result without hitting the data source again`() = runTest {
         val tasks = listOf(task(1L), task(2L))
         coEvery { cloudTasksDataSource.fetchTasks(deviceUuid) } returns Outcome.Ok(tasks)
 
@@ -90,7 +90,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTasks propagates error from data source`() = runTest {
+    fun `WHEN data source returns an error THEN fetchTasks propagates it`() = runTest {
         val error = TaskError.Remote(RemoteError.Unreachable)
         coEvery { cloudTasksDataSource.fetchTasks(deviceUuid) } returns Outcome.Err(error)
 
@@ -100,7 +100,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTasks stores initial task state info for later retrieval`() = runTest {
+    fun `WHEN fetchTasks is called THEN it stores initial task state info for later retrieval`() = runTest {
         val info = stateInfo(state = "RUNNING")
         val tasks = listOf(task(uid = 1L, taskTypeUid = 10L, stateInfo = info))
         coEvery { cloudTasksDataSource.fetchTasks(deviceUuid) } returns Outcome.Ok(tasks)
@@ -112,7 +112,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getLatestTaskUidForTaskType returns highest uid for given task type`() = runTest {
+    fun `WHEN multiple tasks exist for a task type THEN getLatestTaskUidForTaskType returns the highest uid`() = runTest {
         val tasks = listOf(task(uid = 1L, taskTypeUid = 10L), task(uid = 5L, taskTypeUid = 10L), task(uid = 3L, taskTypeUid = 20L))
         coEvery { cloudTasksDataSource.fetchTasks(deviceUuid) } returns Outcome.Ok(tasks)
 
@@ -122,12 +122,12 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getLatestTaskUidForTaskType returns null when no tasks cached`() {
+    fun `WHEN no tasks are cached THEN getLatestTaskUidForTaskType returns null`() {
         assertNull(repository.getLatestTaskUidForTaskType(deviceUuid, 10L))
     }
 
     @Test
-    fun `getLatestTaskStateInfoEmittedByIoT excludes CREATED UNDEFINED and ERROR states`() = runTest {
+    fun `WHEN latest state is CREATED THEN getLatestTaskStateInfoEmittedByIoT excludes it`() = runTest {
         val key = TaskKey(deviceUuid = deviceUuid, taskTypeUid = 10L, taskUid = 1L)
         coEvery { cloudTasksDataSource.fetchTasks(deviceUuid) } returns
             Outcome.Ok(listOf(task(uid = 1L, taskTypeUid = 10L, stateInfo = stateInfo(state = "CREATED"))))
@@ -139,7 +139,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getLatestTaskStateInfoEmittedByIoT returns state when not excluded`() = runTest {
+    fun `WHEN latest state is not excluded THEN getLatestTaskStateInfoEmittedByIoT returns it`() = runTest {
         val info = stateInfo(state = "RUNNING")
         coEvery { cloudTasksDataSource.fetchTasks(deviceUuid) } returns
             Outcome.Ok(listOf(task(uid = 1L, taskTypeUid = 10L, stateInfo = info)))
@@ -151,7 +151,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `observeNewTasks emits task pushed via listenTasks callback`() = runTest {
+    fun `WHEN a task is pushed via listenTasks callback THEN observeNewTasks emits it`() = runTest {
         val newTask = task(1L)
         coEvery { cloudTasksDataSource.listenTasks(deviceUuid, any()) } coAnswers {
             secondArg<(Task) -> Unit>().invoke(newTask)
@@ -164,7 +164,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `observeTaskStateInfoUpdates emits event pushed via listenTaskStateInfos callback`() = runTest {
+    fun `WHEN an event is pushed via listenTaskStateInfos callback THEN observeTaskStateInfoUpdates emits it`() = runTest {
         val key = TaskKey(deviceUuid = deviceUuid, taskTypeUid = 10L, taskUid = 1L)
         val info = stateInfo()
         coEvery { cloudTasksDataSource.listenTaskStateInfos(deviceUuid, any()) } coAnswers {
@@ -180,7 +180,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `listenTasks callback stores initial task state info and emits it when the incoming task has one`() = runTest {
+    fun `WHEN the incoming task has an initial task state info THEN listenTasks callback stores it and emits it`() = runTest {
         val info = stateInfo(state = "RUNNING")
         val newTask = task(uid = 1L, taskTypeUid = 10L, stateInfo = info)
         coEvery { cloudTasksDataSource.listenTasks(deviceUuid, any()) } coAnswers {
@@ -196,14 +196,14 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `addTask does nothing when the task has no initial state info`() = runTest {
+    fun `WHEN the task has no initial state info THEN addTask does nothing`() = runTest {
         repository.addTask(task(uid = 1L, taskTypeUid = 10L, stateInfo = null))
 
         assertNull(repository.getLatestTaskStateInfo(deviceUuid, taskTypeUid = 10L))
     }
 
     @Test
-    fun `addTask stores the initial task state info and emits a TaskStateInfoEvent`() = runTest {
+    fun `WHEN the task has an initial state info THEN addTask stores it and emits a TaskStateInfoEvent`() = runTest {
         val info = stateInfo(state = "RUNNING")
         val newTask = task(uid = 1L, taskTypeUid = 10L, stateInfo = info)
 
@@ -216,7 +216,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `stopListeningFor clears cached tasks and state for that device`() = runTest {
+    fun `WHEN stopListeningFor is called THEN it clears cached tasks and state for that device`() = runTest {
         coEvery { cloudTasksDataSource.fetchTasks(deviceUuid) } returns Outcome.Ok(listOf(task(1L)))
         coEvery { cloudTasksDataSource.stopListening(deviceUuid) } returns Unit
         repository.fetchTasks(deviceUuid)
@@ -228,7 +228,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `stopAllListeners stops both cloud and ble data sources`() = runTest {
+    fun `WHEN stopAllListeners is called THEN it stops both cloud and ble data sources`() = runTest {
         coEvery { cloudTasksDataSource.stopAllListeners() } returns Unit
         coEvery { bleTasksDataSource.stopAllListeners() } returns Unit
 
@@ -239,7 +239,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `sendNewTask delegates to data source for device transport`() = runTest {
+    fun `WHEN sendNewTask is called THEN it delegates to the data source for the device transport`() = runTest {
         val newTask = task(1L)
         coEvery { cloudTasksDataSource.sendNewTask(any()) } returns Outcome.Ok(Unit)
 
@@ -250,7 +250,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync delegates to data source`() = runTest {
+    fun `WHEN requestTaskStateInfoSync is called THEN it delegates to data source`() = runTest {
         coEvery { cloudTasksDataSource.requestTaskStateInfoSync(deviceUuid, 10L) } returns Outcome.Ok(Unit)
 
         val result = repository.requestTaskStateInfoSync(deviceUuid, 10L)
@@ -259,7 +259,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistory returns local page immediately when it satisfies the limit`() = runTest {
+    fun `WHEN local page satisfies the limit THEN fetchTaskStateInfoHistory returns it immediately`() = runTest {
         val entry = TaskStateInfoHistoryEntry(
             stateInfoId = 1L,
             taskKey = TaskKey(deviceUuid, 10L, 1L),
@@ -276,7 +276,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistory falls back to remote when local page is smaller than limit`() = runTest {
+    fun `WHEN local page is smaller than the limit THEN fetchTaskStateInfoHistory falls back to remote`() = runTest {
         val entry = TaskStateInfoHistoryEntry(
             stateInfoId = 1L,
             taskKey = TaskKey(deviceUuid, 10L, 1L),
@@ -295,7 +295,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistory with taskTypeUid filter skips local cache entirely`() = runTest {
+    fun `WHEN a taskTypeUid filter is given THEN fetchTaskStateInfoHistory skips local cache entirely`() = runTest {
         coEvery {
             cloudTasksDataSource.fetchTaskStateInfoHistory(deviceUuid, 10, null, null, 99L)
         } returns Outcome.Ok(emptyList())
@@ -307,7 +307,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistory returns local page when remote call fails`() = runTest {
+    fun `WHEN remote call fails THEN fetchTaskStateInfoHistory returns the local page`() = runTest {
         val entry = TaskStateInfoHistoryEntry(
             stateInfoId = 1L,
             taskKey = TaskKey(deviceUuid, 10L, 1L),
@@ -324,7 +324,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistory returns error when both local and remote are empty`() = runTest {
+    fun `WHEN both local and remote are empty THEN fetchTaskStateInfoHistory returns an error`() = runTest {
         val error = TaskError.Remote(RemoteError.Unreachable)
         coEvery { localTaskHistoryDataSource.getPage(deviceUuid, 10, null, null) } returns emptyList()
         coEvery {
@@ -337,7 +337,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistoryCount returns max of local and remote counts`() = runTest {
+    fun `WHEN local and remote counts differ THEN fetchTaskStateInfoHistoryCount returns the max of both`() = runTest {
         coEvery { localTaskHistoryDataSource.count(deviceUuid, null, null) } returns 5
         coEvery {
             cloudTasksDataSource.fetchTaskStateInfoHistoryCount(deviceUuid, null, null, null)
@@ -349,7 +349,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistoryCount falls back to local count when remote fails`() = runTest {
+    fun `WHEN remote fails THEN fetchTaskStateInfoHistoryCount falls back to local count`() = runTest {
         coEvery { localTaskHistoryDataSource.count(deviceUuid, null, null) } returns 3
         coEvery {
             cloudTasksDataSource.fetchTaskStateInfoHistoryCount(deviceUuid, null, null, null)
@@ -361,7 +361,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `fetchTaskStateInfoHistoryCount with taskTypeUid filter delegates directly to remote`() = runTest {
+    fun `WHEN a taskTypeUid filter is given THEN fetchTaskStateInfoHistoryCount delegates directly to remote`() = runTest {
         coEvery {
             cloudTasksDataSource.fetchTaskStateInfoHistoryCount(deviceUuid, null, null, 42L)
         } returns Outcome.Ok(2)

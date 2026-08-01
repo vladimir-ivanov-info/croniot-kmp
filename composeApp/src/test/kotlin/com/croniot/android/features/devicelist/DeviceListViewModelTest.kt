@@ -82,7 +82,7 @@ class DeviceListViewModelTest {
     private fun device(uuid: String, name: String) = Device(uuid = uuid, name = name, description = "")
 
     @Test
-    fun `Given server session with some unnamed devices, When created, Then only named devices are kept as CLOUD`() =
+    fun `WHEN the ViewModel is created with a server session containing some unnamed devices THEN only named devices are kept as CLOUD`() =
         runTest {
             val devices = listOf(device("d1", "Device 1"), device("d2", ""), device("d3", "Device 3"))
             val account = Account(uuid = "acc-1", nickname = "nick", email = "user@test.com", devices = devices)
@@ -94,7 +94,7 @@ class DeviceListViewModelTest {
         }
 
     @Test
-    fun `Given ble only session, When created, Then devices are mapped as BLE and inRangeUuids only keeps in-range uuids`() =
+    fun `WHEN the ViewModel is created with a ble only session THEN devices are mapped as BLE and inRangeUuids only keeps in-range uuids`() =
         runTest {
             val known = listOf(
                 KnownBleDevice(uuid = "ble-1", displayName = "Ble 1", lastSeenAtMillis = 0, isInRange = true),
@@ -110,14 +110,14 @@ class DeviceListViewModelTest {
         }
 
     @Test
-    fun `Given no session, When created, Then devices is empty`() = runTest {
+    fun `WHEN the ViewModel is created with no session THEN devices is empty`() = runTest {
         val viewModel = buildViewModel(AppSession.None)
 
         assertTrue(viewModel.state.value.devices.isEmpty())
     }
 
     @Test
-    fun `Given a device disappears from the account, When session updates, Then stops listening for it and clears its lastSeenMillis`() =
+    fun `WHEN a device disappears from the account THEN the ViewModel stops listening for it and clears its lastSeenMillis`() =
         runTest {
             val devices = listOf(device("d1", "Device 1"), device("d2", "Device 2"))
             val account = Account(uuid = "acc-1", nickname = "nick", email = "user@test.com", devices = devices)
@@ -146,7 +146,7 @@ class DeviceListViewModelTest {
         }
 
     @Test
-    fun `Given LogOut intent, When onIntent, Then stops notifications, logs out and emits LogOut effect`() =
+    fun `WHEN the LogOut intent is dispatched THEN it stops notifications, logs out, and emits the LogOut effect`() =
         runTest {
             val viewModel = buildViewModel(AppSession.None)
             val effects = mutableListOf<DeviceListEffect>()
@@ -163,7 +163,7 @@ class DeviceListViewModelTest {
         }
 
     @Test
-    fun `Given DeviceClicked intent, When onIntent, Then emits NavigateToDevice effect`() = runTest {
+    fun `WHEN the DeviceClicked intent is dispatched THEN it emits the NavigateToDevice effect`() = runTest {
         val viewModel = buildViewModel(AppSession.None)
         val effects = mutableListOf<DeviceListEffect>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -177,7 +177,7 @@ class DeviceListViewModelTest {
     }
 
     @Test
-    fun `Given ForgetBleDevice intent, When onIntent, Then calls forgetBleDeviceUseCase`() = runTest {
+    fun `WHEN the ForgetBleDevice intent is dispatched THEN it calls forgetBleDeviceUseCase`() = runTest {
         val viewModel = buildViewModel(AppSession.None)
 
         viewModel.onIntent(DeviceListIntent.ForgetBleDevice("device-uuid"))
@@ -186,7 +186,7 @@ class DeviceListViewModelTest {
     }
 
     @Test
-    fun `Given GoToBleDiscovery intent, When onIntent, Then emits NavigateToBleDiscovery effect`() = runTest {
+    fun `WHEN the GoToBleDiscovery intent is dispatched THEN it emits the NavigateToBleDiscovery effect`() = runTest {
         val viewModel = buildViewModel(AppSession.None)
         val effects = mutableListOf<DeviceListEffect>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -200,7 +200,7 @@ class DeviceListViewModelTest {
     }
 
     @Test
-    fun `Given CLOUD mode with a stored account, When reconnectIfNeeded, Then starts device listeners`() = runTest {
+    fun `WHEN reconnectIfNeeded is called in CLOUD mode with a stored account THEN it starts device listeners`() = runTest {
         val devices = listOf(device("d1", "Device 1"))
         val account = Account(uuid = "acc-1", nickname = "nick", email = "user@test.com", devices = devices)
         val localRepo = FakeLocalDataRepository(account = account)
@@ -222,7 +222,7 @@ class DeviceListViewModelTest {
     }
 
     @Test
-    fun `Given BLE mode, When reconnectIfNeeded, Then does not start device listeners`() = runTest {
+    fun `WHEN reconnectIfNeeded is called in BLE mode THEN it does not start device listeners`() = runTest {
         val viewModel = buildViewModel(AppSession.BleOnly)
 
         viewModel.reconnectIfNeeded()
@@ -231,7 +231,7 @@ class DeviceListViewModelTest {
     }
 
     @Test
-    fun `Given CLOUD mode with no stored account, When reconnectIfNeeded, Then does not start device listeners`() =
+    fun `WHEN reconnectIfNeeded is called in CLOUD mode with no stored account THEN it does not start device listeners`() =
         runTest {
             val account = Account(uuid = "acc-1", nickname = "nick", email = "user@test.com", devices = emptyList())
             val localRepo = FakeLocalDataRepository(account = null)

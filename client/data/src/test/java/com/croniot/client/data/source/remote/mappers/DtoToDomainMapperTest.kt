@@ -32,7 +32,7 @@ class DtoToDomainMapperTest {
     )
 
     @Test
-    fun `ParameterTaskDto maps all fields to domain`() {
+    fun `WHEN mapping ParameterTaskDto to domain THEN all fields are mapped`() {
         val result = parameterTaskDto.toDomain()
 
         assertEquals(1L, result.uid)
@@ -44,7 +44,7 @@ class DtoToDomainMapperTest {
     }
 
     @Test
-    fun `ParameterSensorDto maps all fields to domain`() {
+    fun `WHEN mapping ParameterSensorDto to domain THEN all fields are mapped`() {
         val result = parameterSensorDto.toDomain()
 
         assertEquals(2L, result.uid)
@@ -56,7 +56,7 @@ class DtoToDomainMapperTest {
     }
 
     @Test
-    fun `TaskTypeDto maps fields and nested parameters`() {
+    fun `WHEN mapping TaskTypeDto to domain THEN it maps fields and nested parameters`() {
         val dto = TaskTypeDto(
             uid = 10L,
             name = "Turn on",
@@ -74,7 +74,7 @@ class DtoToDomainMapperTest {
     }
 
     @Test
-    fun `SensorTypeDto maps fields and nested parameters`() {
+    fun `WHEN mapping SensorTypeDto to domain THEN it maps fields and nested parameters`() {
         val dto = SensorTypeDto(
             uid = 20L,
             name = "Temperature",
@@ -92,7 +92,7 @@ class DtoToDomainMapperTest {
     }
 
     @Test
-    fun `DeviceDto maps fields and nested sensor and task types`() {
+    fun `WHEN mapping DeviceDto to domain THEN it maps fields and nested sensor and task types`() {
         val dto = DeviceDto(
             uuid = "device-1",
             name = "Living room",
@@ -114,7 +114,7 @@ class DtoToDomainMapperTest {
     }
 
     @Test
-    fun `AccountDto maps fields and nested devices`() {
+    fun `WHEN mapping AccountDto to domain THEN it maps fields and nested devices`() {
         val deviceDto = DeviceDto(
             uuid = "device-1",
             name = "Living room",
@@ -140,7 +140,7 @@ class DtoToDomainMapperTest {
     }
 
     @Test
-    fun `SensorDataDto maps fields including renamed timestamp property`() {
+    fun `WHEN mapping SensorDataDto to domain THEN it maps fields including the renamed timestamp property`() {
         val now = ZonedDateTime.now()
         val dto = SensorDataDto(
             deviceUuid = "device-1",

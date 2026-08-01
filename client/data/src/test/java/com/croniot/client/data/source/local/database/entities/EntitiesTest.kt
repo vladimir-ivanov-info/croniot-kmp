@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class EntitiesTest {
 
     @Test
-    fun `AccountEntity default id is zero and copy overrides id`() {
+    fun `WHEN AccountEntity is constructed without an id THEN it defaults to zero and copy overrides it`() {
         val entity = AccountEntity(uuid = "acc-1", nickname = "nick", email = "user@example.com")
 
         assertEquals(0L, entity.id)
@@ -20,7 +20,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `BleKnownDeviceEntity default schemaVersion and schemaJson`() {
+    fun `WHEN BleKnownDeviceEntity is constructed without schema fields THEN schemaVersion and schemaJson use their defaults`() {
         val entity = BleKnownDeviceEntity(
             uuid = "device-1",
             displayName = "Device",
@@ -37,7 +37,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `DeviceEntity default id and lastOnlineMillis`() {
+    fun `WHEN DeviceEntity is constructed without id and lastOnlineMillis THEN both default to zero`() {
         val entity = DeviceEntity(uuid = "device-1", accountId = 1L, name = "Device", description = "desc")
 
         assertEquals(0L, entity.id)
@@ -47,7 +47,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `ParameterSensorEntity default constraintsJson is empty object`() {
+    fun `WHEN ParameterSensorEntity is constructed without constraintsJson THEN it defaults to an empty object`() {
         val entity = ParameterSensorEntity(
             uid = 1L,
             sensorTypeId = 1L,
@@ -63,7 +63,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `ParameterTaskEntity default constraintsJson is empty object`() {
+    fun `WHEN ParameterTaskEntity is constructed without constraintsJson THEN it defaults to an empty object`() {
         val entity = ParameterTaskEntity(
             uid = 1L,
             taskTypeId = 1L,
@@ -79,7 +79,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `SensorDataEntity holds device uuid sensor type and value`() {
+    fun `WHEN SensorDataEntity is constructed THEN it holds device uuid sensor type and value`() {
         val entity = SensorDataEntity(deviceUuid = "device-1", sensorTypeUid = 10L, value = "25.5", timeStampMillis = 1000L)
 
         assertEquals(0L, entity.id)
@@ -89,7 +89,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `SensorTypeEntity holds device id name and description`() {
+    fun `WHEN SensorTypeEntity is constructed THEN it holds device id name and description`() {
         val entity = SensorTypeEntity(uid = 1L, deviceId = 1L, name = "Temperature", description = "desc")
 
         assertEquals(0L, entity.id)
@@ -98,7 +98,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `TaskEntity default parametersValuesJson is empty object`() {
+    fun `WHEN TaskEntity is constructed without parametersValuesJson THEN it defaults to an empty object`() {
         val entity = TaskEntity(uid = 1L, deviceId = 1L, taskTypeId = 1L)
 
         assertEquals("{}", entity.parametersValuesJson)
@@ -107,7 +107,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `TaskHistoryCacheEntity holds nullable stateInfoId`() {
+    fun `WHEN TaskHistoryCacheEntity is constructed with a null stateInfoId THEN it holds it as null`() {
         val entity = TaskHistoryCacheEntity(
             deviceUuid = "device-1",
             stateInfoId = null,
@@ -125,7 +125,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `TaskStateInfoEntity holds task id state and progress`() {
+    fun `WHEN TaskStateInfoEntity is constructed THEN it holds task id state and progress`() {
         val entity = TaskStateInfoEntity(
             taskId = 1L,
             state = "RUNNING",
@@ -140,7 +140,7 @@ class EntitiesTest {
     }
 
     @Test
-    fun `TaskTypeEntity default realTime is false`() {
+    fun `WHEN TaskTypeEntity is constructed without realTime THEN it defaults to false`() {
         val entity = TaskTypeEntity(uid = 1L, deviceId = 1L, name = "Water", description = "desc")
 
         assertEquals(false, entity.realTime)

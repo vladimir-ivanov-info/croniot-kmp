@@ -10,7 +10,7 @@ import java.time.ZonedDateTime
 class DateTimeUtilTest {
 
     @Test
-    fun `formatRelativeTime for a few seconds in the past ends with ago and has no unit letters`() {
+    fun `WHEN the timestamp is a few seconds in the past THEN formatRelativeTime ends with ago and has no unit letters`() {
         val result = DateTimeUtil.formatRelativeTime(ZonedDateTime.now().minusSeconds(10))
 
         assertThat(result).endsWith("ago")
@@ -18,7 +18,7 @@ class DateTimeUtilTest {
     }
 
     @Test
-    fun `formatRelativeTime for minutes in the past reports minutes and seconds`() {
+    fun `WHEN the timestamp is minutes in the past THEN formatRelativeTime reports minutes and seconds`() {
         val result = DateTimeUtil.formatRelativeTime(ZonedDateTime.now().minusMinutes(5))
 
         assertThat(result).endsWith("ago")
@@ -26,7 +26,7 @@ class DateTimeUtilTest {
     }
 
     @Test
-    fun `formatRelativeTime for hours in the past reports hours and minutes`() {
+    fun `WHEN the timestamp is hours in the past THEN formatRelativeTime reports hours and minutes`() {
         val result = DateTimeUtil.formatRelativeTime(ZonedDateTime.now().minusHours(3))
 
         assertThat(result).endsWith("ago")
@@ -34,7 +34,7 @@ class DateTimeUtilTest {
     }
 
     @Test
-    fun `formatRelativeTime for days in the past reports days and hours`() {
+    fun `WHEN the timestamp is days in the past THEN formatRelativeTime reports days and hours`() {
         val result = DateTimeUtil.formatRelativeTime(ZonedDateTime.now().minusDays(2))
 
         assertThat(result).endsWith("ago")
@@ -43,7 +43,7 @@ class DateTimeUtilTest {
     }
 
     @Test
-    fun `formatRelativeTime for weeks in the past reports weeks and days`() {
+    fun `WHEN the timestamp is weeks in the past THEN formatRelativeTime reports weeks and days`() {
         val result = DateTimeUtil.formatRelativeTime(ZonedDateTime.now().minusWeeks(2))
 
         assertThat(result).endsWith("ago")
@@ -51,7 +51,7 @@ class DateTimeUtilTest {
     }
 
     @Test
-    fun `formatRelativeTime for months in the past reports months and weeks`() {
+    fun `WHEN the timestamp is months in the past THEN formatRelativeTime reports months and weeks`() {
         val result = DateTimeUtil.formatRelativeTime(ZonedDateTime.now().minusDays(70))
 
         assertThat(result).endsWith("ago")
@@ -59,7 +59,7 @@ class DateTimeUtilTest {
     }
 
     @Test
-    fun `formatRelativeTime for years in the past reports years and months`() {
+    fun `WHEN the timestamp is years in the past THEN formatRelativeTime reports years and months`() {
         val result = DateTimeUtil.formatRelativeTime(ZonedDateTime.now().minusDays(400))
 
         assertThat(result).endsWith("ago")
@@ -67,7 +67,7 @@ class DateTimeUtilTest {
     }
 
     @Test
-    fun `formatRelativeTime for a future instant is prefixed with in instead of suffixed with ago`() {
+    fun `WHEN the timestamp is in the future THEN formatRelativeTime prefixes the result with in instead of suffixing with ago`() {
         val result = DateTimeUtil.formatRelativeTime(ZonedDateTime.now().plusHours(3))
 
         assertThat(result).startsWith("in ")

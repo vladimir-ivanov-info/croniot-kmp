@@ -27,7 +27,7 @@ class MqttDataProcessorNewTaskTest {
     }
 
     @Test
-    fun `process maps task dto and overrides deviceUuid with the configured one`() {
+    fun `WHEN processing a task dto THEN process maps it and overrides deviceUuid with the configured one`() {
         val receivedTasks = mutableListOf<Task>()
         val processor = MqttDataProcessorNewTask(deviceUuid = "device-1", onNewTask = { receivedTasks.add(it) })
         val taskDto = croniot.models.dto.TaskDto(uid = 1L, taskTypeUid = 10L, parametersValues = mapOf(1L to "on"))
@@ -42,7 +42,7 @@ class MqttDataProcessorNewTaskTest {
     }
 
     @Test
-    fun `process with invalid json does not invoke onNewTask`() {
+    fun `WHEN json is invalid THEN process does not invoke onNewTask`() {
         val receivedTasks = mutableListOf<Task>()
         val processor = MqttDataProcessorNewTask(deviceUuid = "device-1", onNewTask = { receivedTasks.add(it) })
 
@@ -52,7 +52,7 @@ class MqttDataProcessorNewTaskTest {
     }
 
     @Test
-    fun `process with non-string data does not invoke onNewTask`() {
+    fun `WHEN data is non-string THEN process does not invoke onNewTask`() {
         val receivedTasks = mutableListOf<Task>()
         val processor = MqttDataProcessorNewTask(deviceUuid = "device-1", onNewTask = { receivedTasks.add(it) })
 

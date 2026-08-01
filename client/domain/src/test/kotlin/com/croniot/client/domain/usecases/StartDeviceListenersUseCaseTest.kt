@@ -30,7 +30,7 @@ class StartDeviceListenersUseCaseTest {
     )
 
     @Test
-    fun `returns Ok when all devices start listening successfully`() = runTest {
+    fun `WHEN all devices start listening successfully THEN it returns Ok`() = runTest {
         val device = Device(uuid = "device-1", name = "Device", description = "")
         val useCase = buildUseCase()
 
@@ -40,7 +40,7 @@ class StartDeviceListenersUseCaseTest {
     }
 
     @Test
-    fun `filters out devices whose uuid starts with android`() = runTest {
+    fun `WHEN a device uuid starts with android THEN it is filtered out`() = runTest {
         val androidDevice = Device(uuid = "android-fake-1", name = "Fake", description = "")
         val realDevice = Device(uuid = "device-1", name = "Real", description = "")
         val sensorRepo = FakeSensorDataRepository()
@@ -52,7 +52,7 @@ class StartDeviceListenersUseCaseTest {
     }
 
     @Test
-    fun `registers all task types for each device`() = runTest {
+    fun `WHEN invoked with devices and their task types THEN it registers all task types for each device`() = runTest {
         val taskType1 = TaskType(uid = 1L, name = "Water", description = "", parameters = emptyList())
         val taskType2 = TaskType(uid = 2L, name = "Light", description = "", parameters = emptyList())
         val device = Device(uuid = "device-1", name = "Device", description = "", taskTypes = listOf(taskType1, taskType2))
@@ -65,7 +65,7 @@ class StartDeviceListenersUseCaseTest {
     }
 
     @Test
-    fun `fetches and caches feature flags before starting listeners`() = runTest {
+    fun `WHEN the use case is invoked THEN it fetches and caches feature flags before starting listeners`() = runTest {
         val featureFlagRepo = FakeFeatureFlagRepository()
         val useCase = buildUseCase(featureFlagRepository = featureFlagRepo)
 
@@ -75,7 +75,7 @@ class StartDeviceListenersUseCaseTest {
     }
 
     @Test
-    fun `starts the mqtt listener for feature flags`() = runTest {
+    fun `WHEN the use case is invoked THEN it starts the mqtt listener for feature flags`() = runTest {
         val featureFlagRepo = FakeFeatureFlagRepository()
         val useCase = buildUseCase(featureFlagRepository = featureFlagRepo)
 
@@ -85,7 +85,7 @@ class StartDeviceListenersUseCaseTest {
     }
 
     @Test
-    fun `returns errors for devices that fail to start listening`() = runTest {
+    fun `WHEN a device fails to start listening THEN it returns errors for that device`() = runTest {
         val device = Device(uuid = "device-1", name = "Device", description = "")
         val sensorRepo = FakeSensorDataRepository(
             listenToDeviceSensorsOutcomeByDevice = mapOf("device-1" to Outcome.Err(ConnectionError.Unknown)),
@@ -98,7 +98,7 @@ class StartDeviceListenersUseCaseTest {
     }
 
     @Test
-    fun `succeeds for empty device list`() = runTest {
+    fun `WHEN device list is empty THEN it succeeds`() = runTest {
         val useCase = buildUseCase()
 
         val result = useCase(emptyList())
@@ -107,7 +107,7 @@ class StartDeviceListenersUseCaseTest {
     }
 
     @Test
-    fun `an unexpected exception while starting a device is reported as ConnectionError_Unknown instead of crashing`() = runTest {
+    fun `WHEN starting a device throws an unexpected exception THEN it is reported as ConnectionError_Unknown instead of crashing`() = runTest {
         val goodDevice = Device(uuid = "device-good", name = "Good", description = "")
         val crashingDevice = Device(uuid = "device-crash", name = "Crash", description = "")
         val sensorRepo = FakeSensorDataRepository(
@@ -121,7 +121,7 @@ class StartDeviceListenersUseCaseTest {
     }
 
     @Test
-    fun `partial failure still reports errors for the failing device only`() = runTest {
+    fun `WHEN one device fails and another succeeds THEN it reports errors only for the failing device`() = runTest {
         val goodDevice = Device(uuid = "device-good", name = "Good", description = "")
         val badDevice = Device(uuid = "device-bad", name = "Bad", description = "")
         val sensorRepo = FakeSensorDataRepository(

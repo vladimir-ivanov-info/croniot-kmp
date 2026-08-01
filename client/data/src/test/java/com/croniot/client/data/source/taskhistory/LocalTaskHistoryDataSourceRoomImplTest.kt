@@ -50,7 +50,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     )
 
     @Test
-    fun `getPage with null before passes null beforeMillis and MAX_VALUE beforeId`() = runTest {
+    fun `WHEN before is null THEN getPage passes null beforeMillis and MAX_VALUE beforeId`() = runTest {
         coEvery { dao.getPage(deviceUuid, 10, null, Long.MAX_VALUE) } returns listOf(entity())
 
         val result = dataSource.getPage(deviceUuid, 10, before = null, beforeId = null)
@@ -60,7 +60,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getPage with numeric before string parses it as epoch millis`() = runTest {
+    fun `WHEN before is a numeric string THEN getPage parses it as epoch millis`() = runTest {
         coEvery { dao.getPage(deviceUuid, 10, 123456L, 7L) } returns emptyList()
 
         dataSource.getPage(deviceUuid, 10, before = "123456", beforeId = 7L)
@@ -69,7 +69,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getPage with ISO date before string parses it to epoch millis`() = runTest {
+    fun `WHEN before is an ISO date string THEN getPage parses it to epoch millis`() = runTest {
         val isoDate = "2024-01-01T00:00:00Z"
         val expectedMillis = OffsetDateTime.parse(isoDate).toInstant().toEpochMilli()
         coEvery { dao.getPage(deviceUuid, 10, expectedMillis, Long.MAX_VALUE) } returns emptyList()
@@ -80,7 +80,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getPage with unparseable before string passes null beforeMillis`() = runTest {
+    fun `WHEN before is an unparseable string THEN getPage passes null beforeMillis`() = runTest {
         coEvery { dao.getPage(deviceUuid, 10, null, Long.MAX_VALUE) } returns emptyList()
 
         dataSource.getPage(deviceUuid, 10, before = "not-a-date", beforeId = null)
@@ -89,7 +89,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getPage with blank before string passes null beforeMillis`() = runTest {
+    fun `WHEN before is a blank string THEN getPage passes null beforeMillis`() = runTest {
         coEvery { dao.getPage(deviceUuid, 10, null, Long.MAX_VALUE) } returns emptyList()
 
         dataSource.getPage(deviceUuid, 10, before = "  ", beforeId = null)
@@ -98,7 +98,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getPage maps entity with stateInfoId to domain using that id`() = runTest {
+    fun `WHEN an entity has a stateInfoId THEN getPage maps it to domain using that id`() = runTest {
         coEvery { dao.getPage(any(), any(), any(), any()) } returns listOf(entity(stateInfoId = 42L, id = 5L))
 
         val result = dataSource.getPage(deviceUuid, 10, null, null)
@@ -107,7 +107,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getPage maps entity without stateInfoId to a negative synthetic id based on row id`() = runTest {
+    fun `WHEN an entity has no stateInfoId THEN getPage maps it to a negative synthetic id based on row id`() = runTest {
         coEvery { dao.getPage(any(), any(), any(), any()) } returns listOf(entity(stateInfoId = null, id = 7L))
 
         val result = dataSource.getPage(deviceUuid, 10, null, null)
@@ -116,14 +116,14 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `savePage with empty entries does nothing`() = runTest {
+    fun `WHEN savePage is called with empty entries THEN it does nothing`() = runTest {
         dataSource.savePage(deviceUuid, emptyList())
 
         coVerify(exactly = 0) { dao.insertAll(any()) }
     }
 
     @Test
-    fun `savePage under the max cache size inserts and prunes`() = runTest {
+    fun `WHEN cache is under the max size THEN savePage inserts and prunes`() = runTest {
         coEvery { dao.countByDevice(deviceUuid) } returns 10
         coJustRun { dao.insertAll(any()) }
         coJustRun { dao.deleteOldest(any(), any()) }
@@ -135,7 +135,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `savePage at max cache size with newer incoming entries still inserts`() = runTest {
+    fun `WHEN cache is at max size and incoming entries are newer THEN savePage still inserts`() = runTest {
         coEvery { dao.countByDevice(deviceUuid) } returns 1_000
         coEvery { dao.oldestTimestamp(deviceUuid) } returns 500L
         coJustRun { dao.insertAll(any()) }
@@ -147,7 +147,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `savePage at max cache size with only older or equal incoming entries skips the write`() = runTest {
+    fun `WHEN cache is at max size and incoming entries are only older or equal THEN savePage skips the write`() = runTest {
         coEvery { dao.countByDevice(deviceUuid) } returns 1_000
         coEvery { dao.oldestTimestamp(deviceUuid) } returns 1000L
 
@@ -158,7 +158,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `count delegates to dao with parsed before values`() = runTest {
+    fun `WHEN count is called THEN it delegates to dao with parsed before values`() = runTest {
         coEvery { dao.count(deviceUuid, 123L, 5L) } returns 3
 
         val result = dataSource.count(deviceUuid, before = "123", beforeId = 5L)
@@ -167,7 +167,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `count with no before defaults to null millis and MAX_VALUE id`() = runTest {
+    fun `WHEN before is not given THEN count defaults to null millis and MAX_VALUE id`() = runTest {
         coEvery { dao.count(deviceUuid, null, Long.MAX_VALUE) } returns 0
 
         val result = dataSource.count(deviceUuid, before = null, beforeId = null)
@@ -176,7 +176,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `getPage uses the interface default parameters when before and beforeId are omitted`() = runTest {
+    fun `WHEN before and beforeId are omitted THEN getPage uses the interface default parameters`() = runTest {
         coEvery { dao.getPage(deviceUuid, 10, null, Long.MAX_VALUE) } returns emptyList()
 
         val result = dataSource.getPage(deviceUuid, 10)
@@ -186,7 +186,7 @@ class LocalTaskHistoryDataSourceRoomImplTest {
     }
 
     @Test
-    fun `count uses the interface default parameters when before and beforeId are omitted`() = runTest {
+    fun `WHEN before and beforeId are omitted THEN count uses the interface default parameters`() = runTest {
         coEvery { dao.count(deviceUuid, null, Long.MAX_VALUE) } returns 0
 
         val result = dataSource.count(deviceUuid)

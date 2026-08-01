@@ -20,7 +20,7 @@ class AppSessionRepositoryImplTest {
         AppSessionRepositoryImpl(localDataRepository, scope)
 
     @Test
-    fun `initial session is None when no session mode is stored`() = runTest(UnconfinedTestDispatcher()) {
+    fun `WHEN no session mode is stored THEN initial session is None`() = runTest(UnconfinedTestDispatcher()) {
         coEvery { localDataRepository.getAppSessionMode() } returns null
 
         val repository = newRepository(this)
@@ -29,7 +29,7 @@ class AppSessionRepositoryImplTest {
     }
 
     @Test
-    fun `initial session is Server with account when mode is server and account exists`() =
+    fun `WHEN mode is server and account exists THEN initial session is Server with account`() =
         runTest(UnconfinedTestDispatcher()) {
             coEvery { localDataRepository.getAppSessionMode() } returns "server"
             coEvery { localDataRepository.getCurrentAccount() } returns account
@@ -40,7 +40,7 @@ class AppSessionRepositoryImplTest {
         }
 
     @Test
-    fun `initial session is None when mode is server but account is missing`() =
+    fun `WHEN mode is server but account is missing THEN initial session is None`() =
         runTest(UnconfinedTestDispatcher()) {
             coEvery { localDataRepository.getAppSessionMode() } returns "server"
             coEvery { localDataRepository.getCurrentAccount() } returns null
@@ -51,7 +51,7 @@ class AppSessionRepositoryImplTest {
         }
 
     @Test
-    fun `initial session is BleOnly when mode is ble`() = runTest(UnconfinedTestDispatcher()) {
+    fun `WHEN mode is ble THEN initial session is BleOnly`() = runTest(UnconfinedTestDispatcher()) {
         coEvery { localDataRepository.getAppSessionMode() } returns "ble"
 
         val repository = newRepository(this)
@@ -60,7 +60,7 @@ class AppSessionRepositoryImplTest {
     }
 
     @Test
-    fun `activateServerSession persists server mode and updates session to Server`() =
+    fun `WHEN activateServerSession is called THEN it persists server mode and updates session to Server`() =
         runTest(UnconfinedTestDispatcher()) {
             coEvery { localDataRepository.getAppSessionMode() } returns null
             coEvery { localDataRepository.saveAppSessionMode("server") } returns Unit
@@ -73,7 +73,7 @@ class AppSessionRepositoryImplTest {
         }
 
     @Test
-    fun `activateBleOnlyMode persists ble mode and updates session to BleOnly`() =
+    fun `WHEN activateBleOnlyMode is called THEN it persists ble mode and updates session to BleOnly`() =
         runTest(UnconfinedTestDispatcher()) {
             coEvery { localDataRepository.getAppSessionMode() } returns null
             coEvery { localDataRepository.saveAppSessionMode("ble") } returns Unit
@@ -86,7 +86,7 @@ class AppSessionRepositoryImplTest {
         }
 
     @Test
-    fun `clear persists null mode and resets session to None`() = runTest(UnconfinedTestDispatcher()) {
+    fun `WHEN clear is called THEN it persists null mode and resets session to None`() = runTest(UnconfinedTestDispatcher()) {
         coEvery { localDataRepository.getAppSessionMode() } returns "server"
         coEvery { localDataRepository.getCurrentAccount() } returns account
         coEvery { localDataRepository.saveAppSessionMode(null) } returns Unit

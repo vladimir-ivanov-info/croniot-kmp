@@ -40,7 +40,7 @@ class SensorDataDaoTest {
     }
 
     @Test
-    fun `getLatest returns readings ordered by timestamp descending`() = runTest {
+    fun `WHEN multiple readings are stored THEN getLatest returns them ordered by timestamp descending`() = runTest {
         dao.insert(entity(value = "20.0", timeStampMillis = 1000L))
         dao.insert(entity(value = "25.0", timeStampMillis = 3000L))
         dao.insert(entity(value = "22.0", timeStampMillis = 2000L))
@@ -51,7 +51,7 @@ class SensorDataDaoTest {
     }
 
     @Test
-    fun `getLatest respects the limit parameter`() = runTest {
+    fun `WHEN more readings exist than the limit THEN getLatest respects the limit parameter`() = runTest {
         repeat(5) { i -> dao.insert(entity(value = "v$i", timeStampMillis = i.toLong())) }
 
         val result = dao.getLatest("device-1", 1L, limit = 2)
@@ -60,7 +60,7 @@ class SensorDataDaoTest {
     }
 
     @Test
-    fun `getLatest only returns readings for the requested device and sensor type`() = runTest {
+    fun `WHEN readings exist for other devices and sensor types THEN getLatest only returns those for the requested device and sensor type`() = runTest {
         dao.insert(entity(deviceUuid = "device-1", sensorTypeUid = 1L, value = "a", timeStampMillis = 1000L))
         dao.insert(entity(deviceUuid = "device-2", sensorTypeUid = 1L, value = "b", timeStampMillis = 1000L))
         dao.insert(entity(deviceUuid = "device-1", sensorTypeUid = 2L, value = "c", timeStampMillis = 1000L))
@@ -72,12 +72,12 @@ class SensorDataDaoTest {
     }
 
     @Test
-    fun `getLatest returns an empty list when there is no data`() = runTest {
+    fun `WHEN there is no data THEN getLatest returns an empty list`() = runTest {
         assertTrue(dao.getLatest("device-1", 1L, limit = 10).isEmpty())
     }
 
     @Test
-    fun `observeLatest emits the single most recent reading`() = runTest {
+    fun `WHEN multiple readings are stored THEN observeLatest emits the single most recent one`() = runTest {
         dao.insert(entity(value = "20.0", timeStampMillis = 1000L))
         dao.insert(entity(value = "25.0", timeStampMillis = 2000L))
 
@@ -87,7 +87,7 @@ class SensorDataDaoTest {
     }
 
     @Test
-    fun `observeLatest emits null when there is no data`() = runTest {
+    fun `WHEN there is no data THEN observeLatest emits null`() = runTest {
         assertNull(dao.observeLatest("device-1", 1L).first())
     }
 }

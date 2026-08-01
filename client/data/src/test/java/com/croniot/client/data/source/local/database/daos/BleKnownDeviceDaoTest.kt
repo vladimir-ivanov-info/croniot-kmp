@@ -45,7 +45,7 @@ class BleKnownDeviceDaoTest {
     }
 
     @Test
-    fun `upsert then getByUuid returns the persisted device`() = runTest {
+    fun `WHEN a device is upserted THEN getByUuid returns the persisted device`() = runTest {
         dao.upsert(entity("device-1"))
 
         val result = dao.getByUuid("device-1")
@@ -54,12 +54,12 @@ class BleKnownDeviceDaoTest {
     }
 
     @Test
-    fun `getByUuid returns null for an unknown uuid`() = runTest {
+    fun `WHEN uuid is unknown THEN getByUuid returns null`() = runTest {
         assertNull(dao.getByUuid("unknown"))
     }
 
     @Test
-    fun `upsert with the same uuid replaces the existing row`() = runTest {
+    fun `WHEN upserting with the same uuid THEN it replaces the existing row`() = runTest {
         dao.upsert(entity("device-1").copy(displayName = "Old Name"))
         dao.upsert(entity("device-1").copy(displayName = "New Name"))
 
@@ -69,7 +69,7 @@ class BleKnownDeviceDaoTest {
     }
 
     @Test
-    fun `observeAll emits devices ordered by lastSeenAtMillis descending`() = runTest {
+    fun `WHEN multiple devices are stored THEN observeAll emits them ordered by lastSeenAtMillis descending`() = runTest {
         dao.upsert(entity("device-1", lastSeen = 1000L))
         dao.upsert(entity("device-2", lastSeen = 3000L))
         dao.upsert(entity("device-3", lastSeen = 2000L))
@@ -80,7 +80,7 @@ class BleKnownDeviceDaoTest {
     }
 
     @Test
-    fun `getAllUuids returns every stored uuid`() = runTest {
+    fun `WHEN multiple devices are stored THEN getAllUuids returns every uuid`() = runTest {
         dao.upsert(entity("device-1"))
         dao.upsert(entity("device-2"))
 
@@ -90,7 +90,7 @@ class BleKnownDeviceDaoTest {
     }
 
     @Test
-    fun `touchLastSeen updates only the lastSeenAtMillis field`() = runTest {
+    fun `WHEN touchLastSeen is called THEN it updates only the lastSeenAtMillis field`() = runTest {
         dao.upsert(entity("device-1", lastSeen = 1000L))
 
         dao.touchLastSeen("device-1", 5000L)
@@ -101,7 +101,7 @@ class BleKnownDeviceDaoTest {
     }
 
     @Test
-    fun `updateSchema sets schemaVersion and schemaJson`() = runTest {
+    fun `WHEN updateSchema is called THEN it sets schemaVersion and schemaJson`() = runTest {
         dao.upsert(entity("device-1"))
 
         dao.updateSchema("device-1", 3L, "{\"sensorTypes\":[]}")
@@ -112,7 +112,7 @@ class BleKnownDeviceDaoTest {
     }
 
     @Test
-    fun `delete removes the device`() = runTest {
+    fun `WHEN delete is called THEN it removes the device`() = runTest {
         dao.upsert(entity("device-1"))
 
         dao.delete("device-1")
@@ -121,7 +121,7 @@ class BleKnownDeviceDaoTest {
     }
 
     @Test
-    fun `observeAll emits an empty list when no devices are known`() = runTest {
+    fun `WHEN no devices are known THEN observeAll emits an empty list`() = runTest {
         assertTrue(dao.observeAll().first().isEmpty())
     }
 }

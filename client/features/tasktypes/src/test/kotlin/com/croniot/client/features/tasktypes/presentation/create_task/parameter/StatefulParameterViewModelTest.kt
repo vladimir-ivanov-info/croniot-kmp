@@ -62,7 +62,7 @@ class StatefulParameterViewModelTest {
     }
 
     @Test
-    fun `recent task state info marks the parameter as synced without requesting a sync`() = runTest {
+    fun `WHEN the task state info is recent THEN the parameter is marked as synced without requesting a sync`() = runTest {
         tasksRepository.latestTaskStateInfoEmittedByIoT = TaskStateInfo(
             dateTime = ZonedDateTime.now().minusSeconds(1),
             state = "RUNNING",
@@ -77,7 +77,7 @@ class StatefulParameterViewModelTest {
     }
 
     @Test
-    fun `stale task state info marks the parameter as not synced and requests a sync`() = runTest {
+    fun `WHEN the task state info is stale THEN the parameter is marked as not synced and a sync is requested`() = runTest {
         tasksRepository.latestTaskStateInfoEmittedByIoT = TaskStateInfo(
             dateTime = ZonedDateTime.now().minusSeconds(10),
             state = "RUNNING",

@@ -27,7 +27,7 @@ class MqttDataProcessorFeatureFlagTest {
     }
 
     @Test
-    fun `process extracts flag name from topic and overrides dto name`() {
+    fun `WHEN processing a flag topic THEN process extracts the flag name and overrides the dto name`() {
         val received = mutableListOf<FeatureFlagDto>()
         val processor = MqttDataProcessorFeatureFlag(onFlagUpdate = { received.add(it) })
         val dto = FeatureFlagDto(name = "irrelevant", enabled = true)
@@ -41,7 +41,7 @@ class MqttDataProcessorFeatureFlagTest {
     }
 
     @Test
-    fun `process with topic missing flag name segment does not invoke callback`() {
+    fun `WHEN topic is missing the flag name segment THEN process does not invoke callback`() {
         val received = mutableListOf<FeatureFlagDto>()
         val processor = MqttDataProcessorFeatureFlag(onFlagUpdate = { received.add(it) })
         val json = MessageFactory.toJson(FeatureFlagDto(name = "x", enabled = true))
@@ -52,7 +52,7 @@ class MqttDataProcessorFeatureFlagTest {
     }
 
     @Test
-    fun `process with wrong topic prefix does not invoke callback`() {
+    fun `WHEN topic has the wrong prefix THEN process does not invoke callback`() {
         val received = mutableListOf<FeatureFlagDto>()
         val processor = MqttDataProcessorFeatureFlag(onFlagUpdate = { received.add(it) })
         val json = MessageFactory.toJson(FeatureFlagDto(name = "x", enabled = true))
@@ -63,7 +63,7 @@ class MqttDataProcessorFeatureFlagTest {
     }
 
     @Test
-    fun `process with invalid json does not invoke callback`() {
+    fun `WHEN json is invalid THEN process does not invoke callback`() {
         val received = mutableListOf<FeatureFlagDto>()
         val processor = MqttDataProcessorFeatureFlag(onFlagUpdate = { received.add(it) })
 
@@ -73,7 +73,7 @@ class MqttDataProcessorFeatureFlagTest {
     }
 
     @Test
-    fun `process with disabled flag preserves the enabled false value`() {
+    fun `WHEN the flag is disabled THEN process preserves the enabled false value`() {
         val received = mutableListOf<FeatureFlagDto>()
         val processor = MqttDataProcessorFeatureFlag(onFlagUpdate = { received.add(it) })
         val json = MessageFactory.toJson(FeatureFlagDto(name = "x", enabled = false))

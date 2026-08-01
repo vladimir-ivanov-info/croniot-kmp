@@ -62,7 +62,7 @@ class TaskTypesViewModelTest {
     }
 
     @Test
-    fun `initialize fetches tasks then requests sync for each task type`() = runTest(testDispatcher) {
+    fun `WHEN initialize is called THEN it fetches tasks and then requests sync for each task type`() = runTest(testDispatcher) {
         coEvery { fetchTasksUseCase(deviceUuid) } returns Outcome.Ok(emptyList<Task>())
         coEvery { requestTaskStateInfoSyncUseCase(any(), any()) } returns Outcome.Ok(Unit)
 
@@ -74,7 +74,7 @@ class TaskTypesViewModelTest {
     }
 
     @Test
-    fun `observeTaskTypeUpdates caches the StateFlow for the same key`() = runTest(testDispatcher) {
+    fun `WHEN observeTaskTypeUpdates is called twice with the same key THEN it caches the StateFlow`() = runTest(testDispatcher) {
         every { observeTaskStateInfoUseCase(deviceUuid, taskTypeOne.uid) } returns emptyFlow()
 
         val first = viewModel.observeTaskTypeUpdates(deviceUuid, taskTypeOne)
@@ -85,7 +85,7 @@ class TaskTypesViewModelTest {
     }
 
     @Test
-    fun `getSecondaryText uses latest task state info for the initial value when it exists`() = runTest(testDispatcher) {
+    fun `WHEN the latest task state info exists THEN getSecondaryText uses it for the initial value`() = runTest(testDispatcher) {
         val latestInfo = TaskStateInfo(
             dateTime = ZonedDateTime.now(),
             state = "RUNNING",
@@ -101,7 +101,7 @@ class TaskTypesViewModelTest {
     }
 
     @Test
-    fun `getSecondaryText returns empty string when there is no latest task state info`() = runTest(testDispatcher) {
+    fun `WHEN there is no latest task state info THEN getSecondaryText returns an empty string`() = runTest(testDispatcher) {
         every { getLatestTaskStateInfoUseCase(deviceUuid, taskTypeOne.uid) } returns null
         every { observeTaskStateInfoUseCase(deviceUuid, taskTypeOne.uid) } returns emptyFlow()
 
@@ -111,7 +111,7 @@ class TaskTypesViewModelTest {
     }
 
     @Test
-    fun `observeTaskTypeUpdates with different task types returns different StateFlow instances`() = runTest(testDispatcher) {
+    fun `WHEN observeTaskTypeUpdates is called with different task types THEN it returns different StateFlow instances`() = runTest(testDispatcher) {
         every { observeTaskStateInfoUseCase(deviceUuid, taskTypeOne.uid) } returns emptyFlow()
         every { observeTaskStateInfoUseCase(deviceUuid, taskTypeTwo.uid) } returns emptyFlow()
 
@@ -122,7 +122,7 @@ class TaskTypesViewModelTest {
     }
 
     @Test
-    fun `getSecondaryText caches the StateFlow for the same key`() = runTest(testDispatcher) {
+    fun `WHEN getSecondaryText is called twice with the same key THEN it caches the StateFlow`() = runTest(testDispatcher) {
         every { getLatestTaskStateInfoUseCase(deviceUuid, taskTypeOne.uid) } returns null
         every { observeTaskStateInfoUseCase(deviceUuid, taskTypeOne.uid) } returns emptyFlow()
 

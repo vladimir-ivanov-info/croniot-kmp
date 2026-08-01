@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class LogoutUseCaseTest {
 
     @Test
-    fun `stops device listeners, clears session and clears app session`() = runTest {
+    fun `WHEN LogoutUseCase is invoked THEN it stops device listeners, clears session and clears app session`() = runTest {
         val sensorDataRepository = FakeSensorDataRepository()
         val tasksRepository = FakeTasksRepository()
         val sessionRepository = FakeSessionRepository()
@@ -32,7 +32,7 @@ class LogoutUseCaseTest {
     }
 
     @Test
-    fun `clears session even when there were no active listeners`() = runTest {
+    fun `WHEN there were no active listeners THEN it still clears session and app session`() = runTest {
         val sessionRepository = FakeSessionRepository()
         val appSessionRepository = FakeAppSessionRepository()
         val useCase = LogoutUseCase(

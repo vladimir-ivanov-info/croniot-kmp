@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class RegisterAccountUseCaseTest {
 
     @Test
-    fun `returns success result from repository`() = runTest {
+    fun `WHEN repository returns success THEN it returns that success result`() = runTest {
         val repository = FakeRegisterAccountRepository(result = Result(success = true, message = ""))
         val useCase = RegisterAccountUseCase(repository)
 
@@ -22,7 +22,7 @@ class RegisterAccountUseCaseTest {
     }
 
     @Test
-    fun `returns failure result from repository`() = runTest {
+    fun `WHEN repository returns failure THEN it returns that failure result`() = runTest {
         val repository = FakeRegisterAccountRepository(result = Result(success = false, message = "Email taken"))
         val useCase = RegisterAccountUseCase(repository)
 
@@ -33,7 +33,7 @@ class RegisterAccountUseCaseTest {
     }
 
     @Test
-    fun `passes through nickname email and password to repository`() = runTest {
+    fun `WHEN invoked THEN it passes nickname, email and password through to the repository`() = runTest {
         val repository = FakeRegisterAccountRepository()
         val useCase = RegisterAccountUseCase(repository)
 

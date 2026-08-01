@@ -43,7 +43,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `RUNNING event shows a progress notification with rounded percentage`() {
+    fun `WHEN a RUNNING event is received THEN it shows a progress notification with the rounded percentage`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val manager = buildManager(events)
 
@@ -54,7 +54,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `COMPLETED event shows a Completed notification`() {
+    fun `WHEN a COMPLETED event is received THEN it shows a Completed notification`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val manager = buildManager(events)
 
@@ -65,7 +65,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `ERROR event with message shows that message`() {
+    fun `WHEN an ERROR event has a message THEN it shows that message`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val manager = buildManager(events)
 
@@ -76,7 +76,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `ERROR event with empty message falls back to generic Error text`() {
+    fun `WHEN an ERROR event has an empty message THEN it falls back to generic Error text`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val manager = buildManager(events)
 
@@ -87,7 +87,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `CREATED event does not show any notification`() {
+    fun `WHEN a CREATED event is received THEN no notification is shown`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val manager = buildManager(events)
 
@@ -100,7 +100,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `uses registered task type name when available`() {
+    fun `WHEN the task type is registered THEN it uses the registered task type name`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val taskType = TaskType(uid = 10L, name = "Watering", description = "", parameters = emptyList())
         taskTypesRepository.add(deviceUuid, taskType)
@@ -113,7 +113,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `falls back to Task hash uid when task type is not registered`() {
+    fun `WHEN the task type is not registered THEN it falls back to Task hash uid`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val manager = buildManager(events)
 
@@ -124,7 +124,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `startObserving called twice for same device only subscribes once`() {
+    fun `WHEN startObserving is called twice for the same device THEN it only subscribes once`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val manager = buildManager(events)
 
@@ -136,7 +136,7 @@ class TaskNotificationManagerTest {
     }
 
     @Test
-    fun `stopAll cancels active notifications`() {
+    fun `WHEN stopAll is called THEN it cancels active notifications`() {
         val events = MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 4)
         val manager = buildManager(events)
         manager.startObserving(deviceUuid)

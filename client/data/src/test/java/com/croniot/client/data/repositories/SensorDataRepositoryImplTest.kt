@@ -60,7 +60,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `stopListeningFor delegates to cloud data source when routing is CLOUD`() = runTest {
+    fun `WHEN routing is CLOUD THEN stopListeningFor delegates to cloud data source`() = runTest {
         every { transportRouter.transportFor(device.uuid) } returns TransportKind.CLOUD
         coJustRun { cloudSensorDataSource.stopListening(any()) }
 
@@ -71,7 +71,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `stopListeningFor delegates to ble data source when routing is BLE`() = runTest {
+    fun `WHEN routing is BLE THEN stopListeningFor delegates to ble data source`() = runTest {
         every { transportRouter.transportFor(device.uuid) } returns TransportKind.BLE
         coJustRun { bleSensorDataSource.stopListening(any()) }
 
@@ -82,7 +82,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `stopListeningFor removes the device entry from devicesLatestSensorTimestamp`() = runTest {
+    fun `WHEN stopListeningFor is called THEN it removes the device entry from devicesLatestSensorTimestamp`() = runTest {
         every { transportRouter.transportFor(device.uuid) } returns TransportKind.CLOUD
         coEvery { cloudSensorDataSource.listenDeviceSensors(device.uuid) } returns
             Outcome.Ok(flowOf(sensorData))
@@ -98,7 +98,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `stopAllListeners stops both data sources and clears devicesLatestSensorTimestamp`() = runTest {
+    fun `WHEN stopAllListeners is called THEN it stops both data sources and clears devicesLatestSensorTimestamp`() = runTest {
         coJustRun { cloudSensorDataSource.stopListening(null) }
         coJustRun { bleSensorDataSource.stopListening(null) }
 
@@ -110,7 +110,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `listenToDeviceSensors returns Ok when data source resolved by routing succeeds`() = runTest {
+    fun `WHEN data source resolved by routing succeeds THEN listenToDeviceSensors returns Ok`() = runTest {
         every { transportRouter.transportFor(device.uuid) } returns TransportKind.CLOUD
         coEvery { cloudSensorDataSource.listenDeviceSensors(device.uuid) } returns
             Outcome.Ok(flowOf(sensorData))
@@ -122,7 +122,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `listenToDeviceSensors propagates Err from data source resolved by routing`() = runTest {
+    fun `WHEN data source resolved by routing returns Err THEN listenToDeviceSensors propagates it`() = runTest {
         every { transportRouter.transportFor(device.uuid) } returns TransportKind.BLE
         coEvery { bleSensorDataSource.listenDeviceSensors(device.uuid) } returns
             Outcome.Err(ConnectionError.Unknown)
@@ -133,7 +133,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `listenToDeviceSensors saves each emitted sensor reading to the local data source`() = runTest {
+    fun `WHEN sensor readings are emitted THEN listenToDeviceSensors saves each to the local data source`() = runTest {
         every { transportRouter.transportFor(device.uuid) } returns TransportKind.CLOUD
         coEvery { cloudSensorDataSource.listenDeviceSensors(device.uuid) } returns
             Outcome.Ok(flowOf(sensorData))
@@ -145,7 +145,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `getLatestSensorData delegates to local data source`() = runTest {
+    fun `WHEN getLatestSensorData is called THEN it delegates to local data source`() = runTest {
         coEvery { localSensorDataSource.getLatestSensorData(device.uuid, 1L, 10) } returns listOf(sensorData)
 
         val result = repository.getLatestSensorData(device.uuid, 1L, 10)
@@ -154,7 +154,7 @@ class SensorDataRepositoryImplTest {
     }
 
     @Test
-    fun `observeSensorData delegates to local data source`() = runTest {
+    fun `WHEN observeSensorData is called THEN it delegates to local data source`() = runTest {
         every { localSensorDataSource.observeSensorData(device.uuid, 1L) } returns flowOf(sensorData)
 
         val result = repository.observeSensorData(device.uuid, 1L)

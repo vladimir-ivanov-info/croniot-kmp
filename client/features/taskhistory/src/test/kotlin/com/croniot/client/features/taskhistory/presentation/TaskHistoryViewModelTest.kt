@@ -78,7 +78,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `initialize with new deviceUuid loads availableTaskTypes`() = runTest {
+    fun `WHEN initialize is called with a new deviceUuid THEN it loads availableTaskTypes`() = runTest {
         every { taskTypesRepository.getAll("device-1") } returns listOf(taskTypeA, taskTypeB)
 
         viewModel.initialize("device-1")
@@ -87,7 +87,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `initialize called twice with same deviceUuid does not reload availableTaskTypes`() = runTest {
+    fun `WHEN initialize is called twice with the same deviceUuid THEN it does not reload availableTaskTypes`() = runTest {
         every { taskTypesRepository.getAll("device-1") } returns listOf(taskTypeA)
 
         viewModel.initialize("device-1")
@@ -97,7 +97,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `initialize with different deviceUuid reloads availableTaskTypes and resets new items state`() = runTest {
+    fun `WHEN initialize is called with a different deviceUuid THEN it reloads availableTaskTypes and resets the new items state`() = runTest {
         every { taskTypesRepository.getAll("device-1") } returns listOf(taskTypeA)
         every { taskTypesRepository.getAll("device-2") } returns listOf(taskTypeB)
 
@@ -112,7 +112,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `setFilter updates taskTypeFilter`() = runTest {
+    fun `WHEN setFilter is called THEN taskTypeFilter is updated`() = runTest {
         viewModel.initialize("device-1")
 
         viewModel.setFilter(taskTypeA)
@@ -121,7 +121,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `setFilter resets newItems and newEntriesSinceSnapshot`() = runTest {
+    fun `WHEN setFilter is called THEN newItems and newEntriesSinceSnapshot are reset`() = runTest {
         viewModel.initialize("device-1")
 
         viewModel.setFilter(taskTypeA)
@@ -131,7 +131,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `totalEntries reflects fetchTaskStateInfoHistoryCountUseCase result after initialize`() = runTest {
+    fun `WHEN initialize completes THEN totalEntries reflects the fetchTaskStateInfoHistoryCountUseCase result`() = runTest {
         coEvery {
             fetchTaskStateInfoHistoryCountUseCase(any(), any(), any(), any())
         } returns Outcome.Ok(42)
@@ -155,7 +155,7 @@ class TaskHistoryViewModelTest {
     private fun liveEventsFlow() = kotlinx.coroutines.flow.MutableSharedFlow<TaskStateInfoEvent>(extraBufferCapacity = 16)
 
     @Test
-    fun `live task state event adds a new item and increments newEntriesSinceSnapshot`() = runTest {
+    fun `WHEN a live task state event arrives THEN it adds a new item and increments newEntriesSinceSnapshot`() = runTest {
         val event = stateInfoEvent()
         val events = liveEventsFlow()
         every { tasksRepository.observeTaskStateInfoUpdates(any()) } returns events
@@ -171,7 +171,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `live task state event uses Unknown type name when task type is not registered`() = runTest {
+    fun `WHEN a live task state event arrives for an unregistered task type THEN it uses Unknown as the type name`() = runTest {
         val event = stateInfoEvent()
         val events = liveEventsFlow()
         every { tasksRepository.observeTaskStateInfoUpdates(any()) } returns events
@@ -185,7 +185,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `live task state event not matching active filter is ignored`() = runTest {
+    fun `WHEN a live task state event does not match the active filter THEN it is ignored`() = runTest {
         val event = stateInfoEvent(taskTypeUid = 2L)
         val events = liveEventsFlow()
         every { tasksRepository.observeTaskStateInfoUpdates(any()) } returns events
@@ -200,7 +200,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `duplicate live task state event with same identity is not added twice`() = runTest {
+    fun `WHEN a duplicate live task state event with the same identity arrives THEN it is not added twice`() = runTest {
         val event = stateInfoEvent()
         val events = liveEventsFlow()
         every { tasksRepository.observeTaskStateInfoUpdates(any()) } returns events
@@ -216,7 +216,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `multiple distinct live task state events are prepended newest first`() = runTest {
+    fun `WHEN multiple distinct live task state events arrive THEN they are prepended newest first`() = runTest {
         val firstEvent = stateInfoEvent(taskUid = 1L)
         val secondEvent = stateInfoEvent(taskUid = 2L)
         val events = liveEventsFlow()
@@ -234,7 +234,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `registerNewIdentity evicts oldest identity once seen set exceeds max size, allowing it to be re-registered`() = runTest {
+    fun `WHEN the seen identities set exceeds its max size THEN the oldest identity is evicted and can be re-registered`() = runTest {
         val events = liveEventsFlow()
         every { tasksRepository.observeTaskStateInfoUpdates(any()) } returns events
         every { taskTypesRepository.get("device-1", any()) } returns taskTypeA
@@ -264,7 +264,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `totalEntries keeps last known value when count usecase returns error`() = runTest {
+    fun `WHEN the count usecase returns an error THEN totalEntries keeps its last known value`() = runTest {
         coEvery {
             fetchTaskStateInfoHistoryCountUseCase(any(), any(), any(), any())
         } returns Outcome.Ok(10)
@@ -282,7 +282,7 @@ class TaskHistoryViewModelTest {
     }
 
     @Test
-    fun `pagingFlow loads a page through the real Pager after initialize`() = runTest {
+    fun `WHEN initialize completes THEN pagingFlow loads a page through the real Pager`() = runTest {
         mockkStatic(Log::class)
         every { Log.d(any(), any()) } returns 0
         every { Log.e(any(), any()) } returns 0

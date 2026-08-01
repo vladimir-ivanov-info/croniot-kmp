@@ -24,20 +24,20 @@ class SensorTypeExtensionsTest {
     )
 
     @Test
-    fun `isChartable is true when the first parameter has both minValue and maxValue`() {
+    fun `WHEN the first parameter has both minValue and maxValue THEN isChartable is true`() {
         val type = sensorType(setOf(parameter(mapOf("minValue" to "0", "maxValue" to "100"))))
 
         assertThat(type.isChartable()).isTrue()
     }
 
     @Test
-    fun `isChartable is false when minValue or maxValue is missing`() {
+    fun `WHEN minValue or maxValue is missing THEN isChartable is false`() {
         assertThat(sensorType(setOf(parameter(mapOf("minValue" to "0")))).isChartable()).isFalse()
         assertThat(sensorType(setOf(parameter(emptyMap()))).isChartable()).isFalse()
     }
 
     @Test
-    fun `isChartable is false when there are no parameters`() {
+    fun `WHEN there are no parameters THEN isChartable is false`() {
         assertThat(sensorType(emptySet()).isChartable()).isFalse()
     }
 }

@@ -37,7 +37,7 @@ class TaskApiTest {
     }
 
     @Test
-    fun `requestTaskConfigurations hits path with device uuid substituted`() = runTest {
+    fun `WHEN requestTaskConfigurations is called THEN it hits the path with device uuid substituted`() = runTest {
         var capturedUrl = ""
         val taskApi = api { request ->
             capturedUrl = request.url.encodedPath
@@ -56,7 +56,7 @@ class TaskApiTest {
     }
 
     @Test
-    fun `requestTaskConfigurations returns empty list when device has no tasks`() = runTest {
+    fun `WHEN device has no tasks THEN requestTaskConfigurations returns empty list`() = runTest {
         val taskApi = api {
             respond(
                 content = ByteReadChannel(json.encodeToString(emptyList<TaskDto>())),
@@ -71,7 +71,7 @@ class TaskApiTest {
     }
 
     @Test
-    fun `requestTaskStateInfoHistory sends limit before beforeId and taskTypeUid as query params`() = runTest {
+    fun `WHEN requestTaskStateInfoHistory is called THEN it sends limit before beforeId and taskTypeUid as query params`() = runTest {
         var capturedQuery = ""
         val entry = TaskStateInfoHistoryEntryDto(
             stateInfoId = 1L,
@@ -100,7 +100,7 @@ class TaskApiTest {
     }
 
     @Test
-    fun `requestTaskStateInfoHistoryCount returns integer count from server`() = runTest {
+    fun `WHEN server responds THEN requestTaskStateInfoHistoryCount returns the integer count`() = runTest {
         val taskApi = api {
             respond(
                 content = ByteReadChannel("42"),
@@ -115,7 +115,7 @@ class TaskApiTest {
     }
 
     @Test
-    fun `addTask posts to add_task endpoint and returns result`() = runTest {
+    fun `WHEN addTask is called THEN it posts to the add_task endpoint and returns result`() = runTest {
         var capturedMethod: HttpMethod? = null
         var capturedUrl = ""
         val taskApi = api { request ->
@@ -136,7 +136,7 @@ class TaskApiTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync posts to sync endpoint and returns result`() = runTest {
+    fun `WHEN requestTaskStateInfoSync is called THEN it posts to the sync endpoint and returns result`() = runTest {
         var capturedUrl = ""
         val taskApi = api { request ->
             capturedUrl = request.url.encodedPath
@@ -154,7 +154,7 @@ class TaskApiTest {
     }
 
     @Test
-    fun `addTask returns failure result when server rejects the task`() = runTest {
+    fun `WHEN server rejects the task THEN addTask returns failure result`() = runTest {
         val taskApi = api {
             respond(
                 content = ByteReadChannel(json.encodeToString(Result(success = false, message = "Invalid task type"))),

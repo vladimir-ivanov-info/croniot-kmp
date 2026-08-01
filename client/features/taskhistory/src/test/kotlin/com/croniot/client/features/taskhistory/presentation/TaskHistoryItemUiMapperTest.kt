@@ -19,21 +19,21 @@ class TaskHistoryItemUiMapperTest {
     )
 
     @Test
-    fun `RUNNING state produces a subtitle with rounded percentage`() {
+    fun `WHEN state is RUNNING THEN the subtitle shows the rounded percentage`() {
         val result = item(state = "RUNNING", progress = 42.7)
 
         assertEquals("Running - 42%", result.subtitle)
     }
 
     @Test
-    fun `ERROR state produces a subtitle prefixed with Error`() {
+    fun `WHEN state is ERROR THEN the subtitle is prefixed with Error`() {
         val result = item(state = "ERROR", errorMessage = "Sensor timeout")
 
         assertEquals("Error: Sensor timeout", result.subtitle)
     }
 
     @Test
-    fun `ERROR state truncates a long error message to 50 characters`() {
+    fun `WHEN state is ERROR with a long error message THEN the subtitle truncates it to 50 characters`() {
         val longMessage = "a".repeat(100)
 
         val result = item(state = "ERROR", errorMessage = longMessage)
@@ -42,21 +42,21 @@ class TaskHistoryItemUiMapperTest {
     }
 
     @Test
-    fun `COMPLETED state produces a plain humanized label without progress or error prefix`() {
+    fun `WHEN state is COMPLETED THEN the subtitle is a plain humanized label without progress or error prefix`() {
         val result = item(state = "COMPLETED")
 
         assertEquals("Completed", result.subtitle)
     }
 
     @Test
-    fun `state label replaces underscores with spaces and capitalizes the first letter`() {
+    fun `WHEN state contains underscores THEN the label replaces them with spaces and capitalizes the first letter`() {
         val result = item(state = "PENDING_SYNC")
 
         assertEquals("Pending sync", result.subtitle)
     }
 
     @Test
-    fun `time field formats dateTime using HH mm pattern`() {
+    fun `WHEN buildTaskHistoryItem is called THEN the time field formats dateTime using the HH mm pattern`() {
         val dateTime = ZonedDateTime.now().withHour(14).withMinute(5)
 
         val result = buildTaskHistoryItem(
@@ -74,14 +74,14 @@ class TaskHistoryItemUiMapperTest {
     }
 
     @Test
-    fun `relativeTime is a non-empty human readable string`() {
+    fun `WHEN buildTaskHistoryItem is called THEN relativeTime is a non-empty human readable string`() {
         val result = item(state = "COMPLETED")
 
         assertTrue(result.relativeTime.isNotEmpty())
     }
 
     @Test
-    fun `preserves the stateInfoId taskUid taskTypeUid and taskTypeName as given`() {
+    fun `WHEN buildTaskHistoryItem is called THEN it preserves the stateInfoId, taskUid, taskTypeUid, and taskTypeName as given`() {
         val result = buildTaskHistoryItem(
             stateInfoId = 42L,
             taskUid = 7L,

@@ -26,7 +26,7 @@ class MqttProcessorSensorDataTest {
     }
 
     @Test
-    fun `process deserializes valid sensor data and invokes callback`() {
+    fun `WHEN sensor data is valid THEN process deserializes it and invokes callback`() {
         val received = mutableListOf<SensorDataDto>()
         val processor = MqttProcessorSensorData(onNewSensorDataDto = { received.add(it) })
         val dto = SensorDataDto(deviceUuid = "device-1", sensorTypeUid = 10L, value = "25.5", timestamp = ZonedDateTime.now())
@@ -40,7 +40,7 @@ class MqttProcessorSensorDataTest {
     }
 
     @Test
-    fun `process with invalid json does not invoke callback`() {
+    fun `WHEN json is invalid THEN process does not invoke callback`() {
         val received = mutableListOf<SensorDataDto>()
         val processor = MqttProcessorSensorData(onNewSensorDataDto = { received.add(it) })
 
@@ -50,7 +50,7 @@ class MqttProcessorSensorDataTest {
     }
 
     @Test
-    fun `process with non-string data does not invoke callback`() {
+    fun `WHEN data is non-string THEN process does not invoke callback`() {
         val received = mutableListOf<SensorDataDto>()
         val processor = MqttProcessorSensorData(onNewSensorDataDto = { received.add(it) })
 
