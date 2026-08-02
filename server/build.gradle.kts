@@ -30,6 +30,7 @@ plugins {
     id("nu.studer.jooq") version "10.2"
     alias(libs.plugins.kotlin.serialization)
     id("io.gitlab.arturbosch.detekt")
+    jacoco
 }
 
 kotlin {
@@ -102,6 +103,49 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+// Coverage target is "100% of what a unit test can meaningfully protect" — same philosophy as the
+// Android/KMP client (see docs/test-coverage.html). Excluded, with rationale:
+//   - jOOQ-generated DB access code (com.server.croniot.jooq, pure codegen from schema.sql) and
+//     Dagger-generated DI wiring (*_Factory/*_MembersInjector/Dagger*Component): a test here only
+//     proves Dagger/jOOQ call what they're told to call, same rationale as the client's Koin DI exclusion.
+//   - AppModule/DI: Dagger @Provides wiring itself, same reasoning.
+//   - RouteInitializer: pure Ktor routing DSL registration (post/get calling into a controller),
+//     no branching logic — same category as excluding Compose Screens on the client.
+//   - MqttController, MqttDataProcessor*: real MQTT broker I/O, can't be exercised without a real
+//     broker (same category as the client's real-BLE-hardware exclusion).
+//   - MainKt: application entrypoint (main(), Ktor module wiring, keystore loading) — needs real
+//     process/instrumentation, not a unit test.
+val coverageExcludes = listOf(
+    "com/server/croniot/jooq/**",
+    "**/*_Factory.class",
+    "**/*_MembersInjector.class",
+    "**/Dagger*Component.class",
+    "**/AppModule.class",
+    "com/server/croniot/di/**",
+    "**/RouteInitializer*.class",
+    "**/MqttController*.class",
+    "**/MqttDataProcessor*.class",
+    "**/MainKt*.class",
+)
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+    classDirectories.setFrom(
+        classDirectories.files.map {
+            fileTree(it) { exclude(coverageExcludes) }
+        },
+    )
 }
 
 tasks {

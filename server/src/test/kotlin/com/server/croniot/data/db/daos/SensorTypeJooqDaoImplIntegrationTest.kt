@@ -24,14 +24,14 @@ class SensorTypeJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `upsert requires a non-zero deviceId`() {
+    fun `WHEN deviceId is zero THEN upsert throws IllegalArgumentException`() {
         assertThrows<IllegalArgumentException> {
             dao.upsert(sensorType(uid = 1L), deviceId = 0L)
         }
     }
 
     @Test
-    fun `upsert inserts a new sensor type with its parameters and constraints`() {
+    fun `WHEN sensor type is new THEN upsert inserts it with its parameters and constraints`() {
         val deviceId = insertDevice()
 
         val id = dao.upsert(
@@ -62,7 +62,7 @@ class SensorTypeJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `upsert updates the existing sensor type on the same (device,uid) and resets its constraints`() {
+    fun `WHEN sensor type already exists for that (device,uid) THEN upsert updates it and resets its constraints`() {
         val deviceId = insertDevice()
         val firstId = dao.upsert(
             sensorType(
@@ -99,7 +99,7 @@ class SensorTypeJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `upsert isolates sensor types across devices (same uid, different device)`() {
+    fun `WHEN same uid is used on a different device THEN upsert isolates the sensor types across devices`() {
         val deviceA = insertDevice(email = "a@example.com", deviceUuid = "dev-A")
         val deviceB = insertDevice(email = "b@example.com", deviceUuid = "dev-B")
 
@@ -111,7 +111,7 @@ class SensorTypeJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getByDeviceIds groups results by deviceId and returns empty when no match`() {
+    fun `WHEN device ids match THEN getByDeviceIds groups results by deviceId, otherwise returns empty`() {
         val deviceA = insertDevice(email = "a@example.com", deviceUuid = "dev-A")
         val deviceB = insertDevice(email = "b@example.com", deviceUuid = "dev-B")
 
@@ -129,7 +129,7 @@ class SensorTypeJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `upsert drops blank-keyed constraints silently`() {
+    fun `WHEN a constraint has a blank key THEN upsert drops it silently`() {
         val deviceId = insertDevice()
         dao.upsert(
             sensorType(

@@ -68,7 +68,7 @@ class LoginRoutesTest {
     }
 
     @Test
-    fun `POST api login returns 200 with LoginResultDto on happy path`() = testApplication {
+    fun `WHEN login succeeds THEN POST api login returns 200 with LoginResultDto`() = testApplication {
         val loginService = mockk<LoginService>()
         every { loginService.login(any()) } returns LoginResultDto(
             result = DomainResult(success = true, message = "ok"),
@@ -92,7 +92,7 @@ class LoginRoutesTest {
     }
 
     @Test
-    fun `POST api login returns 401 with INVALID_CREDENTIALS when service throws InvalidCredentials`() = testApplication {
+    fun `WHEN service throws InvalidCredentials THEN POST api login returns 401 with INVALID_CREDENTIALS`() = testApplication {
         val loginService = mockk<LoginService>()
         every { loginService.login(any()) } throws DomainException(DomainError.InvalidCredentials())
         application { testModule(loginService) }
@@ -108,7 +108,7 @@ class LoginRoutesTest {
     }
 
     @Test
-    fun `POST api login returns 409 with CONFLICT when service throws Conflict`() = testApplication {
+    fun `WHEN service throws Conflict THEN POST api login returns 409 with CONFLICT`() = testApplication {
         val loginService = mockk<LoginService>()
         every { loginService.login(any()) } throws DomainException(DomainError.Conflict("Device already registered"))
         application { testModule(loginService) }
@@ -125,7 +125,7 @@ class LoginRoutesTest {
     }
 
     @Test
-    fun `POST api login returns 500 with INTERNAL for unhandled exceptions`() = testApplication {
+    fun `WHEN an unhandled exception occurs THEN POST api login returns 500 with INTERNAL`() = testApplication {
         val loginService = mockk<LoginService>()
         every { loginService.login(any()) } throws IllegalStateException("boom")
         application { testModule(loginService) }
@@ -141,7 +141,7 @@ class LoginRoutesTest {
     }
 
     @Test
-    fun `POST api token refresh returns 200 with new tokens on happy path`() = testApplication {
+    fun `WHEN refresh succeeds THEN POST api token refresh returns 200 with new tokens`() = testApplication {
         val loginService = mockk<LoginService>()
         every { loginService.refresh("old-refresh") } returns RefreshTokenResultDto(
             result = DomainResult(success = true),
@@ -163,7 +163,7 @@ class LoginRoutesTest {
     }
 
     @Test
-    fun `POST api token refresh returns 401 UNAUTHORIZED when rotation fails`() = testApplication {
+    fun `WHEN rotation fails THEN POST api token refresh returns 401 UNAUTHORIZED`() = testApplication {
         val loginService = mockk<LoginService>()
         every { loginService.refresh(any()) } throws DomainException(DomainError.Unauthorized("Invalid or expired refresh token"))
         application { testModule(loginService) }
@@ -179,7 +179,7 @@ class LoginRoutesTest {
     }
 
     @Test
-    fun `POST api logout returns 200 with success result`() = testApplication {
+    fun `WHEN logout is called THEN POST api logout returns 200 with success result`() = testApplication {
         val loginService = mockk<LoginService>()
         every { loginService.logout("refresh-to-revoke") } returns DomainResult(success = true)
         application { testModule(loginService) }
@@ -195,7 +195,7 @@ class LoginRoutesTest {
     }
 
     @Test
-    fun `POST api login responds 400 VALIDATION with field detail when service throws Validation`() = testApplication {
+    fun `WHEN service throws Validation THEN POST api login responds 400 VALIDATION with field detail`() = testApplication {
         val loginService = mockk<LoginService>()
         every { loginService.login(any()) } throws DomainException(
             DomainError.Validation(field = "email", message = "Email is required"),

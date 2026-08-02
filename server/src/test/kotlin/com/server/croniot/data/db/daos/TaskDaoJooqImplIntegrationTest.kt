@@ -30,7 +30,7 @@ class TaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `create inserts a Task row and returns a Task with the generated uid`() {
+    fun `WHEN create is called THEN it inserts a Task row and returns a Task with the generated uid`() {
         val (_, taskTypeId) = insertTaskType(taskTypeUid = 10L)
 
         val task = dao.create(taskTypeId = taskTypeId, taskTypeUid = 10L)
@@ -41,7 +41,7 @@ class TaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `get returns the matching task by (deviceUuid, taskTypeUid, taskUid) and null otherwise`() {
+    fun `WHEN deviceUuid, taskTypeUid and taskUid match THEN get returns the task, otherwise null`() {
         val (deviceUuid, taskTypeId) = insertTaskType(deviceUuid = "dev-1", taskTypeUid = 42L)
         val created = dao.create(taskTypeId, 42L)!!
 
@@ -56,7 +56,7 @@ class TaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getAll returns tasks for a device with the most recent state info attached`() {
+    fun `WHEN device has tasks THEN getAll returns them with the most recent state info attached`() {
         val (deviceUuid, taskTypeId) = insertTaskType(deviceUuid = "dev-gall", taskTypeUid = 1L)
         val created = dao.create(taskTypeId, 1L)!!
         val taskId = taskIdForUid(created.uid)
@@ -74,14 +74,14 @@ class TaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getAll returns empty list when the device has no tasks`() {
+    fun `WHEN the device has no tasks THEN getAll returns an empty list`() {
         val (deviceUuid, _) = insertTaskType(deviceUuid = "dev-empty", taskTypeUid = 1L)
         assertTrue(dao.getAll(deviceUuid).isEmpty())
         assertTrue(dao.getAll("missing-device").isEmpty())
     }
 
     @Test
-    fun `getAllStateInfoHistory orders by dateTime desc, id desc and respects limit`() {
+    fun `WHEN getAllStateInfoHistory is called THEN it orders by dateTime desc, id desc and respects the limit`() {
         val (deviceUuid, taskTypeId) = insertTaskType(deviceUuid = "dev-hist", taskTypeUid = 1L)
         val task = dao.create(taskTypeId, 1L)!!
         val taskId = taskIdForUid(task.uid)
@@ -102,7 +102,7 @@ class TaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getAllStateInfoHistory uses (before, beforeId) as a cursor with id tiebreaker on ties`() {
+    fun `WHEN before and beforeId are given THEN getAllStateInfoHistory uses them as a cursor with id tiebreaker on ties`() {
         val (deviceUuid, taskTypeId) = insertTaskType(deviceUuid = "dev-cursor", taskTypeUid = 1L)
         val task = dao.create(taskTypeId, 1L)!!
         val taskId = taskIdForUid(task.uid)
@@ -132,7 +132,7 @@ class TaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getAllStateInfoHistory filters by taskTypeUid`() {
+    fun `WHEN taskTypeUid is given THEN getAllStateInfoHistory filters by it`() {
         val accountId = insertAccount()
         val deviceId = deviceDao.insert(device(accountId, "dev-filter"))
         val ttA = taskTypeDao.upsert(TaskType(uid = 1L, name = "A", description = ""), deviceId)
@@ -149,7 +149,7 @@ class TaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getAllStateInfoHistoryCount mirrors the filters of getAllStateInfoHistory`() {
+    fun `WHEN filters are applied THEN getAllStateInfoHistoryCount mirrors the filters of getAllStateInfoHistory`() {
         val (deviceUuid, taskTypeId) = insertTaskType(deviceUuid = "dev-count", taskTypeUid = 1L)
         val task = dao.create(taskTypeId, 1L)!!
         val taskId = taskIdForUid(task.uid)
@@ -175,7 +175,7 @@ class TaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `TaskStateInfoDao insert rejects non-existent taskId`() {
+    fun `WHEN taskId does not exist THEN TaskStateInfoDao insert rejects it`() {
         val stateInfo = stateInfo(
             taskUid = 1L,
             dateTime = ZonedDateTime.now(ZoneId.systemDefault()),
