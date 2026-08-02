@@ -33,7 +33,7 @@ class LogInUseCaseTest {
     )
 
     @Test
-    fun `returns InvalidCredentials when email is blank`() = runTest {
+    fun `WHEN email is blank THEN it returns InvalidCredentials`() = runTest {
         val useCase = buildUseCase()
 
         val result = useCase(email = "", password = "password")
@@ -42,7 +42,7 @@ class LogInUseCaseTest {
     }
 
     @Test
-    fun `returns InvalidCredentials when password is blank`() = runTest {
+    fun `WHEN password is blank THEN it returns InvalidCredentials`() = runTest {
         val useCase = buildUseCase()
 
         val result = useCase(email = "user@example.com", password = "")
@@ -51,7 +51,7 @@ class LogInUseCaseTest {
     }
 
     @Test
-    fun `happy path persists session, tokens and account`() = runTest {
+    fun `WHEN login succeeds THEN it persists session, tokens and account`() = runTest {
         val authRepository = FakeAuthRepository(
             loginOutcome = Outcome.Ok(LoginResult(account = baseAccount, tokens = tokens)),
         )
@@ -76,7 +76,7 @@ class LogInUseCaseTest {
     }
 
     @Test
-    fun `propagates error outcome from auth repository`() = runTest {
+    fun `WHEN auth repository returns an error THEN it propagates that error`() = runTest {
         val error = AuthError.InvalidCredentials
         val useCase = buildUseCase(
             authRepository = FakeAuthRepository(loginOutcome = Outcome.Err(error)),

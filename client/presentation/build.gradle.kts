@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.roborazzi)
+    alias(libs.plugins.kover)
     id("croniot.android.library")
     id("io.gitlab.arturbosch.detekt")
 }
@@ -59,6 +60,7 @@ kotlin {
                 implementation(libs.robolectric)
                 implementation(libs.androidx.test.junit)
                 implementation(libs.composeUiTestJunit4)
+                implementation(libs.mockk)
             }
         }
     }

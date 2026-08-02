@@ -4,6 +4,7 @@ plugins {
 
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kover)
 
     id("kotlin-parcelize")
     id("croniot.android.library")
@@ -61,6 +62,19 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.androidx.appcompat)
                 implementation(libs.androidx.material)
+            }
+        }
+        val androidUnitTest by getting {
+            kotlin.srcDirs("src/test/java", "src/test/kotlin")
+            dependencies {
+                implementation(libs.junit.jupiter)
+                runtimeOnly(libs.junit.jupiter.engine)
+                runtimeOnly(libs.junit.platform.launcher)
+
+                implementation(libs.turbine)
+                implementation(libs.mockk)
+                implementation(libs.coroutines.test)
+                implementation(projects.testing.fakes)
             }
         }
     }

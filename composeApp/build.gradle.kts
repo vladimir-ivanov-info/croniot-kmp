@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.roborazzi)
+    alias(libs.plugins.kover)
 
     id("kotlin-parcelize")
     id("androidx.baselineprofile")
@@ -149,7 +150,8 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
-    
+    testImplementation(projects.testing.fakes)
+
     // Roborazzi
     testImplementation(libs.roborazzi)
     testImplementation(libs.roborazzi.compose)
