@@ -27,14 +27,14 @@ class TaskTypeDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `upsert requires a non-zero deviceId`() {
+    fun `WHEN deviceId is zero THEN upsert throws IllegalArgumentException`() {
         assertThrows<IllegalArgumentException> {
             dao.upsert(taskType(uid = 1L), deviceId = 0L)
         }
     }
 
     @Test
-    fun `upsert inserts a new task type with parameters and constraints`() {
+    fun `WHEN task type is new THEN upsert inserts it with parameters and constraints`() {
         val deviceId = insertDevice()
 
         val id = dao.upsert(
@@ -61,7 +61,7 @@ class TaskTypeDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `upsert updates an existing row on the same (device,uid) and resets its constraints`() {
+    fun `WHEN a row already exists for that (device,uid) THEN upsert updates it and resets its constraints`() {
         val deviceId = insertDevice()
         val firstId = dao.upsert(
             taskType(
@@ -97,7 +97,7 @@ class TaskTypeDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getByDeviceIds groups results by deviceId and handles empty input`() {
+    fun `WHEN device ids are given THEN getByDeviceIds groups results by deviceId and handles empty input`() {
         val deviceA = insertDevice(email = "a@example.com", deviceUuid = "dev-A")
         val deviceB = insertDevice(email = "b@example.com", deviceUuid = "dev-B")
 
@@ -113,7 +113,7 @@ class TaskTypeDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getId and exists reflect the (device,uid) unique pair`() {
+    fun `WHEN (device,uid) pair is unique THEN getId and exists reflect it`() {
         val deviceA = insertDevice(email = "a@example.com", deviceUuid = "dev-A")
         val deviceB = insertDevice(email = "b@example.com", deviceUuid = "dev-B")
         val idA = dao.upsert(taskType(uid = 99L, name = "A"), deviceId = deviceA)
@@ -127,7 +127,7 @@ class TaskTypeDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getByDeviceUuid returns the matching task type and null otherwise`() {
+    fun `WHEN task type matches THEN getByDeviceUuid returns it, otherwise null`() {
         val deviceId = insertDevice(deviceUuid = "dev-X")
         dao.upsert(taskType(uid = 7L, name = "target"), deviceId = deviceId)
 
@@ -141,7 +141,7 @@ class TaskTypeDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `get and getLazy are stubs that currently return null`() {
+    fun `WHEN get and getLazy are called THEN they are stubs that currently return null`() {
         // Documented contract: both are TODO jOOQ implementations and return null today.
         val device = Device(uuid = "any", name = "n", description = "d", iot = false)
         assertNull(dao.get(device, 1L))

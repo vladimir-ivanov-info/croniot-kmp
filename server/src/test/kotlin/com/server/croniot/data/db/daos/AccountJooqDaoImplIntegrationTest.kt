@@ -29,7 +29,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `insert persists account with a bcrypt hash (not the plaintext password)`() {
+    fun `WHEN account is inserted THEN password is persisted as a bcrypt hash, not plaintext`() {
         val id = dao.insert(account("acc-1", "user@example.com"), password = "plaintext-pwd")
 
         assertTrue(id > 0)
@@ -41,7 +41,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `get returns entity when email exists and null otherwise`() {
+    fun `WHEN email exists THEN get returns the entity, otherwise null`() {
         dao.insert(account("acc-2", "present@example.com"), password = "pwd")
 
         val present = dao.get("present@example.com")
@@ -53,7 +53,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `verifyPassword returns Valid(rehashed=false) for bcrypt-stored password`() {
+    fun `WHEN password is bcrypt-stored THEN verifyPassword returns Valid(rehashed=false)`() {
         dao.insert(account("acc-3", "user3@example.com"), password = "correct")
 
         val ok = dao.verifyPassword("user3@example.com", "correct")
@@ -62,7 +62,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `verifyPassword returns Invalid when password does not match`() {
+    fun `WHEN password does not match THEN verifyPassword returns Invalid`() {
         dao.insert(account("acc-4", "user4@example.com"), password = "correct")
 
         val result = dao.verifyPassword("user4@example.com", "wrong")
@@ -70,13 +70,13 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `verifyPassword returns UserNotFound when email is unknown`() {
+    fun `WHEN email is unknown THEN verifyPassword returns UserNotFound`() {
         val result = dao.verifyPassword("nobody@example.com", "anything")
         assertEquals(VerifyPasswordResult.UserNotFound, result)
     }
 
     @Test
-    fun `verifyPassword re-hashes legacy plaintext password on first successful login`() {
+    fun `WHEN legacy plaintext password succeeds for the first time THEN verifyPassword re-hashes it`() {
         // Simulate legacy row inserted with plaintext (bypass DAO's bcrypt hashing).
         PostgresTestcontainer.dsl.execute(
             "INSERT INTO account (uuid, nickname, email, password) VALUES (?, ?, ?, ?)",
@@ -101,7 +101,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `isExistsAccountWithEmail returns true when account exists, false otherwise`() {
+    fun `WHEN account exists THEN isExistsAccountWithEmail returns true, otherwise false`() {
         dao.insert(account("acc-5", "present@example.com"), password = "pwd")
 
         assertTrue(dao.isExistsAccountWithEmail("present@example.com"))
@@ -109,7 +109,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getAccountId returns id when email exists and null otherwise`() {
+    fun `WHEN email exists THEN getAccountId returns the id, otherwise null`() {
         val createdId = dao.insert(account("acc-6", "id@example.com"), password = "pwd")
 
         assertEquals(createdId, dao.getAccountId("id@example.com"))
@@ -117,7 +117,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getEmailById returns email when id exists and null otherwise`() {
+    fun `WHEN id exists THEN getEmailById returns the email, otherwise null`() {
         val createdId = dao.insert(account("acc-7", "email@example.com"), password = "pwd")
 
         assertEquals("email@example.com", dao.getEmailById(createdId))
@@ -125,7 +125,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getAll returns every account with devices left empty`() {
+    fun `WHEN getAll is called THEN it returns every account with devices left empty`() {
         dao.insert(account("acc-a", "a@example.com"), password = "pwd")
         dao.insert(account("acc-b", "b@example.com"), password = "pwd")
 
@@ -137,12 +137,12 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getAll returns empty list when there are no accounts`() {
+    fun `WHEN there are no accounts THEN getAll returns an empty list`() {
         assertTrue(dao.getAll().isEmpty())
     }
 
     @Test
-    fun `isAccountExists returns true when account exists, false otherwise`() {
+    fun `WHEN account exists THEN isAccountExists returns true, otherwise false`() {
         dao.insert(account("acc-exists", "exists@example.com"), password = "pwd")
 
         assertTrue(dao.isAccountExists("exists@example.com"))
@@ -150,12 +150,12 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getAccountEagerSkipTasks returns null when email does not exist`() {
+    fun `WHEN email does not exist THEN getAccountEagerSkipTasks returns null`() {
         assertNull(dao.getAccountEagerSkipTasks("missing@example.com"))
     }
 
     @Test
-    fun `getAccountEagerSkipTasks returns account with empty devices when account has no devices`() {
+    fun `WHEN account has no devices THEN getAccountEagerSkipTasks returns the account with empty devices`() {
         dao.insert(account("acc-nodev", "nodev@example.com"), password = "pwd")
 
         val result = dao.getAccountEagerSkipTasks("nodev@example.com")
@@ -166,7 +166,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getAccountEagerSkipTasks returns device with empty sensorTypes and taskTypes when device has none`() {
+    fun `WHEN device has none THEN getAccountEagerSkipTasks returns the device with empty sensorTypes and taskTypes`() {
         val accountId = dao.insert(account("acc-emptydevice", "emptydevice@example.com"), password = "pwd")
         deviceDao.insert(
             DeviceEntity(uuid = "dev-empty", name = "D", description = "", iot = false, accountId = accountId)
@@ -182,7 +182,7 @@ class AccountJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getAccountEagerSkipTasks assembles the full device-sensorType-taskType graph with constraints`() {
+    fun `WHEN account has device with sensor and task types with constraints THEN getAccountEagerSkipTasks assembles the full graph`() {
         val accountId = dao.insert(account("acc-eager", "eager@example.com"), password = "pwd")
         val deviceId = deviceDao.insert(
             DeviceEntity(uuid = "dev-eager", name = "Device1", description = "desc", iot = true, accountId = accountId)

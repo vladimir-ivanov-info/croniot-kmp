@@ -21,7 +21,7 @@ class FeatureFlagRepositoryTest {
     private val repository = FeatureFlagRepository(featureFlagDao)
 
     @Test
-    fun `getAll returns every seeded flag and empty when none exist`() {
+    fun `WHEN flags are seeded THEN getAll returns every one of them, otherwise empty`() {
         assertTrue(repository.getAll().isEmpty())
 
         featureFlagDao.seed(flag("flag-a"))
@@ -31,7 +31,7 @@ class FeatureFlagRepositoryTest {
     }
 
     @Test
-    fun `getByName returns the flag for a known name and null otherwise`() {
+    fun `WHEN name is known THEN getByName returns the flag, otherwise null`() {
         featureFlagDao.seed(flag("flag-a"))
 
         assertEquals("flag-a", repository.getByName("flag-a")?.name)
@@ -39,7 +39,7 @@ class FeatureFlagRepositoryTest {
     }
 
     @Test
-    fun `setEnabled updates an existing flag and returns true`() {
+    fun `WHEN flag exists THEN setEnabled updates it and returns true`() {
         featureFlagDao.seed(flag("flag-a", enabled = false))
 
         val result = repository.setEnabled("flag-a", enabled = true)
@@ -49,7 +49,7 @@ class FeatureFlagRepositoryTest {
     }
 
     @Test
-    fun `setEnabled returns false for an unknown flag`() {
+    fun `WHEN flag is unknown THEN setEnabled returns false`() {
         assertFalse(repository.setEnabled("missing-flag", enabled = true))
     }
 

@@ -36,7 +36,7 @@ class SensorsDataControllerTest {
     }
 
     @Test
-    fun `processSensorData forwards to MqttController when the device exists`() {
+    fun `WHEN the device exists THEN processSensorData forwards to MqttController`() {
         val device = Device(uuid = "device-uuid", name = "d", iot = true)
         every { deviceService.getLazy("device-uuid") } returns device
         val captured = slot<SensorDataDto>()
@@ -51,7 +51,7 @@ class SensorsDataControllerTest {
     }
 
     @Test
-    fun `processSensorData does not forward to MqttController when the device does not exist`() {
+    fun `WHEN the device does not exist THEN processSensorData does not forward to MqttController`() {
         every { deviceService.getLazy("unknown-device") } returns null
 
         controller.processSensorData("unknown-device", MessageSensorData(sensorTypeId = 7L, value = "23.5"))

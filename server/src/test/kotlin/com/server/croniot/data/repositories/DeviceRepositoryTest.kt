@@ -20,7 +20,7 @@ class DeviceRepositoryTest {
     private val repository = DeviceRepository(deviceDao)
 
     @Test
-    fun `getId returns the id for a known uuid and null otherwise`() {
+    fun `WHEN uuid is known THEN getId returns the id, otherwise null`() {
         val id = deviceDao.seed(deviceEntity(uuid = "device-uuid"))
 
         assertEquals(id, repository.getId("device-uuid"))
@@ -28,7 +28,7 @@ class DeviceRepositoryTest {
     }
 
     @Test
-    fun `isDeviceExists is true for a known uuid and false otherwise`() {
+    fun `WHEN uuid is known THEN isDeviceExists is true, otherwise false`() {
         deviceDao.seed(deviceEntity(uuid = "device-uuid"))
 
         assertTrue(repository.isDeviceExists("device-uuid"))
@@ -36,7 +36,7 @@ class DeviceRepositoryTest {
     }
 
     @Test
-    fun `getByUuid returns the device for a known uuid and null otherwise`() {
+    fun `WHEN uuid is known THEN getByUuid returns the device, otherwise null`() {
         deviceDao.seed(deviceEntity(uuid = "device-uuid", name = "Kitchen sensor"))
 
         assertEquals("Kitchen sensor", repository.getByUuid("device-uuid")?.name)
@@ -44,7 +44,7 @@ class DeviceRepositoryTest {
     }
 
     @Test
-    fun `getLazy returns the device for a known uuid and null otherwise`() {
+    fun `WHEN uuid is known THEN getLazy returns the device, otherwise null`() {
         deviceDao.seed(deviceEntity(uuid = "device-uuid", name = "Kitchen sensor"))
 
         assertEquals("Kitchen sensor", repository.getLazy("device-uuid")?.name)
@@ -52,7 +52,7 @@ class DeviceRepositoryTest {
     }
 
     @Test
-    fun `getAll returns every seeded device`() {
+    fun `WHEN devices are seeded THEN getAll returns every one of them`() {
         deviceDao.seed(deviceEntity(uuid = "device-1"))
         deviceDao.seed(deviceEntity(uuid = "device-2"))
 
@@ -60,7 +60,7 @@ class DeviceRepositoryTest {
     }
 
     @Test
-    fun `createDevice maps the domain device into an entity and persists it so it becomes retrievable`() {
+    fun `WHEN createDevice is called THEN it maps the domain device into an entity and persists it so it becomes retrievable`() {
         val device = Device(uuid = "new-device", name = "New device", description = "desc", iot = true)
 
         val id = repository.createDevice(device, accountId = 7L)

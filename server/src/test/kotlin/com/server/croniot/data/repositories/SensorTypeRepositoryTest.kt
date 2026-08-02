@@ -16,7 +16,7 @@ class SensorTypeRepositoryTest {
     private val repository = SensorTypeRepository(sensorTypeDao)
 
     @Test
-    fun `upsert persists the sensor type so it becomes retrievable by device id`() {
+    fun `WHEN upsert is called THEN the sensor type is persisted and becomes retrievable by device id`() {
         val sensorType = SensorType(uid = 1L, name = "Temp", description = "", parameters = emptyList())
 
         repository.upsert(sensorType, deviceId = 42L)

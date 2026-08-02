@@ -34,7 +34,7 @@ class DeviceServiceTest {
     )
 
     @Test
-    fun `registerDevice returns failure when account does not exist`() {
+    fun `WHEN account does not exist THEN registerDevice returns failure`() {
         every { accountRepository.isAccountExists("user@example.com") } returns false
 
         val result = service.registerDevice(message)
@@ -45,7 +45,7 @@ class DeviceServiceTest {
     }
 
     @Test
-    fun `registerDevice returns failure when account id cannot be resolved`() {
+    fun `WHEN account id cannot be resolved THEN registerDevice returns failure`() {
         every { accountRepository.isAccountExists("user@example.com") } returns true
         every { accountRepository.getAccountId("user@example.com") } returns null
 
@@ -57,7 +57,7 @@ class DeviceServiceTest {
     }
 
     @Test
-    fun `registerDevice creates the device and a fresh token on success`() {
+    fun `WHEN registration succeeds THEN registerDevice creates the device and a fresh token`() {
         every { accountRepository.isAccountExists("user@example.com") } returns true
         every { accountRepository.getAccountId("user@example.com") } returns 10L
         every { deviceRepository.createDevice(any(), 10L) } returns 99L
@@ -73,7 +73,7 @@ class DeviceServiceTest {
     }
 
     @Test
-    fun `registerDevice returns a success-flagged failure message when an exception is thrown`() {
+    fun `WHEN an exception is thrown THEN registerDevice returns a success-flagged failure message`() {
         every { accountRepository.isAccountExists("user@example.com") } returns true
         every { accountRepository.getAccountId("user@example.com") } returns 10L
         every { deviceRepository.createDevice(any(), 10L) } throws RuntimeException("already exists")

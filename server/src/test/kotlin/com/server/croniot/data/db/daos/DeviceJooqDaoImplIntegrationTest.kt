@@ -24,7 +24,7 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `insert persists device and returns a positive id`() {
+    fun `WHEN insert is called THEN it persists the device and returns a positive id`() {
         val accountId = insertAccount()
 
         val id = dao.insert(device(uuid = "dev-1", accountId = accountId))
@@ -33,14 +33,14 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `insert requires a non-zero accountId`() {
+    fun `WHEN accountId is zero THEN insert throws IllegalArgumentException`() {
         assertThrows<IllegalArgumentException> {
             dao.insert(device(uuid = "dev-orphan", accountId = 0L))
         }
     }
 
     @Test
-    fun `insert enforces uuid uniqueness`() {
+    fun `WHEN uuid already exists THEN insert throws DataAccessException`() {
         val accountId = insertAccount()
         dao.insert(device(uuid = "dup", accountId = accountId))
 
@@ -50,7 +50,7 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `upsert inserts when uuid is new and updates when uuid already exists`() {
+    fun `WHEN uuid is new THEN upsert inserts, otherwise it updates the existing row`() {
         val accountId = insertAccount()
 
         val firstId = dao.upsert(
@@ -70,7 +70,7 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getByUuid returns device when present and null otherwise`() {
+    fun `WHEN device is present THEN getByUuid returns it, otherwise null`() {
         val accountId = insertAccount()
         dao.insert(device(uuid = "known", name = "Thermostat", accountId = accountId))
 
@@ -83,7 +83,7 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getLazy returns minimal projection and null for unknown uuid`() {
+    fun `WHEN uuid is known THEN getLazy returns a minimal projection, otherwise null`() {
         val accountId = insertAccount()
         dao.insert(device(uuid = "lazy-known", name = "ignored-by-lazy", accountId = accountId))
 
@@ -99,7 +99,7 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getDeviceId returns id when uuid exists and null otherwise`() {
+    fun `WHEN uuid exists THEN getDeviceId returns the id, otherwise null`() {
         val accountId = insertAccount()
         val id = dao.insert(device(uuid = "has-id", accountId = accountId))
 
@@ -108,7 +108,7 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `isDeviceExists returns true only when uuid is present`() {
+    fun `WHEN uuid is present THEN isDeviceExists returns true, otherwise false`() {
         val accountId = insertAccount()
         dao.insert(device(uuid = "present", accountId = accountId))
 
@@ -117,7 +117,7 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getDevices returns only non-android rows of the given account`() {
+    fun `WHEN account has android and non-android devices THEN getDevices returns only the non-android rows of that account`() {
         val accountA = insertAccount(email = "a@example.com")
         val accountB = insertAccount(email = "b@example.com")
 
@@ -138,7 +138,7 @@ class DeviceJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getAll returns every row regardless of account or uuid prefix`() {
+    fun `WHEN devices belong to different accounts and uuid prefixes THEN getAll returns every row regardless`() {
         val accountA = insertAccount(email = "all-a@example.com")
         val accountB = insertAccount(email = "all-b@example.com")
         dao.insert(device(uuid = "all-1", accountId = accountA))

@@ -27,7 +27,7 @@ class RefreshTokenDaoImplIntegrationTest {
     }
 
     @Test
-    fun `create persists and returns a positive id`() {
+    fun `WHEN create is called THEN it persists the token and returns a positive id`() {
         val accountId = insertAccount()
 
         val id = dao.create(
@@ -42,7 +42,7 @@ class RefreshTokenDaoImplIntegrationTest {
     }
 
     @Test
-    fun `findByHash returns the record when present and null when absent`() {
+    fun `WHEN record is present THEN findByHash returns it, otherwise null`() {
         val accountId = insertAccount()
         val id = dao.create(accountId, "hash-2", "device-2", now, tomorrow)
 
@@ -60,7 +60,7 @@ class RefreshTokenDaoImplIntegrationTest {
     }
 
     @Test
-    fun `create enforces the token_hash unique constraint`() {
+    fun `WHEN token_hash already exists THEN create throws DataAccessException`() {
         val accountId = insertAccount()
         dao.create(accountId, "dup", null, now, tomorrow)
 
@@ -70,7 +70,7 @@ class RefreshTokenDaoImplIntegrationTest {
     }
 
     @Test
-    fun `revokeById stamps revoked_at and leaves other rows untouched`() {
+    fun `WHEN revokeById is called THEN it stamps revoked_at and leaves other rows untouched`() {
         val accountId = insertAccount()
         val targetId = dao.create(accountId, "target", null, now, tomorrow)
         dao.create(accountId, "untouched", null, now, tomorrow)
@@ -87,7 +87,7 @@ class RefreshTokenDaoImplIntegrationTest {
     }
 
     @Test
-    fun `revokeAllForAccount only affects rows of that account that are still active`() {
+    fun `WHEN revokeAllForAccount is called THEN it only affects rows of that account that are still active`() {
         val accountA = insertAccount(email = "a@example.com")
         val accountB = insertAccount(email = "b@example.com")
         val tokenA1 = dao.create(accountA, "a1", null, now, tomorrow)
@@ -111,7 +111,7 @@ class RefreshTokenDaoImplIntegrationTest {
     }
 
     @Test
-    fun `create allows null deviceUuid`() {
+    fun `WHEN deviceUuid is null THEN create allows it`() {
         val accountId = insertAccount()
 
         dao.create(accountId, "no-device", deviceUuid = null, issuedAt = now, expiresAt = tomorrow)

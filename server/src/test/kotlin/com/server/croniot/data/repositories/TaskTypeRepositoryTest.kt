@@ -24,7 +24,7 @@ class TaskTypeRepositoryTest {
     private val device = Device(uuid = "device-uuid", name = "Device", iot = true)
 
     @Test
-    fun `getId returns non-null for a known device and task type, null otherwise`() {
+    fun `WHEN device and task type are known THEN getId returns non-null, otherwise null`() {
         taskTypeDao.seed(deviceId = 1L, taskType = TaskType(uid = 10L, name = "Water", description = ""))
 
         assertEquals(true, repository.getId(deviceId = 1L, taskTypeUid = 10L) != null)
@@ -32,7 +32,7 @@ class TaskTypeRepositoryTest {
     }
 
     @Test
-    fun `get returns the task type for a known device and uid, null otherwise`() {
+    fun `WHEN device and uid are known THEN get returns the task type, otherwise null`() {
         val taskType = TaskType(uid = 10L, name = "Water", description = "")
         taskTypeDao.seedForDevice(device, taskType)
 
@@ -41,7 +41,7 @@ class TaskTypeRepositoryTest {
     }
 
     @Test
-    fun `getLazy returns the task type for a known device and uid, null otherwise`() {
+    fun `WHEN device and uid are known THEN getLazy returns the task type, otherwise null`() {
         val taskType = TaskType(uid = 10L, name = "Water", description = "")
         taskTypeDao.seedForDevice(device, taskType)
 
@@ -50,7 +50,7 @@ class TaskTypeRepositoryTest {
     }
 
     @Test
-    fun `exists is true once seeded for that device and false otherwise`() {
+    fun `WHEN task type is seeded for that device THEN exists is true, otherwise false`() {
         taskTypeDao.seed(deviceId = 1L, taskType = TaskType(uid = 10L, name = "Water", description = ""))
 
         assertTrue(repository.exists(taskTypeUid = 10L, deviceId = 1L))
@@ -59,7 +59,7 @@ class TaskTypeRepositoryTest {
     }
 
     @Test
-    fun `insert persists the task type so it becomes visible to exists`() {
+    fun `WHEN insert is called THEN the task type is persisted and becomes visible to exists`() {
         val taskType = TaskType(uid = 10L, name = "Water", description = "")
 
         repository.insert(taskType, deviceId = 1L)
@@ -68,7 +68,7 @@ class TaskTypeRepositoryTest {
     }
 
     @Test
-    fun `getParameterTaskByUid returns the parameter for a known task type, null otherwise`() {
+    fun `WHEN task type is known THEN getParameterTaskByUid returns the parameter, otherwise null`() {
         val parameter = ParameterTask(uid = 5L, name = "duration", type = "int", unit = "s", description = "")
         parameterTaskDao.seed(taskTypeId = 1L, parameterTask = parameter)
 

@@ -62,7 +62,7 @@ class TaskServiceTest {
     }
 
     @Test
-    fun `addTask returns failure result and skips creation when device is unknown`() {
+    fun `WHEN device is unknown THEN addTask returns failure result and skips creation`() {
         every { deviceRepository.getLazy("device-uuid") } returns null
 
         val result = service.addTask(message)
@@ -72,7 +72,7 @@ class TaskServiceTest {
     }
 
     @Test
-    fun `addTask returns failure result when deviceId cannot be resolved`() {
+    fun `WHEN deviceId cannot be resolved THEN addTask returns failure result`() {
         every { deviceRepository.getLazy("device-uuid") } returns device
         every { deviceRepository.getId("device-uuid") } returns null
 
@@ -83,7 +83,7 @@ class TaskServiceTest {
     }
 
     @Test
-    fun `addTask returns failure result when task type does not exist for device`() {
+    fun `WHEN task type does not exist for device THEN addTask returns failure result`() {
         every { deviceRepository.getLazy("device-uuid") } returns device
         every { deviceRepository.getId("device-uuid") } returns 5L
         every { taskTypeRepository.exists(taskTypeUid = 42L, deviceId = 5L) } returns false
@@ -95,7 +95,7 @@ class TaskServiceTest {
     }
 
     @Test
-    fun `addTask persists the task with resolved parameters and returns success`() {
+    fun `WHEN parameters are resolved THEN addTask persists the task and returns success`() {
         val parameterTask = ParameterTask(
             uid = 1L,
             name = "power",
@@ -121,7 +121,7 @@ class TaskServiceTest {
     }
 
     @Test
-    fun `addTask skips unresolved parameters without failing`() {
+    fun `WHEN parameters cannot be resolved THEN addTask skips them without failing`() {
         every { deviceRepository.getLazy("device-uuid") } returns device
         every { deviceRepository.getId("device-uuid") } returns 5L
         every { taskTypeRepository.exists(taskTypeUid = 42L, deviceId = 5L) } returns true
@@ -137,7 +137,7 @@ class TaskServiceTest {
     }
 
     @Test
-    fun `addTask returns failure result when repository throws`() {
+    fun `WHEN repository throws THEN addTask returns failure result`() {
         every { deviceRepository.getLazy("device-uuid") } throws RuntimeException("boom")
 
         val result = service.addTask(message)
@@ -146,7 +146,7 @@ class TaskServiceTest {
     }
 
     @Test
-    fun `getTasksByDeviceUuid maps repository tasks to dtos`() {
+    fun `WHEN getTasksByDeviceUuid is called THEN it maps repository tasks to dtos`() {
         val parameterTask = ParameterTask(uid = 1L, name = "power", type = "bool", unit = "", description = "")
         val stateInfo = TaskStateInfo(
             taskUid = 100L,
@@ -173,7 +173,7 @@ class TaskServiceTest {
     }
 
     @Test
-    fun `requestTaskStateInfoSync always returns a success result`() {
+    fun `WHEN requestTaskStateInfoSync is called THEN it always returns a success result`() {
         val result = service.requestTaskStateInfoSync("device-uuid", 42L)
 
         assertTrue(result.success)

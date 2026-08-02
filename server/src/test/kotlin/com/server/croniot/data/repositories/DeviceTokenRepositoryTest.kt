@@ -22,14 +22,14 @@ class DeviceTokenRepositoryTest {
     private val repository = DeviceTokenRepository(deviceTokenDao)
 
     @Test
-    fun `createDeviceToken builds and persists a device token from the raw device id and token`() {
+    fun `WHEN createDeviceToken is called with a raw device id and token THEN it builds and persists a device token`() {
         repository.createDeviceToken(deviceId = 5L, token = "tok-123")
 
         assertEquals(listOf(DeviceToken(deviceId = 5L, token = "tok-123")), deviceTokenDao.insertedTokens)
     }
 
     @Test
-    fun `getDevice returns the associated device for a known token and null otherwise`() {
+    fun `WHEN token is known THEN getDevice returns the associated device, otherwise null`() {
         val device = Device(uuid = "device-uuid", name = "Device", iot = true)
         deviceTokenDao.seed("tok-123", device)
 
@@ -38,7 +38,7 @@ class DeviceTokenRepositoryTest {
     }
 
     @Test
-    fun `getDeviceUuid returns the associated device uuid for a known token and null otherwise`() {
+    fun `WHEN token is known THEN getDeviceUuid returns the associated device uuid, otherwise null`() {
         deviceTokenDao.seedValidToken(deviceUuid = "device-uuid", token = "tok-123")
 
         assertEquals("device-uuid", repository.getDeviceUuid("tok-123"))
@@ -46,7 +46,7 @@ class DeviceTokenRepositoryTest {
     }
 
     @Test
-    fun `isTokenCorrect is true only for the matching device uuid and token pair`() {
+    fun `WHEN device uuid and token match THEN isTokenCorrect is true, otherwise false`() {
         deviceTokenDao.seedValidToken(deviceUuid = "device-uuid", token = "tok-123")
 
         assertTrue(repository.isTokenCorrect("device-uuid", "tok-123"))

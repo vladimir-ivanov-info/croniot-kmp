@@ -26,7 +26,7 @@ class ParameterTaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getByUid returns the parameter with its constraints when uid and taskTypeId match`() {
+    fun `WHEN uid and taskTypeId match THEN getByUid returns the parameter with its constraints`() {
         val taskTypeId = insertTaskType(
             taskTypeUid = 1L,
             parameters = listOf(
@@ -53,7 +53,7 @@ class ParameterTaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getByUid returns a parameter with empty constraints map when it has none`() {
+    fun `WHEN the parameter has no constraints THEN getByUid returns it with an empty constraints map`() {
         val taskTypeId = insertTaskType(
             taskTypeUid = 1L,
             parameters = listOf(
@@ -75,14 +75,14 @@ class ParameterTaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getByUid returns null when the uid does not exist for the given taskTypeId`() {
+    fun `WHEN the uid does not exist for the given taskTypeId THEN getByUid returns null`() {
         val taskTypeId = insertTaskType(taskTypeUid = 1L, parameters = emptyList())
 
         assertNull(dao.getByUid(parameterTaskUid = 999L, taskTypeId = taskTypeId))
     }
 
     @Test
-    fun `getByUid returns null when the parameter exists but belongs to a different taskType`() {
+    fun `WHEN the parameter exists but belongs to a different taskType THEN getByUid returns null`() {
         val taskTypeAId = insertTaskType(
             taskTypeUid = 1L,
             email = "a@example.com",
@@ -103,7 +103,7 @@ class ParameterTaskDaoJooqImplIntegrationTest {
     }
 
     @Test
-    fun `getByUid throws IllegalArgumentException when taskTypeId is 0`() {
+    fun `WHEN taskTypeId is 0 THEN getByUid throws IllegalArgumentException`() {
         assertThrows(IllegalArgumentException::class.java) {
             dao.getByUid(parameterTaskUid = 1L, taskTypeId = 0L)
         }

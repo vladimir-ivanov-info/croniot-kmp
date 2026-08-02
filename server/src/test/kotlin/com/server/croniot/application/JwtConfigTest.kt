@@ -18,7 +18,7 @@ class JwtConfigTest {
     private val now: Instant = Instant.now()
 
     @Test
-    fun `issues access token with issuer, audience, subject, email claim and expiry`() {
+    fun `WHEN issueAccessToken is called THEN it issues a token with issuer, audience, subject, email claim and expiry`() {
         val secrets = Fixtures.secrets(jwtAccessTokenTtlMinutes = 15L)
         val config = JwtConfig(secrets)
 
@@ -33,7 +33,7 @@ class JwtConfigTest {
     }
 
     @Test
-    fun `verifier rejects token signed with a different secret`() {
+    fun `WHEN token is signed with a different secret THEN verifier rejects it`() {
         val config = JwtConfig(Fixtures.secrets(jwtSecretCurrent = "secret-A-long-enough"))
 
         val foreignToken = JWT.create()
@@ -50,7 +50,7 @@ class JwtConfigTest {
     }
 
     @Test
-    fun `decodeAllowingPrevious accepts tokens signed with previous secret`() {
+    fun `WHEN token is signed with previous secret THEN decodeAllowingPrevious accepts it`() {
         val previous = "secret-prev-long-enough-for-hmac"
         val current = "secret-current-long-enough-for-hmac"
         val config = JwtConfig(
@@ -71,7 +71,7 @@ class JwtConfigTest {
     }
 
     @Test
-    fun `decodeAllowingPrevious returns null when token is signed by an unknown secret`() {
+    fun `WHEN token is signed by an unknown secret THEN decodeAllowingPrevious returns null`() {
         val config = JwtConfig(
             Fixtures.secrets(
                 jwtSecretCurrent = "secret-current-long-enough-for-hmac",
@@ -90,7 +90,7 @@ class JwtConfigTest {
     }
 
     @Test
-    fun `decodeAllowingPrevious returns null when no previous secret is configured and current fails`() {
+    fun `WHEN no previous secret is configured and current fails THEN decodeAllowingPrevious returns null`() {
         val config = JwtConfig(
             Fixtures.secrets(
                 jwtSecretCurrent = "secret-current-long-enough-for-hmac",

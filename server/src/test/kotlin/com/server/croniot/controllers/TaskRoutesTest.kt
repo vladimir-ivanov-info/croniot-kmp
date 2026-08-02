@@ -94,7 +94,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `POST add_task delegates to service and returns its Result`() = testApplication {
+    fun `WHEN add_task is called THEN POST add_task delegates to service and returns its Result`() = testApplication {
         val taskService = mockk<TaskService>()
         val captured = slot<MessageAddTask>()
         every { taskService.addTask(capture(captured)) } returns DomainResult(success = true, message = "")
@@ -118,7 +118,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskConfiguration returns 200 with list when service has configurations`() = testApplication {
+    fun `WHEN service has configurations THEN GET taskConfiguration returns 200 with list`() = testApplication {
         val taskService = mockk<TaskService>()
         val taskDto = TaskDto(uid = 1L, taskTypeUid = 42L)
         every { taskService.getTasksByDeviceUuid("device-uuid") } returns listOf(taskDto)
@@ -133,7 +133,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskConfiguration returns 404 NOT_FOUND when service returns an empty list`() = testApplication {
+    fun `WHEN service returns an empty list THEN GET taskConfiguration returns 404 NOT_FOUND`() = testApplication {
         val taskService = mockk<TaskService>()
         every { taskService.getTasksByDeviceUuid(any()) } returns emptyList()
         application { testModule(taskService) }
@@ -147,7 +147,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskStateInfoHistory passes query params and returns serialized history`() = testApplication {
+    fun `WHEN query params are provided THEN GET taskStateInfoHistory passes them and returns serialized history`() = testApplication {
         val taskService = mockk<TaskService>()
         val entry = TaskStateInfoHistoryEntryDto(
             stateInfoId = 10L,
@@ -194,7 +194,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskStateInfoHistory defaults limit to 50 and passes null query params when absent`() = testApplication {
+    fun `WHEN query params are absent THEN GET taskStateInfoHistory defaults limit to 50 and passes null query params`() = testApplication {
         val taskService = mockk<TaskService>()
         every {
             taskService.getTaskStateInfoHistory(
@@ -222,7 +222,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskStateInfoHistoryCount returns serialized count`() = testApplication {
+    fun `WHEN taskStateInfoHistoryCount is called THEN GET taskStateInfoHistoryCount returns serialized count`() = testApplication {
         val taskService = mockk<TaskService>()
         every {
             taskService.getTaskStateInfoHistoryCount("device-uuid", any(), any(), any())
@@ -236,7 +236,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `POST request_task_state_info_sync forwards to service and returns its Result`() = testApplication {
+    fun `WHEN request_task_state_info_sync is called THEN POST request_task_state_info_sync forwards to service and returns its Result`() = testApplication {
         val taskService = mockk<TaskService>()
         every { taskService.requestTaskStateInfoSync("device-uuid", 42L) } returns DomainResult(success = true)
         application { testModule(taskService) }
@@ -257,7 +257,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskStateInfoHistory parses an ISO offset date-time before param that is not epoch millis`() =
+    fun `WHEN before param is an ISO offset date-time that is not epoch millis THEN GET taskStateInfoHistory parses it`() =
         testApplication {
             val taskService = mockk<TaskService>()
             val expectedBefore = OffsetDateTime.of(2026, 4, 20, 10, 0, 0, 0, ZoneOffset.UTC)
@@ -287,7 +287,7 @@ class TaskRoutesTest {
         }
 
     @Test
-    fun `GET taskStateInfoHistory treats an unparseable before param as absent`() = testApplication {
+    fun `WHEN before param is unparseable THEN GET taskStateInfoHistory treats it as absent`() = testApplication {
         val taskService = mockk<TaskService>()
         every {
             taskService.getTaskStateInfoHistory(
@@ -323,7 +323,7 @@ class TaskRoutesTest {
     )
 
     @Test
-    fun `addTaskProgress does nothing when the device does not exist`() {
+    fun `WHEN the device does not exist THEN addTaskProgress does nothing`() {
         val taskService = mockk<TaskService>()
         val taskTypeService = mockk<TaskTypeService>()
         val deviceService = mockk<DeviceService>()
@@ -339,7 +339,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `addTaskProgress does nothing when the device id cannot be resolved`() {
+    fun `WHEN the device id cannot be resolved THEN addTaskProgress does nothing`() {
         val taskService = mockk<TaskService>()
         val taskTypeService = mockk<TaskTypeService>()
         val deviceService = mockk<DeviceService>()
@@ -355,7 +355,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `addTaskProgress does nothing when the task type id cannot be resolved`() {
+    fun `WHEN the task type id cannot be resolved THEN addTaskProgress does nothing`() {
         val taskService = mockk<TaskService>()
         val taskTypeService = mockk<TaskTypeService>()
         val deviceService = mockk<DeviceService>()
@@ -372,7 +372,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `addTaskProgress creates a new task and sends it over MQTT when no existing task is found`() {
+    fun `WHEN no existing task is found THEN addTaskProgress creates a new task and sends it over MQTT`() {
         val taskService = mockk<TaskService>()
         val taskTypeService = mockk<TaskTypeService>()
         val deviceService = mockk<DeviceService>()
@@ -395,7 +395,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `addTaskProgress does not send anything over MQTT when new task creation fails`() {
+    fun `WHEN new task creation fails THEN addTaskProgress does not send anything over MQTT`() {
         val taskService = mockk<TaskService>()
         val taskTypeService = mockk<TaskTypeService>()
         val deviceService = mockk<DeviceService>()
@@ -414,7 +414,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `addTaskProgress updates an existing task and sends the new state info over MQTT`() {
+    fun `WHEN an existing task is found THEN addTaskProgress updates it and sends the new state info over MQTT`() {
         val taskService = mockk<TaskService>()
         val taskTypeService = mockk<TaskTypeService>()
         val deviceService = mockk<DeviceService>()
@@ -437,7 +437,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `addTaskProgress swallows exceptions thrown by its dependencies`() {
+    fun `WHEN a dependency throws an exception THEN addTaskProgress swallows it`() {
         val taskService = mockk<TaskService>()
         val taskTypeService = mockk<TaskTypeService>()
         val deviceService = mockk<DeviceService>()

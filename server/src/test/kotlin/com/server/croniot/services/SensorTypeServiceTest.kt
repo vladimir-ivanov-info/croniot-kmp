@@ -34,7 +34,7 @@ class SensorTypeServiceTest {
     )
 
     @Test
-    fun `registerSensorType returns failure when device does not exist`() {
+    fun `WHEN device does not exist THEN registerSensorType returns failure`() {
         every { deviceRepository.isDeviceExists("device-uuid") } returns false
         every { deviceTokenRepository.isTokenCorrect("device-uuid", "device-token") } returns true
 
@@ -46,7 +46,7 @@ class SensorTypeServiceTest {
     }
 
     @Test
-    fun `registerSensorType returns failure when token is incorrect`() {
+    fun `WHEN token is incorrect THEN registerSensorType returns failure`() {
         every { deviceRepository.isDeviceExists("device-uuid") } returns true
         every { deviceTokenRepository.isTokenCorrect("device-uuid", "device-token") } returns false
 
@@ -58,7 +58,7 @@ class SensorTypeServiceTest {
     }
 
     @Test
-    fun `registerSensorType returns failure when device id cannot be resolved`() {
+    fun `WHEN device id cannot be resolved THEN registerSensorType returns failure`() {
         every { deviceRepository.isDeviceExists("device-uuid") } returns true
         every { deviceTokenRepository.isTokenCorrect("device-uuid", "device-token") } returns true
         every { deviceRepository.getId("device-uuid") } returns null
@@ -71,7 +71,7 @@ class SensorTypeServiceTest {
     }
 
     @Test
-    fun `registerSensorType upserts the sensor type and returns success`() {
+    fun `WHEN inputs are valid THEN registerSensorType upserts the sensor type and returns success`() {
         every { deviceRepository.isDeviceExists("device-uuid") } returns true
         every { deviceTokenRepository.isTokenCorrect("device-uuid", "device-token") } returns true
         every { deviceRepository.getId("device-uuid") } returns 5L

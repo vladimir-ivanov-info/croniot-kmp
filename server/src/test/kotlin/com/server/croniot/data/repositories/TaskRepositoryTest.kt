@@ -25,7 +25,7 @@ class TaskRepositoryTest {
     private val repository = TaskRepository(taskDao, taskStateInfoDao)
 
     @Test
-    fun `get returns the task for a known key and null otherwise`() {
+    fun `WHEN key is known THEN get returns the task, otherwise null`() {
         val task = Task(uid = 1L, parametersValues = emptyMap(), taskTypeUid = 10L)
         taskDao.seed("device-uuid", task)
 
@@ -35,7 +35,7 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun `createTaskState inserts the state info against the given task id`() {
+    fun `WHEN createTaskState is called THEN it inserts the state info against the given task id`() {
         val stateInfo = TaskStateInfo(
             taskUid = 1L,
             dateTime = ZonedDateTime.now(),
@@ -50,14 +50,14 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun `create by taskTypeId returns a freshly created task with the given task type uid`() {
+    fun `WHEN create is called by taskTypeId THEN it returns a freshly created task with the given task type uid`() {
         val task = repository.create(taskTypeId = 5L, taskTypeUid = 99L)
 
         assertEquals(99L, task?.taskTypeUid)
     }
 
     @Test
-    fun `create by task inserts the full task`() {
+    fun `WHEN create is called by task THEN it inserts the full task`() {
         val task = Task(uid = 7L, parametersValues = emptyMap(), taskTypeUid = 10L)
 
         repository.create(task)
@@ -66,7 +66,7 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun `getAll returns only the tasks for the given device`() {
+    fun `WHEN getAll is called for a device THEN it returns only the tasks for that device`() {
         val taskA = Task(uid = 1L, parametersValues = emptyMap(), taskTypeUid = 10L)
         val taskB = Task(uid = 2L, parametersValues = emptyMap(), taskTypeUid = 10L)
         taskDao.seed("device-1", taskA)
@@ -77,7 +77,7 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun `getAllStateInfoHistory filters by task type uid and respects the limit`() {
+    fun `WHEN taskTypeUid and limit are given THEN getAllStateInfoHistory filters by task type uid and respects the limit`() {
         val entryA = historyEntry(stateInfoId = 1L, taskTypeUid = 10L)
         val entryB = historyEntry(stateInfoId = 2L, taskTypeUid = 20L)
         taskDao.seedHistory("device-uuid", entryA)
@@ -94,7 +94,7 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun `getAllStateInfoHistoryCount counts entries matching the optional task type filter`() {
+    fun `WHEN an optional task type filter is given THEN getAllStateInfoHistoryCount counts only matching entries`() {
         taskDao.seedHistory("device-uuid", historyEntry(stateInfoId = 1L, taskTypeUid = 10L))
         taskDao.seedHistory("device-uuid", historyEntry(stateInfoId = 2L, taskTypeUid = 20L))
 

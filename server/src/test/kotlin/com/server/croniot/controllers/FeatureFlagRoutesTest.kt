@@ -88,7 +88,7 @@ class FeatureFlagRoutesTest {
         jwtConfig.issueAccessToken(accountId = 2L, email = "user@example.com", isAdmin = false).token
 
     @Test
-    fun `GET feature_flags returns 200 with all flags from service`() = testApplication {
+    fun `WHEN feature flags are requested THEN GET feature_flags returns 200 with all flags from service`() = testApplication {
         val service = mockk<FeatureFlagService>()
         every { service.getAll() } returns listOf(FeatureFlagDto("dark_mode", true, "desc"))
         application { testModule(service) }
@@ -103,7 +103,7 @@ class FeatureFlagRoutesTest {
     }
 
     @Test
-    fun `PUT admin feature_flags updates flag, broadcasts over MQTT and returns 200 when caller is admin`() =
+    fun `WHEN caller is admin THEN PUT admin feature_flags updates flag, broadcasts over MQTT and returns 200`() =
         testApplication {
             val service = mockk<FeatureFlagService>()
             val updated = FeatureFlagDto("dark_mode", true, "desc")
@@ -125,7 +125,7 @@ class FeatureFlagRoutesTest {
         }
 
     @Test
-    fun `PUT admin feature_flags returns 401 UNAUTHORIZED and does not broadcast when caller is not admin`() =
+    fun `WHEN caller is not admin THEN PUT admin feature_flags returns 401 UNAUTHORIZED and does not broadcast`() =
         testApplication {
             val service = mockk<FeatureFlagService>()
             application { testModule(service) }
@@ -143,7 +143,7 @@ class FeatureFlagRoutesTest {
         }
 
     @Test
-    fun `PUT admin feature_flags returns 401 UNAUTHORIZED via auth challenge when no token is sent`() =
+    fun `WHEN no token is sent THEN PUT admin feature_flags returns 401 UNAUTHORIZED via auth challenge`() =
         testApplication {
             val service = mockk<FeatureFlagService>()
             application { testModule(service) }
@@ -158,7 +158,7 @@ class FeatureFlagRoutesTest {
         }
 
     @Test
-    fun `PUT admin feature_flags returns 404 NOT_FOUND when flag name does not exist`() = testApplication {
+    fun `WHEN flag name does not exist THEN PUT admin feature_flags returns 404 NOT_FOUND`() = testApplication {
         val service = mockk<FeatureFlagService>()
         every {
             service.setEnabled("unknown", true)

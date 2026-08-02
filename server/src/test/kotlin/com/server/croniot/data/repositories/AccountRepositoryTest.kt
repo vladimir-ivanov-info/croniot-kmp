@@ -31,12 +31,12 @@ class AccountRepositoryTest {
     private val repository = AccountRepository(accountDao, deviceDao, sensorTypeDao, taskTypeDao)
 
     @Test
-    fun `getAccount returns null when the email is unknown`() {
+    fun `WHEN email is unknown THEN getAccount returns null`() {
         assertNull(repository.getAccount("missing@example.com"))
     }
 
     @Test
-    fun `getAccount assembles devices with their sensor types and task types`() {
+    fun `WHEN account has devices with sensor and task types THEN getAccount assembles them all`() {
         accountDao.seed(AccountEntity(id = 1L, uuid = "acc-uuid", nickname = "nick", email = "user@example.com", password = "hash"))
         val deviceId = deviceDao.seed(
             DeviceEntity(uuid = "device-uuid", name = "Device", description = "", iot = true, accountId = 1L),
@@ -56,7 +56,7 @@ class AccountRepositoryTest {
     }
 
     @Test
-    fun `getAccountId returns the id for a known email and null otherwise`() {
+    fun `WHEN email is known THEN getAccountId returns the id, otherwise null`() {
         accountDao.seed(AccountEntity(id = 5L, uuid = "u", nickname = "n", email = "a@b.com", password = "h"))
 
         assertEquals(5L, repository.getAccountId("a@b.com"))
@@ -64,7 +64,7 @@ class AccountRepositoryTest {
     }
 
     @Test
-    fun `getEmailById returns the email for a known id and null otherwise`() {
+    fun `WHEN id is known THEN getEmailById returns the email, otherwise null`() {
         accountDao.seed(AccountEntity(id = 5L, uuid = "u", nickname = "n", email = "a@b.com", password = "h"))
 
         assertEquals("a@b.com", repository.getEmailById(5L))
@@ -72,19 +72,19 @@ class AccountRepositoryTest {
     }
 
     @Test
-    fun `isEmailAvailable is true when nobody has that email`() {
+    fun `WHEN nobody has that email THEN isEmailAvailable is true`() {
         assertTrue(repository.isEmailAvailable("free@example.com"))
     }
 
     @Test
-    fun `isEmailAvailable is false once the email is taken`() {
+    fun `WHEN the email is taken THEN isEmailAvailable is false`() {
         accountDao.seed(AccountEntity(id = 1L, uuid = "u", nickname = "n", email = "taken@example.com", password = "h"))
 
         assertFalse(repository.isEmailAvailable("taken@example.com"))
     }
 
     @Test
-    fun `createAccount persists the account and it becomes retrievable`() {
+    fun `WHEN createAccount is called THEN the account is persisted and becomes retrievable`() {
         val id = repository.createAccount("acc-uuid", "nick", "new@example.com", "secret")
 
         assertTrue(id > 0)
@@ -92,21 +92,21 @@ class AccountRepositoryTest {
     }
 
     @Test
-    fun `isAccountExists reflects whether the account was created`() {
+    fun `WHEN the account was created THEN isAccountExists reflects that`() {
         assertFalse(repository.isAccountExists("nobody@example.com"))
         repository.createAccount("acc-uuid", "nick", "somebody@example.com", "secret")
         assertTrue(repository.isAccountExists("somebody@example.com"))
     }
 
     @Test
-    fun `verifyPassword delegates to the dao result`() {
+    fun `WHEN verifyPassword is called THEN it delegates to the dao result`() {
         accountDao.verifyPasswordResult = VerifyPasswordResult.Valid(rehashed = true)
 
         assertEquals(VerifyPasswordResult.Valid(rehashed = true), repository.verifyPassword("a@b.com", "secret"))
     }
 
     @Test
-    fun `isAdmin is true only for an admin account and false for unknown accounts`() {
+    fun `WHEN account is admin THEN isAdmin is true, otherwise false`() {
         accountDao.seed(AccountEntity(id = 1L, uuid = "u", nickname = "n", email = "admin@example.com", password = "h", isAdmin = true))
         accountDao.seed(AccountEntity(id = 2L, uuid = "u2", nickname = "n2", email = "user@example.com", password = "h", isAdmin = false))
 
@@ -116,7 +116,7 @@ class AccountRepositoryTest {
     }
 
     @Test
-    fun `getAccountEagerSkipTasks returns the account without tasks`() {
+    fun `WHEN getAccountEagerSkipTasks is called THEN it returns the account without tasks`() {
         accountDao.seed(AccountEntity(id = 1L, uuid = "u", nickname = "n", email = "a@b.com", password = "h"))
 
         assertEquals("u", repository.getAccountEagerSkipTasks("a@b.com")?.uuid)

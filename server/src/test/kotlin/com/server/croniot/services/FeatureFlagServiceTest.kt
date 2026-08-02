@@ -31,7 +31,7 @@ class FeatureFlagServiceTest {
     )
 
     @Test
-    fun `getAll maps every repository entity to a dto`() {
+    fun `WHEN getAll is called THEN it maps every repository entity to a dto`() {
         every { repo.getAll() } returns listOf(
             entity(name = "flag_a", enabled = true),
             entity(name = "flag_b", enabled = false, description = null),
@@ -49,14 +49,14 @@ class FeatureFlagServiceTest {
     }
 
     @Test
-    fun `getAll returns an empty list when there are no flags`() {
+    fun `WHEN there are no flags THEN getAll returns an empty list`() {
         every { repo.getAll() } returns emptyList()
 
         assertTrue(service.getAll().isEmpty())
     }
 
     @Test
-    fun `setEnabled updates the flag and returns the refreshed dto`() {
+    fun `WHEN the flag exists THEN setEnabled updates it and returns the refreshed dto`() {
         every { repo.setEnabled("new_ui", true) } returns true
         every { repo.getByName("new_ui") } returns entity(name = "new_ui", enabled = true)
 
@@ -68,7 +68,7 @@ class FeatureFlagServiceTest {
     }
 
     @Test
-    fun `setEnabled throws NotFound when the flag does not exist`() {
+    fun `WHEN the flag does not exist THEN setEnabled throws NotFound`() {
         every { repo.setEnabled("unknown", true) } returns false
 
         val ex = assertThrows(DomainException::class.java) { service.setEnabled("unknown", true) }

@@ -35,7 +35,7 @@ class TaskTypeServiceTest {
     )
 
     @Test
-    fun `exists returns false when device id cannot be resolved`() {
+    fun `WHEN device id cannot be resolved THEN exists returns false`() {
         every { deviceRepository.getId("device-uuid") } returns null
 
         assertFalse(service.exists("device-uuid", 42L))
@@ -43,7 +43,7 @@ class TaskTypeServiceTest {
     }
 
     @Test
-    fun `exists delegates to repository when device id is resolved`() {
+    fun `WHEN device id is resolved THEN exists delegates to repository`() {
         every { deviceRepository.getId("device-uuid") } returns 5L
         every { taskTypeRepository.exists(deviceId = 5L, taskTypeUid = 42L) } returns true
 
@@ -51,7 +51,7 @@ class TaskTypeServiceTest {
     }
 
     @Test
-    fun `registerTaskType returns failure when device token does not resolve to a device`() {
+    fun `WHEN device token does not resolve to a device THEN registerTaskType returns failure`() {
         every { deviceTokenRepository.getDevice("device-token") } returns null
 
         val result = service.registerTaskType(message)
@@ -62,7 +62,7 @@ class TaskTypeServiceTest {
     }
 
     @Test
-    fun `registerTaskType returns failure when resolved device uuid does not match message`() {
+    fun `WHEN resolved device uuid does not match message THEN registerTaskType returns failure`() {
         every { deviceTokenRepository.getDevice("device-token") } returns Device(
             uuid = "other-device",
             name = "d",
@@ -76,7 +76,7 @@ class TaskTypeServiceTest {
     }
 
     @Test
-    fun `registerTaskType returns failure when device id cannot be resolved`() {
+    fun `WHEN device id cannot be resolved THEN registerTaskType returns failure`() {
         every { deviceTokenRepository.getDevice("device-token") } returns Device(
             uuid = "device-uuid",
             name = "d",
@@ -92,7 +92,7 @@ class TaskTypeServiceTest {
     }
 
     @Test
-    fun `registerTaskType inserts the task type and returns success`() {
+    fun `WHEN inputs are valid THEN registerTaskType inserts the task type and returns success`() {
         every { deviceTokenRepository.getDevice("device-token") } returns Device(
             uuid = "device-uuid",
             name = "d",
