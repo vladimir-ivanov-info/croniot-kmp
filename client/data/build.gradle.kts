@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kover)
     id("croniot.android.library")
     id("io.gitlab.arturbosch.detekt")
 }
@@ -35,9 +36,15 @@ kotlin {
                 runtimeOnly(libs.junit.platform.launcher)
                 implementation(libs.mockk)
                 implementation(libs.coroutines.test)
+                implementation(libs.turbine)
                 implementation(libs.ktor.client.mock)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx)
+                implementation(libs.junit4)
+                runtimeOnly(libs.junit.vintage.engine)
+                implementation(libs.robolectric)
+                implementation(libs.room.testing)
+                implementation(libs.androidx.test.junit)
             }
         }
 

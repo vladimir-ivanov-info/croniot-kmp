@@ -37,7 +37,7 @@ class AuthRepositoryImplTest {
     private fun loginParams() = Triple("test@test.com", "password", "device-uuid")
 
     @Test
-    fun `login returns Ok with LoginResult when account and tokens are present`() = runTest {
+    fun `WHEN account and tokens are present THEN login returns Ok with LoginResult`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = validAccountDto,
@@ -59,7 +59,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login propagates Err from data source`() = runTest {
+    fun `WHEN data source returns Err THEN login propagates it`() = runTest {
         coEvery { loginDataSource.login(any()) } returns Outcome.Err(AuthError.Network)
 
         val (email, password, deviceUuid) = loginParams()
@@ -69,7 +69,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns InvalidCredentials when result success is false`() = runTest {
+    fun `WHEN result success is false THEN login returns InvalidCredentials`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = false),
             accountDto = null,
@@ -84,7 +84,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns AccountMissing when account is null but result is success`() = runTest {
+    fun `WHEN account is null but result is success THEN login returns AccountMissing`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = null,
@@ -101,7 +101,7 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns TokenMissing when token is null but account is present`() = runTest {
+    fun `WHEN token is null but account is present THEN login returns TokenMissing`() = runTest {
         val dto = LoginResultDto(
             result = Result(success = true),
             accountDto = validAccountDto,
@@ -113,5 +113,60 @@ class AuthRepositoryImplTest {
         val result = repository.login(email, password, deviceUuid, null, emptyMap())
 
         assertEquals(Outcome.Err(AuthError.TokenMissing), result)
+    }
+
+    @Test
+    fun `WHEN refreshToken is missing THEN login returns TokenMissing`() = runTest {
+        val dto = LoginResultDto(
+            result = Result(success = true),
+            accountDto = validAccountDto,
+            token = validToken,
+            refreshToken = null,
+            accessTokenExpiresAtEpochSeconds = validExpiresAt,
+        )
+        coEvery { loginDataSource.login(any()) } returns Outcome.Ok(dto)
+
+        val (email, password, deviceUuid) = loginParams()
+        val result = repository.login(email, password, deviceUuid, null, emptyMap())
+
+        assertEquals(Outcome.Err(AuthError.TokenMissing), result)
+    }
+
+    @Test
+    fun `WHEN expiresAt is missing THEN login returns TokenMissing`() = runTest {
+        val dto = LoginResultDto(
+            result = Result(success = true),
+            accountDto = validAccountDto,
+            token = validToken,
+            refreshToken = validRefreshToken,
+            accessTokenExpiresAtEpochSeconds = null,
+        )
+        coEvery { loginDataSource.login(any()) } returns Outcome.Ok(dto)
+
+        val (email, password, deviceUuid) = loginParams()
+        val result = repository.login(email, password, deviceUuid, null, emptyMap())
+
+        assertEquals(Outcome.Err(AuthError.TokenMissing), result)
+    }
+
+    @Test
+    fun `WHEN deviceToken and deviceProperties are provided THEN login passes them through to the data source`() = runTest {
+        val dto = LoginResultDto(
+            result = Result(success = true),
+            accountDto = validAccountDto,
+            token = validToken,
+            refreshToken = validRefreshToken,
+            accessTokenExpiresAtEpochSeconds = validExpiresAt,
+        )
+        coEvery { loginDataSource.login(any()) } returns Outcome.Ok(dto)
+        val properties = mapOf("model" to "Pixel")
+
+        repository.login("test@test.com", "password", "device-uuid", "device-token-123", properties)
+
+        io.mockk.coVerify(exactly = 1) {
+            loginDataSource.login(
+                match { it.deviceToken == "device-token-123" && it.deviceProperties == properties },
+            )
+        }
     }
 }

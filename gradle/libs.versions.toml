@@ -77,7 +77,7 @@ robolectric = "4.14.1"
 
 turbine = "1.2.1"
 assertk = "0.28.1"
-kover = "0.9.1"
+kover = "0.9.9"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -116,6 +116,8 @@ mqtt = { group = "org.eclipse.paho", name = "org.eclipse.paho.client.mqttv3", ve
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitJupiter" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitJupiter" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junitJupiter" }
+junit4 = { module = "junit:junit", version.ref = "junit" }
 
 composeUiTestJunit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
 
@@ -162,9 +164,11 @@ androidx-security-crypto = { module = "androidx.security:security-crypto", versi
 
 room-runtime      = { module = "androidx.room:room-runtime",      version.ref = "room" }
 room-compiler     = { module = "androidx.room:room-compiler",     version.ref = "room" }
+room-testing      = { module = "androidx.room:room-testing",      version.ref = "room" }
 
 paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
 
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 

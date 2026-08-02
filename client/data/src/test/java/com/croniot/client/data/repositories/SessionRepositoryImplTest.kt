@@ -5,10 +5,13 @@ import com.croniot.client.domain.models.auth.AuthTokens
 import com.croniot.client.data.source.local.AppPreferencesLocalDatasource
 import com.croniot.client.data.source.local.AuthLocalDatasource
 import com.croniot.client.data.source.local.TokenStore
+import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -29,7 +32,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `save delegates email to auth datasource`() = runTest {
+    fun `WHEN save is called THEN it delegates email to auth datasource`() = runTest {
         val session = AuthSession(email = "user@example.com", token = "token-123")
         coJustRun { authLocalDatasource.saveEmail(any()) }
 
@@ -39,7 +42,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `saveTokens delegates to token store`() = runTest {
+    fun `WHEN saveTokens is called THEN it delegates to token store`() = runTest {
         val tokens = AuthTokens(
             accessToken = "access-123",
             refreshToken = "refresh-123",
@@ -53,7 +56,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    fun `clearAllExceptDeviceUuid clears tokens and app preferences`() = runTest {
+    fun `WHEN clearAllExceptDeviceUuid is called THEN it clears tokens and app preferences`() = runTest {
         coJustRun { tokenStore.clearTokens() }
         coJustRun { appPreferencesLocalDatasource.clearAllCacheExceptDeviceUuid() }
 
@@ -61,5 +64,37 @@ class SessionRepositoryImplTest {
 
         coVerify(exactly = 1) { tokenStore.clearTokens() }
         coVerify(exactly = 1) { appPreferencesLocalDatasource.clearAllCacheExceptDeviceUuid() }
+    }
+
+    @Test
+    fun `WHEN token store has tokens THEN getTokens returns them`() = runTest {
+        val tokens = AuthTokens(
+            accessToken = "access-123",
+            refreshToken = "refresh-123",
+            expiresAtEpochSeconds = 1_700_000_000L,
+        )
+        coEvery { tokenStore.getTokens() } returns tokens
+
+        val result = repository.getTokens()
+
+        assertEquals(tokens, result)
+    }
+
+    @Test
+    fun `WHEN token store has none THEN getTokens returns null`() = runTest {
+        coEvery { tokenStore.getTokens() } returns null
+
+        val result = repository.getTokens()
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `WHEN clearTokens is called THEN it delegates to token store`() = runTest {
+        coJustRun { tokenStore.clearTokens() }
+
+        repository.clearTokens()
+
+        coVerify(exactly = 1) { tokenStore.clearTokens() }
     }
 }

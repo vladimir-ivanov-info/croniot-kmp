@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.roborazzi)
+    alias(libs.plugins.kover)
 
     id("kotlin-parcelize")
     id("croniot.android.library")

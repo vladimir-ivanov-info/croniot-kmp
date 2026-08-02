@@ -4,6 +4,7 @@ plugins {
 
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kover)
     id("io.gitlab.arturbosch.detekt")
 }
 
@@ -12,6 +13,8 @@ kotlin {
         namespace = "com.croniot.client.features.sensors"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        withHostTestBuilder {}.configure {}
     }
 
     jvmToolchain(21)
@@ -68,6 +71,20 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.androidx.appcompat)
                 implementation(libs.androidx.material)
+            }
+        }
+        val androidHostTest by getting {
+            kotlin.srcDirs("src/test/java", "src/test/kotlin")
+
+            dependencies {
+                implementation(libs.junit.jupiter)
+                runtimeOnly(libs.junit.jupiter.engine)
+                runtimeOnly(libs.junit.platform.launcher)
+
+                implementation(libs.turbine)
+                implementation(libs.mockk)
+                implementation(libs.coroutines.test)
+                implementation(projects.testing.fakes)
             }
         }
     }

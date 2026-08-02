@@ -30,7 +30,7 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `save delegates account to local datasource`() = runTest {
+    fun `WHEN save is called THEN it delegates account to local datasource`() = runTest {
         coJustRun { authLocalDatasource.saveCurrentAccount(any()) }
 
         repository.save(account)
@@ -39,7 +39,7 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `get returns account from local datasource`() = runTest {
+    fun `WHEN local datasource has an account THEN get returns it`() = runTest {
         coEvery { authLocalDatasource.getCurrentAccount() } returns account
 
         val result = repository.get("user@example.com")
@@ -48,7 +48,7 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `get returns null when no account stored`() = runTest {
+    fun `WHEN no account is stored THEN get returns null`() = runTest {
         coEvery { authLocalDatasource.getCurrentAccount() } returns null
 
         val result = repository.get("user@example.com")
@@ -57,7 +57,7 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `get ignores email parameter and delegates directly to datasource`() = runTest {
+    fun `WHEN get is called THEN it ignores the email parameter and delegates directly to datasource`() = runTest {
         coEvery { authLocalDatasource.getCurrentAccount() } returns account
 
         repository.get("some-other-email@example.com")

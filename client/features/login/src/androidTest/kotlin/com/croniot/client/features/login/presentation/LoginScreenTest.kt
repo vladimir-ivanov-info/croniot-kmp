@@ -19,7 +19,7 @@ class LoginScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun loginScreen_initialState_isCorrect() {
+    fun `WHEN LoginScreenBody is rendered with the initial state THEN it displays the title and an enabled login button`() {
         val state = mutableStateOf(LoginState(email = "", password = ""))
         
         composeTestRule.setContent {
@@ -36,7 +36,7 @@ class LoginScreenTest {
     }
 
     @Test
-    fun loginScreen_loadingState_disablesButtons() {
+    fun `WHEN LoginScreenBody is rendered in a loading state THEN the login button is disabled`() {
         val state = mutableStateOf(LoginState(isLoading = true))
         
         composeTestRule.setContent {
@@ -51,7 +51,7 @@ class LoginScreenTest {
     }
 
     @Test
-    fun loginScreen_typingEmailAndPassword_updatesState() {
+    fun `WHEN typing the email and password and clicking login THEN it dispatches EmailChanged, PasswordChanged, and Login actions`() {
         var capturedAction: LoginIntent? = null
         val state = mutableStateOf(LoginState(email = "", password = ""))
         

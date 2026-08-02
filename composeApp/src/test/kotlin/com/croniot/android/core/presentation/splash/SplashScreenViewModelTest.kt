@@ -6,11 +6,12 @@ import com.croniot.client.domain.models.Account
 import com.croniot.client.domain.models.ConnectionError
 import com.croniot.client.domain.models.Device
 import com.croniot.client.domain.models.auth.AuthTokens
-import com.croniot.client.domain.repositories.AppSessionRepository
-import com.croniot.client.domain.repositories.LocalDataRepository
-import com.croniot.client.domain.repositories.SessionRepository
+import com.croniot.client.domain.models.session.AppSession
 import com.croniot.client.domain.usecases.LogoutUseCase
 import com.croniot.client.domain.usecases.StartDeviceListenersUseCase
+import com.croniot.testing.fakes.FakeAppSessionRepository
+import com.croniot.testing.fakes.FakeLocalDataRepository
+import com.croniot.testing.fakes.FakeSessionRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -33,11 +34,11 @@ class SplashScreenViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    private val localDataRepository = mockk<LocalDataRepository>()
-    private val sessionRepository = mockk<SessionRepository>()
+    private val localDataRepository = FakeLocalDataRepository(account = null, selectedDevice = null)
+    private val sessionRepository = FakeSessionRepository()
     private val logOutUseCase = mockk<LogoutUseCase>(relaxed = true)
     private val startDeviceListenersUseCase = mockk<StartDeviceListenersUseCase>()
-    private val appSessionRepository = mockk<AppSessionRepository>(relaxed = true)
+    private val appSessionRepository = FakeAppSessionRepository()
 
     private lateinit var viewModel: SplashScreenViewModel
 
@@ -61,81 +62,85 @@ class SplashScreenViewModelTest {
     // --- Sesión inválida → logout + NavigateToLogin ---
 
     @Test
-    fun `given no account when initSplash then logs out and navigates to login`() = runTest(testDispatcher) {
-        coEvery { localDataRepository.getCurrentAccount() } returns null
-        coEvery { sessionRepository.getTokens() } returns validTokens()
+    fun `WHEN initSplash is called with no account THEN it logs out and navigates to login`() = runTest(testDispatcher) {
+        sessionRepository.saveTokens(validTokens())
         val effects = collectEffects()
 
         viewModel.initSplash()
 
         assertEquals(listOf(SplashEffect.NavigateToLogin), effects)
         coVerify { logOutUseCase() }
+        assertEquals(AppSession.None, appSessionRepository.session.value)
     }
 
     @Test
-    fun `given no tokens when initSplash then navigates to login`() = runTest(testDispatcher) {
-        coEvery { localDataRepository.getCurrentAccount() } returns account()
-        coEvery { sessionRepository.getTokens() } returns null
+    fun `WHEN initSplash is called with no tokens THEN it navigates to login`() = runTest(testDispatcher) {
+        localDataRepository.saveCurrentAccount(account())
         val effects = collectEffects()
 
         viewModel.initSplash()
 
         assertEquals(listOf(SplashEffect.NavigateToLogin), effects)
         coVerify { logOutUseCase() }
+        assertEquals(AppSession.None, appSessionRepository.session.value)
     }
 
     @Test
-    fun `given expired access token when initSplash then navigates to login`() = runTest(testDispatcher) {
-        coEvery { localDataRepository.getCurrentAccount() } returns account()
-        coEvery { sessionRepository.getTokens() } returns expiredTokens()
+    fun `WHEN initSplash is called with an expired access token THEN it navigates to login`() = runTest(testDispatcher) {
+        localDataRepository.saveCurrentAccount(account())
+        sessionRepository.saveTokens(expiredTokens())
         val effects = collectEffects()
 
         viewModel.initSplash()
 
         assertEquals(listOf(SplashEffect.NavigateToLogin), effects)
         coVerify { logOutUseCase() }
+        assertEquals(AppSession.None, appSessionRepository.session.value)
     }
 
     // --- Sesión válida + listeners OK ---
 
     @Test
-    fun `given valid session and listeners ok and selected device then navigates to that device without error`() =
+    fun `WHEN initSplash is called with a valid session, listeners ok, and a selected device THEN it navigates to that device without an error`() =
         runTest(testDispatcher) {
-            coEvery { localDataRepository.getCurrentAccount() } returns account()
-            coEvery { sessionRepository.getTokens() } returns validTokens()
+            val account = account()
+            localDataRepository.saveCurrentAccount(account)
+            sessionRepository.saveTokens(validTokens())
             coEvery { startDeviceListenersUseCase(any()) } returns Outcome.Ok(Unit)
-            coEvery { localDataRepository.getSelectedDevice() } returns device("device-1")
+            localDataRepository.saveSelectedDevice(device("device-1"))
             val effects = collectEffects()
 
             viewModel.initSplash()
 
             assertEquals(listOf(SplashEffect.NavigateToDevice("device-1", null)), effects)
             coVerify(exactly = 0) { logOutUseCase() }
+            assertEquals(AppSession.Server(account), appSessionRepository.session.value)
         }
 
     @Test
-    fun `given valid session and listeners ok and no selected device then navigates to device list without error`() =
+    fun `WHEN initSplash is called with a valid session, listeners ok, and no selected device THEN it navigates to the device list without an error`() =
         runTest(testDispatcher) {
-            coEvery { localDataRepository.getCurrentAccount() } returns account()
-            coEvery { sessionRepository.getTokens() } returns validTokens()
+            val account = account()
+            localDataRepository.saveCurrentAccount(account)
+            sessionRepository.saveTokens(validTokens())
             coEvery { startDeviceListenersUseCase(any()) } returns Outcome.Ok(Unit)
-            coEvery { localDataRepository.getSelectedDevice() } returns null
             val effects = collectEffects()
 
             viewModel.initSplash()
 
             assertEquals(listOf(SplashEffect.NavigateToDeviceList(null)), effects)
+            assertEquals(AppSession.Server(account), appSessionRepository.session.value)
         }
 
     // --- Sesión válida + listeners con error → arrastra AppError ---
 
     @Test
-    fun `given valid session and listeners error and selected device then navigates to that device with app error`() =
+    fun `WHEN initSplash is called with a valid session, a listeners error, and a selected device THEN it navigates to that device with the app error`() =
         runTest(testDispatcher) {
-            coEvery { localDataRepository.getCurrentAccount() } returns account()
-            coEvery { sessionRepository.getTokens() } returns validTokens()
+            localDataRepository.saveCurrentAccount(account())
+            sessionRepository.saveTokens(validTokens())
             coEvery { startDeviceListenersUseCase(any()) } returns Outcome.Err(connectionErrors)
-            coEvery { localDataRepository.getSelectedDevice() } returns device("device-1")
+            localDataRepository.saveSelectedDevice(device("device-1"))
             val effects = collectEffects()
 
             viewModel.initSplash()
@@ -144,12 +149,11 @@ class SplashScreenViewModelTest {
         }
 
     @Test
-    fun `given valid session and listeners error and no selected device then navigates to device list with app error`() =
+    fun `WHEN initSplash is called with a valid session, a listeners error, and no selected device THEN it navigates to the device list with the app error`() =
         runTest(testDispatcher) {
-            coEvery { localDataRepository.getCurrentAccount() } returns account()
-            coEvery { sessionRepository.getTokens() } returns validTokens()
+            localDataRepository.saveCurrentAccount(account())
+            sessionRepository.saveTokens(validTokens())
             coEvery { startDeviceListenersUseCase(any()) } returns Outcome.Err(connectionErrors)
-            coEvery { localDataRepository.getSelectedDevice() } returns null
             val effects = collectEffects()
 
             viewModel.initSplash()
