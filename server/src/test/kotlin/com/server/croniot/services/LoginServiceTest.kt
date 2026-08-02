@@ -65,7 +65,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `login throws InvalidCredentials when password does not match`() {
+    fun `WHEN password does not match THEN login throws InvalidCredentials`() {
         every { accountRepository.verifyPassword(any(), any()) } returns VerifyPasswordResult.Invalid
 
         val ex = assertThrows(DomainException::class.java) { service.login(loginDto) }
@@ -73,7 +73,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `login throws InvalidCredentials when user does not exist`() {
+    fun `WHEN user does not exist THEN login throws InvalidCredentials`() {
         every { accountRepository.verifyPassword(any(), any()) } returns VerifyPasswordResult.UserNotFound
 
         val ex = assertThrows(DomainException::class.java) { service.login(loginDto) }
@@ -81,7 +81,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `login throws Conflict when deviceToken resolves to a known device`() {
+    fun `WHEN deviceToken resolves to a known device THEN login throws Conflict`() {
         every { accountRepository.verifyPassword(any(), any()) } returns VerifyPasswordResult.Valid(rehashed = false)
         every { deviceTokenRepository.getDevice("token") } returns Device(uuid = "d", name = "d", iot = true)
 
@@ -92,7 +92,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `login throws NotFound when accountId lookup returns null`() {
+    fun `WHEN accountId lookup returns null THEN login throws NotFound`() {
         every { accountRepository.verifyPassword(any(), any()) } returns VerifyPasswordResult.Valid(rehashed = false)
         every { accountRepository.getAccountId(any()) } returns null
 
@@ -101,7 +101,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `login throws Internal when account fetch fails after device creation`() {
+    fun `WHEN account fetch fails after device creation THEN login throws Internal`() {
         every { accountRepository.verifyPassword(any(), any()) } returns VerifyPasswordResult.Valid(rehashed = false)
         every { accountRepository.getAccountId("user@example.com") } returns 77L
         every { deviceRepository.createDevice(any(), 77L) } returns 1L
@@ -112,12 +112,13 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `login happy path returns tokens, issues refresh and creates device`() {
+    fun `WHEN login succeeds THEN it returns tokens, issues refresh and creates device`() {
         val account = Account(uuid = "acc-uuid", nickname = "nick", email = "user@example.com", devices = emptyList())
         every { accountRepository.verifyPassword(any(), any()) } returns VerifyPasswordResult.Valid(rehashed = false)
         every { accountRepository.getAccountId("user@example.com") } returns 77L
         every { deviceRepository.createDevice(any(), 77L) } returns 1L
         every { accountRepository.getAccount("user@example.com") } returns account
+        every { accountRepository.isAdmin("user@example.com") } returns false
         every { refreshTokenService.issueForAccount(77L, "device-uuid") } returns "refresh-token-plaintext"
 
         val result = service.login(loginDto)
@@ -130,7 +131,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `refresh returns tokens when rotation succeeds`() {
+    fun `WHEN rotation succeeds THEN refresh returns tokens`() {
         every { refreshTokenService.rotate("old") } returns RefreshTokenService.RotationResult(
             accessToken = "new-access",
             accessTokenExpiresAtEpochSeconds = 1_000_000L,
@@ -146,7 +147,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `refresh throws Unauthorized when rotation returns null`() {
+    fun `WHEN rotation returns null THEN refresh throws Unauthorized`() {
         every { refreshTokenService.rotate(any()) } returns null
 
         val ex = assertThrows(DomainException::class.java) { service.refresh("old") }
@@ -154,7 +155,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `logout revokes the refresh token and returns success`() {
+    fun `WHEN logout is called THEN it revokes the refresh token and returns success`() {
         every { refreshTokenService.revoke("plaintext") } returns Unit
 
         val result = service.logout("plaintext")
@@ -164,7 +165,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `loginIot throws Validation when deviceToken is missing`() {
+    fun `WHEN deviceToken is missing THEN loginIot throws Validation`() {
         val ex = assertThrows(DomainException::class.java) {
             service.loginIot(loginDto.copy(deviceToken = null))
         }
@@ -172,7 +173,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `loginIot throws NotFound when deviceToken does not resolve to a device`() {
+    fun `WHEN deviceToken does not resolve to a device THEN loginIot throws NotFound`() {
         every { deviceTokenRepository.getDevice(any()) } returns null
 
         val ex = assertThrows(DomainException::class.java) {
@@ -182,7 +183,7 @@ class LoginServiceTest {
     }
 
     @Test
-    fun `loginIot throws InvalidCredentials when password verification fails`() {
+    fun `WHEN password verification fails THEN loginIot throws InvalidCredentials`() {
         every { deviceTokenRepository.getDevice(any()) } returns Device(uuid = "d", name = "d", iot = true)
         every { accountRepository.verifyPassword(any(), any()) } returns VerifyPasswordResult.Invalid
 

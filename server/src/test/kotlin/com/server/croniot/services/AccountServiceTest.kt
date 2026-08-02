@@ -26,7 +26,7 @@ class AccountServiceTest {
     )
 
     @Test
-    fun `registerAccount persists account and returns success when email is available`() {
+    fun `WHEN email is available THEN registerAccount persists account and returns success`() {
         every { accountRepository.isEmailAvailable("user@example.com") } returns true
         every { accountRepository.createAccount(any(), any(), any(), any()) } returns 1L
 
@@ -39,7 +39,7 @@ class AccountServiceTest {
     }
 
     @Test
-    fun `registerAccount throws Conflict and skips createAccount when email is taken`() {
+    fun `WHEN email is taken THEN registerAccount throws Conflict and skips createAccount`() {
         every { accountRepository.isEmailAvailable("user@example.com") } returns false
 
         val ex = assertThrows(DomainException::class.java) { service.registerAccount(message) }

@@ -35,7 +35,7 @@ class RefreshTokenServiceTest {
     )
 
     @Test
-    fun `issueForAccount persists a hashed token and returns the plaintext`() {
+    fun `WHEN issueForAccount is called THEN it persists a hashed token and returns the plaintext`() {
         val hashSlot = slot<String>()
         every {
             refreshTokenDao.create(
@@ -63,7 +63,7 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    fun `issueForAccount produces distinct plaintexts and distinct hashes between calls`() {
+    fun `WHEN issueForAccount is called twice THEN it produces distinct plaintexts and distinct hashes`() {
         val hashes = mutableListOf<String>()
         every {
             refreshTokenDao.create(any(), capture(hashes), any(), any(), any())
@@ -77,14 +77,14 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    fun `rotate returns null when token is unknown`() {
+    fun `WHEN token is unknown THEN rotate returns null`() {
         every { refreshTokenDao.findByHash(any()) } returns null
 
         assertNull(service.rotate("unknown-plaintext"))
     }
 
     @Test
-    fun `rotate returns null when token is revoked`() {
+    fun `WHEN token is revoked THEN rotate returns null`() {
         every { refreshTokenDao.findByHash(any()) } returns record(
             expiresAt = now.plus(Duration.ofDays(10)),
             revokedAt = now.minus(Duration.ofMinutes(1)),
@@ -94,7 +94,7 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    fun `rotate returns null when token is expired`() {
+    fun `WHEN token is expired THEN rotate returns null`() {
         every { refreshTokenDao.findByHash(any()) } returns record(
             expiresAt = Instant.EPOCH,
             revokedAt = null,
@@ -104,7 +104,7 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    fun `rotate returns null when account email cannot be resolved`() {
+    fun `WHEN account email cannot be resolved THEN rotate returns null`() {
         every { refreshTokenDao.findByHash(any()) } returns record(
             expiresAt = Instant.now().plus(Duration.ofDays(5)),
             revokedAt = null,
@@ -117,7 +117,7 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    fun `rotate happy path revokes the old record, issues new access and new refresh`() {
+    fun `WHEN rotation succeeds THEN rotate revokes the old record, issues new access and new refresh`() {
         every { refreshTokenDao.findByHash(any()) } returns record(
             expiresAt = Instant.now().plus(Duration.ofDays(5)),
             revokedAt = null,
@@ -140,7 +140,7 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    fun `revoke marks the record when found and active`() {
+    fun `WHEN the record is found and active THEN revoke marks it`() {
         every { refreshTokenDao.findByHash(any()) } returns record(
             expiresAt = Instant.now().plus(Duration.ofDays(5)),
             revokedAt = null,
@@ -152,7 +152,7 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    fun `revoke is a no-op when token is already revoked`() {
+    fun `WHEN token is already revoked THEN revoke is a no-op`() {
         every { refreshTokenDao.findByHash(any()) } returns record(
             expiresAt = Instant.now().plus(Duration.ofDays(5)),
             revokedAt = Instant.now().minus(Duration.ofMinutes(1)),
@@ -164,7 +164,7 @@ class RefreshTokenServiceTest {
     }
 
     @Test
-    fun `revoke is a no-op when token does not exist`() {
+    fun `WHEN token does not exist THEN revoke is a no-op`() {
         every { refreshTokenDao.findByHash(any()) } returns null
 
         service.revoke("plaintext")

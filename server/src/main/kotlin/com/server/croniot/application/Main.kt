@@ -166,7 +166,7 @@ fun main() {
     initDatabase(DI.appComponent.dataSource())
 
     try {
-        MqttController
+        MqttController.start()
         DI.appComponent.sensorDataController().start()
 
         val keystorePassword = Global.secrets.keystorePassword

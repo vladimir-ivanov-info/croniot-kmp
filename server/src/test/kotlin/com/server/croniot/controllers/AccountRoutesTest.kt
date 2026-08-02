@@ -49,7 +49,7 @@ class AccountRoutesTest {
     }
 
     @Test
-    fun `POST register_account returns 200 with success when service accepts`() = testApplication {
+    fun `WHEN service accepts THEN POST register_account returns 200 with success`() = testApplication {
         val accountService = mockk<AccountService>()
         every { accountService.registerAccount(any()) } returns DomainResult(success = true, message = "")
         application { testModule(accountService) }
@@ -65,7 +65,7 @@ class AccountRoutesTest {
     }
 
     @Test
-    fun `POST register_account returns 409 CONFLICT when email is taken`() = testApplication {
+    fun `WHEN email is taken THEN POST register_account returns 409 CONFLICT`() = testApplication {
         val accountService = mockk<AccountService>()
         every { accountService.registerAccount(any()) } throws DomainException(
             DomainError.Conflict("This email is already used."),

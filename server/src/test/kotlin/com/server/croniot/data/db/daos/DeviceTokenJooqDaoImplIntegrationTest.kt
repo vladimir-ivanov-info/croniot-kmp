@@ -25,14 +25,14 @@ class DeviceTokenJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `insert requires a non-zero deviceId`() {
+    fun `WHEN deviceId is zero THEN insert throws IllegalArgumentException`() {
         assertThrows<IllegalArgumentException> {
             dao.insert(DeviceToken(deviceId = 0L, token = "any"))
         }
     }
 
     @Test
-    fun `getDeviceAssociatedWithToken returns the joined device and null for unknown token`() {
+    fun `WHEN token is known THEN getDeviceAssociatedWithToken returns the joined device, otherwise null`() {
         val (_, deviceId) = insertAccountAndDevice(deviceUuid = "device-X")
         dao.insert(DeviceToken(deviceId = deviceId, token = "tok-X"))
 
@@ -44,7 +44,7 @@ class DeviceTokenJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `getDeviceUuidAssociatedWithToken returns uuid when token exists and null otherwise`() {
+    fun `WHEN token exists THEN getDeviceUuidAssociatedWithToken returns the uuid, otherwise null`() {
         val (_, deviceId) = insertAccountAndDevice(deviceUuid = "device-Y")
         dao.insert(DeviceToken(deviceId = deviceId, token = "tok-Y"))
 
@@ -53,7 +53,7 @@ class DeviceTokenJooqDaoImplIntegrationTest {
     }
 
     @Test
-    fun `isTokenCorrect returns true only when device uuid and token match in the same row`() {
+    fun `WHEN device uuid and token match in the same row THEN isTokenCorrect returns true, otherwise false`() {
         val (_, deviceA) = insertAccountAndDevice(deviceUuid = "device-A")
         val (_, deviceB) = insertAccountAndDevice(
             email = "b@example.com",

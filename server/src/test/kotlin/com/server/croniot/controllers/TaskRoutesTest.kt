@@ -3,6 +3,7 @@ package com.server.croniot.controllers
 import com.server.croniot.application.ApplicationScope
 import com.server.croniot.application.installStatusPages
 import com.server.croniot.data.repositories.TaskRepository
+import com.server.croniot.mqtt.MqttController
 import com.server.croniot.services.DeviceService
 import com.server.croniot.services.TaskService
 import com.server.croniot.services.TaskTypeService
@@ -10,6 +11,9 @@ import croniot.messages.MessageAddTask
 import croniot.messages.MessageFactory
 import croniot.messages.MessageRequestTaskStateInfoSync
 import croniot.models.Result as DomainResult
+import croniot.models.Device
+import croniot.models.Task
+import croniot.models.TaskProgressUpdate
 import croniot.models.dto.TaskDto
 import croniot.models.dto.TaskStateInfoHistoryEntryDto
 import croniot.models.errors.DomainError
@@ -31,13 +35,18 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.slot
+import io.mockk.unmockkObject
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -47,8 +56,14 @@ class TaskRoutesTest {
 
     private val applicationScope = ApplicationScope()
 
+    @BeforeEach
+    fun setUp() {
+        mockkObject(MqttController)
+    }
+
     @AfterEach
     fun tearDown() {
+        unmockkObject(MqttController)
         applicationScope.shutdown()
     }
 
@@ -79,7 +94,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `POST add_task delegates to service and returns its Result`() = testApplication {
+    fun `WHEN add_task is called THEN POST add_task delegates to service and returns its Result`() = testApplication {
         val taskService = mockk<TaskService>()
         val captured = slot<MessageAddTask>()
         every { taskService.addTask(capture(captured)) } returns DomainResult(success = true, message = "")
@@ -103,7 +118,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskConfiguration returns 200 with list when service has configurations`() = testApplication {
+    fun `WHEN service has configurations THEN GET taskConfiguration returns 200 with list`() = testApplication {
         val taskService = mockk<TaskService>()
         val taskDto = TaskDto(uid = 1L, taskTypeUid = 42L)
         every { taskService.getTasksByDeviceUuid("device-uuid") } returns listOf(taskDto)
@@ -118,7 +133,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskConfiguration returns 404 NOT_FOUND when service returns an empty list`() = testApplication {
+    fun `WHEN service returns an empty list THEN GET taskConfiguration returns 404 NOT_FOUND`() = testApplication {
         val taskService = mockk<TaskService>()
         every { taskService.getTasksByDeviceUuid(any()) } returns emptyList()
         application { testModule(taskService) }
@@ -132,7 +147,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskStateInfoHistory passes query params and returns serialized history`() = testApplication {
+    fun `WHEN query params are provided THEN GET taskStateInfoHistory passes them and returns serialized history`() = testApplication {
         val taskService = mockk<TaskService>()
         val entry = TaskStateInfoHistoryEntryDto(
             stateInfoId = 10L,
@@ -179,7 +194,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskStateInfoHistory defaults limit to 50 and passes null query params when absent`() = testApplication {
+    fun `WHEN query params are absent THEN GET taskStateInfoHistory defaults limit to 50 and passes null query params`() = testApplication {
         val taskService = mockk<TaskService>()
         every {
             taskService.getTaskStateInfoHistory(
@@ -207,7 +222,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `GET taskStateInfoHistoryCount returns serialized count`() = testApplication {
+    fun `WHEN taskStateInfoHistoryCount is called THEN GET taskStateInfoHistoryCount returns serialized count`() = testApplication {
         val taskService = mockk<TaskService>()
         every {
             taskService.getTaskStateInfoHistoryCount("device-uuid", any(), any(), any())
@@ -221,7 +236,7 @@ class TaskRoutesTest {
     }
 
     @Test
-    fun `POST request_task_state_info_sync forwards to service and returns its Result`() = testApplication {
+    fun `WHEN request_task_state_info_sync is called THEN POST request_task_state_info_sync forwards to service and returns its Result`() = testApplication {
         val taskService = mockk<TaskService>()
         every { taskService.requestTaskStateInfoSync("device-uuid", 42L) } returns DomainResult(success = true)
         application { testModule(taskService) }
@@ -239,5 +254,200 @@ class TaskRoutesTest {
         val payload = MessageFactory.fromJson<DomainResult>(response.bodyAsText())
         assertTrue(payload.success)
         verify(exactly = 1) { taskService.requestTaskStateInfoSync("device-uuid", 42L) }
+    }
+
+    @Test
+    fun `WHEN before param is an ISO offset date-time that is not epoch millis THEN GET taskStateInfoHistory parses it`() =
+        testApplication {
+            val taskService = mockk<TaskService>()
+            val expectedBefore = OffsetDateTime.of(2026, 4, 20, 10, 0, 0, 0, ZoneOffset.UTC)
+            every {
+                taskService.getTaskStateInfoHistory(
+                    deviceUuid = "device-uuid",
+                    limit = 50,
+                    before = expectedBefore,
+                    beforeId = null,
+                    taskTypeUid = null,
+                )
+            } returns emptyList()
+            application { testModule(taskService) }
+
+            val response = client.get("/taskStateInfoHistory/device-uuid?before=2026-04-20T10:00:00Z")
+
+            assertEquals(HttpStatusCode.OK, response.status)
+            verify(exactly = 1) {
+                taskService.getTaskStateInfoHistory(
+                    deviceUuid = "device-uuid",
+                    limit = 50,
+                    before = expectedBefore,
+                    beforeId = null,
+                    taskTypeUid = null,
+                )
+            }
+        }
+
+    @Test
+    fun `WHEN before param is unparseable THEN GET taskStateInfoHistory treats it as absent`() = testApplication {
+        val taskService = mockk<TaskService>()
+        every {
+            taskService.getTaskStateInfoHistory(
+                deviceUuid = "device-uuid",
+                limit = 50,
+                before = null,
+                beforeId = null,
+                taskTypeUid = null,
+            )
+        } returns emptyList()
+        application { testModule(taskService) }
+
+        val response = client.get("/taskStateInfoHistory/device-uuid?before=not-a-date")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        verify(exactly = 1) {
+            taskService.getTaskStateInfoHistory(
+                deviceUuid = "device-uuid",
+                limit = 50,
+                before = null,
+                beforeId = null,
+                taskTypeUid = null,
+            )
+        }
+    }
+
+    private val progressUpdate = TaskProgressUpdate(
+        taskTypeUid = 42L,
+        taskUid = 1L,
+        state = "RUNNING",
+        progress = 0.5,
+        errorMessage = "",
+    )
+
+    @Test
+    fun `WHEN the device does not exist THEN addTaskProgress does nothing`() {
+        val taskService = mockk<TaskService>()
+        val taskTypeService = mockk<TaskTypeService>()
+        val deviceService = mockk<DeviceService>()
+        val taskRepository = mockk<TaskRepository>()
+        every { deviceService.getByUuid("device-uuid") } returns null
+        val controller = TaskController(taskService, taskTypeService, deviceService, taskRepository, applicationScope)
+
+        controller.addTaskProgress("device-uuid", progressUpdate)
+
+        verify(exactly = 0) { taskRepository.get(any(), any(), any()) }
+        coVerify(exactly = 0) { MqttController.sendNewTask(any(), any()) }
+        coVerify(exactly = 0) { MqttController.sendNewTaskStateInfo(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `WHEN the device id cannot be resolved THEN addTaskProgress does nothing`() {
+        val taskService = mockk<TaskService>()
+        val taskTypeService = mockk<TaskTypeService>()
+        val deviceService = mockk<DeviceService>()
+        val taskRepository = mockk<TaskRepository>()
+        every { deviceService.getByUuid("device-uuid") } returns Device(uuid = "device-uuid", name = "d", iot = true)
+        every { deviceService.getId("device-uuid") } returns null
+        val controller = TaskController(taskService, taskTypeService, deviceService, taskRepository, applicationScope)
+
+        controller.addTaskProgress("device-uuid", progressUpdate)
+
+        verify(exactly = 0) { taskRepository.get(any(), any(), any()) }
+        coVerify(exactly = 0) { MqttController.sendNewTask(any(), any()) }
+    }
+
+    @Test
+    fun `WHEN the task type id cannot be resolved THEN addTaskProgress does nothing`() {
+        val taskService = mockk<TaskService>()
+        val taskTypeService = mockk<TaskTypeService>()
+        val deviceService = mockk<DeviceService>()
+        val taskRepository = mockk<TaskRepository>()
+        every { deviceService.getByUuid("device-uuid") } returns Device(uuid = "device-uuid", name = "d", iot = true)
+        every { deviceService.getId("device-uuid") } returns 5L
+        every { taskTypeService.getId(5L, 42L) } returns null
+        val controller = TaskController(taskService, taskTypeService, deviceService, taskRepository, applicationScope)
+
+        controller.addTaskProgress("device-uuid", progressUpdate)
+
+        verify(exactly = 0) { taskRepository.get(any(), any(), any()) }
+        coVerify(exactly = 0) { MqttController.sendNewTask(any(), any()) }
+    }
+
+    @Test
+    fun `WHEN no existing task is found THEN addTaskProgress creates a new task and sends it over MQTT`() {
+        val taskService = mockk<TaskService>()
+        val taskTypeService = mockk<TaskTypeService>()
+        val deviceService = mockk<DeviceService>()
+        val taskRepository = mockk<TaskRepository>()
+        every { deviceService.getByUuid("device-uuid") } returns Device(uuid = "device-uuid", name = "d", iot = true)
+        every { deviceService.getId("device-uuid") } returns 5L
+        every { taskTypeService.getId(5L, 42L) } returns 10L
+        every { taskRepository.get("device-uuid", 42L, 1L) } returns null
+        every { taskService.iotSendTimestamps } returns java.util.concurrent.ConcurrentHashMap()
+        val createdTask = Task(uid = 99L, parametersValues = emptyMap(), taskTypeUid = 42L)
+        every { taskService.create(10L, 42L) } returns createdTask
+        every { taskService.createTaskState(any(), 10L) } returns Unit
+        coEvery { MqttController.sendNewTask("device-uuid", any()) } returns Unit
+        val controller = TaskController(taskService, taskTypeService, deviceService, taskRepository, applicationScope)
+
+        controller.addTaskProgress("device-uuid", progressUpdate)
+
+        verify(exactly = 1) { taskService.createTaskState(any(), 10L) }
+        coVerify(timeout = 2000, exactly = 1) { MqttController.sendNewTask("device-uuid", any()) }
+    }
+
+    @Test
+    fun `WHEN new task creation fails THEN addTaskProgress does not send anything over MQTT`() {
+        val taskService = mockk<TaskService>()
+        val taskTypeService = mockk<TaskTypeService>()
+        val deviceService = mockk<DeviceService>()
+        val taskRepository = mockk<TaskRepository>()
+        every { deviceService.getByUuid("device-uuid") } returns Device(uuid = "device-uuid", name = "d", iot = true)
+        every { deviceService.getId("device-uuid") } returns 5L
+        every { taskTypeService.getId(5L, 42L) } returns 10L
+        every { taskRepository.get("device-uuid", 42L, 1L) } returns null
+        every { taskService.iotSendTimestamps } returns java.util.concurrent.ConcurrentHashMap()
+        every { taskService.create(10L, 42L) } returns null
+        val controller = TaskController(taskService, taskTypeService, deviceService, taskRepository, applicationScope)
+
+        controller.addTaskProgress("device-uuid", progressUpdate)
+
+        coVerify(exactly = 0) { MqttController.sendNewTask(any(), any()) }
+    }
+
+    @Test
+    fun `WHEN an existing task is found THEN addTaskProgress updates it and sends the new state info over MQTT`() {
+        val taskService = mockk<TaskService>()
+        val taskTypeService = mockk<TaskTypeService>()
+        val deviceService = mockk<DeviceService>()
+        val taskRepository = mockk<TaskRepository>()
+        every { deviceService.getByUuid("device-uuid") } returns Device(uuid = "device-uuid", name = "d", iot = true)
+        every { deviceService.getId("device-uuid") } returns 5L
+        every { taskTypeService.getId(5L, 42L) } returns 10L
+        val existingTask = Task(uid = 77L, parametersValues = emptyMap(), taskTypeUid = 42L)
+        every { taskRepository.get("device-uuid", 42L, 1L) } returns existingTask
+        every { taskService.iotSendTimestamps } returns java.util.concurrent.ConcurrentHashMap()
+        every { taskService.createTaskState(any(), 10L) } returns Unit
+        coEvery { MqttController.sendNewTaskStateInfo("device-uuid", 42L, 1L, any()) } returns Unit
+        val controller = TaskController(taskService, taskTypeService, deviceService, taskRepository, applicationScope)
+
+        controller.addTaskProgress("device-uuid", progressUpdate)
+
+        verify(exactly = 1) { taskService.createTaskState(any(), 10L) }
+        coVerify(timeout = 2000, exactly = 1) { MqttController.sendNewTaskStateInfo("device-uuid", 42L, 1L, any()) }
+        coVerify(exactly = 0) { MqttController.sendNewTask(any(), any()) }
+    }
+
+    @Test
+    fun `WHEN a dependency throws an exception THEN addTaskProgress swallows it`() {
+        val taskService = mockk<TaskService>()
+        val taskTypeService = mockk<TaskTypeService>()
+        val deviceService = mockk<DeviceService>()
+        val taskRepository = mockk<TaskRepository>()
+        every { deviceService.getByUuid("device-uuid") } throws RuntimeException("boom")
+        val controller = TaskController(taskService, taskTypeService, deviceService, taskRepository, applicationScope)
+
+        controller.addTaskProgress("device-uuid", progressUpdate)
+
+        coVerify(exactly = 0) { MqttController.sendNewTask(any(), any()) }
+        coVerify(exactly = 0) { MqttController.sendNewTaskStateInfo(any(), any(), any(), any()) }
     }
 }

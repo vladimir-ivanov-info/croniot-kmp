@@ -49,7 +49,7 @@ class SensorTypeRoutesTest {
     }
 
     @Test
-    fun `POST register_sensor_type returns 200 and success payload when service accepts`() = testApplication {
+    fun `WHEN service accepts THEN POST register_sensor_type returns 200 and success payload`() = testApplication {
         val service = mockk<SensorTypeService>()
         every { service.registerSensorType(any()) } returns DomainResult(success = true, message = "Sensor 7 registered")
         application { testModule(service) }
@@ -66,7 +66,7 @@ class SensorTypeRoutesTest {
     }
 
     @Test
-    fun `POST register_sensor_type returns 200 with failure payload when token is incorrect`() = testApplication {
+    fun `WHEN token is incorrect THEN POST register_sensor_type returns 200 with failure payload`() = testApplication {
         val service = mockk<SensorTypeService>()
         every { service.registerSensorType(any()) } returns DomainResult(
             success = false,

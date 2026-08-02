@@ -52,7 +52,17 @@ object MqttController {
         scope.cancel()
     }
 
-    init {
+    private var started = false
+
+    // Connects to the MQTT broker and resolves the real Dagger DI graph (Postgres included via
+    // deviceRepository()) — deliberately NOT run from object init / a Kotlin `init {}` block, since
+    // Kotlin `object`s initialize eagerly on first reference (including from `mockkObject()` in
+    // tests), which would otherwise force real network/DB I/O just from referencing this singleton.
+    // Call explicitly from real app startup (see Main.kt).
+    fun start() {
+        if (started) return
+        started = true
+
         deviceMqttClient.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable?) {
                 logger.warn { "MQTT connection lost: ${cause?.message}" }
@@ -79,6 +89,7 @@ object MqttController {
 
         initTaskStateController()
     }
+
 
     fun initTaskStateController() {
         val devices = DI.appComponent.deviceRepository().getAll()

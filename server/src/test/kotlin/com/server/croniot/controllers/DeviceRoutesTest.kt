@@ -45,7 +45,7 @@ class DeviceRoutesTest {
     }
 
     @Test
-    fun `POST register_client returns 200 and success with token when service accepts`() = testApplication {
+    fun `WHEN service accepts THEN POST register_client returns 200 and success with token`() = testApplication {
         val service = mockk<DeviceService>()
         every { service.registerDevice(any()) } returns DomainResult(
             success = true,
@@ -65,7 +65,7 @@ class DeviceRoutesTest {
     }
 
     @Test
-    fun `POST register_client returns 200 with failure when account does not exist`() = testApplication {
+    fun `WHEN account does not exist THEN POST register_client returns 200 with failure`() = testApplication {
         val service = mockk<DeviceService>()
         every { service.registerDevice(any()) } returns DomainResult(
             success = false,
