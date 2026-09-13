@@ -4,6 +4,9 @@
 build/
 **/build/
 
+# Ignore AI
+*.claude
+
 # Kotlin and IntelliJ/Android Studio specific
 *.idea/
 *.iml
