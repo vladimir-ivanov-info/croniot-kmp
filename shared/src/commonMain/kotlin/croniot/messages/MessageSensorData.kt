@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MessageSensorData(
-    val sensorTypeId: Long,
+    val sensorTypeUid: Long,
     val value: String,
 )

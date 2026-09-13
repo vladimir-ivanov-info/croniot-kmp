@@ -45,7 +45,7 @@ class SensorsDataController(
     fun processSensorData(deviceUuid: String, messageSensorData: MessageSensorData) {
         val sensorDataDto = SensorDataDto(
             deviceUuid,
-            messageSensorData.sensorTypeId,
+            messageSensorData.sensorTypeUid,
             messageSensorData.value,
             ZonedDateTime.now()
         )

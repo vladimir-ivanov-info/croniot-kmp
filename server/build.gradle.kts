@@ -1,4 +1,5 @@
 import org.gradle.api.tasks.Delete
+import org.gradle.api.tasks.Exec
 import java.io.ByteArrayOutputStream
 import java.io.StringReader
 import java.util.Properties
@@ -173,7 +174,28 @@ tasks.register<Delete>("cleanKotlinMQTTFolders") {
 tasks.named("shadowJar") { dependsOn("cleanKotlinMQTTFolders") }
 
 tasks.named("run") {
-    dependsOn("cleanKotlinMQTTServers")
+    dependsOn("cleanKotlinMQTTServers", "dockerComposeUp")
+}
+
+tasks.register<Exec>("dockerComposeUp") {
+    group = "docker"
+    description = "Starts the local Postgres container (docker compose up -d) and waits until it's ready."
+    workingDir = projectDir
+    commandLine("docker", "compose", "up", "-d", "--wait")
+}
+
+tasks.register<Exec>("dockerComposeDown") {
+    group = "docker"
+    description = "Stops the local Postgres container (docker compose down)."
+    workingDir = projectDir
+    commandLine("docker", "compose", "down")
+}
+
+tasks.register<Exec>("dockerComposeLogs") {
+    group = "docker"
+    description = "Tails the local Postgres container logs (docker compose logs -f db). Ctrl+C to stop."
+    workingDir = projectDir
+    commandLine("docker", "compose", "logs", "-f", "db")
 }
 
 tasks.register<Delete>("cleanKotlinMQTTServers") {
