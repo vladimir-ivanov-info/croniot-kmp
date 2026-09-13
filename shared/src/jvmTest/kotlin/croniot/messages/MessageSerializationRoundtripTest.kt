@@ -6,7 +6,6 @@ import croniot.models.Account
 import croniot.models.Device
 import croniot.models.SensorType
 import croniot.models.TaskType
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 
@@ -113,7 +112,7 @@ class MessageSerializationRoundtripTest {
 
     @Test
     fun `WHEN encoded and decoded THEN MessageSensorData roundtrips correctly`() {
-        val original = MessageSensorData(sensorTypeId = 5L, value = "23.5")
+        val original = MessageSensorData(sensorTypeUid = 5L, value = "23.5")
 
         val decoded = json.decodeFromString<MessageSensorData>(json.encodeToString(original))
 

@@ -42,7 +42,7 @@ class SensorsDataControllerTest {
         val captured = slot<SensorDataDto>()
         coEvery { MqttController.sendSensorData(capture(captured)) } returns Unit
 
-        controller.processSensorData("device-uuid", MessageSensorData(sensorTypeId = 7L, value = "23.5"))
+        controller.processSensorData("device-uuid", MessageSensorData(sensorTypeUid = 7L, value = "23.5"))
 
         coVerify(timeout = 2000, exactly = 1) { MqttController.sendSensorData(any()) }
         assertEquals("device-uuid", captured.captured.deviceUuid)
@@ -54,7 +54,7 @@ class SensorsDataControllerTest {
     fun `WHEN the device does not exist THEN processSensorData does not forward to MqttController`() {
         every { deviceService.getLazy("unknown-device") } returns null
 
-        controller.processSensorData("unknown-device", MessageSensorData(sensorTypeId = 7L, value = "23.5"))
+        controller.processSensorData("unknown-device", MessageSensorData(sensorTypeUid = 7L, value = "23.5"))
 
         coVerify(exactly = 0) { MqttController.sendSensorData(any()) }
     }
