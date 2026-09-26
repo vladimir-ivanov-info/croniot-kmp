@@ -20,11 +20,11 @@ data class DeviceLogRecord(
 // The batch envelope croniot-iot's Uplink actually sends - `[bootId,
 // stream, firstSeq, count, records[]]` (see croniot-iot's
 // BatchEnvelope.h). `stream` is 0=Logs/1=Events/2=Data, matching
-// croniot::log::Stream's ordinal - Data has no wire topic on the device
-// side yet (Tanda F), so a decoded batch with stream=2 should never
-// actually arrive; DeviceLogBatchDecoder decodes it anyway rather than
-// rejecting it, since nothing about the envelope shape depends on which
-// stream it is.
+// croniot::log::Stream's ordinal. This decoder assumes every record in
+// `records[]` has the log/event 5-field shape, so it should only ever
+// be pointed at the logs/events topics in practice - a Data batch (the
+// sensor-batch topic) uses the same outer envelope but a different
+// record shape, decoded instead by SensorBatchEnvelopeDecoder.
 data class DeviceLogBatch(
     val bootId: Long,
     val stream: Int,
