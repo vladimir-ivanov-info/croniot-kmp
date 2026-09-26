@@ -276,3 +276,26 @@ CREATE TABLE IF NOT EXISTS device_event (
 CREATE INDEX IF NOT EXISTS idx_device_log_device_received ON device_log(device, received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_device_event_device_received ON device_event(device, received_at DESC);
 
+-- Batched sensor readings (plan §7.1-7.2/§12.6, PR19) - the same
+-- sensor_data table the legacy per-reading path already writes to (no
+-- new table, matching the plan's "se mantiene el topic por lectura por
+-- compatibilidad": old and new rows coexist). boot_id/seq/sample_index
+-- are nullable specifically so legacy rows (which have none of these)
+-- never collide with the new unique index below - Postgres never
+-- considers NULLs equal to each other, so old rows are implicitly
+-- exempt without a CASE or a separate table.
+ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS boot_id BIGINT;
+ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS seq BIGINT;
+ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS sample_index INTEGER;
+
+-- One `seq` identifies a whole *flush event* (one encodeSensorBatch()
+-- call on the device, i.e. one Journal frame - see croniot-iot's
+-- Sensors/SensorBatchEncoder.h), not one sample. sample_index is this
+-- row's position within that flush's values[] array, since a Batch
+-- policy's flush can hold many samples. A partial index (not a table
+-- CONSTRAINT) so it only ever applies to new-style rows, expressed
+-- explicitly rather than relying purely on implicit NULL-distinctness.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_sensor_data_device_boot_seq_idx
+    ON sensor_data(device, boot_id, seq, sample_index)
+    WHERE boot_id IS NOT NULL;
+

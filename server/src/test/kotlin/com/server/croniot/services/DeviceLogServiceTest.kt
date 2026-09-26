@@ -41,8 +41,9 @@ class DeviceLogServiceTest {
     fun `WHEN the stream is unsupported THEN ingestBatch drops the batch and returns null`() {
         every { deviceRepository.getId("device-uuid") } returns 7L
 
-        // stream=2 is Data - has no wire topic on the device side yet (Tanda F), should never
-        // actually arrive, but the decoder doesn't reject it, so the service must.
+        // stream=2 is Data - a real, ingestable stream now, but through
+        // SensorBatchService, not this one. DeviceLogService only knows
+        // device_log/device_event, so it must still reject it.
         val batch = DeviceLogBatch(bootId = 1, stream = 2, firstSeq = 1, count = 1, records = listOf(record(1)))
         val result = service.ingestBatch("device-uuid", batch)
 
