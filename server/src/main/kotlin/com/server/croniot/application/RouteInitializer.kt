@@ -23,6 +23,7 @@ class RouteInitializer @Inject constructor(
     private val sensorTypeController: SensorTypeController,
     private val taskTypeController: TaskTypeController,
     private val featureFlagController: FeatureFlagController,
+    private val deviceLogConfigController: DeviceLogConfigController,
 ) {
     fun setupRoutes(application: Application) {
         val prometheusRegistry = application.attributes.getOrNull(PROMETHEUS_REGISTRY_KEY)
@@ -132,6 +133,14 @@ class RouteInitializer @Inject constructor(
             authenticate(AUTH_JWT_REALM) {
                 put("/api/admin/feature_flags/{name}") {
                     featureFlagController.setFlag(call)
+                }
+
+                put("/api/devices/{uuid}/log_config") {
+                    deviceLogConfigController.putConfig(call)
+                }
+
+                get("/api/devices/{uuid}/log_config") {
+                    deviceLogConfigController.getConfig(call)
                 }
             }
         }
