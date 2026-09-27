@@ -110,6 +110,7 @@ fun Application.module(testing: Boolean = false) {
         sensorTypeController = appComponent.sensorTypeController(),
         taskTypeController = appComponent.taskTypeController(),
         featureFlagController = appComponent.featureFlagController(),
+        deviceLogController = appComponent.deviceLogController(),
     )
     routeInitializer.setupRoutes(this)
 }
