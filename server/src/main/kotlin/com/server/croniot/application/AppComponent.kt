@@ -2,6 +2,7 @@ package com.server.croniot.application
 
 import com.server.croniot.controllers.AccountController
 import com.server.croniot.controllers.DeviceController
+import com.server.croniot.controllers.DeviceLogConfigController
 import com.server.croniot.controllers.DeviceLogController
 import com.server.croniot.controllers.FeatureFlagController
 import com.server.croniot.controllers.LoginController
@@ -37,6 +38,7 @@ interface AppComponent {
     fun featureFlagController(): FeatureFlagController
     fun dataSource(): DataSource
 
+    fun deviceLogConfigController(): DeviceLogConfigController
     fun deviceLogController(): DeviceLogController
     fun deviceLogService(): DeviceLogService
 }
