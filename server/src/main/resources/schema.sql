@@ -224,6 +224,58 @@ CREATE TABLE IF NOT EXISTS feature_flag (
     updated_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
+-- Device observability epic (plan §11.3/§12.4, PR11): one row per record
+-- of croniot-iot's Journal Logs/Events streams. Same shape for both
+-- tables (croniot-iot uses one wire record shape - `[seq, uptimeMs,
+-- level, tag, msg]` - for both, distinguished only by MQTT topic. Kept
+-- as two tables rather than one with a `stream` column so retention
+-- (logs 14 days, events 180, different windows) is a plain per-table
+-- DELETE, and so device_event's rows (never space-reclaimed on-device
+-- either) aren't sharing an index/vacuum footprint with the much
+-- higher-volume device_log.
+CREATE TABLE IF NOT EXISTS device_log (
+    id BIGSERIAL PRIMARY KEY,
+    device BIGINT NOT NULL,
+    boot_id BIGINT NOT NULL,
+    seq BIGINT NOT NULL,
+    uptime_ms BIGINT NOT NULL,
+    level SMALLINT NOT NULL,
+    tag VARCHAR(32) NOT NULL,
+    message VARCHAR(256) NOT NULL,
+    received_at TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_device_log_device
+        FOREIGN KEY (device)
+        REFERENCES device(id)
+        ON DELETE CASCADE,
+
+    -- Plan §5 point 1's dedupe key, minus `deviceUuid` (the FK already
+    -- scopes it) and `stream` (implicit: this table IS the logs stream).
+    CONSTRAINT uq_device_log_device_boot_seq UNIQUE (device, boot_id, seq)
+);
+
+CREATE TABLE IF NOT EXISTS device_event (
+    id BIGSERIAL PRIMARY KEY,
+    device BIGINT NOT NULL,
+    boot_id BIGINT NOT NULL,
+    seq BIGINT NOT NULL,
+    uptime_ms BIGINT NOT NULL,
+    level SMALLINT NOT NULL,
+    tag VARCHAR(32) NOT NULL,
+    message VARCHAR(256) NOT NULL,
+    received_at TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_device_event_device
+        FOREIGN KEY (device)
+        REFERENCES device(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_device_event_device_boot_seq UNIQUE (device, boot_id, seq)
+);
+
+CREATE INDEX IF NOT EXISTS idx_device_log_device_received ON device_log(device, received_at DESC);
+CREATE INDEX IF NOT EXISTS idx_device_event_device_received ON device_event(device, received_at DESC);
+
 -- One row per device, holding the last log_config JSON PUT there (plan
 -- Fase 4/PR15). Opaque cargo as far as the server is concerned - the
 -- shape it validates and republishes matches croniot-iot's own reduced
@@ -242,4 +294,3 @@ CREATE TABLE IF NOT EXISTS device_log_config (
         REFERENCES device(id)
         ON DELETE CASCADE
 );
-

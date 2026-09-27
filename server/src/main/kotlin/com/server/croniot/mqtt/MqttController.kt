@@ -4,6 +4,7 @@ import Global
 import MqttHandler
 import com.server.croniot.data.mappers.toDto
 import com.server.croniot.di.DI
+import com.server.croniot.services.LogStream
 import croniot.messages.MessageFactory
 import croniot.messages.MessageTask
 import croniot.models.Device
@@ -12,6 +13,7 @@ import croniot.models.Task
 import croniot.models.dto.SensorDataDto
 import croniot.models.dto.TaskStateInfoDto
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.serialization.Serializable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,9 +30,18 @@ import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.MqttMessage
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
+// Plan §5 point 3's ack shape - `{"stream":"logs"|"events"|"data",
+// "upToSeq":N}` - minus `bootId`/`batchId`, which Uplink::onAck() on the
+// device doesn't need (see croniot-iot's Uplink.h).
+@Serializable
+private data class AckPayload(val stream: String, val upToSeq: Long)
+
 object MqttController {
 
     private val logger = KotlinLogging.logger {}
+
+    private const val LOG_TOPIC_PREFIX = "/iot_to_server/logs/"
+    private const val EVENT_TOPIC_PREFIX = "/iot_to_server/events/"
 
     private val exceptionHandler = CoroutineExceptionHandler { context, throwable ->
         logger.error(throwable) { "Uncaught exception in MqttController scope (context=$context)" }
@@ -88,6 +99,56 @@ object MqttController {
         deviceMqttClient.connect()
 
         initTaskStateController()
+        initDeviceLogController()
+    }
+
+    // Plan §12.4 PR11 / §5: a single wildcard subscription per stream
+    // ("una sola suscripción con comodín", not one MqttClient per device
+    // like initTaskStateController() above) - the concrete device UUID
+    // is parsed out of each message's own resolved topic instead of
+    // being baked into a per-device client. Binary-safe (BinaryMqttSubscriber,
+    // not the shared MqttHandler) since the payload is CBOR, not JSON.
+    private fun initDeviceLogController() {
+        val deviceLogService = DI.appComponent.deviceLogService()
+        val logProcessor = MqttDataProcessorDeviceLog(LOG_TOPIC_PREFIX, deviceLogService)
+        val eventProcessor = MqttDataProcessorDeviceLog(EVENT_TOPIC_PREFIX, deviceLogService)
+
+        val logClient = MqttClient(
+            Global.secrets.mqttBrokerUrl,
+            Global.secrets.mqttClientId + Global.generateUniqueString(8),
+            MemoryPersistence(),
+        )
+        synchronized(deviceClients) { deviceClients.add(logClient) }
+        BinaryMqttSubscriber(logClient, "$LOG_TOPIC_PREFIX+", qos = 1, scope = scope) { topic, payload ->
+            logProcessor.process(topic, payload)
+        }
+
+        val eventClient = MqttClient(
+            Global.secrets.mqttBrokerUrl,
+            Global.secrets.mqttClientId + Global.generateUniqueString(8),
+            MemoryPersistence(),
+        )
+        synchronized(deviceClients) { deviceClients.add(eventClient) }
+        BinaryMqttSubscriber(eventClient, "$EVENT_TOPIC_PREFIX+", qos = 1, scope = scope) { topic, payload ->
+            eventProcessor.process(topic, payload)
+        }
+    }
+
+    // Application-level ack (plan §5 point 3), published only after the
+    // batch has actually committed to Postgres (DeviceLogService.
+    // ingestBatch() already returned by the time this is called) - never
+    // the MQTT PUBACK, which the device's own Uplink deliberately
+    // ignores for exactly this reason (see croniot-iot's Uplink.cpp).
+    suspend fun sendLogAck(deviceUuid: String, stream: LogStream, upToSeq: Long) {
+        clientLock.withLock {
+            val topic = "/server/$deviceUuid/ack"
+            val json = MessageFactory.toJson(AckPayload(stream.ackName, upToSeq))
+            val message = MqttMessage(json.toByteArray()).apply {
+                qos = 1
+                isRetained = false
+            }
+            deviceMqttClient.publish(topic, message)
+        }
     }
 
 
