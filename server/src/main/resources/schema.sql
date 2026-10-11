@@ -224,3 +224,96 @@ CREATE TABLE IF NOT EXISTS feature_flag (
     updated_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
+-- Device observability epic (plan §11.3/§12.4, PR11): one row per record
+-- of croniot-iot's Journal Logs/Events streams. Same shape for both
+-- tables (croniot-iot uses one wire record shape - `[seq, uptimeMs,
+-- level, tag, msg]` - for both, distinguished only by MQTT topic. Kept
+-- as two tables rather than one with a `stream` column so retention
+-- (logs 14 days, events 180, different windows) is a plain per-table
+-- DELETE, and so device_event's rows (never space-reclaimed on-device
+-- either) aren't sharing an index/vacuum footprint with the much
+-- higher-volume device_log.
+CREATE TABLE IF NOT EXISTS device_log (
+    id BIGSERIAL PRIMARY KEY,
+    device BIGINT NOT NULL,
+    boot_id BIGINT NOT NULL,
+    seq BIGINT NOT NULL,
+    uptime_ms BIGINT NOT NULL,
+    level SMALLINT NOT NULL,
+    tag VARCHAR(32) NOT NULL,
+    message VARCHAR(256) NOT NULL,
+    received_at TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_device_log_device
+        FOREIGN KEY (device)
+        REFERENCES device(id)
+        ON DELETE CASCADE,
+
+    -- Plan §5 point 1's dedupe key, minus `deviceUuid` (the FK already
+    -- scopes it) and `stream` (implicit: this table IS the logs stream).
+    CONSTRAINT uq_device_log_device_boot_seq UNIQUE (device, boot_id, seq)
+);
+
+CREATE TABLE IF NOT EXISTS device_event (
+    id BIGSERIAL PRIMARY KEY,
+    device BIGINT NOT NULL,
+    boot_id BIGINT NOT NULL,
+    seq BIGINT NOT NULL,
+    uptime_ms BIGINT NOT NULL,
+    level SMALLINT NOT NULL,
+    tag VARCHAR(32) NOT NULL,
+    message VARCHAR(256) NOT NULL,
+    received_at TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_device_event_device
+        FOREIGN KEY (device)
+        REFERENCES device(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_device_event_device_boot_seq UNIQUE (device, boot_id, seq)
+);
+
+CREATE INDEX IF NOT EXISTS idx_device_log_device_received ON device_log(device, received_at DESC);
+CREATE INDEX IF NOT EXISTS idx_device_event_device_received ON device_event(device, received_at DESC);
+
+-- Batched sensor readings (plan §7.1-7.2/§12.6, PR19) - the same
+-- sensor_data table the legacy per-reading path already writes to (no
+-- new table, matching the plan's "se mantiene el topic por lectura por
+-- compatibilidad": old and new rows coexist). boot_id/seq/sample_index
+-- are nullable specifically so legacy rows (which have none of these)
+-- never collide with the new unique index below - Postgres never
+-- considers NULLs equal to each other, so old rows are implicitly
+-- exempt without a CASE or a separate table.
+ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS boot_id BIGINT;
+ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS seq BIGINT;
+ALTER TABLE sensor_data ADD COLUMN IF NOT EXISTS sample_index INTEGER;
+
+-- One `seq` identifies a whole *flush event* (one encodeSensorBatch()
+-- call on the device, i.e. one Journal frame - see croniot-iot's
+-- Sensors/SensorBatchEncoder.h), not one sample. sample_index is this
+-- row's position within that flush's values[] array, since a Batch
+-- policy's flush can hold many samples. A partial index (not a table
+-- CONSTRAINT) so it only ever applies to new-style rows, expressed
+-- explicitly rather than relying purely on implicit NULL-distinctness.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_sensor_data_device_boot_seq_idx
+    ON sensor_data(device, boot_id, seq, sample_index)
+    WHERE boot_id IS NOT NULL;
+
+-- One row per device, holding the last log_config JSON PUT there (plan
+-- Fase 4/PR15). Opaque cargo as far as the server is concerned - the
+-- shape it validates and republishes matches croniot-iot's own reduced
+-- RemoteLogConfig contract, not something this schema models field by
+-- field, so a TEXT blob is the honest representation rather than
+-- inventing normalized columns for a config the device owns the shape
+-- of. device is the PRIMARY KEY, not a separate id column, because a
+-- device has at most one config - there is nothing to key by besides it.
+CREATE TABLE IF NOT EXISTS device_log_config (
+    device BIGINT PRIMARY KEY,
+    config_json TEXT NOT NULL,
+    updated_at TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_device_log_config_device
+        FOREIGN KEY (device)
+        REFERENCES device(id)
+        ON DELETE CASCADE
+);

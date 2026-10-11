@@ -202,4 +202,12 @@ class SensorTypeJooqDaoImpl @Inject constructor(
             result
         }
     }
+
+    override fun getId(deviceId: Long, uid: Long): Long? {
+        return dsl.select(SENSOR_TYPE.ID)
+            .from(SENSOR_TYPE)
+            .where(SENSOR_TYPE.DEVICE.eq(deviceId))
+            .and(SENSOR_TYPE.UID.eq(uid))
+            .fetchOne(SENSOR_TYPE.ID)
+    }
 }

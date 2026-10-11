@@ -11,4 +11,8 @@ class SensorTypeRepository @Inject constructor(
     fun upsert(sensorType: SensorType, deviceId: Long) {
         sensorTypeDao.upsert(sensorType, deviceId)
     }
+
+    fun getId(deviceId: Long, uid: Long): Long? {
+        return sensorTypeDao.getId(deviceId, uid)
+    }
 }
