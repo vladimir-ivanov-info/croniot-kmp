@@ -1,0 +1,14 @@
+.logs-page {
+  height: calc(100vh - 58px);
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.logs-page-title {
+  margin: 0;
+  font-size: 18px;
+}
+
+@media (max-width: 640px) {
+  .logs-page { padding: 8px; height: calc(100vh - 96px); }
+}
