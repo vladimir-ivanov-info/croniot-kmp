@@ -11,7 +11,7 @@ import java.time.OffsetDateTime
 // with separate retention windows (see schema.sql), not a shared one
 // with a `stream` discriminator column.
 interface DeviceEventDao {
-    fun insertBatch(deviceId: Long, bootId: Long, records: List<DeviceLogRecord>): Int
+    fun insertBatch(deviceId: Long, bootId: Long, records: List<DeviceLogRecord>): List<InsertedDeviceLogRow>
 
     fun getRecent(
         deviceId: Long,

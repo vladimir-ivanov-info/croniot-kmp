@@ -1,8 +1,11 @@
 package com.server.croniot.services
 
+import com.server.croniot.data.db.daos.InsertedDeviceLogRow
 import com.server.croniot.data.repositories.DeviceEventRepository
 import com.server.croniot.data.repositories.DeviceLogRepository
 import com.server.croniot.data.repositories.DeviceRepository
+import com.server.croniot.livelog.DeviceLogLivePublisher
+import com.server.croniot.livelog.LogKind
 import com.server.croniot.mqtt.DeviceLogBatch
 import com.server.croniot.mqtt.DeviceLogRecord
 import io.mockk.every
@@ -11,20 +14,27 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.time.OffsetDateTime
 
 class DeviceLogServiceTest {
 
     private val deviceLogRepository: DeviceLogRepository = mockk(relaxUnitFun = true)
     private val deviceEventRepository: DeviceEventRepository = mockk(relaxUnitFun = true)
     private val deviceRepository: DeviceRepository = mockk()
+    private val livePublisher: DeviceLogLivePublisher = mockk(relaxUnitFun = true)
 
     private val service = DeviceLogService(
         deviceLogRepository = deviceLogRepository,
         deviceEventRepository = deviceEventRepository,
         deviceRepository = deviceRepository,
+        livePublisher = livePublisher,
     )
 
     private fun record(seq: Long) = DeviceLogRecord(seq = seq, uptimeMs = seq * 1000, level = 2, tag = "TAG", message = "m")
+
+    private fun inserted(vararg records: DeviceLogRecord) =
+        records.map { InsertedDeviceLogRow(id = it.seq * 10, record = it, receivedAt = OffsetDateTime.now()) }
 
     @Test
     fun `WHEN the device is unknown THEN ingestBatch drops the batch and returns null`() {
@@ -53,7 +63,7 @@ class DeviceLogServiceTest {
     @Test
     fun `WHEN stream is Logs THEN ingestBatch inserts into the log repository and acks the highest seq`() {
         every { deviceRepository.getId("device-uuid") } returns 7L
-        every { deviceLogRepository.insertBatch(7L, 100L, any()) } returns 2
+        every { deviceLogRepository.insertBatch(7L, 100L, any()) } returns inserted(record(5), record(6))
 
         val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 5, count = 2, records = listOf(record(5), record(6)))
         val result = service.ingestBatch("device-uuid", batch)
@@ -67,7 +77,7 @@ class DeviceLogServiceTest {
     @Test
     fun `WHEN stream is Events THEN ingestBatch inserts into the event repository`() {
         every { deviceRepository.getId("device-uuid") } returns 7L
-        every { deviceEventRepository.insertBatch(7L, 100L, any()) } returns 1
+        every { deviceEventRepository.insertBatch(7L, 100L, any()) } returns inserted(record(9))
 
         val batch = DeviceLogBatch(bootId = 100, stream = 1, firstSeq = 9, count = 1, records = listOf(record(9)))
         val result = service.ingestBatch("device-uuid", batch)
@@ -80,11 +90,57 @@ class DeviceLogServiceTest {
     @Test
     fun `WHEN the batch has zero records THEN ingestBatch still acks using firstSeq`() {
         every { deviceRepository.getId("device-uuid") } returns 7L
-        every { deviceLogRepository.insertBatch(7L, 100L, emptyList()) } returns 0
+        every { deviceLogRepository.insertBatch(7L, 100L, emptyList()) } returns emptyList()
 
         val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 42, count = 0, records = emptyList())
         val result = service.ingestBatch("device-uuid", batch)
 
         assertEquals(42L, result?.upToSeq)
+    }
+
+    @Test
+    fun `WHEN rows are inserted THEN exactly those rows are published live with the right kind`() {
+        every { deviceRepository.getId("device-uuid") } returns 7L
+        val rows = inserted(record(5), record(6))
+        every { deviceLogRepository.insertBatch(7L, 100L, any()) } returns rows
+
+        val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 5, count = 2, records = listOf(record(5), record(6)))
+        service.ingestBatch("device-uuid", batch)
+
+        verify { livePublisher.publish(7L, 100L, LogKind.LOG, rows) }
+    }
+
+    @Test
+    fun `WHEN an event batch is ingested THEN it is published as EVENT`() {
+        every { deviceRepository.getId("device-uuid") } returns 7L
+        val rows = inserted(record(9))
+        every { deviceEventRepository.insertBatch(7L, 100L, any()) } returns rows
+
+        val batch = DeviceLogBatch(bootId = 100, stream = 1, firstSeq = 9, count = 1, records = listOf(record(9)))
+        service.ingestBatch("device-uuid", batch)
+
+        verify { livePublisher.publish(7L, 100L, LogKind.EVENT, rows) }
+    }
+
+    @Test
+    fun `WHEN a resent batch inserts nothing THEN the publisher receives no rows`() {
+        every { deviceRepository.getId("device-uuid") } returns 7L
+        every { deviceLogRepository.insertBatch(7L, 100L, any()) } returns emptyList()
+
+        val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 5, count = 1, records = listOf(record(5)))
+        service.ingestBatch("device-uuid", batch)
+
+        verify { livePublisher.publish(7L, 100L, LogKind.LOG, emptyList()) }
+    }
+
+    @Test
+    fun `WHEN the insert fails THEN nothing is published live`() {
+        every { deviceRepository.getId("device-uuid") } returns 7L
+        every { deviceLogRepository.insertBatch(7L, 100L, any()) } throws IllegalStateException("db down")
+
+        val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 5, count = 1, records = listOf(record(5)))
+        assertThrows<IllegalStateException> { service.ingestBatch("device-uuid", batch) }
+
+        verify(exactly = 0) { livePublisher.publish(any(), any(), any(), any()) }
     }
 }
