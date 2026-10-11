@@ -203,13 +203,16 @@ fun ensureAdminUiRunning() {
         return
     }
 
-    val npm = System.getenv("NPM_PATH") ?: "npm"
+    val nodeBinDir = resolveNodeBinDir()
+    val npm = nodeBinDir?.let { File(it, "npm").path } ?: "npm"
+    logger.info { "Using Node from ${nodeBinDir?.path ?: "PATH"}" }
     val logFile = File(System.getProperty("user.dir"), "logs/admin-ui.log").apply { parentFile.mkdirs() }
 
     try {
         if (!File(adminUiDir, "node_modules").isDirectory) {
             logger.info { "Installing Admin UI dependencies (npm ci)..." }
             val exitCode = ProcessBuilder(npm, "ci")
+                .withNodeOnPath(nodeBinDir)
                 .directory(adminUiDir)
                 .redirectErrorStream(true)
                 .redirectOutput(ProcessBuilder.Redirect.appendTo(logFile))
@@ -222,6 +225,7 @@ fun ensureAdminUiRunning() {
         }
 
         val process = ProcessBuilder(npm, "run", "dev", "--", "--port", "$ADMIN_UI_PORT", "--strictPort")
+            .withNodeOnPath(nodeBinDir)
             .directory(adminUiDir)
             .redirectErrorStream(true)
             .redirectOutput(ProcessBuilder.Redirect.appendTo(logFile))
@@ -230,7 +234,32 @@ fun ensureAdminUiRunning() {
         logger.info { "Starting Admin UI (logs: ${logFile.path})" }
         logWhenAdminUiReady(process, logFile)
     } catch (e: IOException) {
-        logger.warn(e) { "Could not start Admin UI (is npm on PATH? otherwise set NPM_PATH)" }
+        logger.warn(e) { "Could not start Admin UI (is npm on PATH? otherwise set CRONIOT_NODE_BIN)" }
+    }
+}
+
+// The IDE doesn't load nvm, so PATH may only have the system Node (too old for Vite).
+// Order: CRONIOT_NODE_BIN, then the newest nvm-installed Node, then whatever is on PATH.
+private fun resolveNodeBinDir(): File? {
+    System.getenv("CRONIOT_NODE_BIN")?.let { return File(it) }
+
+    val nvmDir = System.getenv("NVM_DIR")?.let(::File) ?: File(System.getProperty("user.home"), ".nvm")
+    return File(nvmDir, "versions/node").listFiles()
+        ?.filter { File(it, "bin/npm").canExecute() }
+        ?.maxWithOrNull { a, b -> compareVersions(a.name, b.name) }
+        ?.let { File(it, "bin") }
+}
+
+private fun compareVersions(a: String, b: String): Int {
+    val partsA = a.removePrefix("v").split('.').map { it.toIntOrNull() ?: 0 }
+    val partsB = b.removePrefix("v").split('.').map { it.toIntOrNull() ?: 0 }
+    return partsA.zip(partsB).map { (x, y) -> x.compareTo(y) }.firstOrNull { it != 0 } ?: 0
+}
+
+// npm's shebang is `#!/usr/bin/env node`, so node must come first on PATH too, not just npm
+private fun ProcessBuilder.withNodeOnPath(nodeBinDir: File?): ProcessBuilder = apply {
+    if (nodeBinDir != null) {
+        environment()["PATH"] = nodeBinDir.path + File.pathSeparator + environment()["PATH"].orEmpty()
     }
 }
 
