@@ -24,3 +24,19 @@ export const PLATFORM_LABELS: Record<string, string> = {
   ANDROID: "Android",
   IOS: "iOS",
 };
+
+// "just now", "5 min ago", "3 h ago", "2 d ago".
+export function formatAgo(ms: number, now = Date.now()): string {
+  const s = Math.max(0, Math.round((now - ms) / 1000));
+  if (s < 45) return "just now";
+  if (s < 3600) return `${Math.round(s / 60)} min ago`;
+  if (s < 86400) return `${Math.round(s / 3600)} h ago`;
+  return `${Math.round(s / 86400)} d ago`;
+}
+
+// Share of received records that were duplicates, e.g. "12.5 %"; null when
+// nothing was received.
+export function duplicateRatio(received: number, duplicated: number): string | null {
+  if (received <= 0) return null;
+  return `${((duplicated / received) * 100).toFixed(1)} %`;
+}

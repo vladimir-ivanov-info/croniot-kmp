@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { deviceLabel, formatTime, ownerLabel, PLATFORM_LABELS } from "../livelog/format";
 import { severityOf } from "../livelog/severity";
 import type { LogEntry } from "../livelog/types";
@@ -25,9 +26,11 @@ function marked(text: string, term: string | undefined): React.ReactNode {
   return parts;
 }
 
-// One line of the viewer. Clicking it shows the fields that don't fit on
-// one line (boot/seq/uptime for devices, thread/trace/exception for the
-// server).
+// One line of the viewer. Clicking it (or its ▸ button) shows the fields
+// that don't fit on one line (boot/seq/uptime for devices,
+// thread/trace/exception for the server). Device and owner are links to
+// their pages - kept outside the expand button, since a link inside a
+// button is invalid HTML.
 export function LogRow({ entry, expanded, onToggle, highlight }: Props) {
   const severity = severityOf(entry.level);
   const device = deviceLabel(entry);
@@ -35,12 +38,19 @@ export function LogRow({ entry, expanded, onToggle, highlight }: Props) {
 
   return (
     <div className={`log-row ${severity.className}`} data-testid="log-row">
-      <button
-        type="button"
-        className="log-row-main"
-        aria-expanded={expanded}
-        onClick={() => onToggle(entry.id)}
-      >
+      <div className="log-row-main" onClick={() => onToggle(entry.id)}>
+        <button
+          type="button"
+          className="log-expand"
+          aria-expanded={expanded}
+          aria-label={expanded ? "Hide details" : "Show details"}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle(entry.id);
+          }}
+        >
+          {expanded ? "▾" : "▸"}
+        </button>
         <span className="log-sev" title={severity.label}>
           <span aria-hidden="true">{severity.icon}</span>
           <span className="visually-hidden">{severity.label}</span>
@@ -52,13 +62,17 @@ export function LogRow({ entry, expanded, onToggle, highlight }: Props) {
           {PLATFORM_LABELS[entry.platform] ?? entry.platform}
         </span>
         {entry.kind === "EVENT" && <span className="log-chip-event">EVENT</span>}
-        <span className="log-who">
-          {device && <span className="log-device">{device}</span>}
-          {owner && <span className="log-owner">{owner}</span>}
+        <span className="log-who" onClick={(e) => e.stopPropagation()}>
+          {device && entry.device && (
+            <Link className="log-device" to={`/devices/${encodeURIComponent(entry.device.uuid)}`}>{device}</Link>
+          )}
+          {owner && entry.owner && (
+            <Link className="log-owner" to={`/accounts/${encodeURIComponent(entry.owner.uuid)}`}>{owner}</Link>
+          )}
         </span>
         <span className="log-tag">{entry.tag}</span>
         <span className="log-message">{marked(entry.message, highlight)}</span>
-      </button>
+      </div>
       {expanded && (
         <dl className="log-details">
           {entry.bootId != null && (<><dt>Boot</dt><dd>{entry.bootId}</dd></>)}
