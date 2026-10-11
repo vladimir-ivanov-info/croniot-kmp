@@ -31,7 +31,9 @@ import org.slf4j.event.Level
 import java.io.File
 import java.security.KeyStore
 import javax.sql.DataSource
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 private val logger = KotlinLogging.logger {}
 
@@ -140,12 +142,36 @@ fun ensureDockerComposeRunning() {
             error("Error al levantar Docker Compose (exit code: $exitCode)")
         }
 
-        logger.info { "Waiting 5s for services to be ready..." }
-        Thread.sleep(5000)
+        logger.info { "Waiting for Postgres to be ready..." }
+        waitForPostgresReady(composeDir)
         logger.info { "Docker Compose services started" }
     } else {
         logger.info { "Docker Compose already running" }
     }
+}
+
+private fun waitForPostgresReady(
+    composeDir: File,
+    timeout: Duration = 30.seconds,
+    pollInterval: Duration = 1.seconds,
+) {
+    val deadline = System.currentTimeMillis() + timeout.inWholeMilliseconds
+
+    while (System.currentTimeMillis() < deadline) {
+        val readyProcess = ProcessBuilder("docker", "compose", "exec", "-T", "db", "pg_isready", "-U", "testuser", "-d", "iot_testdb")
+            .directory(composeDir)
+            .redirectErrorStream(true)
+            .start()
+
+        val exitCode = readyProcess.waitFor()
+        if (exitCode == 0) {
+            return
+        }
+
+        Thread.sleep(pollInterval.inWholeMilliseconds)
+    }
+
+    error("Postgres no respondió como listo tras ${timeout.inWholeSeconds}s")
 }
 
 fun initDatabase(dataSource: DataSource) {
