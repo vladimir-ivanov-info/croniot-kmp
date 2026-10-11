@@ -84,3 +84,30 @@
   .entity-page { padding: 8px; height: auto; min-height: calc(100vh - 96px); }
   .entity-logs { height: 70vh; flex: none; }
 }
+
+.entity-devices {
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-size: 13px;
+  width: 100%;
+  max-width: 760px;
+}
+
+.entity-devices th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  color: #6b7280;
+  padding: 4px 12px 4px 0;
+}
+
+.entity-devices td {
+  padding: 5px 12px 5px 0;
+  border-top: 1px solid #f3f4f6;
+}
+
+.entity-devices .has-errors { color: #991b1b; font-weight: 700; }
+
+@media (max-width: 640px) {
+  .entity-devices { display: block; overflow-x: auto; }
+}
