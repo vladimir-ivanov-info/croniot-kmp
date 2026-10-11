@@ -180,10 +180,13 @@ fun initDatabase(dataSource: DataSource) {
 
 fun main() {
     ensureDockerComposeRunning()
+    AdminUiLauncher.start()
 
     Runtime.getRuntime().addShutdownHook(
         Thread {
             logger.info { "Gracefully shutting down..." }
+            runCatching { AdminUiLauncher.stop() }
+                .onFailure { logger.warn(it) { "Error stopping Admin UI" } }
             runCatching { DI.appComponent.applicationScope().shutdown() }
                 .onFailure { logger.warn(it) { "Error cancelling ApplicationScope" } }
             runCatching { MqttController.shutdown() }
