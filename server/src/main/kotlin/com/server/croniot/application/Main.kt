@@ -29,6 +29,10 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.ktor.server.response.respond
 import org.slf4j.event.Level
 import java.io.File
+import java.io.IOException
+import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Socket
 import java.security.KeyStore
 import javax.sql.DataSource
 import kotlin.time.Duration
@@ -174,16 +178,84 @@ private fun waitForPostgresReady(
     error("Postgres no respondió como listo tras ${timeout.inWholeSeconds}s")
 }
 
+private const val ADMIN_UI_PORT = 5173
+
+private var adminUiProcess: Process? = null
+
+fun ensureAdminUiRunning() {
+    if (System.getenv("CRONIOT_ADMIN_UI").equals("false", ignoreCase = true)) {
+        logger.info { "Admin UI auto-start disabled (CRONIOT_ADMIN_UI=false)" }
+        return
+    }
+
+    val adminUiDir = System.getenv("CRONIOT_ADMIN_UI_DIR")?.let(::File)
+        ?: File(System.getProperty("user.dir"), "../admin-ui")
+    if (!File(adminUiDir, "package.json").isFile) {
+        logger.warn { "Admin UI not found at ${adminUiDir.canonicalPath}, skipping" }
+        return
+    }
+
+    if (isLocalPortInUse(ADMIN_UI_PORT)) {
+        logger.info { "Admin UI already running on port $ADMIN_UI_PORT" }
+        return
+    }
+
+    val npm = System.getenv("NPM_PATH") ?: "npm"
+    val logFile = File(System.getProperty("user.dir"), "logs/admin-ui.log").apply { parentFile.mkdirs() }
+
+    try {
+        if (!File(adminUiDir, "node_modules").isDirectory) {
+            logger.info { "Installing Admin UI dependencies (npm ci)..." }
+            val exitCode = ProcessBuilder(npm, "ci")
+                .directory(adminUiDir)
+                .redirectErrorStream(true)
+                .redirectOutput(ProcessBuilder.Redirect.appendTo(logFile))
+                .start()
+                .waitFor()
+            if (exitCode != 0) {
+                logger.warn { "npm ci failed (exit code: $exitCode), see ${logFile.path}" }
+                return
+            }
+        }
+
+        adminUiProcess = ProcessBuilder(npm, "run", "dev", "--", "--port", "$ADMIN_UI_PORT", "--strictPort")
+            .directory(adminUiDir)
+            .redirectErrorStream(true)
+            .redirectOutput(ProcessBuilder.Redirect.appendTo(logFile))
+            .start()
+        logger.info { "Admin UI starting on http://localhost:$ADMIN_UI_PORT (logs: ${logFile.path})" }
+    } catch (e: IOException) {
+        logger.warn(e) { "Could not start Admin UI (is npm on PATH? otherwise set NPM_PATH)" }
+    }
+}
+
+fun stopAdminUi() {
+    // npm spawns vite as a child process; destroying only npm would leave vite holding the port
+    adminUiProcess?.let { process ->
+        process.descendants().forEach { it.destroy() }
+        process.destroy()
+    }
+}
+
+private fun isLocalPortInUse(port: Int): Boolean =
+    // vite may bind to ::1 or 127.0.0.1 depending on how "localhost" resolves
+    InetAddress.getAllByName("localhost").any { address ->
+        runCatching { Socket().use { it.connect(InetSocketAddress(address, port), 200) } }.isSuccess
+    }
+
 fun initDatabase(dataSource: DataSource) {
     DatabaseSchemaInitializer.createSchemaIfNeeded(dataSource)
 }
 
 fun main() {
     ensureDockerComposeRunning()
+    ensureAdminUiRunning()
 
     Runtime.getRuntime().addShutdownHook(
         Thread {
             logger.info { "Gracefully shutting down..." }
+            runCatching { stopAdminUi() }
+                .onFailure { logger.warn(it) { "Error stopping Admin UI" } }
             runCatching { DI.appComponent.applicationScope().shutdown() }
                 .onFailure { logger.warn(it) { "Error cancelling ApplicationScope" } }
             runCatching { MqttController.shutdown() }
