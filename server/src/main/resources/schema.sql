@@ -276,3 +276,21 @@ CREATE TABLE IF NOT EXISTS device_event (
 CREATE INDEX IF NOT EXISTS idx_device_log_device_received ON device_log(device, received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_device_event_device_received ON device_event(device, received_at DESC);
 
+-- One row per device, holding the last log_config JSON PUT there (plan
+-- Fase 4/PR15). Opaque cargo as far as the server is concerned - the
+-- shape it validates and republishes matches croniot-iot's own reduced
+-- RemoteLogConfig contract, not something this schema models field by
+-- field, so a TEXT blob is the honest representation rather than
+-- inventing normalized columns for a config the device owns the shape
+-- of. device is the PRIMARY KEY, not a separate id column, because a
+-- device has at most one config - there is nothing to key by besides it.
+CREATE TABLE IF NOT EXISTS device_log_config (
+    device BIGINT PRIMARY KEY,
+    config_json TEXT NOT NULL,
+    updated_at TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_device_log_config_device
+        FOREIGN KEY (device)
+        REFERENCES device(id)
+        ON DELETE CASCADE
+);

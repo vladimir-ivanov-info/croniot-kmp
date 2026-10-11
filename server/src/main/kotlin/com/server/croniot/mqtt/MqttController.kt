@@ -301,4 +301,23 @@ object MqttController {
             deviceMqttClient.publish(topic, message)
         }
     }
+
+    // Plan §11.5/PR15: retained so a device picks up the latest config
+    // the moment it (re)connects, even if it was offline when this was
+    // published - the device applies it via croniot-iot's
+    // Log::applyRemoteConfig() and confirms with its own
+    // log_config_applied event (a separate signal from this publish
+    // succeeding; MQTT delivery isn't confirmation of anything beyond
+    // "the broker has it", same distinction as every other retained/ack
+    // path in this controller).
+    suspend fun publishLogConfig(deviceUuid: String, configJson: String) {
+        clientLock.withLock {
+            val topic = "/server/$deviceUuid/log_config"
+            val message = MqttMessage(configJson.toByteArray()).apply {
+                qos = 1
+                isRetained = true
+            }
+            deviceMqttClient.publish(topic, message)
+        }
+    }
 }

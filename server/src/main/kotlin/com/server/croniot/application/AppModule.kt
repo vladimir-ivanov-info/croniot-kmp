@@ -4,6 +4,7 @@ import Global
 import com.server.croniot.config.Secrets
 import com.server.croniot.controllers.AccountController
 import com.server.croniot.controllers.DeviceController
+import com.server.croniot.controllers.DeviceLogConfigController
 import com.server.croniot.controllers.DeviceLogController
 import com.server.croniot.controllers.FeatureFlagController
 import com.server.croniot.controllers.SensorTypeController
@@ -13,6 +14,8 @@ import com.server.croniot.data.db.daos.AccountDao
 import com.server.croniot.data.db.daos.AccountJooqDaoImpl
 import com.server.croniot.data.db.daos.DeviceEventDao
 import com.server.croniot.data.db.daos.DeviceEventJooqDaoImpl
+import com.server.croniot.data.db.daos.DeviceLogConfigDao
+import com.server.croniot.data.db.daos.DeviceLogConfigJooqDaoImpl
 import com.server.croniot.data.db.daos.DeviceLogDao
 import com.server.croniot.data.db.daos.DeviceLogJooqDaoImpl
 import com.server.croniot.data.db.daos.FeatureFlagDao
@@ -35,6 +38,7 @@ import com.server.croniot.data.db.daos.TaskTypeDao
 import com.server.croniot.data.db.daos.TaskTypeDaoJooqImpl
 import com.server.croniot.data.repositories.AccountRepository
 import com.server.croniot.data.repositories.DeviceEventRepository
+import com.server.croniot.data.repositories.DeviceLogConfigRepository
 import com.server.croniot.data.repositories.DeviceLogRepository
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.DeviceTokenRepository
@@ -42,6 +46,7 @@ import com.server.croniot.data.repositories.FeatureFlagRepository
 import com.server.croniot.data.repositories.SensorTypeRepository
 import com.server.croniot.data.repositories.TaskRepository
 import com.server.croniot.data.repositories.TaskTypeRepository
+import com.server.croniot.services.DeviceLogConfigService
 import com.server.croniot.services.FeatureFlagService
 import com.server.croniot.http.SensorsDataController
 import com.server.croniot.services.AccountService
@@ -122,6 +127,12 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideDeviceLogConfigController(deviceLogConfigService: DeviceLogConfigService): DeviceLogConfigController {
+        return DeviceLogConfigController(deviceLogConfigService)
+    }
+
+    @Provides
+    @Singleton
     fun provideDeviceLogController(deviceLogService: DeviceLogService): DeviceLogController {
         return DeviceLogController(deviceLogService)
     }
@@ -186,6 +197,10 @@ class AppModule {
         RefreshTokenDaoImpl(dsl)
 
     @Provides @Singleton
+    fun provideDeviceLogConfigDao(dsl: DSLContext): DeviceLogConfigDao =
+        DeviceLogConfigJooqDaoImpl(dsl)
+
+    @Provides @Singleton
     fun provideDeviceLogDao(dsl: DSLContext): DeviceLogDao =
         DeviceLogJooqDaoImpl(dsl)
 
@@ -228,6 +243,12 @@ class AppModule {
     @Singleton
     fun provideTaskTypeRepository(taskTypeDao: TaskTypeDao, parameterTaskDao: ParameterTaskDao): TaskTypeRepository {
         return TaskTypeRepository(taskTypeDao, parameterTaskDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeviceLogConfigRepository(deviceLogConfigDao: DeviceLogConfigDao): DeviceLogConfigRepository {
+        return DeviceLogConfigRepository(deviceLogConfigDao)
     }
 
     @Provides
