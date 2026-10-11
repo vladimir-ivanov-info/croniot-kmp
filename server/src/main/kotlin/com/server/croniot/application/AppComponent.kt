@@ -14,6 +14,7 @@ import com.server.croniot.http.SensorsDataController
 import com.server.croniot.services.DeviceLogService
 import com.server.croniot.services.SensorBatchService
 import dagger.Component
+import org.jooq.DSLContext
 import javax.inject.Singleton
 import javax.sql.DataSource
 
@@ -38,6 +39,7 @@ interface AppComponent {
     fun deviceRepository(): DeviceRepository
     fun featureFlagController(): FeatureFlagController
     fun dataSource(): DataSource
+    fun dslContext(): DSLContext
 
     fun deviceLogConfigController(): DeviceLogConfigController
     fun deviceLogController(): DeviceLogController

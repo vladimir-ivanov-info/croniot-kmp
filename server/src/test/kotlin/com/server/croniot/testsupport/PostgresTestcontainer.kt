@@ -51,6 +51,7 @@ object PostgresTestcontainer {
         dsl.execute(
             """
             TRUNCATE TABLE
+                server_log,
                 refresh_token,
                 task_parameter_value,
                 task_state_info,

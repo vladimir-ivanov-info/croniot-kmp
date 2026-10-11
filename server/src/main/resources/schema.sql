@@ -352,3 +352,27 @@ CREATE TABLE IF NOT EXISTS ingest_batch (
 
 CREATE INDEX IF NOT EXISTS idx_ingest_batch_device_received ON ingest_batch(device, received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_ingest_batch_received ON ingest_batch(received_at DESC);
+
+-- The server's own log lines (everything Logback writes at the configured
+-- level, the same lines as server.log), so the admin viewer can show and
+-- filter them after a restart. Written in batches by ServerLogDbWriter on
+-- its own thread, never by the thread that logs. server.log stays the
+-- source of truth if Postgres is down.
+-- entry_id is the id the line was published live with
+-- (LiveLogAppender / ServerLogIds), which lets the viewer recognise the
+-- stored copy of a line it already showed live.
+CREATE TABLE IF NOT EXISTS server_log (
+    id BIGSERIAL PRIMARY KEY,
+    entry_id VARCHAR(48) NOT NULL,
+    level SMALLINT NOT NULL,
+    tag VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    thread VARCHAR(255),
+    trace_id VARCHAR(64),
+    throwable TEXT,
+    created_at TIMESTAMPTZ(6) NOT NULL,
+
+    CONSTRAINT uq_server_log_entry_id UNIQUE (entry_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_server_log_created ON server_log(created_at DESC);
