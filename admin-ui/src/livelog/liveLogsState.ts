@@ -7,18 +7,23 @@ export interface LiveLogsState {
   entries: LogEntry[];
   pending: LogEntry[];
   paused: boolean;
+  // An older history page is being fetched.
+  loadingOlder: boolean;
+  // History has nothing older than what is shown.
+  reachedStart: boolean;
 }
 
 export const MAX_ENTRIES = 10_000;
 
-export const initialLiveLogsState: LiveLogsState = { entries: [], pending: [], paused: false };
+export const initialLiveLogsState: LiveLogsState = { entries: [], pending: [], paused: false, loadingOlder: false, reachedStart: false };
 
 export type LiveLogsAction =
   // Live entries, and gap refills (they may be newer than what is shown).
   | { type: "receive"; entries: LogEntry[] }
   // Older pages of history: they go below what is shown, so they are added
   // even while paused - the visible part of the list does not move.
-  | { type: "history"; entries: LogEntry[] }
+  | { type: "history"; entries: LogEntry[]; reachedStart: boolean }
+  | { type: "loadingOlder" }
   | { type: "pause" }
   | { type: "resume" }
   | { type: "reset" };
@@ -49,11 +54,18 @@ export function liveLogsReducer(state: LiveLogsState, action: LiveLogsAction): L
       return { ...state, pending: mergeEntries(state.pending, notShown) };
     }
     case "history":
-      return { ...state, entries: mergeEntries(state.entries, action.entries) };
+      return {
+        ...state,
+        entries: mergeEntries(state.entries, action.entries),
+        loadingOlder: false,
+        reachedStart: state.reachedStart || action.reachedStart,
+      };
+    case "loadingOlder":
+      return { ...state, loadingOlder: true };
     case "pause":
       return state.paused ? state : { ...state, paused: true };
     case "resume":
-      return { entries: mergeEntries(state.entries, state.pending), pending: [], paused: false };
+      return { ...state, entries: mergeEntries(state.entries, state.pending), pending: [], paused: false };
     case "reset":
       return initialLiveLogsState;
   }
