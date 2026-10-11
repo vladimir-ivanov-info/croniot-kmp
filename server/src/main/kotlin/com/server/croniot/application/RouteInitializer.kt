@@ -27,6 +27,7 @@ class RouteInitializer @Inject constructor(
     private val deviceLogConfigController: DeviceLogConfigController,
     private val deviceLogController: DeviceLogController,
     private val adminLogStreamController: AdminLogStreamController,
+    private val adminLogController: AdminLogController,
 ) {
     fun setupRoutes(application: Application) {
         val prometheusRegistry = application.attributes.getOrNull(PROMETHEUS_REGISTRY_KEY)
@@ -157,6 +158,11 @@ class RouteInitializer @Inject constructor(
                 route("/api/admin/logs/stream") {
                     install(AdminOnly)
                     sse { adminLogStreamController.stream(this) }
+                }
+
+                get("/api/admin/logs") {
+                    call.requireAdmin()
+                    adminLogController.getLogs(call)
                 }
             }
         }

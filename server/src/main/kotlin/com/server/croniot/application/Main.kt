@@ -123,6 +123,7 @@ fun Application.module(testing: Boolean = false) {
         deviceLogConfigController = appComponent.deviceLogConfigController(),
         deviceLogController = appComponent.deviceLogController(),
         adminLogStreamController = appComponent.adminLogStreamController(),
+        adminLogController = appComponent.adminLogController(),
     )
     routeInitializer.setupRoutes(this)
 }
