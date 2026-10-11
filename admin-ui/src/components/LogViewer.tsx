@@ -17,6 +17,7 @@ interface Props {
   onNearEnd?: () => void;
   toolbar?: React.ReactNode;
   emptyText?: string;
+  highlight?: string;
 }
 
 // Scrolling this far from the top (where new entries arrive) pauses the
@@ -26,7 +27,7 @@ const AUTO_PAUSE_PX = 48;
 const AUTO_RESUME_PX = 8;
 const NEAR_END_ROWS = 30;
 
-export function LogViewer({ entries, status, paused, pendingCount, onPause, onResume, onNearEnd, toolbar, emptyText }: Props) {
+export function LogViewer({ entries, status, paused, pendingCount, onPause, onResume, onNearEnd, toolbar, emptyText, highlight }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const pausedByScroll = useRef(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -104,7 +105,7 @@ export function LogViewer({ entries, status, paused, pendingCount, onPause, onRe
                   className="log-viewer-item"
                   style={{ transform: `translateY(${item.start}px)` }}
                 >
-                  <LogRow entry={entry} expanded={expanded.has(entry.id)} onToggle={toggle} />
+                  <LogRow entry={entry} expanded={expanded.has(entry.id)} onToggle={toggle} highlight={highlight} />
                 </div>
               );
             })}

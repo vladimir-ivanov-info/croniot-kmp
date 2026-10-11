@@ -6,12 +6,29 @@ interface Props {
   entry: LogEntry;
   expanded: boolean;
   onToggle: (id: string) => void;
+  // Text search term to mark inside the message.
+  highlight?: string;
+}
+
+function marked(text: string, term: string | undefined): React.ReactNode {
+  const needle = term?.trim().toLowerCase();
+  if (!needle) return text;
+  const parts: React.ReactNode[] = [];
+  const lower = text.toLowerCase();
+  let from = 0;
+  for (let at = lower.indexOf(needle); at !== -1; at = lower.indexOf(needle, from)) {
+    if (at > from) parts.push(text.slice(from, at));
+    parts.push(<mark key={at}>{text.slice(at, at + needle.length)}</mark>);
+    from = at + needle.length;
+  }
+  if (from < text.length) parts.push(text.slice(from));
+  return parts;
 }
 
 // One line of the viewer. Clicking it shows the fields that don't fit on
 // one line (boot/seq/uptime for devices, thread/trace/exception for the
 // server).
-export function LogRow({ entry, expanded, onToggle }: Props) {
+export function LogRow({ entry, expanded, onToggle, highlight }: Props) {
   const severity = severityOf(entry.level);
   const device = deviceLabel(entry);
   const owner = ownerLabel(entry);
@@ -40,7 +57,7 @@ export function LogRow({ entry, expanded, onToggle }: Props) {
           {owner && <span className="log-owner">{owner}</span>}
         </span>
         <span className="log-tag">{entry.tag}</span>
-        <span className="log-message">{entry.message}</span>
+        <span className="log-message">{marked(entry.message, highlight)}</span>
       </button>
       {expanded && (
         <dl className="log-details">
