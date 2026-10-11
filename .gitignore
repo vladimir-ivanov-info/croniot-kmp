@@ -80,3 +80,6 @@ server/KotlinMQTTServer*/
 #Local AI files
 Modelfile
 
+
+# Local-only scripts
+server/scripts/
