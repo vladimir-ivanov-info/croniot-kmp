@@ -382,3 +382,20 @@ CREATE INDEX IF NOT EXISTS idx_server_log_created ON server_log(created_at DESC)
 -- filtering by one device.
 CREATE INDEX IF NOT EXISTS idx_device_log_received ON device_log(received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_device_event_received ON device_event(received_at DESC);
+
+-- Last known MQTT presence of each device, from the retained
+-- /iot_to_server/status/<uuid> topic: the broker's LWT "offline" when the
+-- session drops, the device's birth {"boot":N} on every (re)connect.
+-- One row per device, overwritten on each change. boot_id is the last one
+-- the device announced (kept while it is offline).
+CREATE TABLE IF NOT EXISTS device_status (
+    device BIGINT PRIMARY KEY,
+    online BOOLEAN NOT NULL,
+    boot_id BIGINT,
+    updated_at TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_device_status_device
+        FOREIGN KEY (device)
+        REFERENCES device(id)
+        ON DELETE CASCADE
+);
