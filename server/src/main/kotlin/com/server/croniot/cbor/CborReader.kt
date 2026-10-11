@@ -2,9 +2,11 @@ package com.server.croniot.cbor
 
 // Minimal CBOR (RFC 8949) decoder for exactly the subset croniot-iot's
 // hand-rolled encoder emits (see croniot-iot's CborWriter.h/
-// BatchEnvelope.h): definite-length unsigned integers (major type 0),
-// definite-length text strings (major type 3), and definite-length
-// arrays (major type 4) - nothing else. Hand-rolled to match that
+// BatchEnvelope.h/SensorBatchEncoder.h): definite-length unsigned
+// integers (major type 0), definite-length text strings (major type
+// 3), definite-length arrays (major type 4), and IEEE 754 double-
+// precision floats (major type 7, additional info 27 - sensor readings
+// only; log/event records never needed a real number type). Hand-rolled to match that
 // encoder symmetrically rather than pulling in a general CBOR library:
 // kotlinx-serialization-cbor has no clean way to decode a plain
 // positional array-of-arrays into named fields (it encodes classes as
@@ -38,6 +40,14 @@ class CborReader(private val bytes: ByteArray) {
         val str = String(bytes, pos, len, Charsets.UTF_8)
         pos += len
         return str
+    }
+
+    fun readDouble(): Double {
+        val initial = nextByte()
+        require(initial == 0xFB) { "expected float64 (0xFB) at byte $pos, got 0x${initial.toString(16)}" }
+        var bits = 0L
+        repeat(8) { bits = (bits shl 8) or (nextByte().toLong() and 0xFF) }
+        return Double.fromBits(bits)
     }
 
     fun hasMore(): Boolean = pos < bytes.size

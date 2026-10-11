@@ -12,6 +12,7 @@ import com.server.croniot.controllers.TaskTypeController
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.http.SensorsDataController
 import com.server.croniot.services.DeviceLogService
+import com.server.croniot.services.SensorBatchService
 import dagger.Component
 import javax.inject.Singleton
 import javax.sql.DataSource
@@ -41,4 +42,5 @@ interface AppComponent {
     fun deviceLogConfigController(): DeviceLogConfigController
     fun deviceLogController(): DeviceLogController
     fun deviceLogService(): DeviceLogService
+    fun sensorBatchService(): SensorBatchService
 }

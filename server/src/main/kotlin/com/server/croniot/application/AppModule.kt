@@ -28,6 +28,8 @@ import com.server.croniot.data.db.daos.ParameterTaskDao
 import com.server.croniot.data.db.daos.ParameterTaskDaoJooqImpl
 import com.server.croniot.data.db.daos.RefreshTokenDao
 import com.server.croniot.data.db.daos.RefreshTokenDaoImpl
+import com.server.croniot.data.db.daos.SensorDataDao
+import com.server.croniot.data.db.daos.SensorDataJooqDaoImpl
 import com.server.croniot.data.db.daos.SensorTypeDao
 import com.server.croniot.data.db.daos.SensorTypeJooqDaoImpl
 import com.server.croniot.data.db.daos.TaskDao
@@ -43,6 +45,7 @@ import com.server.croniot.data.repositories.DeviceLogRepository
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.DeviceTokenRepository
 import com.server.croniot.data.repositories.FeatureFlagRepository
+import com.server.croniot.data.repositories.SensorDataRepository
 import com.server.croniot.data.repositories.SensorTypeRepository
 import com.server.croniot.data.repositories.TaskRepository
 import com.server.croniot.data.repositories.TaskTypeRepository
@@ -208,6 +211,10 @@ class AppModule {
     fun provideDeviceEventDao(dsl: DSLContext): DeviceEventDao =
         DeviceEventJooqDaoImpl(dsl)
 
+    @Provides @Singleton
+    fun provideSensorDataDao(dsl: DSLContext): SensorDataDao =
+        SensorDataJooqDaoImpl(dsl)
+
     // --- Repositories ---
 
     @Provides
@@ -261,6 +268,12 @@ class AppModule {
     @Singleton
     fun provideDeviceEventRepository(deviceEventDao: DeviceEventDao): DeviceEventRepository {
         return DeviceEventRepository(deviceEventDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSensorDataRepository(sensorDataDao: SensorDataDao): SensorDataRepository {
+        return SensorDataRepository(sensorDataDao)
     }
 
     @Provides @Singleton

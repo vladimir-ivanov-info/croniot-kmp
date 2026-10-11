@@ -10,15 +10,18 @@ import java.time.OffsetDateTime
 import javax.inject.Inject
 
 // Which croniot-iot Journal stream a batch/record belongs to (plan
-// §11.3's device_log/device_event split) - `wireValue` matches
-// croniot::log::Stream's ordinal in the CBOR envelope, `ackName` matches
-// the string Uplink::onAck() expects in the JSON ack payload
-// ({"stream":"logs"|"events"|"data","upToSeq":N}).  `Data` is
-// deliberately absent: it has no wire topic on the device side yet
-// (Tanda F), so there is nothing to ingest for it today.
+// §11.3's device_log/device_event split, plus §7.2/§12.6's Data
+// stream) - `wireValue` matches croniot::log::Stream's ordinal in the
+// CBOR envelope, `ackName` matches the string Uplink::onAck() expects
+// in the JSON ack payload ({"stream":"logs"|"events"|"data",
+// "upToSeq":N}). DATA is ingested by SensorBatchService, not
+// DeviceLogService - the two never share a stream despite sharing this
+// enum, since it's genuinely one wire-level concept (which Journal
+// stream a batch came from) used by two different consumers.
 enum class LogStream(val wireValue: Int, val ackName: String) {
     LOGS(0, "logs"),
-    EVENTS(1, "events");
+    EVENTS(1, "events"),
+    DATA(2, "data");
 
     companion object {
         fun fromWireValue(value: Int): LogStream? = entries.find { it.wireValue == value }
@@ -60,7 +63,16 @@ class DeviceLogService @Inject constructor(
         }
 
         val stream = LogStream.fromWireValue(batch.stream)
-        if (stream == null) {
+        if (stream == null || stream == LogStream.DATA) {
+            // DATA is a real, ingestable stream now (SensorBatchService
+            // handles it - entirely different payload shape, a sensor
+            // reading batch rather than a log/event record) - just not
+            // through this service, which only knows device_log/
+            // device_event. A DeviceLogBatch decoded with stream=DATA
+            // would fail to parse as sensor readings anyway (wrong
+            // record shape), so this never actually happens in
+            // practice - MqttController subscribes DeviceLogService only
+            // to the logs/events topics.
             logger.warn { "ingestBatch: unsupported stream ${batch.stream} for device $deviceUuid, dropping batch" }
             return null
         }
@@ -68,6 +80,7 @@ class DeviceLogService @Inject constructor(
         val inserted = when (stream) {
             LogStream.LOGS -> deviceLogRepository.insertBatch(deviceId, batch.bootId, batch.records)
             LogStream.EVENTS -> deviceEventRepository.insertBatch(deviceId, batch.bootId, batch.records)
+            LogStream.DATA -> error("unreachable - guarded above")
         }
         logger.debug {
             "ingestBatch: device=$deviceUuid stream=${stream.ackName} inserted=$inserted/${batch.records.size} firstSeq=${batch.firstSeq} count=${batch.count}"

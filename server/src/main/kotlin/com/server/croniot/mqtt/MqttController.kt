@@ -42,6 +42,7 @@ object MqttController {
 
     private const val LOG_TOPIC_PREFIX = "/iot_to_server/logs/"
     private const val EVENT_TOPIC_PREFIX = "/iot_to_server/events/"
+    private const val SENSOR_BATCH_TOPIC_PREFIX = "/iot_to_server/sensor_batch/"
 
     private val exceptionHandler = CoroutineExceptionHandler { context, throwable ->
         logger.error(throwable) { "Uncaught exception in MqttController scope (context=$context)" }
@@ -100,6 +101,7 @@ object MqttController {
 
         initTaskStateController()
         initDeviceLogController()
+        initSensorBatchController()
     }
 
     // Plan §12.4 PR11 / §5: a single wildcard subscription per stream
@@ -131,6 +133,26 @@ object MqttController {
         synchronized(deviceClients) { deviceClients.add(eventClient) }
         BinaryMqttSubscriber(eventClient, "$EVENT_TOPIC_PREFIX+", qos = 1, scope = scope) { topic, payload ->
             eventProcessor.process(topic, payload)
+        }
+    }
+
+    // Plan §7.4/§12.6 PR19: same wildcard-subscription shape as
+    // initDeviceLogController() above, for the Data stream's batched
+    // sensor readings - a separate CommChannel/topic/decoder/service
+    // from logs/events (different payload shape entirely), but the
+    // exact same "one wildcard MqttClient, ack after commit" pattern.
+    private fun initSensorBatchController() {
+        val sensorBatchService = DI.appComponent.sensorBatchService()
+        val processor = MqttDataProcessorSensorBatch(SENSOR_BATCH_TOPIC_PREFIX, sensorBatchService)
+
+        val sensorBatchClient = MqttClient(
+            Global.secrets.mqttBrokerUrl,
+            Global.secrets.mqttClientId + Global.generateUniqueString(8),
+            MemoryPersistence(),
+        )
+        synchronized(deviceClients) { deviceClients.add(sensorBatchClient) }
+        BinaryMqttSubscriber(sensorBatchClient, "$SENSOR_BATCH_TOPIC_PREFIX+", qos = 1, scope = scope) { topic, payload ->
+            processor.process(topic, payload)
         }
     }
 
