@@ -95,6 +95,7 @@ dependencies {
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.coroutines.test)
 
     pitest("org.pitest:pitest-junit5-plugin:1.2.0")
 

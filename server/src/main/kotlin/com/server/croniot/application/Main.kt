@@ -125,6 +125,7 @@ fun Application.module(testing: Boolean = false) {
         adminLogStreamController = appComponent.adminLogStreamController(),
         adminLogController = appComponent.adminLogController(),
         adminDirectoryController = appComponent.adminDirectoryController(),
+        adminServerLogLevelController = appComponent.adminServerLogLevelController(),
     )
     routeInitializer.setupRoutes(this)
 }

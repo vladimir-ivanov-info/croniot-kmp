@@ -4,6 +4,12 @@
   box-sizing: border-box;
 }
 
+.logs-page-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .logs-page-title {
   margin: 0;
   font-size: 18px;

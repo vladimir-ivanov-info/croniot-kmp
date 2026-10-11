@@ -29,6 +29,7 @@ class RouteInitializer @Inject constructor(
     private val adminLogStreamController: AdminLogStreamController,
     private val adminLogController: AdminLogController,
     private val adminDirectoryController: AdminDirectoryController,
+    private val adminServerLogLevelController: AdminServerLogLevelController,
 ) {
     fun setupRoutes(application: Application) {
         val prometheusRegistry = application.attributes.getOrNull(PROMETHEUS_REGISTRY_KEY)
@@ -179,6 +180,13 @@ class RouteInitializer @Inject constructor(
                 get("/api/admin/accounts/{uuid}") {
                     call.requireAdmin()
                     adminDirectoryController.getAccount(call)
+                }
+
+                route("/api/admin/server/log_level") {
+                    install(AdminOnly)
+                    get { adminServerLogLevelController.get(call) }
+                    put { adminServerLogLevelController.set(call) }
+                    delete { adminServerLogLevelController.revert(call) }
                 }
             }
         }
