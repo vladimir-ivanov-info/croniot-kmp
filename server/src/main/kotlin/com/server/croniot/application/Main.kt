@@ -35,7 +35,9 @@ import java.net.InetSocketAddress
 import java.net.Socket
 import java.security.KeyStore
 import javax.sql.DataSource
+import kotlin.concurrent.thread
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -179,6 +181,7 @@ private fun waitForPostgresReady(
 }
 
 private const val ADMIN_UI_PORT = 5173
+private const val ADMIN_UI_URL = "http://localhost:$ADMIN_UI_PORT"
 
 private var adminUiProcess: Process? = null
 
@@ -196,7 +199,7 @@ fun ensureAdminUiRunning() {
     }
 
     if (isLocalPortInUse(ADMIN_UI_PORT)) {
-        logger.info { "Admin UI already running on port $ADMIN_UI_PORT" }
+        logger.info { "Admin UI already running: $ADMIN_UI_URL" }
         return
     }
 
@@ -218,15 +221,41 @@ fun ensureAdminUiRunning() {
             }
         }
 
-        adminUiProcess = ProcessBuilder(npm, "run", "dev", "--", "--port", "$ADMIN_UI_PORT", "--strictPort")
+        val process = ProcessBuilder(npm, "run", "dev", "--", "--port", "$ADMIN_UI_PORT", "--strictPort")
             .directory(adminUiDir)
             .redirectErrorStream(true)
             .redirectOutput(ProcessBuilder.Redirect.appendTo(logFile))
             .start()
-        logger.info { "Admin UI starting on http://localhost:$ADMIN_UI_PORT (logs: ${logFile.path})" }
+        adminUiProcess = process
+        logger.info { "Starting Admin UI (logs: ${logFile.path})" }
+        logWhenAdminUiReady(process, logFile)
     } catch (e: IOException) {
         logger.warn(e) { "Could not start Admin UI (is npm on PATH? otherwise set NPM_PATH)" }
     }
+}
+
+// Runs in the background so the server boot isn't blocked waiting for vite
+private fun logWhenAdminUiReady(
+    process: Process,
+    logFile: File,
+    timeout: Duration = 60.seconds,
+    pollInterval: Duration = 500.milliseconds,
+) = thread(isDaemon = true, name = "admin-ui-readiness") {
+    val deadline = System.currentTimeMillis() + timeout.inWholeMilliseconds
+
+    while (System.currentTimeMillis() < deadline) {
+        if (!process.isAlive) {
+            logger.warn { "Admin UI exited (exit code: ${process.exitValue()}), see ${logFile.path}" }
+            return@thread
+        }
+        if (isLocalPortInUse(ADMIN_UI_PORT)) {
+            logger.info { "Admin UI ready: $ADMIN_UI_URL" }
+            return@thread
+        }
+        Thread.sleep(pollInterval.inWholeMilliseconds)
+    }
+
+    logger.warn { "Admin UI not ready after ${timeout.inWholeSeconds}s, see ${logFile.path}" }
 }
 
 fun stopAdminUi() {
