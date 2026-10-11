@@ -212,6 +212,8 @@ fun main() {
     val serverLogWriter = ServerLogDbWriter(DI.appComponent.dslContext()).also { it.start() }
     Runtime.getRuntime().addShutdownHook(Thread { runCatching { serverLogWriter.stop() } })
 
+    DI.appComponent.logRetentionService().schedule(DI.appComponent.applicationScope())
+
     try {
         MqttController.start()
         DI.appComponent.sensorDataController().start()
