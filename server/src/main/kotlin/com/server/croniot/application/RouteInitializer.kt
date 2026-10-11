@@ -12,6 +12,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import io.ktor.server.sse.sse
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -25,6 +26,7 @@ class RouteInitializer @Inject constructor(
     private val featureFlagController: FeatureFlagController,
     private val deviceLogConfigController: DeviceLogConfigController,
     private val deviceLogController: DeviceLogController,
+    private val adminLogStreamController: AdminLogStreamController,
 ) {
     fun setupRoutes(application: Application) {
         val prometheusRegistry = application.attributes.getOrNull(PROMETHEUS_REGISTRY_KEY)
@@ -150,6 +152,11 @@ class RouteInitializer @Inject constructor(
 
                 get("/api/devices/{uuid}/log_config") {
                     deviceLogConfigController.getConfig(call)
+                }
+
+                route("/api/admin/logs/stream") {
+                    install(AdminOnly)
+                    sse { adminLogStreamController.stream(this) }
                 }
             }
         }

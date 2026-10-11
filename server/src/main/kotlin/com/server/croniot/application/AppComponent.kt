@@ -1,6 +1,7 @@
 package com.server.croniot.application
 
 import com.server.croniot.controllers.AccountController
+import com.server.croniot.controllers.AdminLogStreamController
 import com.server.croniot.controllers.DeviceController
 import com.server.croniot.controllers.DeviceLogConfigController
 import com.server.croniot.controllers.DeviceLogController
@@ -43,6 +44,7 @@ interface AppComponent {
 
     fun deviceLogConfigController(): DeviceLogConfigController
     fun deviceLogController(): DeviceLogController
+    fun adminLogStreamController(): AdminLogStreamController
     fun deviceLogService(): DeviceLogService
     fun sensorBatchService(): SensorBatchService
 }
