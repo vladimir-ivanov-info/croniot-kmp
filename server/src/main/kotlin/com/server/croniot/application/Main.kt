@@ -124,6 +124,7 @@ fun Application.module(testing: Boolean = false) {
         deviceLogController = appComponent.deviceLogController(),
         adminLogStreamController = appComponent.adminLogStreamController(),
         adminLogController = appComponent.adminLogController(),
+        adminDirectoryController = appComponent.adminDirectoryController(),
     )
     routeInitializer.setupRoutes(this)
 }
