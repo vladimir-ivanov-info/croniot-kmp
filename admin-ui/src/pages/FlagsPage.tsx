@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
+import { UnauthorizedError } from "../api/client";
 import { fetchFlags, setFlag } from "../api/featureFlags";
+import { useAuth } from "../auth/useAuth";
 import { FlagRow } from "../components/FlagRow";
 import type { FeatureFlag } from "../types";
 
-interface Props {
-  token: string;
-  onLogout: () => void;
-}
-
-export function FlagsPage({ token, onLogout }: Props) {
+export function FlagsPage() {
+  const { token } = useAuth();
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
@@ -25,14 +23,11 @@ export function FlagsPage({ token, onLogout }: Props) {
     setUpdating(name);
     setError(null);
     try {
-      const updated = await setFlag(name, enabled, token);
+      const updated = await setFlag(name, enabled, token ?? "");
       setFlags((prev) => prev.map((f) => (f.name === name ? updated : f)));
     } catch (err) {
-      if (err instanceof Error && err.message === "Unauthorized") {
-        onLogout();
-      } else {
-        setError(`Failed to update "${name}"`);
-      }
+      // UnauthorizedError already signed the user out.
+      if (!(err instanceof UnauthorizedError)) setError(`Failed to update "${name}"`);
     } finally {
       setUpdating(null);
     }
@@ -40,17 +35,8 @@ export function FlagsPage({ token, onLogout }: Props) {
 
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        <div style={styles.brand}>
-          <img src="/logo.png" alt="Croniot Logo" style={styles.logo} />
-          <h1 style={styles.title}>Croniot Feature Flags</h1>
-        </div>
-        <button style={styles.logoutBtn} onClick={onLogout}>
-          Sign out
-        </button>
-      </header>
-
-      <main style={styles.main}>
+      <div style={styles.main}>
+        <h1 style={styles.title}>Feature flags</h1>
         {error && <div style={styles.error}>{error}</div>}
 
         <div style={styles.card}>
@@ -67,49 +53,21 @@ export function FlagsPage({ token, onLogout }: Props) {
             />
           ))}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: "100vh",
     background: "#f3f4f6",
     fontFamily: "system-ui, sans-serif",
   },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "20px 32px",
-    background: "#fff",
-    borderBottom: "1px solid #e5e7eb",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-  },
   title: {
-    margin: 0,
+    margin: "0 0 16px",
     fontSize: 20,
     fontWeight: 700,
     color: "#111827",
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-  logo: {
-    width: "40px",
-    height: "40px",
-  },
-  logoutBtn: {
-    padding: "7px 16px",
-    borderRadius: 8,
-    border: "1px solid #d1d5db",
-    background: "#fff",
-    fontSize: 14,
-    cursor: "pointer",
-    color: "#374151",
   },
   main: {
     maxWidth: 680,
