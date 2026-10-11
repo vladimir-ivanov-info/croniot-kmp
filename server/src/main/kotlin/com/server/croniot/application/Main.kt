@@ -21,6 +21,7 @@ import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.ratelimit.RateLimitName
+import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
@@ -77,6 +78,9 @@ fun Application.module(testing: Boolean = false) {
         )
     }
     attributes.put(PROMETHEUS_REGISTRY_KEY, prometheusRegistry)
+    // Lets services that are not handed the registry (e.g.
+    // IngestBatchRecorder) register counters that still show up in /metrics.
+    Metrics.addRegistry(prometheusRegistry)
 
     installStatusPages()
 

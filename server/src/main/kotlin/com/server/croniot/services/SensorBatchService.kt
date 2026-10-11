@@ -1,5 +1,6 @@
 package com.server.croniot.services
 
+import com.server.croniot.data.db.daos.IngestBatchRow
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.SensorDataRepository
 import com.server.croniot.data.repositories.SensorTypeRepository
@@ -12,6 +13,7 @@ class SensorBatchService @Inject constructor(
     private val sensorDataRepository: SensorDataRepository,
     private val sensorTypeRepository: SensorTypeRepository,
     private val deviceRepository: DeviceRepository,
+    private val ingestBatchRecorder: IngestBatchRecorder,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -31,12 +33,16 @@ class SensorBatchService @Inject constructor(
 
         val receivedAt = OffsetDateTime.now()
         var totalInserted = 0
+        var totalSamples = 0
+        var skippedSamples = 0
         for (record in envelope.records) {
             val sensorTypeId = sensorTypeRepository.getId(deviceId, record.sensorUid.toLong())
             if (sensorTypeId == null) {
                 logger.warn { "ingestBatch: device=$deviceUuid has no sensor type uid=${record.sensorUid}, skipping ${record.values.size} sample(s)" }
+                skippedSamples += record.values.size
                 continue
             }
+            totalSamples += record.values.size
             totalInserted += sensorDataRepository.insertBatch(
                 deviceId, sensorTypeId, envelope.bootId, record.seq, record.values, receivedAt,
             )
@@ -44,6 +50,23 @@ class SensorBatchService @Inject constructor(
         logger.debug { "ingestBatch: device=$deviceUuid records=${envelope.records.size} inserted=$totalInserted" }
 
         val upToSeq = envelope.records.maxOfOrNull { it.seq } ?: return null
+
+        // Counted in samples, not records: one record (one device flush)
+        // holds many samples, and the unique key that absorbs resends is
+        // per sample.
+        ingestBatchRecorder.record(
+            IngestBatchRow(
+                deviceId = deviceId,
+                stream = LogStream.DATA.ackName,
+                bootId = envelope.bootId,
+                firstSeq = envelope.records.minOf { it.seq },
+                lastSeq = upToSeq,
+                records = totalSamples,
+                inserted = totalInserted,
+                duplicated = totalSamples - totalInserted,
+                skipped = skippedSamples,
+            ),
+        )
         return AckResult(LogStream.DATA, upToSeq)
     }
 }

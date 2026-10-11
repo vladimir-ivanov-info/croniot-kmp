@@ -1,5 +1,6 @@
 package com.server.croniot.services
 
+import com.server.croniot.data.db.daos.IngestBatchRow
 import com.server.croniot.data.repositories.DeviceEventRepository
 import com.server.croniot.data.repositories.DeviceLogRepository
 import com.server.croniot.data.repositories.DeviceRepository
@@ -37,6 +38,7 @@ class DeviceLogService @Inject constructor(
     private val deviceEventRepository: DeviceEventRepository,
     private val deviceRepository: DeviceRepository,
     private val livePublisher: DeviceLogLivePublisher,
+    private val ingestBatchRecorder: IngestBatchRecorder,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -93,6 +95,21 @@ class DeviceLogService @Inject constructor(
         // live viewer (the server's own ERROR log line does instead).
         val kind = if (stream == LogStream.EVENTS) LogKind.EVENT else LogKind.LOG
         livePublisher.publish(deviceId, batch.bootId, kind, inserted)
+
+        if (batch.records.isNotEmpty()) {
+            ingestBatchRecorder.record(
+                IngestBatchRow(
+                    deviceId = deviceId,
+                    stream = stream.ackName,
+                    bootId = batch.bootId,
+                    firstSeq = batch.records.minOf { it.seq },
+                    lastSeq = batch.records.maxOf { it.seq },
+                    records = batch.records.size,
+                    inserted = inserted.size,
+                    duplicated = batch.records.size - inserted.size,
+                ),
+            )
+        }
 
         val upToSeq = if (batch.records.isEmpty()) batch.firstSeq else batch.records.maxOf { it.seq }
         return AckResult(stream, upToSeq)

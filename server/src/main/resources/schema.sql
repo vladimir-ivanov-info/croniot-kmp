@@ -317,3 +317,38 @@ CREATE TABLE IF NOT EXISTS device_log_config (
         REFERENCES device(id)
         ON DELETE CASCADE
 );
+
+-- One row per batch the server received from a device (logs, events or
+-- sensor data), whatever happened to its records - the audit trail for
+-- resends. device_log/device_event/sensor_data keep exactly one row per
+-- record (resends are absorbed by their unique keys), and this table is where
+-- "this batch arrived again, at this time, N records were duplicates"
+-- survives, so delivery quality can be measured over time instead of
+-- being invisible.
+--   stream:     'logs' | 'events' | 'data' (LogStream.ackName)
+--   records:    records considered (for 'data': samples)
+--   inserted:   rows that were new
+--   duplicated: rows the unique key rejected (already stored)
+--   skipped:    'data' only - samples for a sensor type the device never
+--               registered, so they could not be stored at all
+CREATE TABLE IF NOT EXISTS ingest_batch (
+    id BIGSERIAL PRIMARY KEY,
+    device BIGINT NOT NULL,
+    stream VARCHAR(8) NOT NULL,
+    boot_id BIGINT NOT NULL,
+    first_seq BIGINT NOT NULL,
+    last_seq BIGINT NOT NULL,
+    records INTEGER NOT NULL,
+    inserted INTEGER NOT NULL,
+    duplicated INTEGER NOT NULL,
+    skipped INTEGER NOT NULL DEFAULT 0,
+    received_at TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_ingest_batch_device
+        FOREIGN KEY (device)
+        REFERENCES device(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_ingest_batch_device_received ON ingest_batch(device, received_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ingest_batch_received ON ingest_batch(received_at DESC);

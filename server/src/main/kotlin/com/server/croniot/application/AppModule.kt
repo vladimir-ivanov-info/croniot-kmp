@@ -19,6 +19,8 @@ import com.server.croniot.data.db.daos.DeviceLogConfigJooqDaoImpl
 import com.server.croniot.data.db.daos.DeviceLogDao
 import com.server.croniot.data.db.daos.DeviceLogJooqDaoImpl
 import com.server.croniot.data.db.daos.FeatureFlagDao
+import com.server.croniot.data.db.daos.IngestBatchDao
+import com.server.croniot.data.db.daos.IngestBatchJooqDaoImpl
 import com.server.croniot.data.db.daos.FeatureFlagJooqDaoImpl
 import com.server.croniot.data.db.daos.DeviceDao
 import com.server.croniot.data.db.daos.DeviceJooqDaoImpl
@@ -221,6 +223,10 @@ class AppModule {
     @Provides @Singleton
     fun provideSensorDataDao(dsl: DSLContext): SensorDataDao =
         SensorDataJooqDaoImpl(dsl)
+
+    @Provides @Singleton
+    fun provideIngestBatchDao(dsl: DSLContext): IngestBatchDao =
+        IngestBatchJooqDaoImpl(dsl)
 
     // --- Repositories ---
 
