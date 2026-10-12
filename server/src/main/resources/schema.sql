@@ -376,3 +376,9 @@ CREATE TABLE IF NOT EXISTS server_log (
 );
 
 CREATE INDEX IF NOT EXISTS idx_server_log_created ON server_log(created_at DESC);
+
+-- The admin log history (LogHistoryDao) reads every device at once,
+-- newest first. The (device, received_at) indexes above only help when
+-- filtering by one device.
+CREATE INDEX IF NOT EXISTS idx_device_log_received ON device_log(received_at DESC);
+CREATE INDEX IF NOT EXISTS idx_device_event_received ON device_event(received_at DESC);
