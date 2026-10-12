@@ -52,6 +52,7 @@ import com.server.croniot.data.repositories.TaskTypeRepository
 import com.server.croniot.services.DeviceLogConfigService
 import com.server.croniot.services.FeatureFlagService
 import com.server.croniot.http.SensorsDataController
+import com.server.croniot.livelog.LiveLogBus
 import com.server.croniot.services.AccountService
 import com.server.croniot.services.DeviceLogService
 import com.server.croniot.services.DeviceService
@@ -101,6 +102,12 @@ class AppModule {
     fun provideDslContext(dataSource: DataSource): DSLContext {
         return DSL.using(dataSource, SQLDialect.POSTGRES)
     }
+
+    // Same instance the Logback appender publishes to (it is created by
+    // Logback, outside Dagger), hence `shared` instead of a new one.
+    @Provides
+    @Singleton
+    fun provideLiveLogBus(): LiveLogBus = LiveLogBus.shared
 
     // --- Controllers ---
 
