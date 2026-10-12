@@ -1,5 +1,6 @@
 package com.server.croniot.services
 
+import com.server.croniot.data.db.daos.IngestBatchRow
 import com.server.croniot.data.db.daos.InsertedDeviceLogRow
 import com.server.croniot.data.repositories.DeviceEventRepository
 import com.server.croniot.data.repositories.DeviceLogRepository
@@ -23,12 +24,14 @@ class DeviceLogServiceTest {
     private val deviceEventRepository: DeviceEventRepository = mockk(relaxUnitFun = true)
     private val deviceRepository: DeviceRepository = mockk()
     private val livePublisher: DeviceLogLivePublisher = mockk(relaxUnitFun = true)
+    private val ingestBatchRecorder: IngestBatchRecorder = mockk(relaxUnitFun = true)
 
     private val service = DeviceLogService(
         deviceLogRepository = deviceLogRepository,
         deviceEventRepository = deviceEventRepository,
         deviceRepository = deviceRepository,
         livePublisher = livePublisher,
+        ingestBatchRecorder = ingestBatchRecorder,
     )
 
     private fun record(seq: Long) = DeviceLogRecord(seq = seq, uptimeMs = seq * 1000, level = 2, tag = "TAG", message = "m")
@@ -142,5 +145,33 @@ class DeviceLogServiceTest {
         assertThrows<IllegalStateException> { service.ingestBatch("device-uuid", batch) }
 
         verify(exactly = 0) { livePublisher.publish(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `WHEN part of a batch was already stored THEN the ingest batch row counts the duplicates`() {
+        every { deviceRepository.getId("device-uuid") } returns 7L
+        every { deviceLogRepository.insertBatch(7L, 100L, any()) } returns inserted(record(6))
+
+        val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 5, count = 2, records = listOf(record(5), record(6)))
+        service.ingestBatch("device-uuid", batch)
+
+        verify {
+            ingestBatchRecorder.record(
+                IngestBatchRow(
+                    deviceId = 7L, stream = "logs", bootId = 100L, firstSeq = 5L, lastSeq = 6L,
+                    records = 2, inserted = 1, duplicated = 1,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `WHEN the batch has no records THEN no ingest batch row is recorded`() {
+        every { deviceRepository.getId("device-uuid") } returns 7L
+        every { deviceLogRepository.insertBatch(7L, 100L, emptyList()) } returns emptyList()
+
+        service.ingestBatch("device-uuid", DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 42, count = 0, records = emptyList()))
+
+        verify(exactly = 0) { ingestBatchRecorder.record(any()) }
     }
 }

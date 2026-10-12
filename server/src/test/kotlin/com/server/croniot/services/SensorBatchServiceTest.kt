@@ -1,5 +1,6 @@
 package com.server.croniot.services
 
+import com.server.croniot.data.db.daos.IngestBatchRow
 import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.data.repositories.SensorDataRepository
 import com.server.croniot.data.repositories.SensorTypeRepository
@@ -17,11 +18,13 @@ class SensorBatchServiceTest {
     private val sensorDataRepository: SensorDataRepository = mockk(relaxUnitFun = true)
     private val sensorTypeRepository: SensorTypeRepository = mockk()
     private val deviceRepository: DeviceRepository = mockk()
+    private val ingestBatchRecorder: IngestBatchRecorder = mockk(relaxUnitFun = true)
 
     private val service = SensorBatchService(
         sensorDataRepository = sensorDataRepository,
         sensorTypeRepository = sensorTypeRepository,
         deviceRepository = deviceRepository,
+        ingestBatchRecorder = ingestBatchRecorder,
     )
 
     @Test
@@ -64,5 +67,29 @@ class SensorBatchServiceTest {
         val result = service.ingestBatch("device-uuid", envelope)
 
         assertNull(result)
+    }
+
+    @Test
+    fun `WHEN a batch is ingested THEN the ingest batch row counts samples, duplicates and skipped ones`() {
+        every { deviceRepository.getId("device-uuid") } returns 7L
+        every { sensorTypeRepository.getId(7L, 42L) } returns 100L
+        every { sensorTypeRepository.getId(7L, 99L) } returns null
+        // 3 samples for a known sensor, 1 of them already stored; 2 for an unregistered one.
+        every { sensorDataRepository.insertBatch(7L, 100L, 5L, 10L, any(), any()) } returns 2
+
+        val envelope = SensorBatchEnvelope(bootId = 5, stream = 2, records = listOf(
+            SensorBatchRecord(seq = 10, sensorUid = 42, t0Ms = 0, dtMs = 0, values = listOf(1.0, 2.0, 3.0)),
+            SensorBatchRecord(seq = 11, sensorUid = 99, t0Ms = 0, dtMs = 0, values = listOf(4.0, 5.0)),
+        ))
+        service.ingestBatch("device-uuid", envelope)
+
+        verify {
+            ingestBatchRecorder.record(
+                IngestBatchRow(
+                    deviceId = 7L, stream = "data", bootId = 5L, firstSeq = 10L, lastSeq = 11L,
+                    records = 3, inserted = 2, duplicated = 1, skipped = 2,
+                ),
+            )
+        }
     }
 }
