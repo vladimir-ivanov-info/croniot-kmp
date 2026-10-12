@@ -36,6 +36,10 @@
         </encoder>
     </appender>
 
+    <!-- Feeds the admin-ui live log viewer (com.server.croniot.livelog). Never
+         blocks or logs itself, so it is safe to attach to root directly. -->
+    <appender name="LIVE" class="com.server.croniot.livelog.LiveLogAppender" />
+
     <!-- Suppress noisy libraries -->
     <logger name="io.netty" level="WARN" />
     <logger name="org.eclipse.paho" level="WARN" />
@@ -47,5 +51,6 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
         <appender-ref ref="ERROR_FILE" />
+        <appender-ref ref="LIVE" />
     </root>
 </configuration>
