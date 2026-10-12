@@ -43,6 +43,7 @@ object MqttController {
     private const val LOG_TOPIC_PREFIX = "/iot_to_server/logs/"
     private const val EVENT_TOPIC_PREFIX = "/iot_to_server/events/"
     private const val SENSOR_BATCH_TOPIC_PREFIX = "/iot_to_server/sensor_batch/"
+    private const val STATUS_TOPIC_PREFIX = "/iot_to_server/status/"
 
     private val exceptionHandler = CoroutineExceptionHandler { context, throwable ->
         logger.error(throwable) { "Uncaught exception in MqttController scope (context=$context)" }
@@ -102,6 +103,7 @@ object MqttController {
         initTaskStateController()
         initDeviceLogController()
         initSensorBatchController()
+        initDeviceStatusController()
     }
 
     // Plan §12.4 PR11 / §5: a single wildcard subscription per stream
@@ -153,6 +155,23 @@ object MqttController {
         synchronized(deviceClients) { deviceClients.add(sensorBatchClient) }
         BinaryMqttSubscriber(sensorBatchClient, "$SENSOR_BATCH_TOPIC_PREFIX+", qos = 1, scope = scope) { topic, payload ->
             processor.process(topic, payload)
+        }
+    }
+
+    // Presence (online/offline) of every device, for the admin device page.
+    // The status topic is retained, so subscribing also delivers each
+    // device's current state right away, which is what syncs device_status
+    // after a server restart.
+    private fun initDeviceStatusController() {
+        val deviceStatusService = DI.appComponent.deviceStatusService()
+        val statusClient = MqttClient(
+            Global.secrets.mqttBrokerUrl,
+            Global.secrets.mqttClientId + Global.generateUniqueString(8),
+            MemoryPersistence(),
+        )
+        synchronized(deviceClients) { deviceClients.add(statusClient) }
+        BinaryMqttSubscriber(statusClient, "$STATUS_TOPIC_PREFIX+", qos = 1, scope = scope) { topic, payload ->
+            deviceStatusService.onStatusMessage(topic.removePrefix(STATUS_TOPIC_PREFIX), String(payload, Charsets.UTF_8))
         }
     }
 
