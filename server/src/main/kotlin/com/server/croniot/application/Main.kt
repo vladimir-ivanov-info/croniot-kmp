@@ -22,6 +22,7 @@ import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.ratelimit.RateLimitName
+import io.ktor.server.sse.SSE
 import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
@@ -85,6 +86,8 @@ fun Application.module(testing: Boolean = false) {
 
     installStatusPages()
 
+    install(SSE)
+
     val appComponent = DI.appComponent
     val jwtConfig = appComponent.jwtConfig()
 
@@ -119,6 +122,7 @@ fun Application.module(testing: Boolean = false) {
         featureFlagController = appComponent.featureFlagController(),
         deviceLogConfigController = appComponent.deviceLogConfigController(),
         deviceLogController = appComponent.deviceLogController(),
+        adminLogStreamController = appComponent.adminLogStreamController(),
     )
     routeInitializer.setupRoutes(this)
 }

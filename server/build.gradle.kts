@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.rate.limit)
     implementation(libs.ktor.server.metrics.micrometer)
+    implementation(libs.ktor.server.sse)
     implementation(libs.micrometer.registry.prometheus)
     implementation(libs.jbcrypt)
 
