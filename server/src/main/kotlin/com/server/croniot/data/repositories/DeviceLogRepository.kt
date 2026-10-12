@@ -1,6 +1,7 @@
 package com.server.croniot.data.repositories
 
 import com.server.croniot.data.db.daos.DeviceLogDao
+import com.server.croniot.data.db.daos.InsertedDeviceLogRow
 import com.server.croniot.mqtt.DeviceLogRecord
 import croniot.models.dto.DeviceLogEntryDto
 import java.time.OffsetDateTime
@@ -10,7 +11,7 @@ class DeviceLogRepository @Inject constructor(
     private val deviceLogDao: DeviceLogDao,
 ) {
 
-    fun insertBatch(deviceId: Long, bootId: Long, records: List<DeviceLogRecord>): Int {
+    fun insertBatch(deviceId: Long, bootId: Long, records: List<DeviceLogRecord>): List<InsertedDeviceLogRow> {
         return deviceLogDao.insertBatch(deviceId, bootId, records)
     }
 

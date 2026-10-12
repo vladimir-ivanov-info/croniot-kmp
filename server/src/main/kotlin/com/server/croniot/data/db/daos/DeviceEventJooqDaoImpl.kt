@@ -11,8 +11,12 @@ class DeviceEventJooqDaoImpl @Inject constructor(
     private val dsl: DSLContext,
 ) : DeviceEventDao {
 
-    override fun insertBatch(deviceId: Long, bootId: Long, records: List<DeviceLogRecord>): Int {
-        if (records.isEmpty()) return 0
+    override fun insertBatch(
+        deviceId: Long,
+        bootId: Long,
+        records: List<DeviceLogRecord>,
+    ): List<InsertedDeviceLogRow> {
+        if (records.isEmpty()) return emptyList()
 
         val step = dsl.insertInto(
             DEVICE_EVENT,
@@ -22,7 +26,21 @@ class DeviceEventJooqDaoImpl @Inject constructor(
         for (r in records) {
             step.values(deviceId, bootId, r.seq, r.uptimeMs, r.level.toShort(), r.tag, r.message)
         }
-        return step.onConflictDoNothing().execute()
+        // RETURNING only yields rows that were really inserted - the ones
+        // ON CONFLICT skipped are absent, which is exactly the set the
+        // live viewer must not show twice.
+        val bySeq = records.associateBy { it.seq }
+        return step.onConflictDoNothing()
+            .returningResult(DEVICE_EVENT.ID, DEVICE_EVENT.SEQ, DEVICE_EVENT.RECEIVED_AT)
+            .fetch()
+            .mapNotNull { row ->
+                val record = bySeq[row.value2()] ?: return@mapNotNull null
+                InsertedDeviceLogRow(
+                    id = row.value1() ?: return@mapNotNull null,
+                    record = record,
+                    receivedAt = row.value3() ?: OffsetDateTime.now(),
+                )
+            }
     }
 
     override fun getRecent(

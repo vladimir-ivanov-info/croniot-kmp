@@ -3,6 +3,8 @@ package com.server.croniot.services
 import com.server.croniot.data.repositories.DeviceEventRepository
 import com.server.croniot.data.repositories.DeviceLogRepository
 import com.server.croniot.data.repositories.DeviceRepository
+import com.server.croniot.livelog.DeviceLogLivePublisher
+import com.server.croniot.livelog.LogKind
 import com.server.croniot.mqtt.DeviceLogBatch
 import croniot.models.dto.DeviceLogEntryDto
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -34,6 +36,7 @@ class DeviceLogService @Inject constructor(
     private val deviceLogRepository: DeviceLogRepository,
     private val deviceEventRepository: DeviceEventRepository,
     private val deviceRepository: DeviceRepository,
+    private val livePublisher: DeviceLogLivePublisher,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -83,8 +86,13 @@ class DeviceLogService @Inject constructor(
             LogStream.DATA -> error("unreachable - guarded above")
         }
         logger.debug {
-            "ingestBatch: device=$deviceUuid stream=${stream.ackName} inserted=$inserted/${batch.records.size} firstSeq=${batch.firstSeq} count=${batch.count}"
+            "ingestBatch: device=$deviceUuid stream=${stream.ackName} inserted=${inserted.size}/${batch.records.size} firstSeq=${batch.firstSeq} count=${batch.count}"
         }
+
+        // After the INSERT, never before: if it threw, nothing reaches the
+        // live viewer (the server's own ERROR log line does instead).
+        val kind = if (stream == LogStream.EVENTS) LogKind.EVENT else LogKind.LOG
+        livePublisher.publish(deviceId, batch.bootId, kind, inserted)
 
         val upToSeq = if (batch.records.isEmpty()) batch.firstSeq else batch.records.maxOf { it.seq }
         return AckResult(stream, upToSeq)
