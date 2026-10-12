@@ -22,6 +22,7 @@ import org.slf4j.MDC
 class LiveLogAppenderTest {
 
     private val bus = LiveLogBus()
+    private val queue = ServerLogQueue()
 
     // A private LoggerContext, so this test neither depends on nor
     // disturbs the real logback.xml configuration.
@@ -29,7 +30,7 @@ class LiveLogAppenderTest {
         // A hand-made context has no MDC adapter; share the one MDC.put() uses.
         setMDCAdapter(MDC.getMDCAdapter())
     }
-    private val appender = LiveLogAppender(bus).apply {
+    private val appender = LiveLogAppender(bus, queue).apply {
         context = this@LiveLogAppenderTest.context
         start()
     }
@@ -111,5 +112,14 @@ class LiveLogAppenderTest {
         }
 
         assertNotEquals(entries[0].id, entries[1].id)
+    }
+
+    @Test
+    fun `WHEN a line is logged THEN the same entry is queued for the database`() {
+        val live = collect(1) { logger.info("stored too") }.single()
+
+        val queued = queue.drain(max = 10, timeoutMs = 1_000)
+
+        assertEquals(listOf(live), queued)
     }
 }

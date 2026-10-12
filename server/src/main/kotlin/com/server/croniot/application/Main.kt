@@ -2,6 +2,7 @@ package com.server.croniot.application
 
 import Global
 import com.server.croniot.di.DI
+import com.server.croniot.livelog.ServerLogDbWriter
 import com.server.croniot.mqtt.MqttController
 import croniot.messages.MessageFactory
 import croniot.models.errors.DomainError
@@ -199,6 +200,11 @@ fun main() {
     )
 
     initDatabase(DI.appComponent.dataSource())
+
+    // After initDatabase (server_log must exist). Lines logged before this
+    // wait in ServerLogQueue and are written on the first flush.
+    val serverLogWriter = ServerLogDbWriter(DI.appComponent.dslContext()).also { it.start() }
+    Runtime.getRuntime().addShutdownHook(Thread { runCatching { serverLogWriter.stop() } })
 
     try {
         MqttController.start()

@@ -20,7 +20,8 @@ object ServerLogIds {
 }
 
 // Logback appender (registered in logback.xml) that turns every server log
-// line into a LogEntryDto for the live viewer.
+// line into a LogEntryDto, publishes it to the live viewer and queues it
+// for ServerLogDbWriter to store in server_log.
 //
 // Never logs and never blocks: append() runs on whatever thread called the
 // logger, and LiveLogBus.publish() is a non-suspending tryEmit. A line
@@ -28,10 +29,11 @@ object ServerLogIds {
 // today, but a future change might) is dropped instead of recursing.
 class LiveLogAppender(
     private val bus: LiveLogBus,
+    private val queue: ServerLogQueue,
 ) : AppenderBase<ILoggingEvent>() {
 
     // Logback instantiates appenders from logback.xml through this one.
-    constructor() : this(LiveLogBus.shared)
+    constructor() : this(LiveLogBus.shared, ServerLogQueue.shared)
 
     private val inAppend = ThreadLocal.withInitial { false }
 
@@ -39,7 +41,9 @@ class LiveLogAppender(
         if (inAppend.get()) return
         inAppend.set(true)
         try {
-            bus.publish(toEntry(event))
+            val entry = toEntry(event)
+            bus.publish(entry)
+            queue.offer(event.loggerName, entry)
         } finally {
             inAppend.set(false)
         }
