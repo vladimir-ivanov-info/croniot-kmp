@@ -16,6 +16,7 @@ import com.server.croniot.data.repositories.DeviceRepository
 import com.server.croniot.http.SensorsDataController
 import com.server.croniot.services.DeviceLogService
 import com.server.croniot.services.DeviceStatusService
+import com.server.croniot.services.LogRetentionService
 import com.server.croniot.services.SensorBatchService
 import dagger.Component
 import org.jooq.DSLContext
@@ -53,4 +54,5 @@ interface AppComponent {
     fun deviceLogService(): DeviceLogService
     fun sensorBatchService(): SensorBatchService
     fun deviceStatusService(): DeviceStatusService
+    fun logRetentionService(): LogRetentionService
 }
