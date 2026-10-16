@@ -13,6 +13,7 @@ export function Layout() {
           <span className="layout-title">Croniot Admin</span>
         </div>
         <nav className="layout-nav" aria-label="Main">
+          <NavLink to="/logs">Logs</NavLink>
           <NavLink to="/flags">Feature flags</NavLink>
         </nav>
         <button type="button" className="layout-signout" onClick={logout}>

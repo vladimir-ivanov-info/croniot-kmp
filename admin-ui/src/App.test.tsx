@@ -27,10 +27,21 @@ describe("AppRoutes", () => {
     localStorage.setItem(TOKEN_KEY, "tok");
     vi.stubGlobal("fetch", vi.fn(async () => new Response("[]", { status: 200 })));
 
-    renderAt("/");
+    renderAt("/flags");
 
     expect(await screen.findByRole("heading", { name: "Feature flags" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Main" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sign out" })).toBeInTheDocument();
+  });
+
+  it("opens the live logs page by default", async () => {
+    localStorage.setItem(TOKEN_KEY, "tok");
+    // The stream ends immediately; the page shows its empty state.
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("", { status: 200 })));
+
+    renderAt("/");
+
+    expect(await screen.findByRole("heading", { name: "Logs" })).toBeInTheDocument();
+    expect(screen.getByText("Waiting for log entries…")).toBeInTheDocument();
   });
 });

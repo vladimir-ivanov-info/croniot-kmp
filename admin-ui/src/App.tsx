@@ -4,6 +4,7 @@ import { useAuth } from "./auth/useAuth";
 import { Layout } from "./components/Layout";
 import { FlagsPage } from "./pages/FlagsPage";
 import { LoginPage } from "./pages/LoginPage";
+import { LogsPage } from "./pages/LogsPage";
 
 export function AppRoutes() {
   const { token, login } = useAuth();
@@ -12,7 +13,8 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<Navigate to="/flags" replace />} />
+        <Route index element={<Navigate to="/logs" replace />} />
+        <Route path="logs" element={<LogsPage />} />
         <Route path="flags" element={<FlagsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
