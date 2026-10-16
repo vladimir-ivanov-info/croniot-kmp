@@ -1,0 +1,86 @@
+/* Device and owner pages: a summary header above a log viewer. */
+
+.entity-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: calc(100vh - 58px);
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.entity-header {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.entity-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.entity-heading h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.entity-error { color: #dc2626; margin: 8px 0 0; }
+
+.entity-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+
+.entity-facts dt { color: #6b7280; font-size: 12px; }
+.entity-facts dd { margin: 2px 0 0; }
+
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.muted { color: #9ca3af; }
+
+.level-counts { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.level-count {
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  border-left: none;
+  font-size: 12px;
+}
+
+.level-count.sev-error { background: #fef2f2; color: #991b1b; font-weight: 700; }
+.level-count.sev-warn { background: #fffbeb; color: #92400e; }
+.level-count.is-zero { opacity: 0.45; font-weight: 400; }
+
+.entity-logs { flex: 1; min-height: 0; }
+.entity-logs-title { margin: 0; font-size: 16px; }
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.status-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; }
+.status-badge-online { background: #dcfce7; color: #166534; }
+.status-badge-online .status-badge-dot { background: #16a34a; }
+.status-badge-offline { background: #fee2e2; color: #991b1b; }
+.status-badge-offline .status-badge-dot { background: #dc2626; }
+.status-badge-since { font-weight: 400; }
+
+@media (max-width: 640px) {
+  .entity-page { padding: 8px; height: auto; min-height: calc(100vh - 96px); }
+  .entity-logs { height: 70vh; flex: none; }
+}

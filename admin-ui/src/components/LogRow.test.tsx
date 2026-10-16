@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { LogEntry } from "../livelog/types";
@@ -13,21 +14,21 @@ const deviceError: LogEntry = {
 
 describe("LogRow", () => {
   it("marks an error with its class, icon and a readable label", () => {
-    render(<LogRow entry={deviceError} expanded={false} onToggle={() => {}} />);
+    render(<LogRow entry={deviceError} expanded={false} onToggle={() => {}} />, { wrapper: MemoryRouter });
 
     expect(screen.getByTestId("log-row")).toHaveClass("sev-error");
     expect(screen.getByText("Error")).toBeInTheDocument();
     expect(screen.getByText("EVENT")).toBeInTheDocument();
-    expect(screen.getByText("Riego")).toBeInTheDocument();
-    expect(screen.getByText("vladimir")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Riego" })).toHaveAttribute("href", "/devices/watering_system_3");
+    expect(screen.getByRole("link", { name: "vladimir" })).toHaveAttribute("href", "/accounts/acc-1");
     expect(screen.getByText("publish failed")).toBeInTheDocument();
   });
 
   it("asks to expand on click and shows the device fields when expanded", async () => {
     const onToggle = vi.fn();
-    const { rerender } = render(<LogRow entry={deviceError} expanded={false} onToggle={onToggle} />);
+    const { rerender } = render(<LogRow entry={deviceError} expanded={false} onToggle={onToggle} />, { wrapper: MemoryRouter });
 
-    await userEvent.click(screen.getByRole("button"));
+    await userEvent.click(screen.getByRole("button", { name: "Show details" }));
     expect(onToggle).toHaveBeenCalledWith("evt-7");
 
     rerender(<LogRow entry={deviceError} expanded={true} onToggle={onToggle} />);
@@ -41,7 +42,7 @@ describe("LogRow", () => {
       receivedAtMs: Date.now(), thread: "worker-1", throwable: "java.lang.IllegalStateException: boom",
     };
 
-    render(<LogRow entry={serverLine} expanded={true} onToggle={() => {}} />);
+    render(<LogRow entry={serverLine} expanded={true} onToggle={() => {}} />, { wrapper: MemoryRouter });
 
     expect(screen.getByTestId("log-row")).toHaveClass("sev-debug");
     expect(screen.getByText("SRV")).toBeInTheDocument();
