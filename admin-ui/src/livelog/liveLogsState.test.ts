@@ -51,13 +51,16 @@ describe("liveLogsReducer", () => {
   it("adds older history even while paused", () => {
     let state = liveLogsReducer(initialLiveLogsState, { type: "receive", entries: [entry("new", 10)] });
     state = liveLogsReducer(state, { type: "pause" });
-    state = liveLogsReducer(state, { type: "history", entries: [entry("old", 1)] });
+    state = liveLogsReducer(state, { type: "history", entries: [entry("old", 1)], reachedStart: false });
 
     expect(state.entries.map((e) => e.id)).toEqual(["new", "old"]);
   });
 
   it("starts empty again on reset", () => {
-    const state = liveLogsReducer({ entries: [entry("a", 1)], pending: [entry("b", 2)], paused: true }, { type: "reset" });
+    const state = liveLogsReducer(
+      { entries: [entry("a", 1)], pending: [entry("b", 2)], paused: true, loadingOlder: true, reachedStart: true },
+      { type: "reset" }
+    );
 
     expect(state).toEqual(initialLiveLogsState);
   });

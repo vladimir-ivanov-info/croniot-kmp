@@ -15,6 +15,9 @@ interface Props {
   onResume: () => void;
   // Called when the user scrolls near the oldest loaded entry.
   onNearEnd?: () => void;
+  loadingOlder?: boolean;
+  // No older history exists for the current filters.
+  reachedStart?: boolean;
   toolbar?: React.ReactNode;
   emptyText?: string;
   highlight?: string;
@@ -27,7 +30,9 @@ const AUTO_PAUSE_PX = 48;
 const AUTO_RESUME_PX = 8;
 const NEAR_END_ROWS = 30;
 
-export function LogViewer({ entries, status, paused, pendingCount, onPause, onResume, onNearEnd, toolbar, emptyText, highlight }: Props) {
+export function LogViewer({
+  entries, status, paused, pendingCount, onPause, onResume, onNearEnd, loadingOlder, reachedStart, toolbar, emptyText, highlight,
+}: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const pausedByScroll = useRef(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -110,6 +115,9 @@ export function LogViewer({ entries, status, paused, pendingCount, onPause, onRe
               );
             })}
           </div>
+        )}
+        {entries.length > 0 && (loadingOlder || reachedStart) && (
+          <p className="log-viewer-footer">{loadingOlder ? "Loading older entries…" : "Beginning of stored history."}</p>
         )}
       </div>
     </section>

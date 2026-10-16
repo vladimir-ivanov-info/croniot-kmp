@@ -35,6 +35,9 @@ export function LogsPage() {
         pendingCount={live.pendingCount}
         onPause={live.pause}
         onResume={live.resume}
+        onNearEnd={live.loadOlder}
+        loadingOlder={live.loadingOlder}
+        reachedStart={live.reachedStart}
         highlight={filter.text}
         toolbar={
           <>

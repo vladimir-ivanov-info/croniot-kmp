@@ -217,3 +217,11 @@
   color: inherit;
   border-radius: 2px;
 }
+
+.log-viewer-footer {
+  margin: 0;
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--log-muted);
+}
