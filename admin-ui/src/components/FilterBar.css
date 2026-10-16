@@ -87,3 +87,22 @@
   .filter-search input,
   .picker input { width: 100%; }
 }
+
+.server-level {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.server-level select {
+  padding: 2px 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.server-level-until {
+  color: #92400e;
+  font-size: 12px;
+}
