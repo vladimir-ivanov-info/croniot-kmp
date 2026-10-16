@@ -1,24 +1,31 @@
-import { useState } from "react";
-import { LoginPage } from "./pages/LoginPage";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+import { AuthProvider } from "./auth/AuthProvider";
+import { useAuth } from "./auth/useAuth";
+import { Layout } from "./components/Layout";
 import { FlagsPage } from "./pages/FlagsPage";
+import { LoginPage } from "./pages/LoginPage";
 
-const TOKEN_KEY = "croniot_admin_token";
+export function AppRoutes() {
+  const { token, login } = useAuth();
+  if (!token) return <LoginPage onLogin={login} />;
+
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Navigate to="/flags" replace />} />
+        <Route path="flags" element={<FlagsPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
+}
 
 export default function App() {
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem(TOKEN_KEY)
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
-
-  function handleLogin(t: string) {
-    localStorage.setItem(TOKEN_KEY, t);
-    setToken(t);
-  }
-
-  function handleLogout() {
-    localStorage.removeItem(TOKEN_KEY);
-    setToken(null);
-  }
-
-  if (!token) return <LoginPage onLogin={handleLogin} />;
-  return <FlagsPage token={token} onLogout={handleLogout} />;
 }
