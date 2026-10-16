@@ -8,6 +8,8 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
+import io.ktor.util.cio.ChannelWriteException
+import io.ktor.utils.io.ClosedWriteChannelException
 
 class DomainException(val error: DomainError) : RuntimeException(error.message)
 
@@ -18,6 +20,15 @@ fun Application.installStatusPages() {
         exception<DomainException> { call, cause ->
             val (status, body) = cause.error.toHttp()
             call.respond(status, body)
+        }
+        // The client closed the connection mid-response (e.g. an SSE viewer
+        // changing filters or navigating away). The response is already
+        // started and the channel is gone, so there is nothing to answer.
+        exception<ChannelWriteException> { call, _ ->
+            logger.debug { "Client disconnected from ${call.request.local.uri}" }
+        }
+        exception<ClosedWriteChannelException> { call, _ ->
+            logger.debug { "Client disconnected from ${call.request.local.uri}" }
         }
         exception<Throwable> { call, cause ->
             logger.error(cause) { "Unhandled exception on ${call.request.local.uri}" }
