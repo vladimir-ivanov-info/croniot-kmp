@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { login } from "../api/auth";
+import { login, type Tokens } from "../api/auth";
 
 interface Props {
-  onLogin: (token: string) => void;
+  onLogin: (tokens: Tokens) => void;
 }
 
 export function LoginPage({ onLogin }: Props) {
@@ -16,8 +16,7 @@ export function LoginPage({ onLogin }: Props) {
     setError(null);
     setLoading(true);
     try {
-      const token = await login(email, password);
-      onLogin(token);
+      onLogin(await login(email, password));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
