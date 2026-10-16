@@ -211,3 +211,9 @@
   .log-message { flex-basis: 100%; white-space: normal; }
   .log-who { max-width: 60vw; }
 }
+
+.log-message mark {
+  background: #fde68a;
+  color: inherit;
+  border-radius: 2px;
+}
