@@ -48,7 +48,14 @@ class AdminLogRoutesTest {
             jwt(AUTH_JWT_REALM) {
                 verifier(jwtConfig.verifier())
                 validate { credential ->
-                    if (credential.payload.audience.contains(jwtConfig.audience)) JWTPrincipal(credential.payload) else null
+                    if (credential.payload.audience.contains(
+                            jwtConfig.audience
+                        )
+                    ) {
+                        JWTPrincipal(credential.payload)
+                    } else {
+                        null
+                    }
                 }
             }
         }
@@ -80,8 +87,13 @@ class AdminLogRoutesTest {
     fun `WHEN an admin asks THEN the query is parsed and entries come back as JSON`() = testApplication {
         application { testModule() }
         val entry = LogEntryDto(
-            id = "log-1", platform = LogPlatform.IOT, kind = LogKind.LOG, level = LogLevels.WARN,
-            tag = "Uplink", message = "m", receivedAtMs = 5,
+            id = "log-1",
+            platform = LogPlatform.IOT,
+            kind = LogKind.LOG,
+            level = LogLevels.WARN,
+            tag = "Uplink",
+            message = "m",
+            receivedAtMs = 5,
         )
         val query = slot<LogHistoryQuery>()
         every { dao.find(capture(query)) } returns listOf(entry)
@@ -91,11 +103,17 @@ class AdminLogRoutesTest {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals(listOf(entry), Json.decodeFromString(ListSerializer(LogEntryDto.serializer()), response.bodyAsText()))
+        assertEquals(
+            listOf(entry),
+            Json.decodeFromString(ListSerializer(LogEntryDto.serializer()), response.bodyAsText())
+        )
         assertEquals(
             LogHistoryQuery(
                 filter = LiveLogFilter(platforms = setOf(LogPlatform.IOT), levels = setOf(LogLevels.WARN)),
-                text = "fail", beforeMs = 10, beforeId = "log-9", limit = 50,
+                text = "fail",
+                beforeMs = 10,
+                beforeId = "log-9",
+                limit = 50,
             ),
             query.captured,
         )

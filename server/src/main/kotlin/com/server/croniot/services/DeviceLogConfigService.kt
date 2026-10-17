@@ -3,8 +3,8 @@ package com.server.croniot.services
 import com.server.croniot.data.repositories.DeviceLogConfigRepository
 import com.server.croniot.data.repositories.DeviceRepository
 import croniot.models.Result
-import javax.inject.Inject
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 class DeviceLogConfigService @Inject constructor(
     private val deviceLogConfigRepository: DeviceLogConfigRepository,

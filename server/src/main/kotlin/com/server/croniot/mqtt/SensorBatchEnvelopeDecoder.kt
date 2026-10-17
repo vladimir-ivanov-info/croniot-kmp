@@ -37,18 +37,22 @@ object SensorBatchEnvelopeDecoder {
         val reader = CborReader(bytes)
 
         val outerLen = reader.readArrayHeader()
-        require(outerLen == 5) { "expected a 5-element batch envelope [bootId, stream, firstSeq, count, records], got $outerLen elements" }
+        require(outerLen == 5) {
+            "expected a 5-element batch envelope [bootId, stream, firstSeq, count, records], got $outerLen elements"
+        }
 
         val bootId = reader.readUInt()
         val stream = reader.readUInt().toInt()
         val firstSeq = reader.readUInt()
-        reader.readUInt()  // count - redundant with records.size, not needed here
+        reader.readUInt() // count - redundant with records.size, not needed here
 
         val recordCount = reader.readArrayHeader()
         val records = ArrayList<SensorBatchRecord>(recordCount)
         repeat(recordCount) { index ->
             val fieldCount = reader.readArrayHeader()
-            require(fieldCount == 4) { "expected a 4-element sensor record [sensorUid, t0Ms, dtMs, values], got $fieldCount elements" }
+            require(fieldCount == 4) {
+                "expected a 4-element sensor record [sensorUid, t0Ms, dtMs, values], got $fieldCount elements"
+            }
 
             val sensorUid = reader.readUInt().toInt()
             val t0Ms = reader.readUInt()

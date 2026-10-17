@@ -83,7 +83,13 @@ class TaskRepositoryTest {
         taskDao.seedHistory("device-uuid", entryA)
         taskDao.seedHistory("device-uuid", entryB)
 
-        val filtered = repository.getAllStateInfoHistory("device-uuid", limit = 10, before = null, beforeId = null, taskTypeUid = 10L)
+        val filtered = repository.getAllStateInfoHistory(
+            "device-uuid",
+            limit = 10,
+            before = null,
+            beforeId = null,
+            taskTypeUid = 10L
+        )
         assertEquals(listOf(entryA), filtered)
 
         val all = repository.getAllStateInfoHistory("device-uuid", limit = 10, before = null, beforeId = null)
@@ -99,7 +105,10 @@ class TaskRepositoryTest {
         taskDao.seedHistory("device-uuid", historyEntry(stateInfoId = 2L, taskTypeUid = 20L))
 
         assertEquals(2, repository.getAllStateInfoHistoryCount("device-uuid", before = null, beforeId = null))
-        assertEquals(1, repository.getAllStateInfoHistoryCount("device-uuid", before = null, beforeId = null, taskTypeUid = 10L))
+        assertEquals(
+            1,
+            repository.getAllStateInfoHistoryCount("device-uuid", before = null, beforeId = null, taskTypeUid = 10L)
+        )
         assertEquals(0, repository.getAllStateInfoHistoryCount("missing-device", before = null, beforeId = null))
     }
 

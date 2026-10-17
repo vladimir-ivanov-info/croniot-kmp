@@ -43,10 +43,18 @@ class LogHistoryDaoIntegrationTest {
             password = "pwd",
         )
         val deviceId = DeviceJooqDaoImpl(dsl).insert(
-            DeviceEntity(uuid = device.uuid, name = device.name!!, description = "d", iot = true, accountId = accountId),
+            DeviceEntity(
+                uuid = device.uuid,
+                name = device.name!!,
+                description = "d",
+                iot = true,
+                accountId = accountId
+            ),
         )
         val logs = DeviceLogJooqDaoImpl(dsl).insertBatch(
-            deviceId, 9, listOf(
+            deviceId,
+            9,
+            listOf(
                 DeviceLogRecord(1, 100, LogLevels.INFO, "Sensor", "reading ok"),
                 DeviceLogRecord(2, 200, LogLevels.WARN, "Uplink", "publish failed"),
             ),
@@ -54,8 +62,12 @@ class LogHistoryDaoIntegrationTest {
         dsl.update(DEVICE_LOG).set(DEVICE_LOG.RECEIVED_AT, at(1000)).where(DEVICE_LOG.ID.eq(logs[0].id)).execute()
         dsl.update(DEVICE_LOG).set(DEVICE_LOG.RECEIVED_AT, at(4000)).where(DEVICE_LOG.ID.eq(logs[1].id)).execute()
 
-        val events = DeviceEventJooqDaoImpl(dsl).insertBatch(deviceId, 9, listOf(DeviceLogRecord(1, 150, LogLevels.ERROR, "Health", "panic")))
-        dsl.update(DEVICE_EVENT).set(DEVICE_EVENT.RECEIVED_AT, at(2000)).where(DEVICE_EVENT.ID.eq(events[0].id)).execute()
+        val events = DeviceEventJooqDaoImpl(
+            dsl
+        ).insertBatch(deviceId, 9, listOf(DeviceLogRecord(1, 150, LogLevels.ERROR, "Health", "panic")))
+        dsl.update(
+            DEVICE_EVENT
+        ).set(DEVICE_EVENT.RECEIVED_AT, at(2000)).where(DEVICE_EVENT.ID.eq(events[0].id)).execute()
 
         val queue = ServerLogQueue()
         queue.offer("app", serverEntry("srv-x-1", LogLevels.WARN, "MqttDataProcessorDeviceLog", "unknown device", 3000))
@@ -99,11 +111,18 @@ class LogHistoryDaoIntegrationTest {
     fun `WHEN filtering by platform, kind and level THEN only matching entries remain`() {
         seed()
 
-        assertEquals(listOf("srv-x-2", "srv-x-1"), ids(LogHistoryQuery(filter = LiveLogFilter(platforms = setOf(LogPlatform.SERVER)))).filter { it.startsWith("srv") })
+        assertEquals(listOf(
+            "srv-x-2",
+            "srv-x-1"
+        ), ids(LogHistoryQuery(filter = LiveLogFilter(platforms = setOf(LogPlatform.SERVER)))).filter {
+            it.startsWith("srv")
+        })
         assertEquals(1, dao.find(LogHistoryQuery(filter = LiveLogFilter(kinds = setOf(LogKind.EVENT)))).size)
         assertEquals(
             listOf(4000L, 3000L, 2000L),
-            dao.find(LogHistoryQuery(filter = LiveLogFilter(levels = setOf(LogLevels.ERROR, LogLevels.WARN)))).map { it.receivedAtMs },
+            dao.find(LogHistoryQuery(filter = LiveLogFilter(levels = setOf(LogLevels.ERROR, LogLevels.WARN)))).map {
+                it.receivedAtMs
+            },
         )
     }
 
@@ -125,7 +144,10 @@ class LogHistoryDaoIntegrationTest {
 
         assertEquals(listOf(4000L), dao.find(LogHistoryQuery(tags = setOf("Uplink"))).map { it.receivedAtMs })
         assertEquals(listOf(4000L), dao.find(LogHistoryQuery(text = "PUBLISH")).map { it.receivedAtMs })
-        assertEquals(listOf(6000L), dao.find(LogHistoryQuery(text = "applic")).map { it.receivedAtMs }) // matches the tag
+        assertEquals(
+            listOf(6000L),
+            dao.find(LogHistoryQuery(text = "applic")).map { it.receivedAtMs }
+        ) // matches the tag
     }
 
     @Test
@@ -144,7 +166,10 @@ class LogHistoryDaoIntegrationTest {
     fun `WHEN asking for a time range THEN only entries inside it, bounds included`() {
         seed()
 
-        assertEquals(listOf(4000L, 3000L, 2000L), dao.find(LogHistoryQuery(fromMs = 2000, toMs = 4000)).map { it.receivedAtMs })
+        assertEquals(
+            listOf(4000L, 3000L, 2000L),
+            dao.find(LogHistoryQuery(fromMs = 2000, toMs = 4000)).map { it.receivedAtMs }
+        )
     }
 
     @Test

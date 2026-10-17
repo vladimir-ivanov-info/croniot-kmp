@@ -38,7 +38,9 @@ class AdminDirectoryRoutesTest {
             jwt(AUTH_JWT_REALM) {
                 verifier(jwtConfig.verifier())
                 validate { credential ->
-                    if (credential.payload.audience.contains(jwtConfig.audience)) JWTPrincipal(credential.payload) else null
+                    if (credential.payload.audience.contains(
+                            jwtConfig.audience
+                        )) JWTPrincipal(credential.payload) else null
                 }
             }
         }
@@ -65,7 +67,9 @@ class AdminDirectoryRoutesTest {
     fun `WHEN the caller is not an admin THEN the pages are refused`() = testApplication {
         application { testModule() }
 
-        val response = client.get("/api/admin/devices/dev-1") { header(HttpHeaders.Authorization, "Bearer ${token(false)}") }
+        val response = client.get(
+            "/api/admin/devices/dev-1"
+        ) { header(HttpHeaders.Authorization, "Bearer ${token(false)}") }
 
         assertEquals(HttpStatusCode.Unauthorized, response.status)
     }
@@ -76,8 +80,12 @@ class AdminDirectoryRoutesTest {
         every { dao.deviceDetail("ghost") } returns null
         every { dao.accountDetail("ghost") } returns null
 
-        val device = client.get("/api/admin/devices/ghost") { header(HttpHeaders.Authorization, "Bearer ${token(true)}") }
-        val account = client.get("/api/admin/accounts/ghost") { header(HttpHeaders.Authorization, "Bearer ${token(true)}") }
+        val device = client.get(
+            "/api/admin/devices/ghost"
+        ) { header(HttpHeaders.Authorization, "Bearer ${token(true)}") }
+        val account = client.get(
+            "/api/admin/accounts/ghost"
+        ) { header(HttpHeaders.Authorization, "Bearer ${token(true)}") }
 
         assertEquals(HttpStatusCode.NotFound, device.status)
         assertEquals(HttpStatusCode.NotFound, account.status)

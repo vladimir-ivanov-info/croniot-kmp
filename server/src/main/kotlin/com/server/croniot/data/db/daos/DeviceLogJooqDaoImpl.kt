@@ -20,8 +20,13 @@ class DeviceLogJooqDaoImpl @Inject constructor(
 
         val step = dsl.insertInto(
             DEVICE_LOG,
-            DEVICE_LOG.DEVICE, DEVICE_LOG.BOOT_ID, DEVICE_LOG.SEQ,
-            DEVICE_LOG.UPTIME_MS, DEVICE_LOG.LEVEL, DEVICE_LOG.TAG, DEVICE_LOG.MESSAGE,
+            DEVICE_LOG.DEVICE,
+            DEVICE_LOG.BOOT_ID,
+            DEVICE_LOG.SEQ,
+            DEVICE_LOG.UPTIME_MS,
+            DEVICE_LOG.LEVEL,
+            DEVICE_LOG.TAG,
+            DEVICE_LOG.MESSAGE,
         )
         for (r in records) {
             step.values(deviceId, bootId, r.seq, r.uptimeMs, r.level.toShort(), r.tag, r.message)

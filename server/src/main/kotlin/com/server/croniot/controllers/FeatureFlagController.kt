@@ -4,7 +4,6 @@ import com.server.croniot.application.DomainException
 import com.server.croniot.application.requireAdmin
 import com.server.croniot.mqtt.MqttController
 import com.server.croniot.services.FeatureFlagService
-import croniot.models.dto.FeatureFlagDto
 import croniot.models.errors.DomainError
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receive

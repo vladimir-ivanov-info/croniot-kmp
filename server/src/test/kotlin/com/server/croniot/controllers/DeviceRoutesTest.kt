@@ -4,7 +4,6 @@ import com.server.croniot.application.installStatusPages
 import com.server.croniot.services.DeviceService
 import croniot.messages.MessageFactory
 import croniot.messages.MessageRegisterDevice
-import croniot.models.Result as DomainResult
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -26,6 +25,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import croniot.models.Result as DomainResult
 
 class DeviceRoutesTest {
 

@@ -21,7 +21,10 @@ class AdminLogController @Inject constructor(
         val entries = logHistoryDao.find(LogHistoryQuery.from(call.request.queryParameters))
         // Same JSON as the live stream (null fields omitted), so the viewer
         // parses both with one type.
-        call.respondText(json.encodeToString(ListSerializer(LogEntryDto.serializer()), entries), ContentType.Application.Json)
+        call.respondText(
+            json.encodeToString(ListSerializer(LogEntryDto.serializer()), entries),
+            ContentType.Application.Json
+        )
     }
 
     private companion object {

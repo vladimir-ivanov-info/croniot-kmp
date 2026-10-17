@@ -192,5 +192,4 @@ class LoginServiceTest {
         }
         assertInstanceOf(DomainError.InvalidCredentials::class.java, ex.error)
     }
-
 }

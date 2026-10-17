@@ -4,6 +4,7 @@ import com.server.croniot.application.AUTH_JWT_REALM
 import com.server.croniot.application.AdminOnly
 import com.server.croniot.application.JwtConfig
 import com.server.croniot.application.installStatusPages
+import com.server.croniot.application.respondInvalidToken
 import com.server.croniot.livelog.LiveLogBus
 import com.server.croniot.livelog.LogEntryDto
 import com.server.croniot.livelog.LogKind
@@ -15,6 +16,7 @@ import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.plugins.sse.sse
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
@@ -39,6 +41,7 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.yield
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class AdminLogStreamRoutesTest {
@@ -56,6 +59,7 @@ class AdminLogStreamRoutesTest {
                     val hasAudience = credential.payload.audience.contains(jwtConfig.audience)
                     if (!subject.isNullOrBlank() && hasAudience) JWTPrincipal(credential.payload) else null
                 }
+                challenge { _, _ -> call.respondInvalidToken() }
             }
         }
         installStatusPages()
@@ -79,7 +83,13 @@ class AdminLogStreamRoutesTest {
         jwtConfig.issueAccessToken(accountId = 2L, email = "user@example.com", isAdmin = false).token
 
     private fun entry(id: String, platform: LogPlatform, level: Int) = LogEntryDto(
-        id = id, platform = platform, kind = LogKind.LOG, level = level, tag = "T", message = "m $id", receivedAtMs = 1,
+        id = id,
+        platform = platform,
+        kind = LogKind.LOG,
+        level = level,
+        tag = "T",
+        message = "m $id",
+        receivedAtMs = 1,
     )
 
     @Test
@@ -93,7 +103,39 @@ class AdminLogStreamRoutesTest {
     fun `WHEN the user is not an admin THEN the stream is refused`() = testApplication {
         application { testModule() }
 
-        val response = client.get("/api/admin/logs/stream") { header(HttpHeaders.Authorization, "Bearer ${userToken()}") }
+        val response = client.get(
+            "/api/admin/logs/stream"
+        ) { header(HttpHeaders.Authorization, "Bearer ${userToken()}") }
+
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+    }
+
+    // The browser's SSE request accepts only text/event-stream. The refusal
+    // must still be a 401 (not 406 Not Acceptable), or admin-ui never
+    // renews an expired token and the live view stays down.
+    @Test
+    fun `WHEN an SSE request has no valid token THEN it gets 401, not 406`() = testApplication {
+        application { testModule() }
+
+        for (auth in listOf(null, "Bearer not.a.jwt")) {
+            val response = client.get("/api/admin/logs/stream") {
+                header(HttpHeaders.Accept, "text/event-stream")
+                if (auth != null) header(HttpHeaders.Authorization, auth)
+            }
+
+            assertEquals(HttpStatusCode.Unauthorized, response.status, "auth=$auth")
+            assertTrue(response.bodyAsText().contains("Invalid or expired token"), "auth=$auth")
+        }
+    }
+
+    @Test
+    fun `WHEN an SSE request comes from a non-admin THEN it gets 401, not 406`() = testApplication {
+        application { testModule() }
+
+        val response = client.get("/api/admin/logs/stream") {
+            header(HttpHeaders.Accept, "text/event-stream")
+            header(HttpHeaders.Authorization, "Bearer ${userToken()}")
+        }
 
         assertEquals(HttpStatusCode.Unauthorized, response.status)
     }

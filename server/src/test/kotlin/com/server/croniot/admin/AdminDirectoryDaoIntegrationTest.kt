@@ -37,7 +37,9 @@ class AdminDirectoryDaoIntegrationTest {
     )
 
     private fun device(uuid: String, name: String, accountId: Long) =
-        DeviceJooqDaoImpl(dsl).insert(DeviceEntity(uuid = uuid, name = name, description = "desc $uuid", iot = true, accountId = accountId))
+        DeviceJooqDaoImpl(
+            dsl
+        ).insert(DeviceEntity(uuid = uuid, name = name, description = "desc $uuid", iot = true, accountId = accountId))
 
     private fun record(seq: Long, level: Int) = DeviceLogRecord(seq, seq * 10, level, "T", "m$seq")
 
@@ -45,11 +47,15 @@ class AdminDirectoryDaoIntegrationTest {
     fun `WHEN a device has activity THEN its page shows status, counts per level and duplicate ratio`() {
         val acc = account("acc-1", "v@example.com")
         val dev = device("dev-1", "Riego", acc)
-        DeviceLogJooqDaoImpl(dsl).insertBatch(dev, 5, listOf(record(1, LogLevels.ERROR), record(2, LogLevels.INFO), record(3, LogLevels.INFO)))
+        DeviceLogJooqDaoImpl(
+            dsl
+        ).insertBatch(dev, 5, listOf(record(1, LogLevels.ERROR), record(2, LogLevels.INFO), record(3, LogLevels.INFO)))
         DeviceEventJooqDaoImpl(dsl).insertBatch(dev, 5, listOf(record(1, LogLevels.ERROR)))
         // An old error, outside the 24 h window: must not count.
         val old = DeviceLogJooqDaoImpl(dsl).insertBatch(dev, 4, listOf(record(9, LogLevels.ERROR))).single()
-        dsl.update(DEVICE_LOG).set(DEVICE_LOG.RECEIVED_AT, OffsetDateTime.now().minusDays(3)).where(DEVICE_LOG.ID.eq(old.id)).execute()
+        dsl.update(
+            DEVICE_LOG
+        ).set(DEVICE_LOG.RECEIVED_AT, OffsetDateTime.now().minusDays(3)).where(DEVICE_LOG.ID.eq(old.id)).execute()
         DeviceStatusDao(dsl).upsert(dev, online = true, bootId = 5)
         IngestBatchJooqDaoImpl(dsl).insert(IngestBatchRow(dev, "logs", 5, 1, 3, 3, 3, 0))
         IngestBatchJooqDaoImpl(dsl).insert(IngestBatchRow(dev, "logs", 5, 1, 3, 3, 0, 3))

@@ -20,8 +20,13 @@ class DeviceEventJooqDaoImpl @Inject constructor(
 
         val step = dsl.insertInto(
             DEVICE_EVENT,
-            DEVICE_EVENT.DEVICE, DEVICE_EVENT.BOOT_ID, DEVICE_EVENT.SEQ,
-            DEVICE_EVENT.UPTIME_MS, DEVICE_EVENT.LEVEL, DEVICE_EVENT.TAG, DEVICE_EVENT.MESSAGE,
+            DEVICE_EVENT.DEVICE,
+            DEVICE_EVENT.BOOT_ID,
+            DEVICE_EVENT.SEQ,
+            DEVICE_EVENT.UPTIME_MS,
+            DEVICE_EVENT.LEVEL,
+            DEVICE_EVENT.TAG,
+            DEVICE_EVENT.MESSAGE,
         )
         for (r in records) {
             step.values(deviceId, bootId, r.seq, r.uptimeMs, r.level.toShort(), r.tag, r.message)

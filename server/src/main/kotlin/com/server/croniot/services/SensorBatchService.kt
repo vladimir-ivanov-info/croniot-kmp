@@ -38,7 +38,9 @@ class SensorBatchService @Inject constructor(
         for (record in envelope.records) {
             val sensorTypeId = sensorTypeRepository.getId(deviceId, record.sensorUid.toLong())
             if (sensorTypeId == null) {
-                logger.warn { "ingestBatch: device=$deviceUuid has no sensor type uid=${record.sensorUid}, skipping ${record.values.size} sample(s)" }
+                logger.warn {
+                    "ingestBatch: device=$deviceUuid has no sensor type uid=${record.sensorUid}, skipping ${record.values.size} sample(s)"
+                }
                 skippedSamples += record.values.size
                 continue
             }

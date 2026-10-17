@@ -34,7 +34,13 @@ class DeviceLogServiceTest {
         ingestBatchRecorder = ingestBatchRecorder,
     )
 
-    private fun record(seq: Long) = DeviceLogRecord(seq = seq, uptimeMs = seq * 1000, level = 2, tag = "TAG", message = "m")
+    private fun record(seq: Long) = DeviceLogRecord(
+        seq = seq,
+        uptimeMs = seq * 1000,
+        level = 2,
+        tag = "TAG",
+        message = "m"
+    )
 
     private fun inserted(vararg records: DeviceLogRecord) =
         records.map { InsertedDeviceLogRow(id = it.seq * 10, record = it, receivedAt = OffsetDateTime.now()) }
@@ -68,7 +74,13 @@ class DeviceLogServiceTest {
         every { deviceRepository.getId("device-uuid") } returns 7L
         every { deviceLogRepository.insertBatch(7L, 100L, any()) } returns inserted(record(5), record(6))
 
-        val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 5, count = 2, records = listOf(record(5), record(6)))
+        val batch = DeviceLogBatch(
+            bootId = 100,
+            stream = 0,
+            firstSeq = 5,
+            count = 2,
+            records = listOf(record(5), record(6))
+        )
         val result = service.ingestBatch("device-uuid", batch)
 
         assertEquals(LogStream.LOGS, result?.stream)
@@ -107,7 +119,13 @@ class DeviceLogServiceTest {
         val rows = inserted(record(5), record(6))
         every { deviceLogRepository.insertBatch(7L, 100L, any()) } returns rows
 
-        val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 5, count = 2, records = listOf(record(5), record(6)))
+        val batch = DeviceLogBatch(
+            bootId = 100,
+            stream = 0,
+            firstSeq = 5,
+            count = 2,
+            records = listOf(record(5), record(6))
+        )
         service.ingestBatch("device-uuid", batch)
 
         verify { livePublisher.publish(7L, 100L, LogKind.LOG, rows) }
@@ -152,14 +170,26 @@ class DeviceLogServiceTest {
         every { deviceRepository.getId("device-uuid") } returns 7L
         every { deviceLogRepository.insertBatch(7L, 100L, any()) } returns inserted(record(6))
 
-        val batch = DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 5, count = 2, records = listOf(record(5), record(6)))
+        val batch = DeviceLogBatch(
+            bootId = 100,
+            stream = 0,
+            firstSeq = 5,
+            count = 2,
+            records = listOf(record(5), record(6))
+        )
         service.ingestBatch("device-uuid", batch)
 
         verify {
             ingestBatchRecorder.record(
                 IngestBatchRow(
-                    deviceId = 7L, stream = "logs", bootId = 100L, firstSeq = 5L, lastSeq = 6L,
-                    records = 2, inserted = 1, duplicated = 1,
+                    deviceId = 7L,
+                    stream = "logs",
+                    bootId = 100L,
+                    firstSeq = 5L,
+                    lastSeq = 6L,
+                    records = 2,
+                    inserted = 1,
+                    duplicated = 1,
                 ),
             )
         }
@@ -170,7 +200,10 @@ class DeviceLogServiceTest {
         every { deviceRepository.getId("device-uuid") } returns 7L
         every { deviceLogRepository.insertBatch(7L, 100L, emptyList()) } returns emptyList()
 
-        service.ingestBatch("device-uuid", DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 42, count = 0, records = emptyList()))
+        service.ingestBatch(
+            "device-uuid",
+            DeviceLogBatch(bootId = 100, stream = 0, firstSeq = 42, count = 0, records = emptyList())
+        )
 
         verify(exactly = 0) { ingestBatchRecorder.record(any()) }
     }

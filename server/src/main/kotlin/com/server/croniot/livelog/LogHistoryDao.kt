@@ -191,7 +191,9 @@ class LogHistoryDao @Inject constructor(
             message = r.get(MESSAGE).orEmpty(),
             receivedAtMs = r.get(RECEIVED_AT)!!.toInstant().toEpochMilli(),
             device = deviceUuid?.let { LogDeviceRef(uuid = it, name = r.get(DEVICE_NAME)) },
-            owner = ownerUuid?.let { LogOwnerRef(uuid = it, nickname = r.get(OWNER_NICKNAME), email = r.get(OWNER_EMAIL).orEmpty()) },
+            owner = ownerUuid?.let {
+                LogOwnerRef(uuid = it, nickname = r.get(OWNER_NICKNAME), email = r.get(OWNER_EMAIL).orEmpty())
+            },
             bootId = r.get(BOOT_ID),
             seq = r.get(SEQ),
             uptimeMs = r.get(UPTIME_MS),

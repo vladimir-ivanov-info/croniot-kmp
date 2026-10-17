@@ -58,7 +58,9 @@ class AdminLogStreamController @Inject constructor(
 
         bus.messages.collect { message ->
             gaps.onMessage(message)?.let { notice ->
-                session.send(ServerSentEvent(data = json.encodeToString(DroppedNotice.serializer(), notice), event = "dropped"))
+                session.send(
+                    ServerSentEvent(data = json.encodeToString(DroppedNotice.serializer(), notice), event = "dropped")
+                )
             }
             if (filter.matches(message.entry)) {
                 session.send(

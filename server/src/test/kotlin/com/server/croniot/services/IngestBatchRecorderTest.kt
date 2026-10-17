@@ -52,8 +52,14 @@ class IngestBatchRecorderTest {
     }
 
     private fun row(duplicated: Int) = IngestBatchRow(
-        deviceId = 7, stream = "logs", bootId = 95, firstSeq = 300, lastSeq = 331,
-        records = 32, inserted = 32 - duplicated, duplicated = duplicated,
+        deviceId = 7,
+        stream = "logs",
+        bootId = 95,
+        firstSeq = 300,
+        lastSeq = 331,
+        records = 32,
+        inserted = 32 - duplicated,
+        duplicated = duplicated,
     )
 
     private fun stored(row: IngestBatchRow) = StoredIngestBatch(id = 12, row = row, receivedAt = OffsetDateTime.now())

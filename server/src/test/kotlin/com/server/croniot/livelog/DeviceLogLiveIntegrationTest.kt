@@ -29,7 +29,13 @@ class DeviceLogLiveIntegrationTest {
         PostgresTestcontainer.reset()
     }
 
-    private fun record(seq: Long) = DeviceLogRecord(seq = seq, uptimeMs = seq * 1000, level = 1, tag = "T", message = "m$seq")
+    private fun record(seq: Long) = DeviceLogRecord(
+        seq = seq,
+        uptimeMs = seq * 1000,
+        level = 1,
+        tag = "T",
+        message = "m$seq"
+    )
 
     private fun insertDevice(): Long {
         val accountId = AccountJooqDaoImpl(dsl).insert(

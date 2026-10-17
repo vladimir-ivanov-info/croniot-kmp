@@ -30,7 +30,9 @@ class LiveLogFilterTest {
         val filter = LiveLogFilter.from(parametersOf())
 
         assertTrue(filter.matches(entry()))
-        assertTrue(filter.matches(entry(platform = LogPlatform.SERVER, device = null, owner = null, level = LogLevels.TRACE)))
+        assertTrue(
+            filter.matches(entry(platform = LogPlatform.SERVER, device = null, owner = null, level = LogLevels.TRACE))
+        )
     }
 
     @Test

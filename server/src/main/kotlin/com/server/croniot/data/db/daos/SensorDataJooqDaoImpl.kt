@@ -21,8 +21,13 @@ class SensorDataJooqDaoImpl @Inject constructor(
 
         val step = dsl.insertInto(
             SENSOR_DATA,
-            SENSOR_DATA.DEVICE, SENSOR_DATA.SENSORTYPE, SENSOR_DATA.VALUE, SENSOR_DATA.DATE_TIME,
-            SENSOR_DATA.BOOT_ID, SENSOR_DATA.SEQ, SENSOR_DATA.SAMPLE_INDEX,
+            SENSOR_DATA.DEVICE,
+            SENSOR_DATA.SENSORTYPE,
+            SENSOR_DATA.VALUE,
+            SENSOR_DATA.DATE_TIME,
+            SENSOR_DATA.BOOT_ID,
+            SENSOR_DATA.SEQ,
+            SENSOR_DATA.SAMPLE_INDEX,
         )
         values.forEachIndexed { index, value ->
             // Stored as a string, same as the legacy per-reading path

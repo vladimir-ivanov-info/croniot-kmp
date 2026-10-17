@@ -31,9 +31,13 @@ class SensorBatchServiceTest {
     fun `WHEN the device is unknown THEN ingestBatch drops the batch and returns null`() {
         every { deviceRepository.getId("unknown-uuid") } returns null
 
-        val envelope = SensorBatchEnvelope(bootId = 1, stream = 2, records = listOf(
-            SensorBatchRecord(seq = 1, sensorUid = 42, t0Ms = 0, dtMs = 0, values = listOf(1.0)),
-        ))
+        val envelope = SensorBatchEnvelope(
+            bootId = 1,
+            stream = 2,
+            records = listOf(
+                SensorBatchRecord(seq = 1, sensorUid = 42, t0Ms = 0, dtMs = 0, values = listOf(1.0)),
+            )
+        )
         val result = service.ingestBatch("unknown-uuid", envelope)
 
         assertNull(result)
@@ -47,10 +51,14 @@ class SensorBatchServiceTest {
         every { sensorTypeRepository.getId(7L, 99L) } returns 55L
         every { sensorDataRepository.insertBatch(7L, 55L, 1L, 2L, listOf(2.0), any()) } returns 1
 
-        val envelope = SensorBatchEnvelope(bootId = 1, stream = 2, records = listOf(
-            SensorBatchRecord(seq = 1, sensorUid = 42, t0Ms = 0, dtMs = 0, values = listOf(1.0)),
-            SensorBatchRecord(seq = 2, sensorUid = 99, t0Ms = 0, dtMs = 0, values = listOf(2.0)),
-        ))
+        val envelope = SensorBatchEnvelope(
+            bootId = 1,
+            stream = 2,
+            records = listOf(
+                SensorBatchRecord(seq = 1, sensorUid = 42, t0Ms = 0, dtMs = 0, values = listOf(1.0)),
+                SensorBatchRecord(seq = 2, sensorUid = 99, t0Ms = 0, dtMs = 0, values = listOf(2.0)),
+            )
+        )
         val result = service.ingestBatch("device-uuid", envelope)
 
         assertEquals(LogStream.DATA, result?.stream)
@@ -77,10 +85,14 @@ class SensorBatchServiceTest {
         // 3 samples for a known sensor, 1 of them already stored; 2 for an unregistered one.
         every { sensorDataRepository.insertBatch(7L, 100L, 5L, 10L, any(), any()) } returns 2
 
-        val envelope = SensorBatchEnvelope(bootId = 5, stream = 2, records = listOf(
-            SensorBatchRecord(seq = 10, sensorUid = 42, t0Ms = 0, dtMs = 0, values = listOf(1.0, 2.0, 3.0)),
-            SensorBatchRecord(seq = 11, sensorUid = 99, t0Ms = 0, dtMs = 0, values = listOf(4.0, 5.0)),
-        ))
+        val envelope = SensorBatchEnvelope(
+            bootId = 5,
+            stream = 2,
+            records = listOf(
+                SensorBatchRecord(seq = 10, sensorUid = 42, t0Ms = 0, dtMs = 0, values = listOf(1.0, 2.0, 3.0)),
+                SensorBatchRecord(seq = 11, sensorUid = 99, t0Ms = 0, dtMs = 0, values = listOf(4.0, 5.0)),
+            )
+        )
         service.ingestBatch("device-uuid", envelope)
 
         verify {

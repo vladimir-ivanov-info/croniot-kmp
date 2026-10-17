@@ -5,20 +5,17 @@ import com.server.croniot.di.DI
 import com.server.croniot.livelog.ServerLogDbWriter
 import com.server.croniot.mqtt.MqttController
 import croniot.messages.MessageFactory
-import croniot.models.errors.DomainError
-import croniot.models.errors.ErrorResponse
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.engine.*
+import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.ratelimit.RateLimitName
@@ -29,7 +26,6 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
-import io.ktor.server.response.respond
 import org.slf4j.event.Level
 import java.io.File
 import java.security.KeyStore
@@ -100,15 +96,7 @@ fun Application.module(testing: Boolean = false) {
                 val hasAudience = credential.payload.audience.contains(jwtConfig.audience)
                 if (!subject.isNullOrBlank() && hasAudience) JWTPrincipal(credential.payload) else null
             }
-            challenge { _, _ ->
-                call.respond(
-                    HttpStatusCode.Unauthorized,
-                    ErrorResponse(
-                        code = DomainError.Unauthorized.CODE,
-                        message = "Invalid or expired token",
-                    ),
-                )
-            }
+            challenge { _, _ -> call.respondInvalidToken() }
         }
     }
 

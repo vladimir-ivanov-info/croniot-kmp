@@ -6,11 +6,10 @@ import com.server.croniot.application.installStatusPages
 import com.server.croniot.services.LoginService
 import croniot.messages.LoginDto
 import croniot.messages.MessageFactory
+import croniot.models.LoginResultDto
 import croniot.models.LogoutRequestDto
 import croniot.models.RefreshTokenRequestDto
 import croniot.models.RefreshTokenResultDto
-import croniot.models.Result as DomainResult
-import croniot.models.LoginResultDto
 import croniot.models.errors.DomainError
 import croniot.models.errors.ErrorResponse
 import io.ktor.client.request.header
@@ -37,6 +36,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration.Companion.minutes
+import croniot.models.Result as DomainResult
 
 class LoginRoutesTest {
 
@@ -165,7 +165,9 @@ class LoginRoutesTest {
     @Test
     fun `WHEN rotation fails THEN POST api token refresh returns 401 UNAUTHORIZED`() = testApplication {
         val loginService = mockk<LoginService>()
-        every { loginService.refresh(any()) } throws DomainException(DomainError.Unauthorized("Invalid or expired refresh token"))
+        every {
+            loginService.refresh(any())
+        } throws DomainException(DomainError.Unauthorized("Invalid or expired refresh token"))
         application { testModule(loginService) }
 
         val response = client.post("/api/token/refresh") {

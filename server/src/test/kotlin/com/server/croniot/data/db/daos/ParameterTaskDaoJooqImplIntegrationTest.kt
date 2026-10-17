@@ -88,7 +88,14 @@ class ParameterTaskDaoJooqImplIntegrationTest {
             email = "a@example.com",
             deviceUuid = "dev-a",
             parameters = listOf(
-                ParameterTask(uid = 30L, name = "p", type = "int", unit = "", description = "", constraints = emptyMap())
+                ParameterTask(
+                    uid = 30L,
+                    name = "p",
+                    type = "int",
+                    unit = "",
+                    description = "",
+                    constraints = emptyMap()
+                )
             ),
         )
         val taskTypeBId = insertTaskType(
