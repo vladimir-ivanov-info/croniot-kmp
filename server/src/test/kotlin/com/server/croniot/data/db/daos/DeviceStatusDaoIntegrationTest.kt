@@ -25,7 +25,9 @@ class DeviceStatusDaoIntegrationTest {
             Account(uuid = "acc", nickname = "n", email = "a@example.com", devices = mutableListOf()),
             password = "pwd",
         )
-        return DeviceJooqDaoImpl(dsl).insert(DeviceEntity(uuid = "dev", name = "n", description = "d", iot = true, accountId = accountId))
+        return DeviceJooqDaoImpl(
+            dsl
+        ).insert(DeviceEntity(uuid = "dev", name = "n", description = "d", iot = true, accountId = accountId))
     }
 
     @Test

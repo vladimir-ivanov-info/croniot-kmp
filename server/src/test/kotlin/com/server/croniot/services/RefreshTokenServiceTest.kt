@@ -9,7 +9,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -135,7 +134,13 @@ class RefreshTokenServiceTest {
         assertTrue(result.accessTokenExpiresAtEpochSeconds > 0)
         verify(exactly = 1) { refreshTokenDao.revokeById(1L, any()) }
         verify(exactly = 1) {
-            refreshTokenDao.create(accountId = 99L, tokenHash = any(), deviceUuid = "dev-1", issuedAt = any(), expiresAt = any())
+            refreshTokenDao.create(
+                accountId = 99L,
+                tokenHash = any(),
+                deviceUuid = "dev-1",
+                issuedAt = any(),
+                expiresAt = any()
+            )
         }
     }
 

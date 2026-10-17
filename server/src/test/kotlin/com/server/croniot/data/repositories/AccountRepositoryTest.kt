@@ -37,7 +37,9 @@ class AccountRepositoryTest {
 
     @Test
     fun `WHEN account has devices with sensor and task types THEN getAccount assembles them all`() {
-        accountDao.seed(AccountEntity(id = 1L, uuid = "acc-uuid", nickname = "nick", email = "user@example.com", password = "hash"))
+        accountDao.seed(
+            AccountEntity(id = 1L, uuid = "acc-uuid", nickname = "nick", email = "user@example.com", password = "hash")
+        )
         val deviceId = deviceDao.seed(
             DeviceEntity(uuid = "device-uuid", name = "Device", description = "", iot = true, accountId = 1L),
         )
@@ -107,8 +109,26 @@ class AccountRepositoryTest {
 
     @Test
     fun `WHEN account is admin THEN isAdmin is true, otherwise false`() {
-        accountDao.seed(AccountEntity(id = 1L, uuid = "u", nickname = "n", email = "admin@example.com", password = "h", isAdmin = true))
-        accountDao.seed(AccountEntity(id = 2L, uuid = "u2", nickname = "n2", email = "user@example.com", password = "h", isAdmin = false))
+        accountDao.seed(
+            AccountEntity(
+                id = 1L,
+                uuid = "u",
+                nickname = "n",
+                email = "admin@example.com",
+                password = "h",
+                isAdmin = true
+            )
+        )
+        accountDao.seed(
+            AccountEntity(
+                id = 2L,
+                uuid = "u2",
+                nickname = "n2",
+                email = "user@example.com",
+                password = "h",
+                isAdmin = false
+            )
+        )
 
         assertTrue(repository.isAdmin("admin@example.com"))
         assertFalse(repository.isAdmin("user@example.com"))

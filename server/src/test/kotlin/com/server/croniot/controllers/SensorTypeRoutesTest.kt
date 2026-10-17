@@ -4,7 +4,6 @@ import com.server.croniot.application.installStatusPages
 import com.server.croniot.services.SensorTypeService
 import croniot.messages.MessageFactory
 import croniot.messages.MessageRegisterSensorType
-import croniot.models.Result as DomainResult
 import croniot.models.SensorType
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import croniot.models.Result as DomainResult
 
 class SensorTypeRoutesTest {
 

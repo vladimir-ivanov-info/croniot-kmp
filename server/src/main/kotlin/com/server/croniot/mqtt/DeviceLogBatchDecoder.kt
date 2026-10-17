@@ -38,7 +38,9 @@ object DeviceLogBatchDecoder {
         val reader = CborReader(bytes)
 
         val outerLen = reader.readArrayHeader()
-        require(outerLen == 5) { "expected a 5-element batch envelope [bootId, stream, firstSeq, count, records], got $outerLen elements" }
+        require(outerLen == 5) {
+            "expected a 5-element batch envelope [bootId, stream, firstSeq, count, records], got $outerLen elements"
+        }
 
         val bootId = reader.readUInt()
         val stream = reader.readUInt().toInt()
@@ -49,7 +51,9 @@ object DeviceLogBatchDecoder {
         val records = ArrayList<DeviceLogRecord>(recordCount)
         repeat(recordCount) {
             val fieldCount = reader.readArrayHeader()
-            require(fieldCount == 5) { "expected a 5-element record [seq, uptimeMs, level, tag, msg], got $fieldCount elements" }
+            require(
+                fieldCount == 5
+            ) { "expected a 5-element record [seq, uptimeMs, level, tag, msg], got $fieldCount elements" }
 
             records.add(
                 DeviceLogRecord(

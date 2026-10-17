@@ -62,8 +62,13 @@ class ServerLogDbWriter(
         )
         for (e in batch) {
             step.values(
-                e.id, e.level.toShort(), e.tag, e.message,
-                e.thread, e.traceId, e.throwable,
+                e.id,
+                e.level.toShort(),
+                e.tag,
+                e.message,
+                e.thread,
+                e.traceId,
+                e.throwable,
                 Instant.ofEpochMilli(e.receivedAtMs).atOffset(ZoneOffset.UTC),
             )
         }

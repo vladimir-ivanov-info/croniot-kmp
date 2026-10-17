@@ -12,7 +12,9 @@ class DeviceLogBatchDecoderTest {
     // confirms this decoder is byte-compatible with the device's real
     // encoder without needing hardware or a live MQTT round trip.
     private fun hexToBytes(hex: String): ByteArray =
-        ByteArray(hex.length / 2) { i -> ((Character.digit(hex[i * 2], 16) shl 4) + Character.digit(hex[i * 2 + 1], 16)).toByte() }
+        ByteArray(
+            hex.length / 2
+        ) { i -> ((Character.digit(hex[i * 2], 16) shl 4) + Character.digit(hex[i * 2 + 1], 16)).toByte() }
 
     @Test
     fun `WHEN decoding the golden batch bytes THEN every field matches the independently-encoded source`() {

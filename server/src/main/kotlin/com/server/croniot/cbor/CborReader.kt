@@ -76,7 +76,9 @@ class CborReader(private val bytes: ByteArray) {
                 repeat(8) { v = (v shl 8) or nextByte().toLong() }
                 v
             }
-            else -> error("unsupported CBOR length encoding: argument=$argument (indefinite length is not produced by this format)")
+            else -> error(
+                "unsupported CBOR length encoding: argument=$argument (indefinite length is not produced by this format)"
+            )
         }
     }
 }

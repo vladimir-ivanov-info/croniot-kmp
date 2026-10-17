@@ -47,7 +47,14 @@ class FakeAccountDao : AccountDao {
 
     override fun verifyPassword(email: String, plaintext: String): VerifyPasswordResult = verifyPasswordResult
 
-    override fun getAll(): List<Account> = byEmail.values.map { Account(it.uuid, it.nickname, it.email, mutableListOf()) }
+    override fun getAll(): List<Account> = byEmail.values.map {
+        Account(
+            it.uuid,
+            it.nickname,
+            it.email,
+            mutableListOf()
+        )
+    }
 
     override fun isAccountExists(email: String): Boolean = byEmail.containsKey(email)
 

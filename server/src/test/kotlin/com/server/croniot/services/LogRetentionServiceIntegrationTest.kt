@@ -37,17 +37,27 @@ class LogRetentionServiceIntegrationTest {
             Account(uuid = "acc", nickname = "n", email = "a@example.com", devices = mutableListOf()),
             password = "pwd",
         )
-        return DeviceJooqDaoImpl(dsl).insert(DeviceEntity(uuid = "dev", name = "n", description = "d", iot = true, accountId = accountId))
+        return DeviceJooqDaoImpl(
+            dsl
+        ).insert(DeviceEntity(uuid = "dev", name = "n", description = "d", iot = true, accountId = accountId))
     }
 
     // One row "days" old in every table.
     private fun seedRowsAged(deviceId: Long, seq: Long, days: Long) {
-        val log = DeviceLogJooqDaoImpl(dsl).insertBatch(deviceId, 1, listOf(DeviceLogRecord(seq, 0, 2, "T", "m"))).single()
+        val log = DeviceLogJooqDaoImpl(
+            dsl
+        ).insertBatch(deviceId, 1, listOf(DeviceLogRecord(seq, 0, 2, "T", "m"))).single()
         dsl.update(DEVICE_LOG).set(DEVICE_LOG.RECEIVED_AT, daysAgo(days)).where(DEVICE_LOG.ID.eq(log.id)).execute()
-        val event = DeviceEventJooqDaoImpl(dsl).insertBatch(deviceId, 1, listOf(DeviceLogRecord(seq, 0, 2, "T", "m"))).single()
-        dsl.update(DEVICE_EVENT).set(DEVICE_EVENT.RECEIVED_AT, daysAgo(days)).where(DEVICE_EVENT.ID.eq(event.id)).execute()
+        val event = DeviceEventJooqDaoImpl(
+            dsl
+        ).insertBatch(deviceId, 1, listOf(DeviceLogRecord(seq, 0, 2, "T", "m"))).single()
+        dsl.update(
+            DEVICE_EVENT
+        ).set(DEVICE_EVENT.RECEIVED_AT, daysAgo(days)).where(DEVICE_EVENT.ID.eq(event.id)).execute()
         val ingest = IngestBatchJooqDaoImpl(dsl).insert(IngestBatchRow(deviceId, "logs", 1, seq, seq, 1, 1, 0))
-        dsl.update(INGEST_BATCH).set(INGEST_BATCH.RECEIVED_AT, daysAgo(days)).where(INGEST_BATCH.ID.eq(ingest.id)).execute()
+        dsl.update(
+            INGEST_BATCH
+        ).set(INGEST_BATCH.RECEIVED_AT, daysAgo(days)).where(INGEST_BATCH.ID.eq(ingest.id)).execute()
         dsl.insertInto(SERVER_LOG)
             .set(SERVER_LOG.ENTRY_ID, "srv-$seq")
             .set(SERVER_LOG.LEVEL, 2.toShort())

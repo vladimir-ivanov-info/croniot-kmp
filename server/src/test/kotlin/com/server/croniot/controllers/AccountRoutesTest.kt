@@ -5,7 +5,6 @@ import com.server.croniot.application.installStatusPages
 import com.server.croniot.services.AccountService
 import croniot.messages.MessageFactory
 import croniot.messages.MessageRegisterAccount
-import croniot.models.Result as DomainResult
 import croniot.models.errors.DomainError
 import croniot.models.errors.ErrorResponse
 import io.ktor.client.request.header
@@ -28,6 +27,7 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import croniot.models.Result as DomainResult
 
 class AccountRoutesTest {
 

@@ -3,7 +3,6 @@ package com.server.croniot.data.db.daos
 import com.server.croniot.data.db.entities.DeviceEntity
 import com.server.croniot.testsupport.PostgresTestcontainer
 import croniot.models.Account
-import croniot.models.Task
 import croniot.models.TaskStateInfo
 import croniot.models.TaskType
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -116,7 +115,10 @@ class TaskDaoJooqImplIntegrationTest {
         // DATE_TIME == before are INCLUDED (id < MAX_VALUE always holds).
         val beforeMiddle = t0.toOffsetDateTime()
         val withTimestampEqual = dao.getAllStateInfoHistory(
-            deviceUuid, 50, before = beforeMiddle, beforeId = null,
+            deviceUuid,
+            50,
+            before = beforeMiddle,
+            beforeId = null,
         )
         assertEquals(listOf("MIDDLE", "OLDEST"), withTimestampEqual.map { it.state })
 
@@ -237,5 +239,4 @@ class TaskDaoJooqImplIntegrationTest {
         progress = progress,
         errorMessage = errorMessage,
     )
-
 }

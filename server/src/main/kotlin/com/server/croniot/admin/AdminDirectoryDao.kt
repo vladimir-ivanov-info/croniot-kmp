@@ -55,7 +55,9 @@ class AdminDirectoryDao(
             .where(INGEST_BATCH.DEVICE.eq(deviceId), INGEST_BATCH.RECEIVED_AT.ge(since))
             .fetchOne()
 
-        val description = dsl.select(DEVICE.DESCRIPTION).from(DEVICE).where(DEVICE.ID.eq(deviceId)).fetchOne(DEVICE.DESCRIPTION)
+        val description = dsl.select(
+            DEVICE.DESCRIPTION
+        ).from(DEVICE).where(DEVICE.ID.eq(deviceId)).fetchOne(DEVICE.DESCRIPTION)
 
         return AdminDeviceDetailDto(
             summary = summary,
@@ -116,7 +118,11 @@ class AdminDirectoryDao(
     private fun toSummary(r: Record, lastActivity: Field<OffsetDateTime?>, errors: Field<Int>) = AdminDeviceSummaryDto(
         uuid = r.get(DEVICE.UUID) ?: "",
         name = r.get(DEVICE.NAME),
-        owner = LogOwnerRef(uuid = r.get(ACCOUNT.UUID) ?: "", nickname = r.get(ACCOUNT.NICKNAME), email = r.get(ACCOUNT.EMAIL) ?: ""),
+        owner = LogOwnerRef(
+            uuid = r.get(ACCOUNT.UUID) ?: "",
+            nickname = r.get(ACCOUNT.NICKNAME),
+            email = r.get(ACCOUNT.EMAIL) ?: ""
+        ),
         online = r.get(DEVICE_STATUS.ONLINE),
         bootId = r.get(DEVICE_STATUS.BOOT_ID),
         statusChangedAtMs = r.get(DEVICE_STATUS.UPDATED_AT)?.toInstant()?.toEpochMilli(),

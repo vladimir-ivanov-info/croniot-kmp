@@ -13,7 +13,6 @@ import croniot.models.Task
 import croniot.models.dto.SensorDataDto
 import croniot.models.dto.TaskStateInfoDto
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.serialization.Serializable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +22,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.Serializable
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttClient
@@ -153,7 +153,12 @@ object MqttController {
             MemoryPersistence(),
         )
         synchronized(deviceClients) { deviceClients.add(sensorBatchClient) }
-        BinaryMqttSubscriber(sensorBatchClient, "$SENSOR_BATCH_TOPIC_PREFIX+", qos = 1, scope = scope) { topic, payload ->
+        BinaryMqttSubscriber(
+            sensorBatchClient,
+            "$SENSOR_BATCH_TOPIC_PREFIX+",
+            qos = 1,
+            scope = scope
+        ) { topic, payload ->
             processor.process(topic, payload)
         }
     }
@@ -171,7 +176,10 @@ object MqttController {
         )
         synchronized(deviceClients) { deviceClients.add(statusClient) }
         BinaryMqttSubscriber(statusClient, "$STATUS_TOPIC_PREFIX+", qos = 1, scope = scope) { topic, payload ->
-            deviceStatusService.onStatusMessage(topic.removePrefix(STATUS_TOPIC_PREFIX), String(payload, Charsets.UTF_8))
+            deviceStatusService.onStatusMessage(
+                topic.removePrefix(STATUS_TOPIC_PREFIX),
+                String(payload, Charsets.UTF_8)
+            )
         }
     }
 
@@ -191,7 +199,6 @@ object MqttController {
             deviceMqttClient.publish(topic, message)
         }
     }
-
 
     fun initTaskStateController() {
         val devices = DI.appComponent.deviceRepository().getAll()

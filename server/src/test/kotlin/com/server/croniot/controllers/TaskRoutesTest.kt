@@ -10,7 +10,6 @@ import com.server.croniot.services.TaskTypeService
 import croniot.messages.MessageAddTask
 import croniot.messages.MessageFactory
 import croniot.messages.MessageRequestTaskStateInfoSync
-import croniot.models.Result as DomainResult
 import croniot.models.Device
 import croniot.models.Task
 import croniot.models.TaskProgressUpdate
@@ -51,6 +50,7 @@ import org.junit.jupiter.api.Test
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import croniot.models.Result as DomainResult
 
 class TaskRoutesTest {
 

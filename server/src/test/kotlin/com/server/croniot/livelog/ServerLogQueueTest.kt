@@ -8,8 +8,13 @@ import org.junit.jupiter.api.Test
 class ServerLogQueueTest {
 
     private fun entry(n: Int) = LogEntryDto(
-        id = "srv-$n", platform = LogPlatform.SERVER, kind = LogKind.LOG, level = LogLevels.INFO,
-        tag = "T", message = "m$n", receivedAtMs = n.toLong(),
+        id = "srv-$n",
+        platform = LogPlatform.SERVER,
+        kind = LogKind.LOG,
+        level = LogLevels.INFO,
+        tag = "T",
+        message = "m$n",
+        receivedAtMs = n.toLong(),
     )
 
     @Test

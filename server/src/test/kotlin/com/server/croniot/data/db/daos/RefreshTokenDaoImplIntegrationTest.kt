@@ -2,6 +2,7 @@ package com.server.croniot.data.db.daos
 
 import com.server.croniot.testsupport.PostgresTestcontainer
 import croniot.models.Account
+import org.jooq.exception.DataAccessException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.jooq.exception.DataAccessException
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 

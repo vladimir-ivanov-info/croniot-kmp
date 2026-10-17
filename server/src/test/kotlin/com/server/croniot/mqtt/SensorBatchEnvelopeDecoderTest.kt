@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test
 class SensorBatchEnvelopeDecoderTest {
 
     private fun hexToBytes(hex: String): ByteArray =
-        ByteArray(hex.length / 2) { i -> ((Character.digit(hex[i * 2], 16) shl 4) + Character.digit(hex[i * 2 + 1], 16)).toByte() }
+        ByteArray(
+            hex.length / 2
+        ) { i -> ((Character.digit(hex[i * 2], 16) shl 4) + Character.digit(hex[i * 2 + 1], 16)).toByte() }
 
     // Golden bytes independently generated with Python's struct module
     // from a batch envelope [7, 2, 5, 1, [[42, 1000, 60000,
@@ -22,7 +24,7 @@ class SensorBatchEnvelopeDecoderTest {
         assertEquals(1, envelope.records.size)
 
         val record = envelope.records[0]
-        assertEquals(5L, record.seq)  // firstSeq (5) + index (0)
+        assertEquals(5L, record.seq) // firstSeq (5) + index (0)
         assertEquals(42, record.sensorUid)
         assertEquals(1000L, record.t0Ms)
         assertEquals(60000L, record.dtMs)
