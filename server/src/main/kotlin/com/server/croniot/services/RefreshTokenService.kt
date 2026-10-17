@@ -53,7 +53,11 @@ class RefreshTokenService @Inject constructor(
 
         refreshTokenDao.revokeById(record.id, now)
         val email = accountRepository.getEmailById(record.accountId) ?: return null
-        val newAccess = jwtConfig.issueAccessToken(record.accountId, email, now = now)
+        // Read from the account on every rotation, as login does: without
+        // it the renewed token defaulted to is_admin = false, so an admin
+        // lost admin access at the first refresh and admin-ui signed out.
+        val isAdmin = accountRepository.isAdmin(email)
+        val newAccess = jwtConfig.issueAccessToken(record.accountId, email, isAdmin, now = now)
         val newRefresh = issueForAccount(record.accountId, record.deviceUuid)
         return RotationResult(
             accessToken = newAccess.token,

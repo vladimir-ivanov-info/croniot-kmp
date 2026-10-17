@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -122,6 +123,7 @@ class RefreshTokenServiceTest {
             revokedAt = null,
         )
         every { accountRepository.getEmailById(99L) } returns "user@example.com"
+        every { accountRepository.isAdmin("user@example.com") } returns false
         every {
             refreshTokenDao.create(accountId = 99L, tokenHash = any(), deviceUuid = "dev-1", issuedAt = any(), expiresAt = any())
         } returns 2L
@@ -142,6 +144,22 @@ class RefreshTokenServiceTest {
                 expiresAt = any()
             )
         }
+    }
+
+    @Test
+    fun `WHEN an admin rotates THEN the new access token is still an admin token`() {
+        every { refreshTokenDao.findByHash(any()) } returns record(
+            expiresAt = Instant.now().plus(Duration.ofDays(5)),
+            revokedAt = null,
+        )
+        every { accountRepository.getEmailById(99L) } returns "admin@example.com"
+        every { accountRepository.isAdmin("admin@example.com") } returns true
+        every { refreshTokenDao.create(any(), any(), any(), any(), any()) } returns 2L
+
+        val result = service.rotate("any-plaintext")
+
+        val claims = jwtConfig.verifier().verify(result!!.accessToken)
+        assertEquals(true, claims.getClaim(JwtConfig.CLAIM_IS_ADMIN).asBoolean())
     }
 
     @Test
