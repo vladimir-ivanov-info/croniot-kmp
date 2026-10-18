@@ -1,0 +1,84 @@
+name: Server CI
+
+# android-ci.yml runs `testDebugUnitTest`, which only exists in the Android
+# modules: the server's own tests (testcontainers) had no CI at all.
+on:
+  pull_request:
+    paths:
+      - 'server/**'
+      - 'shared/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/server.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+      - 'shared/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/server.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # A database that already ran a migration keeps its checksum: editing,
+  # renaming or deleting that file makes Flyway refuse to start against it
+  # (production included). Schema changes go in a new V<n>__<what>.sql.
+  migrations:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Migrations already on the base branch are not changed
+        run: |
+          changed=$(git diff --name-status --diff-filter=MDRT "origin/${{ github.base_ref }}...HEAD" -- server/src/main/resources/db/migration/)
+          if [ -n "$changed" ]; then
+            echo "::error::These migrations are already on ${{ github.base_ref }} and must not be edited, renamed or deleted. Add a new V<n>__<what>.sql instead."
+            echo "$changed"
+            exit 1
+          fi
+
+      - name: Migration file names are V<n>__<what>.sql
+        run: |
+          bad=$(ls server/src/main/resources/db/migration | grep -vE '^V[0-9]+__[A-Za-z0-9_]+\.sql$' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Flyway only picks up files named V<n>__<what>.sql:"
+            echo "$bad"
+            exit 1
+          fi
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+      # The tests mock MqttController, but its object initializer still builds
+      # a Paho client from these, and an empty URL throws. Locally they come from
+      # the developer's environment. Dummy values: nothing connects to them.
+      CRONIOT_MQTT_BROKER_URL: tcp://localhost:1883
+      CRONIOT_MQTT_CLIENT_ID: croniot-ci
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle (with cache)
+        uses: gradle/actions/setup-gradle@v3
+
+      # Every integration test starts from an empty Postgres and runs all
+      # migrations, so a broken or duplicate migration fails here.
+      - name: Server tests
+        run: ./gradlew :server:test --stacktrace

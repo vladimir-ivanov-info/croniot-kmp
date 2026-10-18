@@ -1,11 +1,12 @@
 package com.server.croniot.testsupport
 
-import com.server.croniot.application.DatabaseSchemaInitializer
+import com.server.croniot.application.DatabaseMigrator
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
+import org.postgresql.ds.PGSimpleDataSource
 import org.testcontainers.containers.PostgreSQLContainer
 import javax.sql.DataSource
 
@@ -38,11 +39,24 @@ object PostgresTestcontainer {
             minimumIdle = 1
         }
         val ds = HikariDataSource(config)
-        DatabaseSchemaInitializer.createSchemaIfNeeded(ds)
+        DatabaseMigrator.migrate(ds)
         ds
     }
 
     val dsl: DSLContext by lazy { DSL.using(dataSource, SQLDialect.POSTGRES) }
+
+    /**
+     * A brand-new, empty database in the same container, NOT migrated - for tests of the
+     * migration itself, which need a database without the shared one's schema.
+     */
+    fun newEmptyDatabase(name: String): DataSource {
+        dataSource.connection.use { it.createStatement().execute("CREATE DATABASE $name") }
+        return PGSimpleDataSource().apply {
+            setURL(container.jdbcUrl.replace("/croniot_test", "/$name"))
+            user = container.username
+            password = container.password
+        }
+    }
 
     /**
      * Truncate all application tables in FK-safe order. Call from @BeforeEach.

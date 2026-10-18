@@ -8,7 +8,7 @@ import java.time.OffsetDateTime
 // is the same for Logs and Events, distinguished only by which MQTT topic
 // it arrived on) - kept as a separate interface/table rather than one
 // generic DAO because device_log and device_event are separate tables
-// with separate retention windows (see schema.sql), not a shared one
+// with separate retention windows (see db/migration), not a shared one
 // with a `stream` discriminator column.
 interface DeviceEventDao {
     fun insertBatch(deviceId: Long, bootId: Long, records: List<DeviceLogRecord>): List<InsertedDeviceLogRow>
