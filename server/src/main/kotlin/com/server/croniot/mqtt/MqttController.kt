@@ -358,6 +358,19 @@ object MqttController {
     // succeeding; MQTT delivery isn't confirmation of anything beyond
     // "the broker has it", same distinction as every other retained/ack
     // path in this controller).
+    // Retained for the same reason as publishLogConfig below: a device that
+    // is offline gets the request as soon as it reconnects. An empty
+    // payload removes the retained message, which cancels the request.
+    suspend fun publishOtaRequest(deviceUuid: String, manifestJson: String) {
+        clientLock.withLock {
+            val message = MqttMessage(manifestJson.toByteArray()).apply {
+                qos = 1
+                isRetained = true
+            }
+            deviceMqttClient.publish(MqttTopics.otaRequest(deviceUuid), message)
+        }
+    }
+
     suspend fun publishLogConfig(deviceUuid: String, configJson: String) {
         clientLock.withLock {
             val topic = "/server/$deviceUuid/log_config"

@@ -24,6 +24,8 @@ import com.server.croniot.data.db.daos.DeviceTokenDao
 import com.server.croniot.data.db.daos.DeviceTokenJooqDaoImpl
 import com.server.croniot.data.db.daos.FeatureFlagDao
 import com.server.croniot.data.db.daos.FeatureFlagJooqDaoImpl
+import com.server.croniot.data.db.daos.FirmwareDao
+import com.server.croniot.data.db.daos.FirmwareJooqDaoImpl
 import com.server.croniot.data.db.daos.IngestBatchDao
 import com.server.croniot.data.db.daos.IngestBatchJooqDaoImpl
 import com.server.croniot.data.db.daos.ParameterTaskDao
@@ -53,6 +55,8 @@ import com.server.croniot.data.repositories.TaskRepository
 import com.server.croniot.data.repositories.TaskTypeRepository
 import com.server.croniot.http.SensorsDataController
 import com.server.croniot.livelog.LiveLogBus
+import com.server.croniot.ota.MqttOtaRequestPublisher
+import com.server.croniot.ota.OtaRequestPublisher
 import com.server.croniot.services.AccountService
 import com.server.croniot.services.DeviceLogConfigService
 import com.server.croniot.services.DeviceLogService
@@ -211,6 +215,13 @@ class AppModule {
     @Provides @Singleton
     fun provideDeviceLogConfigDao(dsl: DSLContext): DeviceLogConfigDao =
         DeviceLogConfigJooqDaoImpl(dsl)
+
+    @Provides @Singleton
+    fun provideFirmwareDao(dsl: DSLContext): FirmwareDao =
+        FirmwareJooqDaoImpl(dsl)
+
+    @Provides @Singleton
+    fun provideOtaRequestPublisher(): OtaRequestPublisher = MqttOtaRequestPublisher()
 
     @Provides @Singleton
     fun provideDeviceLogDao(dsl: DSLContext): DeviceLogDao =
