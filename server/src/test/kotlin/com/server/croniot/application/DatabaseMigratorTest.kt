@@ -4,6 +4,7 @@ import com.server.croniot.testsupport.PostgresTestcontainer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.io.File
 import javax.sql.DataSource
 
 class DatabaseMigratorTest {
@@ -16,8 +17,20 @@ class DatabaseMigratorTest {
         }
     }
 
+    // Every migration after the baseline, as Flyway records it when it runs
+    // them: these tests are about V1, and must not need editing per migration.
+    private val laterMigrations: List<Pair<String, String>> =
+        File(javaClass.getResource("/db/migration")!!.toURI()).list()!!
+            .mapNotNull { Regex("""^V(\d+)__.*\.sql$""").find(it)?.groupValues?.get(1)?.toInt() }
+            .filter { it > 1 }
+            .sorted()
+            .map { it.toString() to "SQL" }
+
     private fun DataSource.count(sql: String): Int = connection.use { connection ->
-        connection.createStatement().executeQuery(sql).use { rs -> rs.next(); rs.getInt(1) }
+        connection.createStatement().executeQuery(sql).use { rs ->
+            rs.next()
+            rs.getInt(1)
+        }
     }
 
     @Test
@@ -26,7 +39,7 @@ class DatabaseMigratorTest {
 
         DatabaseMigrator.migrate(ds)
 
-        assertEquals(listOf("1" to "SQL"), ds.history())
+        assertEquals(listOf("1" to "SQL") + laterMigrations, ds.history())
         assertEquals(1, ds.count("SELECT count(*) FROM information_schema.tables WHERE table_name = 'device_log'"))
         assertEquals(3, ds.count("SELECT count(*) FROM feature_flag"))
     }
@@ -46,7 +59,7 @@ class DatabaseMigratorTest {
 
         DatabaseMigrator.migrate(ds)
 
-        assertEquals(listOf("1" to "BASELINE"), ds.history())
+        assertEquals(listOf("1" to "BASELINE") + laterMigrations, ds.history())
         assertEquals(1, ds.count("SELECT count(*) FROM account"))
     }
 
@@ -57,7 +70,7 @@ class DatabaseMigratorTest {
 
         DatabaseMigrator.migrate(ds)
 
-        assertEquals(listOf("1" to "SQL"), ds.history())
+        assertEquals(listOf("1" to "SQL") + laterMigrations, ds.history())
         assertTrue(ds.count("SELECT count(*) FROM feature_flag") == 3)
     }
 }
