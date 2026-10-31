@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.kotlin.logging)
     implementation(libs.postgresql)
+    implementation(libs.flyway.core)
+    implementation(libs.flyway.database.postgresql)
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)
     implementation(libs.dagger)
@@ -115,7 +117,7 @@ jacoco {
 
 // Coverage target is "100% of what a unit test can meaningfully protect" — same philosophy as the
 // Android/KMP client (see docs/test-coverage.html). Excluded, with rationale:
-//   - jOOQ-generated DB access code (com.server.croniot.jooq, pure codegen from schema.sql) and
+//   - jOOQ-generated DB access code (com.server.croniot.jooq, pure codegen from the Flyway migrations) and
 //     Dagger-generated DI wiring (*_Factory/*_MembersInjector/Dagger*Component): a test here only
 //     proves Dagger/jOOQ call what they're told to call, same rationale as the client's Koin DI exclusion.
 //   - AppModule/DI: Dagger @Provides wiring itself, same reasoning.
@@ -153,6 +155,12 @@ tasks.jacocoTestReport {
 
 tasks {
     shadowJar {
+        // Shadow 9 drops duplicate paths before its transformers run: without
+        // INCLUDE, mergeServiceFiles() kept a single jar's copy of each
+        // META-INF/services file. Flyway lost its core plugins and failed at
+        // startup from the fat jar (NPE in PluginRegister), while Gradle runs
+        // and tests, which use the plain classpath, worked.
+        filesMatching("META-INF/services/**") { duplicatesStrategy = DuplicatesStrategy.INCLUDE }
         mergeServiceFiles()
         archiveClassifier.set("all")
         manifest {
@@ -222,8 +230,10 @@ jooq {
                     database = Database().apply {
                         name = "org.jooq.meta.extensions.ddl.DDLDatabase"
                         properties = listOf(
-                            Property().withKey("scripts").withValue("src/main/resources/schema.sql"),
-                            Property().withKey("sort").withValue("semantic"),
+                            // Every Flyway migration, in Flyway's own order (V1, V2, ... V10), so
+                            // the generated code always matches what migrate() leaves in the DB.
+                            Property().withKey("scripts").withValue("src/main/resources/db/migration/*.sql"),
+                            Property().withKey("sort").withValue("flyway"),
                             Property().withKey("unqualifiedSchema").withValue("none"),
                             Property().withKey("defaultNameCase").withValue("lower"),
                             Property().withKey("parseDialect").withValue("POSTGRES"),

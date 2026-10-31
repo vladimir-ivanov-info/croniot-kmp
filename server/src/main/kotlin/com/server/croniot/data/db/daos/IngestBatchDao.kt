@@ -2,7 +2,7 @@ package com.server.croniot.data.db.daos
 
 import java.time.OffsetDateTime
 
-// One received batch, as stored in ingest_batch (see schema.sql).
+// One received batch, as stored in ingest_batch (see db/migration).
 data class IngestBatchRow(
     val deviceId: Long,
     val stream: String,

@@ -175,7 +175,7 @@ private fun waitForPostgresReady(
 }
 
 fun initDatabase(dataSource: DataSource) {
-    DatabaseSchemaInitializer.createSchemaIfNeeded(dataSource)
+    DatabaseMigrator.migrate(dataSource)
 }
 
 fun main() {
