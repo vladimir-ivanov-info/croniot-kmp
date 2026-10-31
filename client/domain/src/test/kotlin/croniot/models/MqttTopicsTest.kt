@@ -34,6 +34,11 @@ class MqttTopicsTest {
     }
 
     @Test
+    fun `WHEN otaRequest is called with a device uuid THEN it builds the per-device topic`() {
+        assertThat(MqttTopics.otaRequest("dev-1")).isEqualTo("/server/dev-1/ota")
+    }
+
+    @Test
     fun `WHEN FEATURE_FLAG_UPDATES_WILDCARD is accessed THEN it is a fixed wildcard topic`() {
         assertThat(MqttTopics.FEATURE_FLAG_UPDATES_WILDCARD).isEqualTo("/server/feature_flags/+")
     }

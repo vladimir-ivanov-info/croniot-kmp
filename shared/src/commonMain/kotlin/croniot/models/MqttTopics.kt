@@ -9,4 +9,7 @@ object MqttTopics {
 
     fun featureFlagUpdate(flagName: String) = "/server/feature_flags/$flagName"
     const val FEATURE_FLAG_UPDATES_WILDCARD = "/server/feature_flags/+"
+
+    // Retained firmware update request for one device (croniot-iot ota/OtaManifest.h).
+    fun otaRequest(deviceUuid: String) = "/server/$deviceUuid/ota"
 }
