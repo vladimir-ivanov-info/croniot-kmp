@@ -30,6 +30,7 @@ class RouteInitializer @Inject constructor(
     private val adminLogController: AdminLogController,
     private val adminDirectoryController: AdminDirectoryController,
     private val adminServerLogLevelController: AdminServerLogLevelController,
+    private val otaController: OtaController,
 ) {
     fun setupRoutes(application: Application) {
         val prometheusRegistry = application.attributes.getOrNull(PROMETHEUS_REGISTRY_KEY)
@@ -144,6 +145,11 @@ class RouteInitializer @Inject constructor(
                 deviceLogController.getEvents(call)
             }
 
+            // Authenticated by the device's own credentials (headers), not a JWT.
+            get("/api/iot/firmware/{id}") {
+                otaController.downloadFirmware(call)
+            }
+
             authenticate(AUTH_JWT_REALM) {
                 put("/api/admin/feature_flags/{name}") {
                     featureFlagController.setFlag(call)
@@ -180,6 +186,19 @@ class RouteInitializer @Inject constructor(
                 get("/api/admin/accounts/{uuid}") {
                     call.requireAdmin()
                     adminDirectoryController.getAccount(call)
+                }
+
+                route("/api/admin/firmware") {
+                    install(AdminOnly)
+                    post { otaController.uploadFirmware(call) }
+                    get { otaController.listFirmware(call) }
+                }
+
+                route("/api/admin/devices/{uuid}/ota") {
+                    install(AdminOnly)
+                    put { otaController.requestUpdate(call) }
+                    get { otaController.getUpdate(call) }
+                    delete { otaController.cancelUpdate(call) }
                 }
 
                 route("/api/admin/server/log_level") {

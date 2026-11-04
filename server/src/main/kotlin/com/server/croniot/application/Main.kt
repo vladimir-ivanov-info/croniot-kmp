@@ -114,6 +114,7 @@ fun Application.module(testing: Boolean = false) {
         adminLogController = appComponent.adminLogController(),
         adminDirectoryController = appComponent.adminDirectoryController(),
         adminServerLogLevelController = appComponent.adminServerLogLevelController(),
+        otaController = appComponent.otaController(),
     )
     routeInitializer.setupRoutes(this)
 }

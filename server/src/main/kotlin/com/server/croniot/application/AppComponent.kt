@@ -10,6 +10,7 @@ import com.server.croniot.controllers.DeviceLogConfigController
 import com.server.croniot.controllers.DeviceLogController
 import com.server.croniot.controllers.FeatureFlagController
 import com.server.croniot.controllers.LoginController
+import com.server.croniot.controllers.OtaController
 import com.server.croniot.controllers.SensorTypeController
 import com.server.croniot.controllers.TaskController
 import com.server.croniot.controllers.TaskTypeController
@@ -53,6 +54,7 @@ interface AppComponent {
     fun adminLogController(): AdminLogController
     fun adminDirectoryController(): AdminDirectoryController
     fun adminServerLogLevelController(): AdminServerLogLevelController
+    fun otaController(): OtaController
     fun deviceLogService(): DeviceLogService
     fun sensorBatchService(): SensorBatchService
     fun deviceStatusService(): DeviceStatusService
