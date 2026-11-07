@@ -26,6 +26,8 @@ import com.server.croniot.data.db.daos.FeatureFlagDao
 import com.server.croniot.data.db.daos.FeatureFlagJooqDaoImpl
 import com.server.croniot.data.db.daos.FirmwareDao
 import com.server.croniot.data.db.daos.FirmwareJooqDaoImpl
+import com.server.croniot.data.db.daos.OtaHistoryDao
+import com.server.croniot.data.db.daos.OtaHistoryJooqDaoImpl
 import com.server.croniot.data.db.daos.IngestBatchDao
 import com.server.croniot.data.db.daos.IngestBatchJooqDaoImpl
 import com.server.croniot.data.db.daos.ParameterTaskDao
@@ -219,6 +221,10 @@ class AppModule {
     @Provides @Singleton
     fun provideFirmwareDao(dsl: DSLContext): FirmwareDao =
         FirmwareJooqDaoImpl(dsl)
+
+    @Provides @Singleton
+    fun provideOtaHistoryDao(dsl: DSLContext): OtaHistoryDao =
+        OtaHistoryJooqDaoImpl(dsl)
 
     @Provides @Singleton
     fun provideOtaRequestPublisher(): OtaRequestPublisher = MqttOtaRequestPublisher()

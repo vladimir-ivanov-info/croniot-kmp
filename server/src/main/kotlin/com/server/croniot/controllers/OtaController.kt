@@ -1,8 +1,14 @@
 package com.server.croniot.controllers
 
 import com.server.croniot.application.DomainException
+import com.server.croniot.data.db.daos.DeviceFirmware
 import com.server.croniot.data.db.daos.FirmwareRelease
+import com.server.croniot.data.db.daos.OtaUpdate
 import com.server.croniot.ota.ByteRange
+import com.server.croniot.ota.DeviceFirmwareOverviewDto
+import com.server.croniot.ota.InstalledFirmwareDto
+import com.server.croniot.ota.OtaEvents
+import com.server.croniot.ota.OtaUpdateDto
 import com.server.croniot.ota.FirmwareReleaseDto
 import com.server.croniot.ota.OtaManifestDto
 import com.server.croniot.ota.OtaRequestPublisher
@@ -22,11 +28,14 @@ import io.ktor.server.response.respondBytes
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-//   POST   /api/admin/firmware              body: the app .bin (admin)
+//   POST   /api/admin/firmware              body: the app .bin (admin); 201 new, 200 if the
+//                                           same file was uploaded before
 //   GET    /api/admin/firmware              uploaded releases (admin)
 //   PUT    /api/admin/devices/{uuid}/ota    {releaseId}: ask the device to install it (admin)
 //   GET    /api/admin/devices/{uuid}/ota    the pending request, 404 if none (admin)
 //   DELETE /api/admin/devices/{uuid}/ota    cancel the request (admin)
+//   GET    /api/admin/devices/{uuid}/firmware  installed firmware, update in progress and
+//                                           history, for the device page (admin)
 //   GET    /api/iot/firmware/{id}           the image, for the device that was asked
 //                                           (X-Device-Uuid + X-Device-Token, Range supported)
 class OtaController @Inject constructor(
@@ -40,7 +49,19 @@ class OtaController @Inject constructor(
             throw DomainException(DomainError.Validation("image", "Larger than 16 MB"))
         }
         val image = call.receive<ByteArray>()
-        call.respond(HttpStatusCode.Created, otaService.upload(image).toDto())
+        val upload = otaService.upload(image)
+        call.respond(if (upload.created) HttpStatusCode.Created else HttpStatusCode.OK, upload.release.toDto())
+    }
+
+    suspend fun getFirmwareOverview(call: ApplicationCall) {
+        val o = otaService.overview(uuid(call))
+        call.respond(
+            DeviceFirmwareOverviewDto(
+                installed = o.installed?.toDto(o.installedRelease),
+                current = o.current?.toDto(),
+                history = o.history.map { it.toDto() },
+            )
+        )
     }
 
     suspend fun listFirmware(call: ApplicationCall) {
@@ -110,6 +131,33 @@ class OtaController @Inject constructor(
         sizeBytes = sizeBytes,
         sha256 = sha256,
         createdAt = createdAt.toString(),
+        builtAt = builtAt,
+        idfVersion = idfVersion,
+    )
+
+    private fun DeviceFirmware.toDto(release: FirmwareRelease?) = InstalledFirmwareDto(
+        project = project,
+        version = version,
+        builtAt = builtAt,
+        idfVersion = idfVersion,
+        sizeBytes = sizeBytes ?: release?.sizeBytes,
+        slot = slot,
+        reportedAt = reportedAt.toString(),
+        release = release?.toDto(),
+    )
+
+    private fun OtaUpdate.toDto() = OtaUpdateDto(
+        requestId = requestId,
+        releaseId = releaseId,
+        version = version,
+        fromVersion = fromVersion,
+        status = status,
+        finished = OtaEvents.isFinished(status),
+        progress = progress,
+        detail = detail,
+        requestedAt = requestedAt.toString(),
+        updatedAt = updatedAt.toString(),
+        finishedAt = finishedAt?.toString(),
     )
 
     companion object {

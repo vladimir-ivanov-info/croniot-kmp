@@ -123,7 +123,8 @@ class OtaRoutesTest {
     @Test
     fun `WHEN an admin uploads an image THEN the stored release comes back`() = testApplication {
         application { testModule() }
-        every { service.upload(image) } returns FirmwareRelease(12, "p", "1.2.0", 100, "a".repeat(64), OffsetDateTime.now())
+        every { service.upload(image) } returns
+            OtaService.Upload(FirmwareRelease(12, "p", "1.2.0", 100, "a".repeat(64), OffsetDateTime.now()), created = true)
 
         val response = client.post("/api/admin/firmware") {
             header(HttpHeaders.Authorization, "Bearer ${token(true)}")

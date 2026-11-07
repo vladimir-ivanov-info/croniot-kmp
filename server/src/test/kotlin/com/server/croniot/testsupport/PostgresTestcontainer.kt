@@ -66,6 +66,8 @@ object PostgresTestcontainer {
             """
             TRUNCATE TABLE
                 server_log,
+                device_ota_update,
+                device_firmware,
                 firmware_release,
                 refresh_token,
                 task_parameter_value,

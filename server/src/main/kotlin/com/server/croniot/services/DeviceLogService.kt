@@ -39,6 +39,7 @@ class DeviceLogService @Inject constructor(
     private val deviceRepository: DeviceRepository,
     private val livePublisher: DeviceLogLivePublisher,
     private val ingestBatchRecorder: IngestBatchRecorder,
+    private val otaEventTracker: OtaEventTracker,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -89,6 +90,10 @@ class DeviceLogService @Inject constructor(
         }
         logger.debug {
             "ingestBatch: device=$deviceUuid stream=${stream.ackName} inserted=${inserted.size}/${batch.records.size} firstSeq=${batch.firstSeq} count=${batch.count}"
+        }
+
+        if (stream == LogStream.EVENTS && inserted.isNotEmpty()) {
+            otaEventTracker.onEvents(deviceId, inserted.map { it.record })
         }
 
         // After the INSERT, never before: if it threw, nothing reaches the
