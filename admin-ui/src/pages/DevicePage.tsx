@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type DragEvent } from "react";
 import { Link, useParams } from "react-router";
 import { useAuth } from "../auth/useAuth";
 import { DeviceStatusBadge } from "../components/DeviceStatusBadge";
@@ -7,6 +7,8 @@ import { fetchDevice, type DeviceDetail } from "../livelog/directory";
 import { duplicateRatio, formatAgo } from "../livelog/format";
 import { severityOf } from "../livelog/severity";
 import { LEVELS } from "../livelog/types";
+import { FirmwarePanel } from "../ota/FirmwarePanel";
+import { useFirmwareUpdate } from "../ota/useFirmwareUpdate";
 import "./EntityPage.css";
 
 // Route wrapper: a new device id means a fresh page (no stale state).
@@ -19,6 +21,11 @@ export function DevicePage({ uuid }: { uuid: string }) {
   const { token } = useAuth();
   const [detail, setDetail] = useState<DeviceDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const fw = useFirmwareUpdate(uuid);
+  // dragenter/dragleave fire for every child the file passes over: count
+  // them so the overlay doesn't flicker.
+  const dragDepth = useRef(0);
+  const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
     const abort = new AbortController();
@@ -33,8 +40,46 @@ export function DevicePage({ uuid }: { uuid: string }) {
   const s = detail?.summary;
   const ratio = detail ? duplicateRatio(detail.recordsReceived24h, detail.recordsDuplicated24h) : null;
 
+  const hasFiles = (e: DragEvent) => Array.from(e.dataTransfer.types).includes("Files");
+  const onDragEnter = (e: DragEvent) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    dragDepth.current += 1;
+    setDragging(true);
+  };
+  const onDragLeave = (e: DragEvent) => {
+    if (!hasFiles(e)) return;
+    dragDepth.current = Math.max(0, dragDepth.current - 1);
+    if (dragDepth.current === 0) setDragging(false);
+  };
+  const onDragOver = (e: DragEvent) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault(); // without this the browser opens the file instead
+    e.dataTransfer.dropEffect = fw.busy ? "none" : "copy";
+  };
+  const onDrop = (e: DragEvent) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    dragDepth.current = 0;
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file && !fw.busy) void fw.start(file);
+  };
+
   return (
-    <div className="entity-page">
+    <div
+      className="entity-page"
+      data-testid="device-page"
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
+      {dragging && (
+        <div className="fw-drop-overlay">
+          {fw.busy ? "An update is already running" : `Drop the .bin to update ${s?.name || uuid}`}
+        </div>
+      )}
       <header className="entity-header">
         <div className="entity-heading">
           <h1>{s?.name || uuid}</h1>
@@ -72,6 +117,7 @@ export function DevicePage({ uuid }: { uuid: string }) {
           </dl>
         )}
       </header>
+      <FirmwarePanel fw={fw} />
       <div className="entity-logs">
         <FilteredLogViewer title={<h2 className="entity-logs-title">Logs</h2>} fixedDevice={uuid} />
       </div>
