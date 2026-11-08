@@ -10,6 +10,9 @@ data class FirmwareRelease(
     val sizeBytes: Long,
     val sha256: String,
     val createdAt: OffsetDateTime,
+    val builtAt: String? = null,
+    val idfVersion: String? = null,
+    val imageHash: String? = null,
 )
 
 data class DeviceOtaRequest(
@@ -24,6 +27,9 @@ interface FirmwareDao {
     fun insertRelease(info: FirmwareImageInfo, image: ByteArray): Long?
     fun listReleases(): List<FirmwareRelease>
     fun getRelease(id: Long): FirmwareRelease?
+    fun findRelease(project: String, version: String): FirmwareRelease?
+    // By the 16-hex-digit prefix a device reports in firmware_info.
+    fun findReleaseByImageHash(hashPrefix: String): FirmwareRelease?
     fun getImage(id: Long): ByteArray?
 
     fun upsertRequest(deviceId: Long, releaseId: Long, requestId: String)

@@ -18,6 +18,9 @@ class FirmwareJooqDaoImpl @Inject constructor(
             .set(FIRMWARE_RELEASE.VERSION, info.version)
             .set(FIRMWARE_RELEASE.SIZE_BYTES, info.sizeBytes)
             .set(FIRMWARE_RELEASE.SHA256, info.sha256)
+            .set(FIRMWARE_RELEASE.BUILT_AT, info.builtAt)
+            .set(FIRMWARE_RELEASE.IDF_VERSION, info.idfVersion)
+            .set(FIRMWARE_RELEASE.IMAGE_HASH, info.imageHash)
             .set(FIRMWARE_RELEASE.IMAGE, image)
             .onConflictDoNothing()
             .returning(FIRMWARE_RELEASE.ID)
@@ -37,6 +40,24 @@ class FirmwareJooqDaoImpl @Inject constructor(
         return dsl.select(*infoFields())
             .from(FIRMWARE_RELEASE)
             .where(FIRMWARE_RELEASE.ID.eq(id))
+            .fetchOne { it.toRelease() }
+    }
+
+    override fun findRelease(project: String, version: String): FirmwareRelease? {
+        return dsl.select(*infoFields())
+            .from(FIRMWARE_RELEASE)
+            .where(FIRMWARE_RELEASE.PROJECT.eq(project))
+            .and(FIRMWARE_RELEASE.VERSION.eq(version))
+            .fetchOne { it.toRelease() }
+    }
+
+    override fun findReleaseByImageHash(hashPrefix: String): FirmwareRelease? {
+        if (hashPrefix.isBlank()) return null
+        return dsl.select(*infoFields())
+            .from(FIRMWARE_RELEASE)
+            .where(FIRMWARE_RELEASE.IMAGE_HASH.startsWith(hashPrefix.lowercase()))
+            .orderBy(FIRMWARE_RELEASE.ID.desc())
+            .limit(1)
             .fetchOne { it.toRelease() }
     }
 
@@ -86,6 +107,9 @@ class FirmwareJooqDaoImpl @Inject constructor(
         FIRMWARE_RELEASE.SIZE_BYTES,
         FIRMWARE_RELEASE.SHA256,
         FIRMWARE_RELEASE.CREATED_AT,
+        FIRMWARE_RELEASE.BUILT_AT,
+        FIRMWARE_RELEASE.IDF_VERSION,
+        FIRMWARE_RELEASE.IMAGE_HASH,
     )
 
     private fun Record.toRelease() = FirmwareRelease(
@@ -95,5 +119,8 @@ class FirmwareJooqDaoImpl @Inject constructor(
         sizeBytes = get(FIRMWARE_RELEASE.SIZE_BYTES)!!,
         sha256 = get(FIRMWARE_RELEASE.SHA256)!!,
         createdAt = get(FIRMWARE_RELEASE.CREATED_AT)!!,
+        builtAt = get(FIRMWARE_RELEASE.BUILT_AT),
+        idfVersion = get(FIRMWARE_RELEASE.IDF_VERSION),
+        imageHash = get(FIRMWARE_RELEASE.IMAGE_HASH)?.trim(),
     )
 }

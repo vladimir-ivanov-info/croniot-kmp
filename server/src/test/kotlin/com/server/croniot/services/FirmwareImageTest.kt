@@ -43,4 +43,29 @@ class FirmwareImageTest {
         assertNull(FirmwareImage.inspect(ByteArray(10)))
         assertNull(FirmwareImage.inspect(FirmwareImages.fake(size = FirmwareImage.MAX_SIZE_BYTES + 1)))
     }
+
+    @Test
+    fun `WHEN the image has a build date, IDF version and appended hash THEN they are read too`() {
+        val image = FirmwareImages.fake(appendHash = true)
+        val info = FirmwareImage.inspect(image)!!
+
+        assertEquals("2026-11-07T19:50:09", info.builtAt)
+        assertEquals("v5.5.3", info.idfVersion)
+        assertEquals(image.copyOfRange(image.size - 32, image.size).joinToString("") { "%02x".format(it) }, info.imageHash)
+    }
+
+    @Test
+    fun `WHEN the header says no hash or the tail is not the hash THEN there is no image hash`() {
+        assertEquals(null, FirmwareImage.inspect(FirmwareImages.fake(appendHash = false))!!.imageHash)
+        val broken = FirmwareImages.fake(appendHash = true).also { it[it.size - 1] = (it[it.size - 1] + 1).toByte() }
+        assertEquals(null, FirmwareImage.inspect(broken)!!.imageHash)
+    }
+
+    @Test
+    fun `WHEN the build date does not parse THEN builtAt is null`() {
+        assertEquals("2027-01-31T00:00:05", FirmwareImage.isoBuildTime("Jan 31 2027", "00:00:05"))
+        assertEquals(null, FirmwareImage.isoBuildTime("Foo  7 2026", "19:50:09"))
+        assertEquals(null, FirmwareImage.isoBuildTime("Nov  7 2026", "late"))
+        assertEquals(null, FirmwareImage.isoBuildTime(null, null))
+    }
 }

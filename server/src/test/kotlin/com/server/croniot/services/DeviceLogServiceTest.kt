@@ -25,6 +25,7 @@ class DeviceLogServiceTest {
     private val deviceRepository: DeviceRepository = mockk()
     private val livePublisher: DeviceLogLivePublisher = mockk(relaxUnitFun = true)
     private val ingestBatchRecorder: IngestBatchRecorder = mockk(relaxUnitFun = true)
+    private val otaEventTracker: OtaEventTracker = mockk(relaxUnitFun = true)
 
     private val service = DeviceLogService(
         deviceLogRepository = deviceLogRepository,
@@ -32,6 +33,7 @@ class DeviceLogServiceTest {
         deviceRepository = deviceRepository,
         livePublisher = livePublisher,
         ingestBatchRecorder = ingestBatchRecorder,
+        otaEventTracker = otaEventTracker,
     )
 
     private fun record(seq: Long) = DeviceLogRecord(

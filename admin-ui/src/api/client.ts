@@ -66,3 +66,55 @@ export async function apiGetJson<T>(
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
   return (await res.json()) as T;
 }
+
+export interface UploadResult {
+  status: number;
+  body: string;
+}
+
+function xhrUpload(
+  path: string,
+  token: string | null,
+  body: Blob,
+  onProgress: (sentBytes: number, totalBytes: number) => void,
+  signal?: AbortSignal
+): Promise<UploadResult> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", path);
+    if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.setRequestHeader("Content-Type", "application/octet-stream");
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(e.loaded, e.total);
+    };
+    xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText });
+    xhr.onerror = () => reject(new Error("Network error while uploading"));
+    xhr.onabort = () => reject(new DOMException("Upload cancelled", "AbortError"));
+    signal?.addEventListener("abort", () => xhr.abort(), { once: true });
+    xhr.send(body);
+  });
+}
+
+// Like apiFetch, but for a file upload whose progress the page shows:
+// fetch() can't report upload progress, XMLHttpRequest can. Same token
+// handling: one renewal on 401, then sign out.
+export async function apiUpload(
+  path: string,
+  token: string | null,
+  body: Blob,
+  onProgress: (sentBytes: number, totalBytes: number) => void,
+  signal?: AbortSignal
+): Promise<UploadResult> {
+  const sent = session?.getToken() ?? token;
+  let res = await xhrUpload(path, sent, body, onProgress, signal);
+  if (res.status === 401 && session) {
+    const current = session.getToken();
+    const renewed = current !== null && current !== sent ? current : await session.refresh();
+    if (renewed) res = await xhrUpload(path, renewed, body, onProgress, signal);
+  }
+  if (res.status === 401) {
+    onUnauthorized();
+    throw new UnauthorizedError();
+  }
+  return res;
+}

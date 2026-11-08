@@ -201,6 +201,11 @@ class RouteInitializer @Inject constructor(
                     delete { otaController.cancelUpdate(call) }
                 }
 
+                route("/api/admin/devices/{uuid}/firmware") {
+                    install(AdminOnly)
+                    get { otaController.getFirmwareOverview(call) }
+                }
+
                 route("/api/admin/server/log_level") {
                     install(AdminOnly)
                     get { adminServerLogLevelController.get(call) }
