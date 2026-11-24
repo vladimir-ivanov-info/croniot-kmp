@@ -36,8 +36,8 @@ android {
         applicationId = "com.croniot.android"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 16
-        versionName = "1.0-alpha12"
+        versionCode = 17
+        versionName = "1.0-alpha13"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
